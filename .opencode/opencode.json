@@ -1,0 +1,156 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": {
+      "default": "ask",
+      "allow": [
+        "git status*",
+        "git diff*",
+        "git log*",
+        "git branch*",
+        "git stash*",
+        "git checkout*",
+        "git add*",
+        "git commit*",
+        "ls*",
+        "find*",
+        "grep*",
+        "cat*",
+        "head*",
+        "tail*",
+        "sed*",
+        "wc*",
+        "pwd*",
+        "mkdir*",
+        "touch*",
+        "cp*",
+        "mv*",
+        "which*",
+        "echo*",
+        "rmdir*"
+      ],
+      "ask": [
+        "pytest*",
+        "python3 -m pytest*",
+        "ruff*",
+        "mypy*",
+        "npm test*",
+        "npm run lint*",
+        "npm run typecheck*",
+        "npm run build*",
+        "npm run dev*",
+        "npm install*",
+        "npm ci*",
+        "pip install*",
+        "docker compose config*",
+        "docker compose up*",
+        "docker compose build*",
+        "docker compose down*",
+        "bash scripts/verify.sh*",
+        "bash scripts/ai_context.sh*",
+        "repomix*",
+        "npx*"
+      ],
+      "deny": [
+        "git push*",
+        "git reset --hard*",
+        "git clean*",
+        "git rebase*",
+        "rm -rf*",
+        "sudo*",
+        "chmod -R 777*",
+        "chmod 777*",
+        "curl * | bash*",
+        "wget * | bash*",
+        "eval*",
+        "source*",
+        "docker system prune*",
+        "docker rm*",
+        "docker rmi*",
+        "apt*",
+        "apt-get*",
+        "chown*",
+        "kill -9*"
+      ]
+    }
+  },
+  "agent": {
+    "plan": {
+      "edit": "deny",
+      "bash": {
+        "default": "ask",
+        "allow": [
+          "git status*",
+          "git diff*",
+          "git log*",
+          "git branch*",
+          "ls*",
+          "find*",
+          "grep*",
+          "cat*",
+          "head*",
+          "tail*",
+          "sed*",
+          "wc*",
+          "pwd*",
+          "which*",
+          "bash scripts/verify.sh*"
+        ]
+      }
+    },
+    "build": {
+      "edit": "ask",
+      "bash": {
+        "default": "ask",
+        "allow": [
+          "git status*",
+          "git diff*",
+          "git log*",
+          "git branch*",
+          "git add*",
+          "git commit*",
+          "ls*",
+          "find*",
+          "grep*",
+          "cat*",
+          "head*",
+          "tail*",
+          "sed*",
+          "wc*",
+          "pwd*",
+          "mkdir*",
+          "touch*",
+          "cp*",
+          "mv*",
+          "which*",
+          "rmdir*"
+        ],
+        "deny": [
+          "git push*",
+          "git reset --hard*",
+          "git clean*",
+          "git rebase*",
+          "rm -rf*",
+          "sudo*",
+          "chmod -R 777*",
+          "chmod 777*",
+          "curl * | bash*",
+          "wget * | bash*",
+          "eval*",
+          "docker system prune*",
+          "docker rm*",
+          "docker rmi*",
+          "apt*",
+          "apt-get*",
+          "chown*",
+          "kill -9*"
+        ]
+      }
+    }
+  },
+  "load": [
+    "AGENTS.md",
+    "docs/ai/CONTEXT_INDEX.md"
+  ],
+  "_notes": "Schema best-guess for current OpenCode. 'permission' (singular) and 'agent' (singular) used per conventions. If OpenCode rejects this config, consult https://opencode.ai for exact schema."
+}

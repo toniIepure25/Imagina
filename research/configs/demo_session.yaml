@@ -1,0 +1,12 @@
+session:
+  scenario: improving_user
+  seed: 42
+  duration_windows: 30
+  window_seconds: 10
+  task_id: corridor_simple
+
+baseline:
+  focus: 6
+  relaxation: 5
+  vividness: 5
+  fatigue: 3

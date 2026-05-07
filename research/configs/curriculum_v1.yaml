@@ -1,0 +1,46 @@
+curriculum:
+  version: 1
+  levels:
+    - level: 1
+      name: "Breath + Fixation"
+      success_iqi: null
+      success_pid: null
+      success_attention: 0.55
+      max_fatigue: 0.5
+    - level: 2
+      name: "Simple Corridor Shape"
+      success_iqi: 0.55
+      success_pid: 0.55
+    - level: 3
+      name: "Stable Walls"
+      success_iqi: 0.60
+      success_pid: 0.50
+    - level: 4
+      name: "Lighting Stability"
+      success_iqi: 0.65
+      success_pid: 0.45
+    - level: 5
+      name: "Texture Detail"
+      success_iqi: 0.70
+      success_pid: 0.40
+    - level: 6
+      name: "Door Formation"
+      success_iqi: 0.72
+      success_pid: 0.38
+    - level: 7
+      name: "Memory Room Entry"
+      success_iqi: 0.75
+      success_pid: 0.35
+    - level: 8
+      name: "Return-to-Scene"
+      success_iqi: 0.78
+      success_pid: 0.32
+
+  staircase:
+    advance_after_successes: 3
+    regress_after_failures: 1
+    major_failure_pid: 0.70
+    major_failure_iqi: 0.35
+    major_failure_fatigue: 0.75
+    major_failure_uncertainty: 0.80
+    fatigue_cooldown_threshold: 0.80

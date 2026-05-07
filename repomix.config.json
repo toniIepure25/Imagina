@@ -1,0 +1,55 @@
+{
+  "output": {
+    "filePath": "docs/ai/repo_snapshot.md",
+    "format": "markdown",
+    "includeLineNumbers": true,
+    "compress": true,
+    "topFilesLength": 30
+  },
+  "security": {
+    "enableSecurityCheck": true
+  },
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultIgnores": true,
+    "customPatterns": [
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/.git.disabled/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/.venv/**",
+      "**/venv/**",
+      "**/__pycache__/**",
+      "**/.pytest_cache/**",
+      "**/.mypy_cache/**",
+      "**/.ruff_cache/**",
+      "**/*.egg-info/**",
+      "**/.turbo/**",
+      "*.pt",
+      "*.pth",
+      "*.ckpt",
+      "*.parquet",
+      "*.csv",
+      "*.db",
+      "*.sqlite",
+      "*.db-journal",
+      "*.db-wal",
+      "*.db-shm",
+      "*.tsbuildinfo",
+      ".env",
+      ".env.*",
+      "secrets/**",
+      "docs/ai/repo_snapshot.md",
+      "docs/ai/snapshots/**",
+      "frontend_git_backup_*.tar.gz",
+      "data/backups/**",
+      "data/sessions/*.json",
+      "data/sessions/*.db",
+      "data/exports/*.html",
+      "data/exports/*.json"
+    ]
+  }
+}
