@@ -28,3 +28,15 @@ Limitations: deterministic simulation is useful for engineering validation, but 
 5. Include the data dictionary with any shared dataset bundle.
 
 All exported PID/IQI values remain experimental derived proxies.
+
+## LSL Smoke Test (Experimental)
+
+For real EEG hardware validation, a manual smoke test CLI is available:
+
+```bash
+cd backend
+IMAGINA_ENABLE_EXPERIMENTAL_LSL=true python3 -m app.cli.lsl_smoke_test \
+  --windows 3 --allow-experimental --output data/exports/lsl_smoke.json
+```
+
+This requires pylsl (`pip install -e ".[lsl]"`) and an active LSL stream. See `docs/lsl_integration.md` for full setup instructions. The output JSON contains no raw EEG samples — only derived proxy features.

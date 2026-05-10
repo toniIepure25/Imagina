@@ -11,6 +11,9 @@
 - Signal provider, calibration, profile, experiment, export, and report modules are now linked into one V2 research workflow.
 - Experiment runs can create or attach linked sessions, track progress, aggregate summaries, and export experiment JSON.
 - Local profiles update idempotently from completed session summaries and expose a longitudinal progress report.
+- Full end-to-end V2 research workflow: profile → experiment run → linked sessions → calibration → session loop → report → profile update → experiment summary → exports.
+- Session summary reports include signal provider, scenario, calibration quality, and experiment linkage context.
+- 48 backend tests covering PID/IQI, curriculum, safety, calibration, reports, exports, profiles, experiments, and end-to-end workflow integration.
 
 ## Simulated
 

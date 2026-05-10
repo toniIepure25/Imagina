@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    app_name: str = "IMAGINA V1"
+    app_name: str = "IMAGINA V2"
     app_version: str = "1.0.0"
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
     max_session_duration_seconds: int = 1200  # 20 minutes
     window_interval_seconds: float = 2.0
+    enable_experimental_lsl: bool = False
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

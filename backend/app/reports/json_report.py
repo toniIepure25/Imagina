@@ -1,4 +1,5 @@
 from app.core.constants import DISCLAIMER
+from app.core.helpers import compute_slope
 from app.schemas.reports import SessionSummary
 from app.services import calibration_service, experiment_service, session_service
 from app.storage import event_store
@@ -25,12 +26,13 @@ async def generate_json_report(session_id: str, summary: SessionSummary) -> dict
     self_report_rows = [ev.payload for ev in events if ev.event_type == "self_report"]
 
     def slope(rows: list[dict], key: str) -> float:
-        values = [row.get(key) for row in rows if isinstance(row.get(key), (int, float))]
-        if len(values) < 2:
-            return 0.0
-        return round((values[-1] - values[0]) / (len(values) - 1), 5)
+        return compute_slope(rows, key)
 
-    levels = [row.get("current_level") for row in curriculum_rows if isinstance(row.get("current_level"), int)]
+    levels: list[int] = []
+    for row in curriculum_rows:
+        v = row.get("current_level")
+        if isinstance(v, int):
+            levels.append(v)
     timeline = [
         {
             "event_type": ev.event_type,

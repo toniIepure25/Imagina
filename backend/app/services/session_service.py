@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from app.core.errors import SessionNotFoundError, SessionStateError
@@ -40,6 +41,23 @@ async def start_session(session_id: str) -> Session:
         raise SessionStateError(f"Cannot start session in status {session.status}")
     if not await get_baseline(session_id):
         raise SessionStateError("Baseline is required before starting session")
+    from app.signals import get_provider
+    provider = get_provider(session.signal_provider_id or "simulated.default")
+    if provider is not None:
+        meta = provider.metadata()
+        if meta.get("window_collection_implemented") is False:
+            raise SessionStateError(
+                f"Provider {session.signal_provider_id} does not support window collection."
+            )
+        if meta.get("session_start_allowed") is False:
+            raise SessionStateError(
+                meta.get("disabled_reason", f"Provider {session.signal_provider_id} cannot run live sessions.")
+            )
+        health = provider.health()
+        if health.get("session_start_allowed") is False:
+            raise SessionStateError(
+                health.get("disabled_reason", f"Provider {session.signal_provider_id} is not currently available.")
+            )
     now = utcnow()
     await repository.update_session_status(session_id, "running", started_at=now)
     await event_store.append_event(session_id, "session_started", {"started_at": now.isoformat()})
@@ -72,6 +90,9 @@ async def complete_session(session_id: str, reason: str = "user_stop") -> Sessio
 
             await attach_session(session.experiment_run_id, session_id, completed=True)
     except Exception:
+        logging.getLogger(__name__).warning(
+            "Profile/experiment update failed for session %s", session_id, exc_info=True
+        )
         pass
     return session
 

@@ -55,7 +55,14 @@ if [ -f "$SNAPSHOT_FILE" ]; then
     # slash matches dir contents like objects/, hooks/, config, HEAD, index).
     # This intentionally does NOT match frontend/.gitignore or doc references
     # to frontend/.git (no trailing slash) which are false positives.
-    NESTED_GIT_COUNT=$(grep -cE '<file path="frontend/\.git/(objects|hooks|info|logs|refs|COMMIT_EDITMSG|config|description|HEAD|index|packed-refs)' "$SNAPSHOT_FILE" 2>/dev/null || echo "0")
+    NESTED_GIT_PATTERN='<file path="frontend/\.git/(objects|hooks|info|logs|refs|COMMIT_EDITMSG|config|description|HEAD|index|packed-refs)'
+
+    if grep -qE "$NESTED_GIT_PATTERN" "$SNAPSHOT_FILE" 2>/dev/null; then
+        NESTED_GIT_COUNT=$(grep -cE "$NESTED_GIT_PATTERN" "$SNAPSHOT_FILE" 2>/dev/null)
+    else
+        NESTED_GIT_COUNT=0
+    fi
+
     if [ "$NESTED_GIT_COUNT" -gt 0 ]; then
         echo ""
         echo "============================================================"
@@ -65,8 +72,7 @@ if [ -f "$SNAPSHOT_FILE" ]; then
         echo "============================================================"
         exit 1
     fi
-
-    echo ""
+	echo ""
     echo "Snapshot is clean — no nested .git paths detected."
     echo "Done."
 else

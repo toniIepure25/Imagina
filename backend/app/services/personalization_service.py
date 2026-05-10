@@ -1,5 +1,6 @@
 import uuid
 
+from app.core.helpers import compute_slope
 from app.core.time import utcnow
 from app.schemas.profile import ImageryProfile, ProfileRecommendation, UserProfileCreate
 from app.schemas.reports import SessionSummary
@@ -118,10 +119,7 @@ async def longitudinal_report(user_id: str) -> dict | None:
     history = profile.progress_history_summary
 
     def slope(key: str) -> float:
-        values = [row.get(key) for row in history if isinstance(row.get(key), (int, float))]
-        if len(values) < 2:
-            return 0.0
-        return round((values[-1] - values[0]) / (len(values) - 1), 5)
+        return compute_slope(history, key)
 
     return {
         "disclaimer": (

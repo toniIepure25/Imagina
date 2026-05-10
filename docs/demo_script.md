@@ -10,7 +10,7 @@
 
 ### Opening (20s)
 
-> "This is IMAGINA V1 — a research prototype for closed-loop mental imagery training. It does NOT read minds or decode dreams. V1 uses simulated EEG-like signals plus self-report and behavioral proxies, then adapts a procedural 3D corridor scene in real time."
+> "This is IMAGINA V2 — a research prototype for closed-loop mental imagery training. It does NOT read minds or decode dreams. V2 uses simulated EEG-like signals plus self-report and behavioral proxies, then adapts a procedural 3D corridor scene in real time."
 
 Point to the landing page disclaimers and the system loop.
 
@@ -61,7 +61,7 @@ Point to the landing page disclaimers and the system loop.
 
 ### Closing
 
-> "IMAGINA V1 is a complete local-first MVP with a FastAPI backend, Next.js frontend, WebSocket streaming, adaptive curriculum, safety monitoring, deterministic replay, and reports. All metrics are experimental proxies. The corridor is adaptive feedback, not decoded thought."
+> "IMAGINA V2 is a complete local-first MVP with a FastAPI backend, Next.js frontend, WebSocket streaming, adaptive curriculum, safety monitoring, deterministic replay, and reports. All metrics are experimental proxies. The corridor is adaptive feedback, not decoded thought."
 
 ## Key Points to Emphasize
 

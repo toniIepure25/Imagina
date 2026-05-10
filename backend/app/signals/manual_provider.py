@@ -7,13 +7,16 @@ class ManualSignalProvider:
     provider_id = "manual.self_report_only"
     provider_type: ProviderType = "manual"
 
-    async def start(self, session_id: str) -> None:
+    async def start(self, session_id: str, **kwargs) -> None:
         return None
 
     async def stop(self, session_id: str) -> None:
         return None
 
-    async def next_window(self, session_id: str, window_index: int) -> FeatureVector:
+    async def next_window(
+        self, session_id: str, window_index: int,
+        self_report: dict | None = None, total_windows: int = 60,
+    ) -> FeatureVector:
         return FeatureVector(
             session_id=session_id,
             timestamp=utcnow(),
@@ -30,11 +33,18 @@ class ManualSignalProvider:
         )
 
     def health(self) -> dict:
-        return {"status": "ok", "available": True, "provider_id": self.provider_id}
+        return {
+            "status": "ok", "available": True, "provider_id": self.provider_id,
+            "session_start_allowed": True, "window_collection_implemented": True,
+            "disabled_reason": None,
+        }
 
     def metadata(self) -> dict:
         return {
             "provider_id": self.provider_id,
             "provider_type": self.provider_type,
             "description": "Safe self-report-only fallback provider with neutral feature defaults.",
+            "session_start_allowed": True,
+            "window_collection_implemented": True,
+            "disabled_reason": None,
         }

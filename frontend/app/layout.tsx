@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "IMAGINA V1 — Dream Corridor Scene Stabilizer",
+  title: "IMAGINA V2 — Dream Corridor Scene Stabilizer",
   description:
     "A research prototype for closed-loop mental imagery training. Estimates proxy metrics for attention, vividness, and behavioral stability.",
 };

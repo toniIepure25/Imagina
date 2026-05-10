@@ -1,6 +1,6 @@
 # Metrics Reference
 
-All metrics in IMAGINA V1 are **experimental proxy metrics**. They require validation before any scientific or clinical claims can be made.
+All metrics in IMAGINA are **experimental proxy metrics**. They require validation before any scientific or clinical claims can be made.
 
 ## IQI — Imagery Quality Index
 

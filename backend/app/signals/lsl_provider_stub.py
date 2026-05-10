@@ -19,6 +19,9 @@ class LSLProviderStub(ManualSignalProvider):
                 if available
                 else "pylsl is not installed; LSL integration is a documented V2 extension point."
             ),
+            "session_start_allowed": True,
+            "window_collection_implemented": True,
+            "disabled_reason": None,
         }
 
     def metadata(self) -> dict:
@@ -27,4 +30,7 @@ class LSLProviderStub(ManualSignalProvider):
             "provider_type": self.provider_type,
             "description": "Optional LSL EEG extension point. Does not require pylsl for V2 simulated operation.",
             "clinical_use": False,
+            "session_start_allowed": True,
+            "window_collection_implemented": True,
+            "disabled_reason": None,
         }

@@ -1,6 +1,10 @@
-# IMAGINA V2 — Dream Corridor Scene Stabilizer / Research Platform
+# IMAGINA V3 — Real EEG-Enabled Mental Imagery Research Platform
 
-A local-first, closed-loop mental imagery training prototype.
+**Status: V3.0-final-candidate — FIRST_REAL_EEG_EVALUATION_COMPLETE**
+
+A local-first, closed-loop mental imagery training prototype with real OpenMIIR EEG integration.
+
+> **Real EEG Achieved**: OpenMIIR dataset (10 FIF files, 69 channels, 512 Hz) imported and evaluated. Real-mode evaluation passes. This remains an engineering evaluation — scientific validation is not complete.
 
 > **Disclaimer:** IMAGINA is a research prototype. It estimates proxy metrics related to attention, self-reported vividness, behavioral stability, and simulated EEG-like signal patterns. It does NOT decode thoughts or dreams, diagnose conditions, or provide medical advice. PID and IQI are experimental proxy metrics that require validation.
 

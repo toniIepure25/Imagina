@@ -63,6 +63,19 @@ data/sessions/*.json
 data/sessions/*.db
 data/exports/*.html
 data/exports/*.json
+data/external/
+data/processed/
+data/cache/
+
+# ---- External EEG Data (never commit) ----
+data/OpenMIIR-RawEEG/
+backend/data/external/
+backend/data/cache/
+backend/data/processed/
+backend/data/backups/
+backend/data/exports/*.csv
+backend/data/exports/*.npy
+backend/data/exports/*.npz
 
 # ---- ML / Data (model checkpoints, parquet, CSV) ----
 *.pt

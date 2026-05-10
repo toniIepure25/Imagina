@@ -30,6 +30,20 @@ export interface FeatureVector {
   simulated_imagery_strength: number;
   behavioral_stability: number;
   reaction_time_ms: number | null;
+  real_signal?: boolean;
+  provider_id?: string | null;
+  provider_type?: string | null;
+  channel_count?: number | null;
+  sampling_rate_hz?: number | null;
+  channels_used?: string[] | null;
+  artifact_flags?: string[] | null;
+  blink_score?: number | null;
+  muscle_score?: number | null;
+  drift_score?: number | null;
+  clipping_score?: number | null;
+  missing_data_ratio?: number | null;
+  preprocessing_version?: string | null;
+  feature_version?: string | null;
 }
 
 export interface StateEstimate {
@@ -100,6 +114,12 @@ export interface SessionSummary {
   safety_events_count: number;
   recommendation: string;
   generated_at: string;
+  signal_provider_id?: string | null;
+  scenario?: string | null;
+  experiment_run_id?: string | null;
+  calibration_quality_score?: number | null;
+  real_signal?: boolean | null;
+  provider_type?: string | null;
 }
 
 export interface ReportTimelineEvent {
@@ -195,6 +215,15 @@ export interface CalibrationProfile {
   warnings: string[];
   normalization_params: Record<string, unknown>;
   notes: string | null;
+  provider_id?: string | null;
+  provider_type?: string | null;
+  real_eeg?: boolean;
+  stream_name?: string | null;
+  channel_count?: number | null;
+  channel_names?: string[] | null;
+  sampling_rate_hz?: number | null;
+  artifact_warning_count?: number;
+  preprocessing_version?: string | null;
 }
 
 export interface SignalProviderInfo {
@@ -206,7 +235,11 @@ export interface SignalProviderInfo {
     status: string;
     message?: string;
     available?: boolean;
+    session_start_allowed?: boolean;
   };
+  session_start_allowed?: boolean;
+  window_collection_implemented?: boolean;
+  disabled_reason?: string | null;
 }
 
 export interface ExperimentProtocol {

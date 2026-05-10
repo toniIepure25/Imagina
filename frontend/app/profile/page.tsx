@@ -74,6 +74,7 @@ export default function ProfilePage() {
             <div className="grid gap-3 md:grid-cols-4">
               {[
                 ["Sessions", String(profile.total_sessions)],
+                ["Total Minutes", String(profile.total_minutes)],
                 ["Best IQI", pct(profile.best_iqi)],
                 ["Best PID", fixed(profile.best_pid)],
                 ["Max Level", String(profile.max_level_reached)],

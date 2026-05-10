@@ -44,7 +44,7 @@ export default function LandingPage() {
               Local-first closed-loop research prototype
             </div>
             <h1 className="text-5xl font-bold tracking-tight glow-text sm:text-7xl">
-              IMAGINA <span className="text-accent-glow">V1</span>
+              IMAGINA <span className="text-accent-glow">V2</span>
             </h1>
             <p className="text-2xl text-foreground/78">Dream Corridor Scene Stabilizer</p>
             <p className="max-w-2xl text-base leading-8 text-foreground/68">

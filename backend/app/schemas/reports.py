@@ -16,3 +16,9 @@ class SessionSummary(BaseModel):
     safety_events_count: int
     recommendation: str
     generated_at: datetime
+    signal_provider_id: str | None = None
+    scenario: str | None = None
+    experiment_run_id: str | None = None
+    calibration_quality_score: float | None = None
+    real_signal: bool | None = None
+    provider_type: str | None = None

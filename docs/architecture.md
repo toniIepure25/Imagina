@@ -2,7 +2,7 @@
 
 ## System Overview
 
-IMAGINA V1 is a monorepo with a Python/FastAPI backend and a Next.js/TypeScript frontend.
+IMAGINA is a monorepo with a Python/FastAPI backend and a Next.js/TypeScript frontend.
 
 ### Backend (FastAPI, port 8000)
 

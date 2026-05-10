@@ -10,6 +10,18 @@ export default function SessionSummaryCard({ summary }: { summary: SessionSummar
   return (
     <Card className="max-w-lg mx-auto space-y-4">
       <h2 className="text-xl font-bold">Session Complete</h2>
+      {summary.calibration_quality_score != null && (
+        <div className="rounded-lg border border-accent/20 bg-accent/8 p-3 text-sm">
+          Calibration quality <span className="font-mono text-accent-glow">{pct(summary.calibration_quality_score)}</span>
+          {summary.signal_provider_id && <span className="ml-2 text-foreground/45">via {summary.signal_provider_id}</span>}
+          {summary.scenario && <span className="ml-2 text-foreground/45">({summary.scenario})</span>}
+        </div>
+      )}
+      {summary.experiment_run_id && (
+        <div className="rounded-lg border border-surface-border bg-surface/30 p-3 text-xs text-foreground/55">
+          Linked to experiment run <span className="font-mono">{summary.experiment_run_id.slice(0,8)}</span>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div>
           <div className="text-foreground/50">Duration</div>

@@ -6,6 +6,11 @@ import DisclaimerBox from "../common/DisclaimerBox";
 import { apiFetch } from "@/lib/api";
 import type { ImageryProfile, SignalProviderInfo } from "@/lib/types";
 
+function isProviderStartAllowed(provider: SignalProviderInfo): boolean {
+  return provider.session_start_allowed !== false &&
+         provider.health?.session_start_allowed !== false;
+}
+
 const TASKS = [
   { id: "corridor_simple", name: "Simple Corridor Stabilization", desc: "Imagine and stabilize a simple corridor." },
   { id: "corridor_doors", name: "Corridor With Doors", desc: "Stabilize a corridor with doors on either side." },
@@ -73,6 +78,9 @@ export default function SessionSetup({ experimentRunId = null, onStart }: Props)
       setProfileLoading(false);
     }
   };
+
+  const selectedProvider = providers.find(p => p.provider_id === signalProviderId);
+  const selectedStartAllowed = selectedProvider ? isProviderStartAllowed(selectedProvider) : true;
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 p-6">
@@ -144,16 +152,20 @@ export default function SessionSetup({ experimentRunId = null, onStart }: Props)
         <div className="grid gap-2 md:grid-cols-2">
           {providers.map((provider) => {
             const available = provider.health?.available !== false;
+            const startAllowed = isProviderStartAllowed(provider);
+            const canSelect = available && startAllowed;
+            const disabledReason = provider.disabled_reason ||
+              (!startAllowed ? "This provider cannot run live sessions." : null);
             return (
               <label
                 key={provider.provider_id}
-                className={`rounded-lg border p-3 text-sm transition-colors ${signalProviderId === provider.provider_id ? "border-accent bg-accent/5" : "border-surface-border bg-surface/30"} ${available ? "cursor-pointer" : "opacity-55"}`}
+                className={`rounded-lg border p-3 text-sm transition-colors ${signalProviderId === provider.provider_id ? "border-accent bg-accent/5" : "border-surface-border bg-surface/30"} ${canSelect ? "cursor-pointer" : "opacity-55"}`}
               >
                 <div className="flex items-center gap-2">
                   <input
                     type="radio"
                     name="provider"
-                    disabled={!available || provider.provider_type === "replay"}
+                    disabled={!canSelect}
                     checked={signalProviderId === provider.provider_id}
                     onChange={() => setSignalProviderId(provider.provider_id)}
                     className="accent-accent"
@@ -161,6 +173,9 @@ export default function SessionSetup({ experimentRunId = null, onStart }: Props)
                   <span className="font-medium">{provider.provider_id}</span>
                 </div>
                 <div className="mt-1 text-xs text-foreground/50">{provider.description}</div>
+                {disabledReason && (
+                  <div className="mt-2 text-[11px] text-yellow-200/80">{disabledReason}</div>
+                )}
                 <div className="mt-2 text-[11px] uppercase tracking-[0.14em] text-foreground/38">
                   {provider.provider_type} | {provider.health?.status || "unknown"}
                 </div>
@@ -195,7 +210,7 @@ export default function SessionSetup({ experimentRunId = null, onStart }: Props)
       </label>
 
       <Button
-        disabled={!consent}
+        disabled={!consent || !selectedStartAllowed}
         onClick={() => onStart({
           displayName: name || profile?.display_name || "Anonymous",
           taskId,

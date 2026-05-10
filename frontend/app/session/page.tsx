@@ -16,7 +16,7 @@ import SafetyBanner from "@/components/metrics/SafetyBanner";
 import { ImaginaSocket } from "@/lib/websocket";
 import { apiFetch } from "@/lib/api";
 import { feedbackToScene, DEFAULT_SCENE_PARAMS, SceneParams } from "@/lib/feedbackMapping";
-import type { CalibrationProfile, FeedbackAction, SafetyEvent, SessionSummary, WSMessage, Session } from "@/lib/types";
+import type { CalibrationProfile, FeedbackAction, SafetyEvent, SessionSummary, SessionReport, WSMessage, Session } from "@/lib/types";
 
 const DreamCorridorScene = dynamic(() => import("@/components/scene/DreamCorridorScene"), { ssr: false });
 
@@ -39,6 +39,7 @@ export default function SessionPage() {
   const [timeline, setTimeline] = useState<{ window: number; iqi: number; pid: number; attention: number; fatigue: number }[]>([]);
   const [safetyEvents, setSafetyEvents] = useState<SafetyEvent[]>([]);
   const [summary, setSummary] = useState<SessionSummary | null>(null);
+  const [report, setReport] = useState<SessionReport | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [wsStatus, setWsStatus] = useState("disconnected");
   const [signalProviderId, setSignalProviderId] = useState("simulated.default");
@@ -61,8 +62,12 @@ export default function SessionPage() {
         await apiFetch(`/api/sessions/${sessionId}/stop`, { method: "POST" });
       } catch { /* may already be stopped */ }
       try {
-        const summary = await apiFetch<SessionSummary>(`/api/sessions/${sessionId}/summary`);
-        setSummary(summary);
+        const [summaryData, reportData] = await Promise.all([
+          apiFetch<SessionSummary>(`/api/sessions/${sessionId}/summary`),
+          apiFetch<SessionReport>(`/api/reports/${sessionId}`).catch(() => null),
+        ]);
+        setSummary(summaryData);
+        if (reportData) setReport(reportData);
       } catch { /* summary not available yet */ }
     }
     socketRef.current?.disconnect();

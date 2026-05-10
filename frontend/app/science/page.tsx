@@ -14,9 +14,9 @@ export default function SciencePage() {
       <div className="flex-1 mx-auto w-full max-w-5xl px-6 py-14 space-y-8">
         <div className="space-y-3">
           <div className="text-[11px] uppercase tracking-[0.24em] text-accent-glow/70">Scientific Framing</div>
-          <h1 className="text-4xl font-bold glow-text">How IMAGINA V1 Should Be Interpreted</h1>
+          <h1 className="text-4xl font-bold glow-text">How IMAGINA V2 Should Be Interpreted</h1>
           <p className="max-w-3xl text-sm leading-7 text-foreground/62">
-            IMAGINA V1 is a simulated, local-first closed-loop prototype. It estimates experimental proxy metrics
+            IMAGINA V2 is a simulated, local-first closed-loop prototype. It estimates experimental proxy metrics
             from self-report, behavioral-style features, and simulated EEG-like signals, then adapts a procedural
             corridor as feedback.
           </p>

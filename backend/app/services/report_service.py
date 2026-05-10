@@ -2,6 +2,8 @@
 Generates session summary reports from event store data.
 """
 
+import logging
+
 from app.core.time import utcnow
 from app.schemas.reports import SessionSummary
 from app.storage import event_store
@@ -65,6 +67,33 @@ async def generate_summary(session_id: str) -> SessionSummary:
 
     recommendation = _build_recommendation(avg_iqi, avg_pid, fatigue_peak, max_level)
 
+    signal_provider_id = None
+    scenario = None
+    experiment_run_id = None
+    calibration_quality_score = None
+    real_signal = None
+    provider_type = None
+
+    try:
+        from app.services import calibration_service, session_service
+
+        session = await session_service.get_session(session_id)
+        signal_provider_id = session.signal_provider_id
+        scenario = session.scenario
+        experiment_run_id = session.experiment_run_id
+
+        if signal_provider_id:
+            provider_type = signal_provider_id.split(".", 1)[0]
+            real_signal = provider_type == "lsl"
+
+        calibration = await calibration_service.get_calibration(session_id)
+        if calibration:
+            calibration_quality_score = calibration.calibration_quality_score
+    except Exception:
+        logging.getLogger(__name__).warning(
+            "Could not attach V2 context to summary for session %s", session_id, exc_info=True
+        )
+
     return SessionSummary(
         session_id=session_id,
         duration_seconds=round(duration, 1),
@@ -78,6 +107,12 @@ async def generate_summary(session_id: str) -> SessionSummary:
         safety_events_count=safety_count,
         recommendation=recommendation,
         generated_at=utcnow(),
+        signal_provider_id=signal_provider_id,
+        scenario=scenario,
+        experiment_run_id=experiment_run_id,
+        calibration_quality_score=calibration_quality_score,
+        real_signal=real_signal,
+        provider_type=provider_type,
     )
 
 

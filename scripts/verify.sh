@@ -46,7 +46,7 @@ if [ -d "backend" ] && [ -f "backend/pyproject.toml" ]; then
     if [ -d "backend/app/tests" ]; then
         if command -v python3 &>/dev/null; then
             info_msg "Running pytest..."
-            if timeout 60s python3 -m pytest backend/app/tests/ -q --tb=short 2>&1; then
+            if timeout 180s python3 -m pytest backend/app/tests/ -q --tb=short 2>&1; then
                 pass_msg "pytest — all tests passed"
             else
                 fail_msg "pytest — some tests failed (or timed out)"

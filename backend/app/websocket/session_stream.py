@@ -6,6 +6,7 @@ All events are emitted via WebSocket and persisted to the event store.
 """
 
 import asyncio
+import logging
 
 from app.core.config import settings
 from app.core.time import utcnow
@@ -15,8 +16,8 @@ from app.services.feature_engine import FeatureEngine
 from app.services.feedback_policy_engine import FeedbackPolicyEngine
 from app.services.pid_iqi_engine import PIDIQIEngine
 from app.services.safety_monitor import SafetyMonitor
-from app.services.signal_simulator import SignalSimulator
 from app.services.state_estimator import StateEstimator
+from app.signals import get_provider
 from app.storage import event_store
 from app.websocket.manager import ws_manager
 
@@ -60,7 +61,41 @@ async def run_session_loop(
     if baseline is None:
         baseline = await session_service.get_baseline(session_id)
 
-    sim = SignalSimulator(seed=seed, scenario=scenario)
+    provider_id = "simulated.default"
+    try:
+        session_meta = await session_service.get_session(session_id)
+        provider_id = session_meta.signal_provider_id or provider_id
+    except Exception:
+        pass
+
+    provider = get_provider(provider_id)
+    if provider is None:
+        provider = get_provider("simulated.default")
+    if provider is None:
+        await _emit(session_id, "session_error", {"message": "No signal provider available"})
+        return
+
+    meta = provider.metadata()
+    if meta.get("window_collection_implemented") is False:
+        await _emit(session_id, "session_error", {
+            "message": f"Provider {provider_id} does not support window collection.",
+        })
+        return
+
+    if meta.get("session_start_allowed") is False:
+        await _emit(session_id, "session_error", {
+            "message": meta.get("disabled_reason", f"Provider {provider_id} cannot run live sessions."),
+        })
+        return
+
+    health = provider.health()
+    if health.get("session_start_allowed") is False:
+        await _emit(session_id, "session_error", {
+            "message": health.get("disabled_reason", f"Provider {provider_id} is not currently available."),
+        })
+        return
+
+    await provider.start(session_id, scenario=scenario, seed=seed)
     feat_engine = FeatureEngine()
     state_est = StateEstimator()
     pid_iqi = PIDIQIEngine()
@@ -79,7 +114,7 @@ async def run_session_loop(
                 break
 
             sr = _session_states.get(session_id, {}).get("self_report")
-            eeg, raw_fv = sim.generate_window(
+            raw_fv = await provider.next_window(
                 session_id, window_index, sr, total_windows
             )
             fv = feat_engine.process(raw_fv, sr)
@@ -130,12 +165,19 @@ async def run_session_loop(
                 break
             await asyncio.sleep(settings.window_interval_seconds)
     finally:
-        state = _session_states.get(session_id, {})
-        terminal_reason = terminal_reason or state.get("stop_reason")
+        try:
+            await provider.stop(session_id)
+        except Exception:
+            pass
+        session_data = _session_states.get(session_id, {})
+        terminal_reason = terminal_reason or session_data.get("stop_reason")
         if terminal_reason in {"completed", "safety", "user_stop"}:
             try:
                 await session_service.complete_session(session_id, reason=terminal_reason)
             except Exception:
+                logging.getLogger(__name__).warning(
+                    "Could not complete session %s (reason=%s)", session_id, terminal_reason, exc_info=True
+                )
                 pass
             await _emit(session_id, "session_stopped", {"reason": terminal_reason})
         _session_states.pop(session_id, None)
