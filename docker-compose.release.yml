@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  imagina-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.release
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/imagina/system/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  imagina-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.release
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+    depends_on:
+      imagina-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/imagina/showcase"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  imagina-demo-seed:
+    profiles:
+      - demo
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.release
+    command: python3 -m app.cli.imagina_demo full
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      imagina-backend:
+        condition: service_healthy
