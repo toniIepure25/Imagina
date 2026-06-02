@@ -1,5 +1,5 @@
 # ============================================================
-# IMAGINA Monorepo — .gitignore
+# IMAGINA — L1 .gitignore
 # ============================================================
 
 # ---- Python ----
@@ -53,19 +53,18 @@ secrets/
 *.pfx
 credentials.*
 
-# ---- Data (local SQLite, sessions, exports) ----
+# ---- Runtime Data (local sessions, exports, cache, benchmarks) ----
+data/
 *.sqlite
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
-data/sessions/*.json
-data/sessions/*.db
-data/exports/*.html
-data/exports/*.json
-data/external/
-data/processed/
-data/cache/
+*.pt
+*.pth
+*.ckpt
+*.parquet
+*.csv
 
 # ---- External EEG Data (never commit) ----
 data/OpenMIIR-RawEEG/
@@ -77,23 +76,20 @@ backend/data/exports/*.csv
 backend/data/exports/*.npy
 backend/data/exports/*.npz
 
-# ---- ML / Data (model checkpoints, parquet, CSV) ----
-*.pt
-*.pth
-*.ckpt
-*.parquet
-*.csv
-
-# ---- AI Context (Repomix output, snapshots) ----
+# ---- AI Context (snapshots, repomix) ----
 docs/ai/repo_snapshot.md
 docs/ai/snapshots/
 frontend_git_backup_*.tar.gz
 frontend/.git.disabled/
 
-# ---- Nested repos (if any remain after cleanup) ----
+# ---- Nested repos / backups ----
 frontend/.git/
 backend/.git/
-
-# Git backups created during monorepo cleanup
 data/backups/
 *.tar.gz
+
+# ---- Docker build artifacts ----
+*.log
+
+# ---- Generated API docs (optional) ----
+docs/api/generated/

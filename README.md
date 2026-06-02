@@ -1,207 +1,190 @@
-# IMAGINA V3 — Real EEG-Enabled Mental Imagery Research Platform
+# IMAGINA
 
-**Status: V3.0-final-candidate — FIRST_REAL_EEG_EVALUATION_COMPLETE**
+**Local-first mental imagery protocol lab and benchmark SDK.**
 
-A local-first, closed-loop mental imagery training prototype with real OpenMIIR EEG integration.
+IMAGINA is a personal exploratory mental imagery training and research platform. It lets users define structured imagery protocols, run guided self-report sessions, visualize symbolic scene feedback from self-report proxies, track skill progression across nine imagery dimensions, benchmark protocols through deterministic closed-loop evaluation, experiment with adaptive policy profiles, and export reproducible safe benchmark packs — all locally, without cloud services, telemetry, or neural data collection.
 
-> **Real EEG Achieved**: OpenMIIR dataset (10 FIF files, 69 channels, 512 Hz) imported and evaluated. Real-mode evaluation passes. This remains an engineering evaluation — scientific validation is not complete.
-
-> **Disclaimer:** IMAGINA is a research prototype. It estimates proxy metrics related to attention, self-reported vividness, behavioral stability, and simulated EEG-like signal patterns. It does NOT decode thoughts or dreams, diagnose conditions, or provide medical advice. PID and IQI are experimental proxy metrics that require validation.
-
-## Features
-
-- Guided mental imagery sessions with adaptive feedback
-- Procedural 3D Dream Corridor (React Three Fiber) that responds to 10 scene parameters
-- Real-time WebSocket streaming of metrics, curriculum state, and feedback
-- Composite proxy metrics: IQI (Imagery Quality Index) and PID (Perception-Imagination Distance)
-- 8-level adaptive curriculum with staircase progression
-- Safety monitor (fatigue, overeffort, session time limits, dissociation keywords)
-- Signal provider abstraction for simulated, replay, manual, and future LSL streams
-- Calibration profiles with quality scores and normalization metadata
-- Local-only user profiles and lightweight experiment protocols
-- JSONL/CSV research exports and offline evaluation harness
-- Deterministic demo replay with seeded signal simulation
-- JSON and HTML session reports
-- SQLite event store for persistence and replay
-- Scientific disclaimers visible throughout the UI
-
-## Architecture
-
-```
-backend/   — FastAPI + Python
-frontend/  — Next.js + TypeScript + Tailwind + React Three Fiber
-docs/      — Documentation (architecture, metrics, ethics, claims, demo script)
-data/      — Local SQLite database and exports
-research/  — Config files and notebook placeholders
-```
-
-See [docs/architecture.md](docs/architecture.md) for the full system diagram.
+---
 
 ## Quick Start
 
-IMAGINA runs as two local services: a FastAPI backend on port 8000 and a Next.js frontend on port 3000.
-
-### Backend
+### One-Command Demo
 
 ```bash
-cd backend
-pip install -e ".[dev]"
-uvicorn app.main:app --reload --port 8000
+cd backend && python3 -m app.cli.imagina_demo full
+cd frontend && npm run dev
 ```
 
-The API docs are at http://localhost:8000/docs.
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://localhost:3000.
+Open `http://localhost:3000/imagina/showcase` for the reviewer-ready overview.
 
 ### Docker
 
 ```bash
-docker-compose up --build
+docker compose -f docker-compose.release.yml up --build
+docker compose -f docker-compose.release.yml run --rm imagina-demo-seed
 ```
 
-Backend: http://localhost:8000 | Frontend: http://localhost:3000
+---
+
+## Architecture
+
+IMAGINA is organized into modular layers:
+
+| Layer | Purpose |
+|-------|---------|
+| **Frontend Panels** | Next.js + TypeScript + Tailwind — live control room, scene renderer, benchmark studio |
+| **API Routes** | FastAPI REST endpoints (~100) — calibration, protocols, tasks, biosignals, fusion, SDK |
+| **Core Engines** | Guided session runtime, self-report IQI/PID proxies, adaptive feedback, scene simulator, skill tree, protocol studio |
+| **Biosignal Sandbox** | Optional simulated/LSL/BrainFlow biosignal sources — signal quality, markering, realtime monitoring (BCI-adjacent, not BCI) |
+| **Multimodal Fusion** | Observation, adaptive state estimation, neuroadaptive policy previews (no auto-intervention) |
+| **Protocol SDK** | External protocol schema, validation, import/export, reproducibility manifests |
+| **Benchmark SDK** | Deterministic closed-loop evaluation, scenario runner, metrics, scorecard, leaderboard |
+| **Export Layer** | Safe benchmark packs, protocol exports, submission packs — no raw EEG, no raw notes |
+| **Safety Boundary** | Every artifact enforces non-clinical, non-diagnostic, non-BCI, non-mind-reading boundaries |
+
+### Module Map (V13-V42)
+
+```
+V13-V19: PID Calibration • Adaptive Plans • N-of-1 Experiments • Evidence Dashboard
+         • Task Battery (30 tasks, 10 categories) • Cognitive Phenotype Engine (9 dimensions)
+
+V20-V23: Guided Session Runtime (10 phases, micro check-ins, IQI/PID proxies)
+         • Skill Tree (5 levels, mastery milestones) • Scene Simulator (11 templates, replay)
+         • Protocol Studio (8 built-in protocols, benchmark engine)
+
+V24-V27: External Protocol SDK • Public Showcase • Release Candidate Hardening
+         • Dockerized Release • CI/E2E Reliability
+
+V28-V34: Biosignal Adapter (simulated/LSL/BrainFlow) • Realtime Dashboard
+         • Multimodal Fusion • Live Control Room • Closed-Loop Scene Adaptation
+         • Visible Scene Dynamics Engine
+
+V35-V42: Closed-Loop Benchmark (Grade-A scorecard) • Benchmark Scenario SDK
+         • Scenario Studio • Adaptive Policy Lab (6 built-in profiles, matrix, leaderboard)
+```
+
+---
+
+## Key Innovations
+
+- **Self-report IQI/PID proxy metrics** — transparent formulas, no neural measurement claims
+- **Symbolic scene visualization** — adaptive visual feedback from self-report parameters, not mental image reconstruction
+- **Deterministic closed-loop benchmarks** — evaluate software behavior, not clinical outcomes
+- **Policy experimentation lab** — built-in profiles, matrix comparison, leaderboard ranking
+- **Reproducibility manifests** — protocol hashes, task registry hashes, exact CLI commands
+- **Safe export standard** — no raw EEG, no raw notes, no forbidden claims in any export
+
+---
+
+## Safety Boundaries
+
+IMAGINA makes **no** clinical, diagnostic, therapeutic, BCI, neurofeedback validation, mind-reading, dream decoding, or neural decoding claims. Every artifact includes:
+
+- `not_clinical = true`
+- `not_diagnostic = true`
+- `not_bci_claim = true`
+- `not_neurofeedback_claim = true`
+- `raw_eeg_export_default = false`
+
+All metrics are self-report proxy estimates. The symbolic scene simulator is a visualization aid. The biosignal sandbox is optional BCI-adjacent infrastructure only.
+
+---
 
 ## Running Tests
 
 ```bash
+# Full project verification
+bash scripts/verify.sh
+
+# Backend integration tests
 cd backend
-timeout 40s python3 -m pytest app/tests/ -q
-python3 -m ruff check .
+python3 -m app.cli.imagina_v24_sdk_standard_test
+python3 -m app.cli.imagina_v25_public_showcase_test
+python3 -m app.cli.imagina_v42_policy_lab_functional_wiring_test
+
+# Closed-loop benchmark suite
+cd backend
+python3 -m app.cli.imagina_v35_closed_loop_benchmark_test
+python3 -m app.cli.imagina_v36_closed_loop_frontend_scorecard_test
 ```
 
-If `aiosqlite` hangs inside a restricted sandbox, rerun the pytest command outside the sandbox. The app itself remains local-first.
+---
+
+## SDK CLI
 
 ```bash
-cd frontend
-npm run lint
-npm run build
+# Protocol SDK
+python3 -m app.cli.imagina_sdk schema
+python3 -m app.cli.imagina_sdk validate --file protocol.json
+python3 -m app.cli.imagina_sdk import --user demo_user --file protocol.json
+
+# Benchmark SDK
+python3 -m app.cli.imagina_sdk demo
+python3 -m app.cli.imagina_sdk benchmark-export --user demo_user --run-id <id>
+
+# Release CLI
+python3 -m app.cli.imagina_release all
+python3 -m app.cli.imagina_release verify
+
+# Demo CLI
+python3 -m app.cli.imagina_demo full
 ```
 
-If a previous Next build was interrupted and `npm run build` reports another build is already running, remove the stale generated lock file:
+---
 
-```bash
-rm -f frontend/.next/lock
+## Frontend Routes
+
+| Route | Purpose |
+|-------|---------|
+| `/imagina` | Main training dashboard |
+| `/imagina/live` | Live neuroadaptive control room + benchmark lab |
+| `/imagina/showcase` | Reviewer-ready project overview |
+
+---
+
+## Project Structure
+
+```
+backend/
+  app/
+    core/
+      imagery/          Task battery, guided sessions, skill tree, protocol studio, SDK, showcase
+      adaptive/          PID calibration, plan optimization, N-of-1 experiments
+      biosignals/        Simulated/LSL/BrainFlow sources, fusion, live events, policy lab, benchmarks
+      evidence/          Evidence model, quality audit, export packs
+      protocols/         Personal intelligence, protocol engine
+    api/imagina/         ~100 REST endpoints
+    cli/                 SDK, demo, release, local CI, ~30 integration tests
+frontend/
+  app/imagina/live/      Live control room + benchmark studio
+  app/imagina/showcase/  Reviewer showcase
+  components/imagina/    40+ panels: tasks, guided sessions, scene, skill tree, protocols, benchmarks
+  hooks/                 useLiveNeuroadaptiveDemo, useAdaptivePolicyLab
+  lib/                   API client, WebSocket, feedback mapping
+docs/                    Architecture, API contracts, demo scripts, whitepaper, safety boundaries
+scripts/                 verify.sh, Docker smoke, AI context
 ```
 
-## V2 Research Workflow Runbook
-
-1. Open http://localhost:3000/profile and create a local-only profile, or continue anonymously.
-2. Open http://localhost:3000/experiments, choose a protocol, and create an experiment run when you want a research-mode flow.
-3. Click **Create Next Session** in the experiment page, then open the linked session. For a normal run, open http://localhost:3000/session directly.
-4. In session setup, select profile mode, signal provider, simulated scenario, task, and acknowledge the scientific/safety disclaimer.
-5. Complete calibration and review the calibration quality score and warnings.
-6. Start the session, stream metrics over WebSocket, submit self-report sliders, and watch the corridor adapt.
-7. Stop the session and open the session report.
-8. Download JSON report, HTML report, event JSONL, timeline CSV, self-report CSV, summary CSV, and the data dictionary.
-9. Return to `/profile` to view longitudinal progress and recommendations.
-10. Return to `/experiments` for experiment progress, linked reports, aggregate summary, and experiment summary export.
-11. Run the offline evaluation CLIs before changing metric formulas or provider behavior.
-
-The corridor is not a decoded mental image. It is an adaptive scaffold driven by experimental proxy metrics.
-
-## Demo Runbook
-
-1. Open http://localhost:3000
-2. Start with **Watch Replay** for the most reliable 3-minute cinematic demo
-3. Narrate the visual mapping: clarity follows IQI proxy, fog follows uncertainty/fatigue, wall distortion follows instability, doors follow curriculum progression, and the pulse is a reset cue
-4. Then use **Start Session** for a live guided session
-5. Complete calibration (30s), submit self-report sliders, and watch the corridor adapt
-6. End the session and view the report
-7. Open `/reports/{session_id}` for the JSON-backed report page, or click the HTML report link
-
-See [docs/demo_script.md](docs/demo_script.md) for a full 3-5 minute demo walkthrough.
-
-## V1.5 Visual Mapping
-
-The corridor is not a decoded mental image. It is an adaptive scaffold driven by experimental proxy metrics.
-
-- Clearer corridor: stronger IQI proxy
-- Lower fog: lower uncertainty/fatigue proxy
-- Calmer wall motion: better estimated stability
-- Steadier lights: stronger attention/relaxation proxy
-- More coherent particles: lower uncertainty proxy
-- Doors/details: curriculum progression
-- Breathing pulse: reset cue when fatigue or attention requires simplification
-
-## Running A Simulated Session
-
-1. Start the backend and frontend with the commands above.
-2. Create a session from the UI, complete baseline calibration, and start the guided corridor.
-3. Submit self-report sliders during the run. These influence later proxy estimates together with the simulated EEG-like feature stream.
-4. Use **End Session** to stop the loop and generate the summary/report.
-
-## Running Replay Demo
-
-The replay page calls `POST /api/replay/demo`, creates a deterministic seeded session, then streams stored events through the same WebSocket envelope used by live sessions.
-
-```bash
-curl -X POST http://localhost:8000/api/replay/demo
-```
-
-## Metrics
-
-| Metric | Formula | Range | Meaning |
-|--------|---------|-------|---------|
-| IQI | 0.35*attention + 0.30*engagement + 0.20*behavioral + 0.15*relaxation | 0-1 (higher=better) | Estimated imagery quality |
-| PID | 0.45*neural_dist + 0.35*behavioral_dist + 0.20*uncertainty | 0-1 (lower=better) | Perception-imagination distance |
-
-See [docs/metrics.md](docs/metrics.md) for full details.
-
-## Documentation
-
-- [Architecture](docs/architecture.md)
-- [Scientific Claims Policy](docs/scientific_claims.md)
-- [Ethics and Safety](docs/ethics.md)
-- [Metrics Reference](docs/metrics.md)
-- [Demo Script](docs/demo_script.md)
-- [Experiment Plan](docs/experiment_plan.md)
-- [Experiment Mode](docs/experiments.md)
-- [Data Dictionary](docs/data_dictionary.md)
-- [Reproducibility](docs/reproducibility.md)
-- [Offline Evaluation](docs/evaluation.md)
-- [Roadmap](docs/roadmap.md)
-- [Implementation Notes](docs/implementation_notes.md)
-
-## What It Does NOT Do
-
-- Does not read your mind or decode dreams
-- Does not show what you are imagining
-- Does not diagnose conditions or provide medical advice
-- Does not cure aphantasia or guarantee lucid dreaming
-- Does not measure consciousness objectively
+---
 
 ## Limitations
 
-- V2 uses simulated/manual/replay providers; LSL remains a documented stub, not real EEG hardware integration
-- Self-report metrics are subjective
-- Metric weights are hand-tuned, not empirically optimized
-- No cross-user normalization
-- Safety monitoring is basic keyword/threshold-based
-- V2 workflow integration improves reproducibility and research operations, not scientific validity by itself
+- All metrics are self-report proxy estimates — not neural measurements
+- N-of-1 experiments are personal exploratory — not randomized controlled trials
+- No EEG/neural data validation — biosignal features are simulated or optionally streamed
+- Protocols are locally defined — no shared cloud registry
+- Frontend requires local server — no static deployment
 
-## Roadmap
+---
 
-### V2.1
-- Real optional LSL EEG stream (Muse, OpenBCI)
-- MNE preprocessing and artifact detection
-- EEG bandpower extraction
-- Public or controlled validation datasets
+## Future Roadmap
 
-### V3
-- EEG/fMRI representation learning
-- CLIP alignment for imagery assessment
-- Generative post-session visual summaries
-- Longitudinal user model
-- Formal psychophysical validation
+- Real EEG/LSL sensor integration (gated behind metadata preflight validation)
+- Multi-user local profiles
+- PDF/HTML benchmark export
+- Multi-protocol meta-analysis
+- Public protocol registry
 
-## License
+---
 
-Research prototype. Not for clinical use.
+*IMAGINA is a personal exploratory mental imagery training and research platform. It is non-clinical, non-diagnostic, non-BCI, not neurofeedback validation, not mind-reading, and not mental image reconstruction.*
