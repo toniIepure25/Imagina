@@ -1,4 +1,204 @@
-# SESSION_LOG.md — AI Development Session Log
+# SESSION_LOG.md
+
+---
+
+## 2026-05-11 — V3.9.5.2 Safety Regression Tests + Documentation Finalization
+
+### Task
+Add automated regression tests proving experimental condition eval never overwrites main artifacts. Update documentation with ADR-011 and version history.
+
+### Changes
+- `tests/test_openmiir_semantic_resolver.py`: Added `TestArtifactSafetyV3_9_5_2` class with 8 new tests
+- `docs/ai/DECISIONS.md`: Added ADR-011 — experimental artifacts must be separate from production
+- `docs/ai/SESSION_LOG.md`: Updated with V3.9.5.1 and V3.9.5.2 entries
+
+### New Tests
+1. `test_main_eval_is_blocked_by_default` — main artifact status==blocked
+2. `test_main_eval_not_overwritten_by_experimental` — runs experimental eval, verifies main stays blocked
+3. `test_experimental_eval_exists_after_experimental_run`
+4. `test_experimental_eval_has_safety_fields` — not_for_scientific_claims=true, production_valid=false, etc.
+5. `test_resolver_version_is_v395` — tool string contains v3.9.5, not v3.9.4
+6. `test_validator_production_unlock_false`
+7. `test_validator_confidence_not_confirmed_documented`
+8. `test_no_raw_eeg_in_eval_artifacts`
+
+### Verification
+- verify.sh: 8/8
+- pytest: passes with new safety tests
+- ruff: clean
+
+---
+
+## 2026-05-11 — V3.9.5.1 Hotfix: Artifact Safety + Version Consistency
+
+---
+
+## 2026-05-11 — V3.9.4 OpenMIIR Hard Metadata Recovery
+
+### Task
+Recover and parse high-value metadata files (.xlsx, .m, .mat) from the OpenMIIR GitHub repository that were previously blocked by file extension filters. Parse MATLAB/PsychToolbox presentation scripts and Excel stimulus metadata to find explicit event code semantics.
+
+### Key Discovery: MATLAB Confirms Trigger Semantics
+The `scripts/presentation/OpenMIIR_StimulusPresentation.m` file (445 lines) explicitly documents:
+```
+% Trigger values sent to Cedrus StimTracker:
+% 0=
+% 1= music
+% 2= cued imagination
+% 3= imagination without a cue
+% 4= noise
+```
+And sends triggers via: `fwrite(sport,['mh',TRIGGER,0])` where TRIGGER ∈ {1,2,3,4}.
+
+**This is confirmed semantic evidence.**
+
+### Condition Code Mapping (Strong Hypothesis)
+Combining MATLAB trigger semantics + beat file naming structure:
+- Perception (music): codes {11, 21, 31, 41} — {stimulus_group}{trigger=1}
+- Cued imagery: codes {12, 22, 32, 42} — {stimulus_group}{trigger=2}
+- Uncued imagery: codes {13, 23, 33, 43} — {stimulus_group}{trigger=3}
+- Noise/baseline: codes {14, 24, 34, 44} — {stimulus_group}{trigger=4}
+
+The 100-series vs 200-series distinction likely maps to Block 1 vs Block 2.
+
+### Files Created
+- `backend/app/datasets/openmiir_excel_metadata_parser.py` — Excel metadata parser (openpyxl/pandas)
+- `backend/app/datasets/openmiir_matlab_metadata_parser.py` — MATLAB script parser
+
+### Files Modified
+- `backend/app/cli/openmiir_metadata_import.py` — Expanded to download .xlsx/.m/.mat files, added --include-binary-metadata flag
+- `backend/app/datasets/openmiir_semantic_resolver.py` — Integrated Excel/MATLAB evidence, MATLAB-confirmed trigger semantics, condition code map
+- `backend/app/cli/openmiir_build_condition_manifest.py` — Shows perception/imagery codes, trigger semantics confirmation
+- `backend/app/cli/openmiir_condition_eval.py` — Reports trigger_semantics_confirmed status
+- `backend/app/api/routes_research.py` — Added hard_metadata_recovery section, perception/imagery codes
+- `frontend/app/research/page.tsx` — Added Hard Metadata Recovery panel with trigger semantics status
+- `tests/test_openmiir_semantic_resolver.py` — Updated for v3.9.4 field changes
+
+### Results
+- **7 hard metadata files** found in GitHub tree: 4 .xlsx, 2 .m, 1 .mat — all downloaded
+- **MATLAB trigger semantics**: CONFIRMED (1=perception, 2=cued_imagery, 3=uncued_imagery, 4=noise)
+- **Condition code map**: 4 perception codes, 8 imagery codes, 4 baseline codes (strong_hypothesis)
+- **Excel parsing**: Blocked (openpyxl not available, pandas needs openpyxl for .xlsx)
+- **Semantic resolver**: resolved=False, trigger_semantics=CONFIRMED, strong=44
+- **Condition eval**: BLOCKED (correct — StimTracker encoding not explicitly documented)
+- **Production manifest**: Not created (correct — no confirmed mappings)
+
+### Decisions
+- ADR-009: Binary metadata recovery allowed only for small metadata files; raw EEG and audio excluded
+- Two-digit codes ({stimulus_group}{trigger_type}) = strong_hypothesis based on MATLAB + beat files
+- Remains blocked for production due to missing StimTracker encoding documentation
+
+### Verification
+- verify.sh: 8/8 (7 pass, 1 skip)
+- pytest: 385 passed (2 fixed tests)
+- ruff: clean at line-length 120
+- frontend build: passes
+
+---
+
+## 2026-05-11 — V3.9.3 Evidence-Driven Event Code Mapping Mining
+
+### Task
+Implement V3.9.3 — Deep mining of downloaded OpenMIIR GitHub candidate files to find structural evidence for event code semantics. Combine beat file naming, README claims, event timing analysis, and sequence motifs to build richer evidence graph without inventing labels.
+
+### Key Discovery: Beat File Naming Confirms Two-Digit Code Semantics
+- 56 downloaded files include `meta/beats.v1/` and `meta/beats.v2/` beat onset files
+- Files named `{stimulus}{cue_type}_beats.txt` (e.g., `11_beats.txt`, `23_cue_beats.txt`)
+- meta/README confirms: beats.v1 = subjects P01-P08, beats.v2 = subjects P09-P14
+- **Confirmed**: Two-digit event codes (11-44) correspond to stimulus×cue beat tracks
+- 4 stimuli identified, each with 4 cue types → 16 beat track files per version
+- README confirms: "10 subjects listening to and imagining 12 short music fragments" — perception + imagery conditions known to exist
+
+### Structural Hypothesis (NOT Confirmed)
+- 100-series codes (111-144): possibly perception condition beat markers
+- 200-series codes (211-244): possibly imagery condition beat markers
+- 1000/1111/2000/2001: block/session boundary markers
+- **No explicit code-to-condition label mapping found** in any downloaded file
+
+### Files Created
+- `backend/app/datasets/openmiir_candidate_miner.py` — Deep file parser with AST, beat filename analysis, README evidence extraction
+- `backend/app/cli/openmiir_event_sequence_report.py` — Event sequence extraction, compression, motif identification
+
+### Files Modified
+- `backend/app/datasets/openmiir_semantic_resolver.py` — Upgraded with evidence graph integration, timing cross-validation, beat file structure, perception/imagery evidence
+- `backend/app/cli/openmiir_build_condition_manifest.py` — Upgraded with `scientific_use_allowed`, `min_confidence`, enriched conditions
+- `backend/app/cli/openmiir_condition_eval.py` — Fixed readiness check, added `beat_file_mapping_confirmed`, enriched blocked report
+- `backend/app/api/routes_research.py` — Added evidence graph, sequence report, confidence summary, beat file structure
+- `frontend/app/research/page.tsx` — Added evidence files, confidence count badges, beat file structure panel
+- `tests/test_openmiir_semantic_resolver.py` — 34 tests (up from 23), added miner module tests, beat parse tests
+
+### Results
+- **Candidate miner**: 56 files analyzed, 96 code mentions found, 14 strong hypotheses
+- **Beat file parsing**: 32 beat files identified, stimulus×cue pattern confirmed
+- **Event sequence**: 657 unique motifs across 5400 events, 10 subjects
+- **Semantic resolver**: confirmed=0, strong=14, weak_hypothesis present, unresolved codes tracked
+- **Condition eval**: BLOCKED (correct)
+- **Manifest**: Draft only, `scientific_use_allowed=false`, 14 strong hypotheses documented
+
+### Decisions
+- ADR-008: No perception-vs-imagery analysis without confirmed semantic mapping
+- Two-digit codes confirmed as stimulus×cue markers via beat file naming (strong_hypothesis, not confirmed)
+- 100-series vs 200-series remains structural hypothesis only
+
+### Verification
+- verify.sh: 8/8 (7 pass, 1 skip)
+- pytest: 386 passed (1 fewer — one skipped test from removed variable)
+- ruff: clean at line-length 120
+- frontend build: passes
+- All CLIs: succeed
+
+### Remaining Limitation
+- Perception/imagery code mapping still unconfirmed
+- Stimuli_Meta.v1.xlsx and Stimuli_Meta.v2.xlsx not downloadable (Excel)
+- PsychToolbox presentation scripts not in GitHub tree
+
+---
+
+## 2026-05-11 — V3.9.2 OpenMIIR Semantic Event Code Resolver
+
+### Task
+Implement V3.9.2 — Semantic Event Code Resolver: discover, download, parse GitHub metadata candidates; build conservative semantic resolver; analyze event timing patterns; create condition manifest builder; implement blocked condition eval; upgrade research dashboard.
+
+### Goal
+Transform raw stim event codes into a usable condition/trial manifest without inventing labels. Preserve scientific honesty — only confirm semantic mappings if metadata/code/docs support it.
+
+### Files Created
+- `backend/app/datasets/openmiir_semantic_resolver.py` — Conservative semantic resolver with code family inference and hypothesis generation
+- `backend/app/cli/openmiir_event_timing_analysis.py` — Stim event timing analysis (IEI distributions, code transitions, block boundaries)
+- `backend/app/cli/openmiir_build_condition_manifest.py` — Condition manifest builder (production only if confirmed mapping)
+- `backend/app/cli/openmiir_condition_eval.py` — Condition eval CLI (blocks until semantic mapping confirmed)
+- `backend/app/tests/test_openmiir_semantic_resolver.py` — 23 focused tests for semantic resolver integrity
+- `docs/openmiir_event_semantics.md` — Documentation on event semantics discovery and status
+
+### Files Modified
+- `backend/app/cli/openmiir_metadata_import.py` — Upgraded to v3.9.2 with GitHub tree download, content parsing, candidate content index generation
+- `backend/app/api/routes_research.py` — Added `openmiir_event_semantics` section to summary, added new artifacts to artifact registry
+- `frontend/app/research/page.tsx` — Added Event Semantics section with code families, hypotheses, amber warning card
+- `backend/pyproject.toml` — Restored `line-length = 120` (was 130)
+
+### Results
+- **Metadata import**: 77 GitHub candidates, 56 downloaded, 7 with mapping evidence
+- **Stim channels**: 10/10 subjects, 52 unique event codes, 5,400 total events
+- **Semantic resolver**: Events found, semantic mapping UNRESOLVED (no confirmed labels)
+- **Event code families**: low_single_digit (11-44), mid_100_range (111-144), mid_200_range (211-244), special_markers (1000-2001)
+- **Condition manifest**: DRAFT only — production blocked until semantic mapping confirmed
+- **Condition eval**: BLOCKED with reason "events_found_but_semantic_mapping_unresolved"
+- **Dashboard**: Shows event semantics status with amber warning card
+- **Tests**: 387 passed (+31 new semantic resolver tests)
+- **Lint**: ruff clean at line-length=120
+- **Build**: frontend build passes
+- **Figures**: Event code counts bar chart, inter-event interval histogram
+
+### Decisions
+- ADR-007: Conservative Semantic Mapping — never mark `semantic_mapping_resolved=true` without confirmed evidence
+- Code families inferred by numerical pattern only; semantic labels require external documentation
+- Condition analysis blocked until confirmed event-code-to-condition mapping obtained from dataset authors or documentation
+- All new outputs explicitly label blocked status and preserve scientific honesty
+
+### Remaining Limitations
+- Semantic mapping to perception/imagery/stimulus conditions is unresolved
+- Need to contact dataset authors (sstober) or locate documentation for event code semantics
+- Condition analysis remains blocked until confirmed mapping exists
 
 ---
 

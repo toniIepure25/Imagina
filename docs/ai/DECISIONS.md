@@ -226,4 +226,88 @@ Safety signals have priority over curriculum advancement and feedback aesthetics
 
 ---
 
-*Last updated: 2026-05-07 — Phase 3A.5*
+## ADR-007: Conservative Semantic Event Code Mapping
+
+**Status:** Accepted  
+**Date:** 2026-05-11  
+**Context:** OpenMIIR FIF files contain 52 unique stim channel event codes across 10 subjects. These event codes are essential for unlocking perception vs imagery analysis, stimulus ID analysis, and trial-aligned EEG epoching. However, the semantic meaning of these codes (which codes represent perception/imagery/stimulus IDs/blocks) is not documented in the GitHub repository metadata.
+
+**Decision:** Event codes are grouped into numerical families (low_single_digit, mid_100_range, mid_200_range, special_markers) based on pattern analysis. Confidence levels (`confirmed`, `strong_hypothesis`, `weak_hypothesis`, `unknown`) are assigned only based on supporting evidence from downloaded metadata or external documentation. Semantic labels are NEVER invented from numerical patterns alone. A production condition_manifest.json is generated ONLY if confirmed mappings are available, otherwise only a draft manifest with explicit warnings is produced.
+
+**Consequences:**
+- Event timing analysis can proceed (IEI distributions, code transitions, block boundary detection)
+- Condition-aware analysis (perception vs imagery) is blocked until semantic mapping is confirmed
+- Subject-level sanity checks (e.g., subject identity classification) remain possible
+- Scientific claims about perception/imagery EEG differences are prohibited pending mapping
+- Research dashboard shows amber status for condition analysis
+- Contact with dataset authors or discovery of external documentation is required to unblock
+
+---
+
+## ADR-008: No Perception-vs-Imagery Condition Analysis Without Confirmed Semantic Mapping
+
+**Status:** Accepted  
+**Date:** 2026-05-11  
+**Context:** OpenMIIR stim channels contain 52 unique event codes. Beat file naming confirms two-digit codes (11-44) map to stimulus×cue beat tracks. README confirms both perception and imagery conditions exist in the dataset. However, the explicit mapping of which event codes represent perception vs imagery vs stimulus IDs has NOT been confirmed from downloaded documentation or code. The 100-series vs 200-series code family distinction is a structural hypothesis only.
+
+**Decision:** IMAGINA blocks all perception-vs-imagery condition analysis until a confirmed production condition_manifest.json exists. The system distinguishes three levels:
+1. **Confirmed**: explicit code-to-label mapping from documentation
+2. **Strong hypothesis**: structural evidence from multiple independent sources
+3. **Weak hypothesis**: numerical patterns or single-source evidence
+
+Only confirmed mappings produce production manifests. Strong hypotheses produce draft manifests with `scientific_use_allowed=false`. Condition eval is blocked until `semantic_mapping_resolved=true`.
+
+**Consequences:**
+- Research dashboard shows amber status for condition analysis
+- All reports explicitly document what is confirmed vs hypothesized
+- No false scientific claims about EEG differences between conditions
+- Unblocks as soon as explicit mapping evidence is obtained
+- Beat file naming is documented as confirmed structural evidence
+- Event timing analysis and sequence motif extraction continue independently
+
+---
+
+## ADR-009: Binary Metadata Recovery with Safety Limits
+
+**Status:** Accepted  
+**Date:** 2026-05-11  
+**Context:** OpenMIIR repository contains high-value metadata files in binary formats (.xlsx, .xls, .m, .mat) that may contain the explicit semantic mapping of event codes to conditions. These files were previously excluded by the downloader's file extension filter. Recovering and parsing these files is essential for unlocking perception-vs-imagery condition analysis.
+
+**Decision:** Binary metadata files are allowed for download from the GitHub tree under strict conditions:
+1. Only metadata/documentation file extensions: .xlsx, .xls, .ods, .m, .mat
+2. Maximum file size: 10 MB (configurable via --max-file-size-mb)
+3. .mat files additionally limited to 5 MB
+4. Raw EEG (.fif, .edf, .bdf, etc.), audio, images, and model checkpoints remain permanently blocked
+5. Downloaded binary metadata is stored in the same github_candidates/ directory as text metadata
+6. A download_manifest.json tracks all downloaded and skipped files
+7. Parsing uses openpyxl (preferred) or pandas for Excel; text-based parsing for MATLAB .m files
+
+**Consequences:**
+- 7 hard metadata files recovered (4 .xlsx, 2 .m, 1 .mat)
+- MATLAB script yielded confirmed trigger semantics from code comments
+- Excel parsing blocked by openpyxl dependency (pandas alone insufficient)
+- No raw EEG or audio exposed through binary metadata channels
+- Download manifest provides full audit trail
+
+---
+
+## ADR-011: Experimental Condition Evaluation Artifacts Must Be Separate from Production Artifacts
+
+**Status:** Accepted  
+**Date:** 2026-05-11  
+**Context:** V3.9.5 introduced experimental condition evaluation mode (`--allow-empirical-hypothesis true`) that uses empirically validated but undocumented StimTracker encoding hypothesis to evaluate perception vs imagery conditions. In V3.9.5.0, the experimental mode was overwriting the main `openmiir_condition_eval.json` artifact with experimental status, creating risk of accidental scientific overclaiming.
+
+**Decision:** The condition eval CLI maintains two strictly separate artifact paths:
+1. **Main/default artifact** (`openmiir_condition_eval.json`): Always reflects canonical production status (blocked unless confirmed documentation exists). Written on every run, regardless of mode.
+2. **Experimental artifact** (`openmiir_condition_eval_experimental.json`): Written ONLY when `--allow-empirical-hypothesis true`. Contains `not_for_scientific_claims=true`, `production_valid=false`, `production_unlock_allowed=false`. Must never overwrite the main artifact.
+
+**Consequences:**
+- Automated tests verify main artifact stays "blocked" after experimental runs
+- Dashboard shows separate main_status and experimental_status
+- Experimental artifacts are clearly labeled as hypothesis-only
+- Accidental scientific overclaiming is prevented by architectural separation
+- Production condition analysis requires both confirmed documentation AND a production manifest
+
+---
+
+*Last updated: 2026-05-11 — V3.9.5.2*
