@@ -9,9 +9,11 @@ from app.api.experiments import router as experiments_router
 from app.api.exports import router as exports_router
 from app.api.feedback import router as feedback_router
 from app.api.health import router as health_router
+from app.api.imagina.routes import router as imagina_router
 from app.api.replay import router as replay_router
 from app.api.reports import router as reports_router
 from app.api.routes_datasets import router as datasets_router
+from app.api.routes_research import router as research_router
 from app.api.sessions import router as sessions_router
 from app.api.signals import router as signals_router
 from app.api.state import router as state_router
@@ -59,10 +61,12 @@ app.include_router(sessions_router)
 app.include_router(signals_router)
 app.include_router(tasks_router)
 app.include_router(users_router)
+app.include_router(imagina_router)
 app.include_router(state_router)
 app.include_router(feedback_router)
 app.include_router(replay_router)
 app.include_router(reports_router)
+app.include_router(research_router)
 
 
 @app.websocket("/ws/sessions/{session_id}")
