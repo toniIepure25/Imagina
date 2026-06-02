@@ -922,3 +922,40 @@ export async function exportPolicyLabPack(userId: string) {
   const r = await fetch(`${API}/api/imagina/policy-lab/export/${userId}`, { method: "POST" });
   return r.json();
 }
+
+export async function runCapstoneReviewerDemo(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/demo/${userId}/run`, { method: "POST" });
+  return r.json();
+}
+export async function getLatestCapstoneDemo(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/demo/${userId}/latest`);
+  return r.json();
+}
+export async function buildCapstoneEvidencePack(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/evidence-pack/${userId}`, { method: "POST" });
+  return r.json();
+}
+export async function getLatestCapstoneEvidencePack(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/evidence-pack/${userId}/latest`);
+  return r.json();
+}
+export async function buildCapstoneNarrative(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/narrative/${userId}`, { method: "POST" });
+  return r.json();
+}
+export async function getCapstoneNarrative(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/narrative/${userId}`);
+  return r.json();
+}
+export async function buildCapstoneReadiness(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/readiness/${userId}`, { method: "POST" });
+  return r.json();
+}
+export async function getCapstoneReadiness(userId: string) {
+  const r = await fetch(`${API}/api/imagina/capstone/readiness/${userId}`);
+  return r.json();
+}
+export async function getCapstoneBoundaries() {
+  const r = await fetch(`${API}/api/imagina/capstone/boundaries`);
+  return r.json();
+}

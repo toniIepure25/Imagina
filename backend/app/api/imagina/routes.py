@@ -2052,3 +2052,79 @@ async def get_leaderboard(user_id: str):
 async def export_policy_lab(user_id: str):
     from app.core.biosignals.policy_lab import export_policy_lab_pack
     return export_policy_lab_pack(user_id)
+
+
+# ─── V43 Capstone Demo ──────────────────────────────────────────
+
+@router.post("/capstone/demo/{user_id}/run")
+async def run_capstone(user_id: str):
+    from app.core.imagery.capstone_demo import run_capstone_reviewer_demo
+    return run_capstone_reviewer_demo(user_id)
+
+
+@router.get("/capstone/demo/{user_id}/latest")
+async def get_latest_capstone(user_id: str):
+    from app.core.imagery.capstone_demo import get_latest_capstone_demo
+    r = get_latest_capstone_demo(user_id)
+    if not r:
+        raise HTTPException(404, "No capstone demo found")
+    return r
+
+
+@router.post("/capstone/evidence-pack/{user_id}")
+async def build_capstone_evidence(user_id: str):
+    from app.core.imagery.capstone_demo import build_capstone_evidence_pack
+    return build_capstone_evidence_pack(user_id)
+
+
+@router.get("/capstone/evidence-pack/{user_id}/latest")
+async def get_capstone_evidence(user_id: str):
+    import json
+    import os
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..",
+                     "data", "imagina", "capstone_evidence_packs", user_id)
+    if os.path.isdir(d):
+        dirs = sorted(os.listdir(d), reverse=True)
+        for dn in dirs:
+            p = os.path.join(d, dn, "manifest.json")
+            if os.path.exists(p):
+                return json.load(open(p))
+    raise HTTPException(404, "No evidence pack found")
+
+
+@router.post("/capstone/narrative/{user_id}")
+async def build_capstone_narrative(user_id: str):
+    from app.core.imagery.capstone_demo import build_capstone_narrative
+    return build_capstone_narrative(user_id)
+
+
+@router.get("/capstone/narrative/{user_id}")
+async def get_capstone_narrative(user_id: str):
+    import os
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..",
+                     "data", "imagina", "capstone_demos", user_id, "CAPSTONE_NARRATIVE.md")
+    if os.path.exists(p):
+        return {"narrative": open(p).read()}
+    raise HTTPException(404, "Narrative not found")
+
+
+@router.post("/capstone/readiness/{user_id}")
+async def build_capstone_readiness(user_id: str):
+    from app.core.imagery.capstone_demo import check_capstone_readiness
+    return check_capstone_readiness(user_id)
+
+
+@router.get("/capstone/readiness/{user_id}")
+async def get_capstone_readiness(user_id: str):
+    from app.core.imagery.capstone_demo import get_capstone_readiness
+    r = get_capstone_readiness(user_id)
+    if not r:
+        raise HTTPException(404, "Readiness not checked")
+    return r
+
+
+@router.get("/capstone/boundaries")
+async def get_capstone_boundaries():
+    from app.core.imagery.capstone_demo import SAFETY
+    return {"capstone_boundary": SAFETY["capstone_boundary"],
+            "raw_eeg_export_default": SAFETY["raw_eeg_export_default"], **SAFETY}
