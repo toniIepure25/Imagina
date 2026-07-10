@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 _MIGRATION_MODULES = [
     "app.storage.migrations.v001_legacy_schema",
     "app.storage.migrations.v002_research_governance",
+    "app.storage.migrations.v003_persistent_synthetic_runtime",
 ]
 
 _VERSION_TABLE = """

@@ -54,13 +54,13 @@ async def legacy_db():
 class TestEmptyDatabaseUpgrade:
     async def test_migrations_run_from_empty(self, empty_db):
         version = await run_migrations(empty_db)
-        assert version == 2
+        assert version == 3
 
     async def test_version_table_created(self, empty_db):
         await run_migrations(empty_db)
         cursor = await empty_db.execute("SELECT COUNT(*) FROM schema_version")
         row = await cursor.fetchone()
-        assert row[0] == 2
+        assert row[0] == 3
 
     async def test_studies_table_exists(self, empty_db):
         await run_migrations(empty_db)
@@ -106,7 +106,140 @@ class TestIdempotentStartup:
     async def test_second_run_is_noop(self, empty_db):
         v1 = await run_migrations(empty_db)
         v2 = await run_migrations(empty_db)
-        assert v1 == v2 == 2
+        assert v1 == v2 == 3
+
+
+class TestV003RuntimeSchema:
+    async def test_research_sessions_table_exists(self, empty_db):
+        await run_migrations(empty_db)
+        cursor = await empty_db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='research_sessions'"
+        )
+        assert await cursor.fetchone() is not None
+
+    async def test_trials_table_exists(self, empty_db):
+        await run_migrations(empty_db)
+        cursor = await empty_db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='trials'"
+        )
+        assert await cursor.fetchone() is not None
+
+    async def test_frozen_yoked_libraries_table_exists(self, empty_db):
+        await run_migrations(empty_db)
+        cursor = await empty_db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='frozen_yoked_libraries'"
+        )
+        assert await cursor.fetchone() is not None
+
+    async def test_session_unique_constraint(self, empty_db):
+        await run_migrations(empty_db)
+        await empty_db.execute(
+            "INSERT INTO studies (study_id, title, created_at, updated_at) "
+            "VALUES ('s1', 'Test', '2026-01-01', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO protocol_versions (protocol_version_id, study_id, version, status, created_at) "
+            "VALUES ('pv1', 's1', '1.0', 'frozen', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO participants (participant_id, study_id, pseudonym, created_at) "
+            "VALUES ('p1', 's1', 'A', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO sequence_allocations "
+            "(allocation_id, study_id, participant_id, sequence_id, sequence_label, allocated_at) "
+            "VALUES ('a1', 's1', 'p1', 'ABC', 'ABC', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO research_sessions "
+            "(research_session_id, study_id, participant_id, protocol_version_id, "
+            "allocation_id, session_index, condition, data_classification, "
+            "signal_provider_id, policy_id, policy_version, runtime_seed, "
+            "status, planned_at, software_version) "
+            "VALUES ('rs1', 's1', 'p1', 'pv1', 'a1', 0, 'adaptive', 'synthetic', "
+            "'simulated.default', 'adaptive', '1.0', 42, 'planned', '2026-01-01', '0.5.0')"
+        )
+        await empty_db.commit()
+        with pytest.raises(Exception):
+            await empty_db.execute(
+                "INSERT INTO research_sessions "
+                "(research_session_id, study_id, participant_id, protocol_version_id, "
+                "allocation_id, session_index, condition, data_classification, "
+                "signal_provider_id, policy_id, policy_version, runtime_seed, "
+                "status, planned_at, software_version) "
+                "VALUES ('rs2', 's1', 'p1', 'pv1', 'a1', 0, 'adaptive', 'synthetic', "
+                "'simulated.default', 'adaptive', '1.0', 42, 'planned', '2026-01-01', '0.5.0')"
+            )
+
+    async def test_classification_check_constraint(self, empty_db):
+        await run_migrations(empty_db)
+        await empty_db.execute(
+            "INSERT INTO studies (study_id, title, created_at, updated_at) "
+            "VALUES ('s1', 'Test', '2026-01-01', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO protocol_versions (protocol_version_id, study_id, version, status, created_at) "
+            "VALUES ('pv1', 's1', '1.0', 'frozen', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO participants (participant_id, study_id, pseudonym, created_at) "
+            "VALUES ('p1', 's1', 'A', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO sequence_allocations "
+            "(allocation_id, study_id, participant_id, sequence_id, sequence_label, allocated_at) "
+            "VALUES ('a1', 's1', 'p1', 'ABC', 'ABC', '2026-01-01')"
+        )
+        await empty_db.commit()
+        with pytest.raises(Exception):
+            await empty_db.execute(
+                "INSERT INTO research_sessions "
+                "(research_session_id, study_id, participant_id, protocol_version_id, "
+                "allocation_id, session_index, condition, data_classification, "
+                "signal_provider_id, policy_id, policy_version, runtime_seed, "
+                "status, planned_at, software_version) "
+                "VALUES ('rs1', 's1', 'p1', 'pv1', 'a1', 0, 'adaptive', 'INVALID', "
+                "'simulated.default', 'adaptive', '1.0', 42, 'planned', '2026-01-01', '0.5.0')"
+            )
+
+    async def test_trial_unique_constraint(self, empty_db):
+        await run_migrations(empty_db)
+        await empty_db.execute(
+            "INSERT INTO studies (study_id, title, created_at, updated_at) "
+            "VALUES ('s1', 'Test', '2026-01-01', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO protocol_versions (protocol_version_id, study_id, version, status, created_at) "
+            "VALUES ('pv1', 's1', '1.0', 'frozen', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO participants (participant_id, study_id, pseudonym, created_at) "
+            "VALUES ('p1', 's1', 'A', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO sequence_allocations "
+            "(allocation_id, study_id, participant_id, sequence_id, sequence_label, allocated_at) "
+            "VALUES ('a1', 's1', 'p1', 'ABC', 'ABC', '2026-01-01')"
+        )
+        await empty_db.execute(
+            "INSERT INTO research_sessions "
+            "(research_session_id, study_id, participant_id, protocol_version_id, "
+            "allocation_id, session_index, condition, data_classification, "
+            "signal_provider_id, policy_id, policy_version, runtime_seed, "
+            "status, planned_at, software_version) "
+            "VALUES ('rs1', 's1', 'p1', 'pv1', 'a1', 0, 'adaptive', 'synthetic', "
+            "'simulated.default', 'adaptive', '1.0', 42, 'planned', '2026-01-01', '0.5.0')"
+        )
+        await empty_db.execute(
+            "INSERT INTO trials (trial_id, research_session_id, trial_index, "
+            "stimulus_id, planned_at) VALUES ('t1', 'rs1', 0, 'stim1', '2026-01-01')"
+        )
+        await empty_db.commit()
+        with pytest.raises(Exception):
+            await empty_db.execute(
+                "INSERT INTO trials (trial_id, research_session_id, trial_index, "
+                "stimulus_id, planned_at) VALUES ('t2', 'rs1', 0, 'stim2', '2026-01-01')"
+            )
 
 
 class TestForeignKeyEnforcement:
