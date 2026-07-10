@@ -10,63 +10,61 @@
 - Signal provider abstraction (simulated, manual, replay, LSL gated).
 - Product/demo stack with guided sessions, skill tree, protocol studio, benchmarks.
 
-## Research Platform Pivot
+## Research Platform Development
 
-### Phase 0 — Repository Truth (current)
+### Merge Gate A — Research Platform Integrity Foundation (current)
 
-- Reconcile versions and documentation.
-- Fix CI gaps, remove dead code.
-- Add frontend typecheck.
+Status: **In progress**
 
-### Phase 1 — Scientific Protocol and Governance
+- CI truth: strict markers, classified test suite, honest reporting.
+- Versioned database migrations with FK enforcement.
+- Normalized research governance tables.
+- Collection readiness gate (default-deny for human data).
+- Balanced Williams crossover sequence allocator.
+- Public/operator API separation (condition blinding).
+- Imagery self-report task (renamed from BehavioralTask).
+- Restored EEG validation dashboard.
+- Documentation reconciled with actual capabilities.
 
-- Study-mode separation (demo vs. pilot vs. approved study).
-- Consent and ethics gating.
-- Randomization and counterbalancing engine.
-- Instrument registry (VVIQ-2 metadata, Likert scales).
-- Research protocol schema.
+### Merge Gate B — Synthetic End-to-End Workflow (planned)
 
-### Phase 2 — Research Experiment Engine
+Status: **Not started**
 
-- Condition assignment (adaptive, fixed-feedback, yoked/sham).
-- Trial scheduler with timing.
-- Stimulus registry with content hashing.
-- Trial-level data capture and provenance.
-- Behavioral imagery-priming task.
+- Wire feedback conditions into the live session loop.
+- Persistent research session and trial state machine.
+- Provenance-aware yoked feedback source.
+- Complete synthetic study-to-export workflow.
+- Playwright end-to-end smoke test.
+- Synthetic export with complete provenance metadata.
+- Deterministic replay from seed and manifest.
 
-### Phase 3 — Statistical Framework
+### Phase C — Objective Behavioral Validation (future work)
 
-- Power analysis tooling.
-- Synthetic data generator.
-- Preregistered LMM analysis pipeline.
-- IQI/PID validation analysis.
+Status: **Not started**
 
-### Phase 4 — Real Biosignal Acquisition (optional for initial study)
+- Implement an objective behavioral endpoint (e.g., binocular rivalry, psychophysics).
+- Validate imagery self-report against objective measures.
+- Separate scientific review for behavioral task design.
 
-- Robust LSL provider with ring buffer.
-- Proper spectral feature extraction.
-- Marker synchronization.
-- Offline MNE preprocessing.
+### Phase D — Real Biosignal Integration (future work)
 
-### Phase 5 — Multimodal Evaluation (requires real data)
+Status: **Not started**
 
-- Self-report, behavioral, EEG baselines.
-- Incremental validity analysis.
-- Group-aware evaluation.
+- Real LSL acquisition worker with clock correction.
+- Spectral feature validation against known datasets.
+- MNE preprocessing pipeline.
+- Signal quality validation.
 
-### Phase 6 — Research Frontend
+### Phase E — Confirmatory Statistics and Publication (future work)
 
-- Consent flow, operator dashboard.
-- Behavioral task component.
-- Condition blinding safeguards.
-- Frontend test suite (Vitest + Playwright).
+Status: **Blocked** (requires objective outcome, human data, ethics approval)
 
-### Phase 7 — Publication Package
-
-- Preregistration document.
-- Reproducibility package.
-- Synthetic dataset and analysis scripts.
-- Software paper documentation.
+- Executable LMM analysis pipeline.
+- Power analysis with finalized primary outcome.
+- Preregistration completion and submission.
+- Methods section finalization.
+- Usability pilot.
+- Ethics submission.
 
 ## Scientific Non-Negotiables
 
@@ -74,5 +72,5 @@
 - IQI/PID are exploratory proxies, not validated outcomes.
 - No human data collection without ethics approval metadata.
 - No claims of mind reading, dream decoding, or clinical neurofeedback.
-
-V3 must not claim mind reading or dream decoding.
+- Primary outcome is not yet finalized.
+- Sample size is provisional.

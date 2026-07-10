@@ -1,7 +1,15 @@
 # IMAGINA Preregistration Template
 
-> **Status:** Draft template. Complete before data collection begins.
+> **Status:** INCOMPLETE DRAFT — not ready for submission.
 > **Target registry:** OSF Preregistrations or AsPredicted.
+>
+> **Critical disclaimers:**
+> - Primary outcome measure is NOT finalized.
+> - No objective behavioral endpoint has been implemented.
+> - Sample size is PROVISIONAL (based on estimated effect sizes, not empirical data).
+> - No data collection is authorized.
+> - Analysis code is specification only, not confirmatory.
+> - Block randomization described below has been replaced by a balanced Williams crossover allocator.
 
 ---
 

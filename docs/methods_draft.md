@@ -1,7 +1,15 @@
 # IMAGINA Methods Section — Draft
 
-> **Status:** Skeleton methods section for the planned publication.
+> **Status:** INCOMPLETE SKELETON — not ready for submission or review.
 > **Not for distribution.** This is a working draft to guide implementation.
+>
+> **Critical disclaimers:**
+> - The imagery task described is self-report only; no objective behavioral endpoint exists.
+> - The LMM analysis is a specification string, not executable confirmatory code.
+> - Biosignal acquisition foundations exist (ring buffer, marker sync) but real EEG collection is not implemented.
+> - No synthetic end-to-end experiment has been executed.
+> - No human data collection is authorized.
+> - Randomization uses a balanced Williams crossover design (6 sequences), not simple Latin square.
 
 ---
 
