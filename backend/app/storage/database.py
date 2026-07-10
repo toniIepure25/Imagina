@@ -62,6 +62,48 @@ CREATE TABLE IF NOT EXISTS experiment_runs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_experiment_runs_protocol ON experiment_runs(protocol_id, started_at);
+
+CREATE TABLE IF NOT EXISTS studies (
+    study_id TEXT PRIMARY KEY,
+    created_at TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'created',
+    payload TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS participants (
+    participant_id TEXT PRIMARY KEY,
+    study_id TEXT NOT NULL,
+    pseudonym TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    FOREIGN KEY (study_id) REFERENCES studies(study_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_participants_study ON participants(study_id);
+
+CREATE TABLE IF NOT EXISTS consents (
+    consent_id TEXT PRIMARY KEY,
+    participant_id TEXT NOT NULL,
+    study_id TEXT NOT NULL,
+    consent_version TEXT NOT NULL,
+    consented_at TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    FOREIGN KEY (participant_id) REFERENCES participants(participant_id),
+    FOREIGN KEY (study_id) REFERENCES studies(study_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_consents_participant ON consents(participant_id, study_id);
+
+CREATE TABLE IF NOT EXISTS condition_assignments (
+    assignment_id TEXT PRIMARY KEY,
+    participant_id TEXT NOT NULL,
+    study_id TEXT NOT NULL,
+    session_index INTEGER NOT NULL,
+    payload TEXT NOT NULL,
+    FOREIGN KEY (participant_id) REFERENCES participants(participant_id),
+    FOREIGN KEY (study_id) REFERENCES studies(study_id),
+    UNIQUE(participant_id, study_id, session_index)
+);
 """
 
 _SESSION_MIGRATIONS = {

@@ -103,6 +103,7 @@ select = ["E", "F", "I", "W"]
 "app/core/imagery/capstone_demo.py" = ["E501"]
 "app/cli/imagina_v43_capstone_demo_test.py" = ["E501"]
 "app/cli/imagina_v44_capstone_frontend_completion_test.py" = ["E501"]
+"app/research/instrument_registry.py" = ["E501"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["app/tests"]

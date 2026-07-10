@@ -13,6 +13,7 @@ from app.api.imagina.routes import router as imagina_router
 from app.api.replay import router as replay_router
 from app.api.reports import router as reports_router
 from app.api.routes_datasets import router as datasets_router
+from app.api.research_protocol import router as research_protocol_router
 from app.api.routes_research import router as research_router
 from app.api.sessions import router as sessions_router
 from app.api.signals import router as signals_router
@@ -67,6 +68,7 @@ app.include_router(feedback_router)
 app.include_router(replay_router)
 app.include_router(reports_router)
 app.include_router(research_router)
+app.include_router(research_protocol_router)
 
 
 @app.websocket("/ws/sessions/{session_id}")
