@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.core.config import settings
 from app.research import consent_gate, instrument_registry, participant_registry, study_manager
+from app.research.governance import evaluate_collection_readiness, get_system_capabilities
 from app.research.randomization import verify_counterbalance
 from app.schemas.research import ConsentCreate, ParticipantCreate, StudyCreate
 
@@ -19,6 +20,17 @@ def _check_study_mode(minimum: str = "pilot"):
 @router.get("/mode")
 async def get_study_mode():
     return {"study_mode": settings.study_mode}
+
+
+@router.get("/capabilities")
+async def get_capabilities():
+    return await get_system_capabilities()
+
+
+@router.get("/readiness/{study_id}/{participant_id}")
+async def check_readiness(study_id: str, participant_id: str):
+    result = await evaluate_collection_readiness(study_id, participant_id)
+    return {"allowed": result.allowed, "checks": [vars(c) for c in result.checks]}
 
 
 @router.get("/instruments")
@@ -94,7 +106,10 @@ async def record_consent(data: ConsentCreate):
     participant = await participant_registry.get_participant(data.participant_id)
     if not participant:
         raise HTTPException(status_code=404, detail="Participant not found")
-    record = await consent_gate.record_consent(data)
+    try:
+        record = await consent_gate.record_consent(data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return record.model_dump()
 
 

@@ -79,6 +79,22 @@ export async function listInstruments(): Promise<{ instruments: InstrumentInfo[]
   return apiFetch("/api/research-protocol/instruments");
 }
 
+export interface SystemCapabilities {
+  study_mode: string;
+  database_foreign_keys_enabled: boolean;
+  migration_version: number;
+  human_collection_allowed: boolean;
+  protocol_freeze_enforced: boolean;
+  consent_version_enforced: boolean;
+  condition_blinding_api_enforced: boolean;
+  synthetic_runtime_available: boolean;
+  checked_at: string;
+}
+
+export async function getSystemCapabilities(): Promise<SystemCapabilities> {
+  return apiFetch("/api/research-protocol/capabilities");
+}
+
 export async function getConditionAssignment(
   studyId: string,
   participantId: string,
