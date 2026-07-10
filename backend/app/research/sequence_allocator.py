@@ -151,10 +151,8 @@ def verify_williams_balance() -> dict:
     )
 
     all_pairs = [(a.value, b.value) for a in conditions for b in conditions if a != b]
-    carryover_balanced = all(
-        carryover_counts.get(pair, 0) == 1
-        for pair in all_pairs
-    )
+    carryover_values = [carryover_counts.get(pair, 0) for pair in all_pairs]
+    carryover_balanced = len(set(carryover_values)) <= 1 and all(v > 0 for v in carryover_values)
 
     return {
         "n_sequences": n_seqs,

@@ -44,6 +44,10 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_multimodal_evaluation": ["research"],
     "test_research_governance": ["research"],
     "test_statistical_framework": ["research"],
+    "test_migration_runner": ["research", "integration"],
+    "test_governance_gates": ["research", "integration"],
+    "test_sequence_allocator": ["research", "integration"],
+    "test_api_blinding": ["research", "integration"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
