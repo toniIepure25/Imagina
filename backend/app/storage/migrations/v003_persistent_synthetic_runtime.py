@@ -17,13 +17,20 @@ CREATE TABLE IF NOT EXISTS research_sessions (
     allocation_id TEXT NOT NULL,
     session_index INTEGER NOT NULL,
     condition TEXT NOT NULL,
-    data_classification TEXT NOT NULL CHECK(data_classification IN ('demo','synthetic','usability_nonresearch','human_research')),
+    data_classification TEXT NOT NULL
+        CHECK(data_classification IN (
+            'demo','synthetic','usability_nonresearch','human_research'
+        )),
     signal_provider_id TEXT NOT NULL,
     policy_id TEXT NOT NULL,
     policy_version TEXT NOT NULL,
     stimulus_schedule_hash TEXT,
     runtime_seed INTEGER NOT NULL,
-    status TEXT NOT NULL DEFAULT 'planned' CHECK(status IN ('planned','ready','running','completed','aborted','withdrawn','invalidated','safety_stopped')),
+    status TEXT NOT NULL DEFAULT 'planned'
+        CHECK(status IN (
+            'planned','ready','running','completed',
+            'aborted','withdrawn','invalidated','safety_stopped'
+        )),
     state_version INTEGER NOT NULL DEFAULT 0,
     planned_at TEXT NOT NULL,
     ready_at TEXT,
@@ -70,7 +77,11 @@ CREATE TABLE IF NOT EXISTS trials (
     stimulus_id TEXT NOT NULL,
     stimulus_version TEXT,
     stimulus_hash TEXT,
-    status TEXT NOT NULL DEFAULT 'planned' CHECK(status IN ('planned','ready','running','completed','aborted','invalidated','safety_stopped')),
+    status TEXT NOT NULL DEFAULT 'planned'
+        CHECK(status IN (
+            'planned','ready','running','completed',
+            'aborted','invalidated','safety_stopped'
+        )),
     state_version INTEGER NOT NULL DEFAULT 0,
     planned_duration_ms INTEGER,
     planned_iti_ms INTEGER,
@@ -235,7 +246,10 @@ CREATE TABLE IF NOT EXISTS runtime_runs (
     run_id TEXT PRIMARY KEY,
     study_id TEXT NOT NULL,
     idempotency_key TEXT UNIQUE,
-    status TEXT NOT NULL DEFAULT 'created' CHECK(status IN ('created','running','completed','failed','interrupted','aborted')),
+    status TEXT NOT NULL DEFAULT 'created'
+        CHECK(status IN (
+            'created','running','completed','failed','interrupted','aborted'
+        )),
     total_sessions INTEGER NOT NULL DEFAULT 0,
     completed_sessions INTEGER NOT NULL DEFAULT 0,
     failed_sessions INTEGER NOT NULL DEFAULT 0,

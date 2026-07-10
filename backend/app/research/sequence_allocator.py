@@ -19,6 +19,8 @@ import hashlib
 import uuid
 from datetime import datetime, timezone
 
+import aiosqlite
+
 from app.research.governance import AllocationIntegrityError
 from app.schemas.research import FeedbackCondition
 from app.storage.database import get_db
@@ -42,8 +44,12 @@ async def allocate_sequence(
     study_id: str,
     participant_id: str,
     study_seed: int,
+    db: aiosqlite.Connection | None = None,
 ) -> tuple[str, list[FeedbackCondition]]:
-    db = await get_db()
+    should_close = False
+    if db is None:
+        db = await get_db()
+        should_close = True
     try:
         await db.execute("BEGIN IMMEDIATE")
 
@@ -111,7 +117,8 @@ async def allocate_sequence(
         await db.rollback()
         raise
     finally:
-        await db.close()
+        if should_close:
+            await db.close()
 
 
 async def get_allocation(study_id: str, participant_id: str) -> tuple[str, list[FeedbackCondition]] | None:

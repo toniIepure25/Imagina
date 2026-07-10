@@ -102,7 +102,7 @@ class TestSessionTransitions:
             await transition_session(sm_db, "rs1", "planned", 0, "aborted")
 
     async def test_abort_from_planned(self, sm_db):
-        v = await transition_session(sm_db, "rs1", "planned", 0, "aborted", reason_code="operator_cancel")
+        await transition_session(sm_db, "rs1", "planned", 0, "aborted", reason_code="operator_cancel")
         await sm_db.commit()
         row = await (await sm_db.execute(
             "SELECT status, terminal_reason FROM research_sessions WHERE research_session_id='rs1'"
@@ -113,7 +113,7 @@ class TestSessionTransitions:
     async def test_safety_stop(self, sm_db):
         await transition_session(sm_db, "rs1", "planned", 0, "ready")
         await transition_session(sm_db, "rs1", "ready", 1, "running")
-        v = await transition_session(sm_db, "rs1", "running", 2, "safety_stopped", reason_code="fatigue_high")
+        await transition_session(sm_db, "rs1", "running", 2, "safety_stopped", reason_code="fatigue_high")
         await sm_db.commit()
         row = await (await sm_db.execute(
             "SELECT status, terminal_reason FROM research_sessions WHERE research_session_id='rs1'"

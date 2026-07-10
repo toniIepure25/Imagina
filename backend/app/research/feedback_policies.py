@@ -19,9 +19,9 @@ class AdaptiveFeedbackPolicy:
         self._engine = FeedbackPolicyEngine()
 
     async def compute(self, context: FeedbackContext) -> FeedbackDecision:
-        from app.schemas.state import MentalState
-        from app.schemas.pid_iqi import PIDResult, IQIResult
         from app.core.time import utcnow
+        from app.schemas.pid_iqi import IQIResult, PIDResult
+        from app.schemas.state import MentalState
 
         state = MentalState(
             session_id=context.session_id,
