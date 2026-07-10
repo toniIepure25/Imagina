@@ -18,6 +18,7 @@ from app.api.routes_research import router as research_router
 from app.api.sessions import router as sessions_router
 from app.api.signals import router as signals_router
 from app.api.state import router as state_router
+from app.api.synthetic_runtime import router as synthetic_runtime_router
 from app.api.tasks import router as tasks_router
 from app.api.users import router as users_router
 from app.core.config import settings
@@ -73,6 +74,7 @@ app.include_router(replay_router)
 app.include_router(reports_router)
 app.include_router(research_router)
 app.include_router(research_protocol_router)
+app.include_router(synthetic_runtime_router)
 
 
 @app.websocket("/ws/sessions/{session_id}")

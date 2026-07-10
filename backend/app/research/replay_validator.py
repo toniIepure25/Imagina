@@ -11,7 +11,6 @@ from typing import Any
 
 import aiosqlite
 
-
 CANONICALIZATION_VERSION = "1.0"
 
 
