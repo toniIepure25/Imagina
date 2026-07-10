@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  backend:
+  backend-core:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -18,8 +18,15 @@ jobs:
           cache: pip
           cache-dependency-path: backend/pyproject.toml
       - run: pip install -e ".[dev]"
-      - run: python3 -m ruff check .
-      - run: python3 -m pytest app/tests/ -q --timeout=300
+      - name: Ruff lint
+        run: python3 -m ruff check .
+      - name: Core and research tests (hermetic merge-gate suite)
+        run: >-
+          python3 -m pytest app/tests/
+          -m "core or research"
+          --strict-markers
+          --timeout=300
+          -q
 
   frontend:
     runs-on: ubuntu-latest
@@ -36,11 +43,42 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm test
       - run: npm run build
 
-  docker:
+  docker-config:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker compose config --quiet
-      - run: docker compose -f docker-compose.release.yml config --quiet
+      - name: Validate dev compose
+        run: docker compose config --quiet
+      - name: Validate release compose
+        run: docker compose -f docker-compose.release.yml config --quiet
+
+  backend-legacy-validation:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev]"
+      - name: Legacy and artifact-dependent tests
+        run: >-
+          python3 -m pytest app/tests/
+          -m "artifact_dependent or legacy or external_dataset"
+          --strict-markers
+          --timeout=600
+          -q
+        continue-on-error: true
+      - name: Report
+        if: always()
+        run: |
+          echo "::notice::Legacy/artifact tests ran. These require generated artifacts under data/exports/ and external datasets."
+          echo "::notice::Prerequisite: run CLI pipelines (see docs/ai/SESSION_LOG.md) before expecting passes."

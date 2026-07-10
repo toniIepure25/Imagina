@@ -1,0 +1,74 @@
+"""Shared pytest configuration and automatic test classification.
+
+Markers are applied based on file-level classification. See pyproject.toml
+for marker definitions and AGENTS.md for classification criteria.
+
+To run only the merge-gate (hermetic) suite:
+    pytest -m "core or research" --timeout=300
+
+To run artifact-dependent / legacy tests (requires generated artifacts):
+    pytest -m "artifact_dependent or legacy" --timeout=600
+
+To run external-dataset tests (requires OpenMIIR download):
+    pytest -m "external_dataset" --timeout=600
+
+To run hardware-dependent tests (requires pylsl):
+    pytest -m "hardware" --timeout=300
+"""
+
+import pytest
+
+_FILE_MARKERS: dict[str, list[str]] = {
+    "test_api_smoke": ["core"],
+    "test_calibration_service": ["core"],
+    "test_curriculum_manager": ["core"],
+    "test_dataset_eval_exports": ["core"],
+    "test_dataset_fixture": ["core"],
+    "test_dataset_import": ["core"],
+    "test_dataset_quality_cli": ["core"],
+    "test_eeg_dsp": ["core"],
+    "test_evaluation_harness": ["core"],
+    "test_feedback_policy": ["core"],
+    "test_pid_iqi_engine": ["core"],
+    "test_profile_experiment_exports": ["core", "integration"],
+    "test_real_data_preflight": ["core"],
+    "test_replay_determinism": ["core"],
+    "test_report_service": ["core", "integration"],
+    "test_safety_monitor": ["core"],
+    "test_session_service": ["core", "integration"],
+    "test_signal_providers": ["core"],
+    "test_dataset_acquire_real": ["core"],
+
+    "test_biosignal_acquisition": ["research"],
+    "test_experiment_engine": ["research"],
+    "test_multimodal_evaluation": ["research"],
+    "test_research_governance": ["research"],
+    "test_statistical_framework": ["research"],
+
+    "test_openmiir_semantic_resolver": ["artifact_dependent"],
+
+    "test_dataset_api_integration": ["external_dataset"],
+
+    "test_lsl_provider": ["hardware"],
+    "test_lsl_smoke_cli": ["hardware"],
+
+    "test_imagina_personalization": ["legacy"],
+    "test_v31_scientific": ["legacy", "artifact_dependent"],
+    "test_v32_events": ["legacy", "artifact_dependent"],
+    "test_v33_ml": ["legacy", "artifact_dependent"],
+    "test_v34_deep": ["legacy", "artifact_dependent"],
+    "test_v35_repr": ["legacy", "artifact_dependent"],
+    "test_v36_iqi": ["legacy", "artifact_dependent"],
+    "test_v361_iqi_hardening": ["legacy", "artifact_dependent"],
+    "test_v3_final_contracts": ["legacy", "artifact_dependent"],
+    "test_v3_final_part2": ["legacy", "artifact_dependent"],
+    "test_v3_final_real_data": ["legacy", "external_dataset"],
+}
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    for item in items:
+        module_name = item.module.__name__.rsplit(".", 1)[-1] if item.module else ""
+        markers = _FILE_MARKERS.get(module_name, [])
+        for marker_name in markers:
+            item.add_marker(getattr(pytest.mark, marker_name))

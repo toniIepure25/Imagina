@@ -17,12 +17,16 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
+    "pytest-timeout>=2.3",
     "httpx>=0.27",
     "ruff>=0.5",
 ]
 lsl = [
     "pylsl>=1.16",
 ]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
 
 [tool.ruff]
 target-version = "py310"
@@ -107,3 +111,14 @@ select = ["E", "F", "I", "W"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["app/tests"]
+addopts = "--strict-markers"
+markers = [
+    "core: hermetic core pipeline tests (default merge-gate suite)",
+    "research: hermetic research-platform module tests",
+    "integration: cross-module integration tests requiring temp DB",
+    "artifact_dependent: requires generated CLI artifacts under data/exports/",
+    "external_dataset: requires downloaded external datasets (e.g. OpenMIIR)",
+    "hardware: requires physical hardware or pylsl",
+    "legacy: V31-V36 product iteration tests requiring generated artifacts",
+    "slow: tests that take >30s",
+]

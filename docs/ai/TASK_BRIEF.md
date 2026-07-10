@@ -1,75 +1,69 @@
-# TASK_BRIEF.md — Task Brief Template
-
-> Edit this template before starting a complex AI-assisted development task. Keep it focused.
+# TASK_BRIEF.md — Merge Gate A: Research Platform Integrity Foundation
 
 ---
 
 ## Goal
 
-*[One sentence: what are we building/fixing and why?]*
+Make the `research/scientific-platform` branch structurally honest, migration-safe,
+governance-safe, and ready for the later synthetic runtime implementation (Merge Gate B).
 
 ## Why This Matters
 
-*[1-2 sentences: how does this advance IMAGINA's research goals?]*
+The branch contains useful research scaffolding but has critical integrity gaps: undeclared
+CI deps, unenforced foreign keys, fake safeguard checkmarks, participant-facing data leakage,
+unbalanced randomization, and contradictory documentation. Fixing these makes the foundation
+trustworthy before any runtime integration.
 
 ## Scope
 
-*[Bullet list of specific changes]*
+- A1: CI truth — add pytest-timeout, strict markers, classified CI jobs, verify.sh --ci
+- A2: Restore EEG validation dashboard, research route structure, rename BehavioralTask
+- A3: Versioned DB migrations, FK enforcement, normalized research tables
+- A4: Governance services — readiness gate, consent corrections, data classification
+- A5: Balanced Williams crossover allocator, persisted and transactional
+- A6: Public/operator API separation, blinding enforcement
+- A7: Documentation truth — reconcile all docs with actual capability status
+- A8: Tests for all new invariants
+- A9: Final verification and SESSION_LOG
 
 ## Non-Goals
 
-*[What we explicitly will NOT do in this task]*
-
-## Relevant Files
-
-- *[Paths to files that will be touched or referenced]*
+- Persistent experiment execution (Merge Gate B)
+- Session runtime extraction / policy wiring into live loop (Merge Gate B)
+- Fixed/yoked execution in the live loop (Merge Gate B)
+- Synthetic end-to-end orchestration (Merge Gate B)
+- Playwright end-to-end tests (Merge Gate B)
+- Real EEG / MNE / BrainFlow (future)
+- Objective behavioral tasks (future)
+- Statistical model fitting (future)
+- Human participant collection (future)
 
 ## Constraints
 
-- [ ] No prohibited scientific claims (mind reading, dream decoding, cures, diagnosis, clinical validation)
-- [ ] No raw EEG/neural data sent to external APIs
-- [ ] No hardcoded secrets
-- [ ] No bypassing safety monitors, fatigue checks, or cooldowns
-- [ ] Follow existing code conventions in the touched files
-- [ ] Small, focused diffs — no unrelated rewrites
+- [x] No prohibited scientific claims
+- [x] No raw EEG/neural data sent to external APIs
+- [x] No hardcoded secrets
+- [x] No bypassing safety monitors
+- [x] Follow existing code conventions
+- [x] Small, focused diffs
+- [x] Do not modify V8–V44 product/demo behavior
 
-## Acceptance Criteria
+## Starting HEAD
 
-- [ ] *[Criterion 1]*
-- [ ] *[Criterion 2]*
-- [ ] `scripts/verify.sh` passes for relevant checks
-- [ ] No new lint errors introduced
-- [ ] Safety boundaries intact (if touching session/safety logic)
+`32d65ef6944fb62bed75bdb7a3b78114671fd4c6`
 
-## Verification Commands
+## Commit Sequence
 
-```bash
-# Backend
-cd backend && python3 -m pytest app/tests/ -q
-cd backend && python3 -m ruff check .
-
-# Frontend
-cd frontend && npm run lint
-cd frontend && npm run build
-
-# Full
-bash scripts/verify.sh
-```
-
-## Safety/Privacy Notes
-
-- [ ] No changes to `.env` files or secrets
-- [ ] No external API calls for neural data
-- [ ] Safety monitor not bypassed
-- [ ] Scientific disclaimer language preserved or strengthened
-
-## Documentation Updates Required
-
-- [ ] `docs/ai/SESSION_LOG.md` — log this task
-- [ ] `docs/ai/DECISIONS.md` — if any architectural decision was made/changed
-- [ ] `docs/ai/KNOWN_ISSUES.md` — if new risks discovered
-- [ ] Project-level docs — if metrics, architecture, or claims changed
+1. ci: classify tests and enforce honest merge checks
+2. fix(frontend): restore EEG validation route and research navigation
+3. refactor(frontend): rename imagery self-report task and correct timing
+4. feat(storage): add versioned migrations and foreign-key enforcement
+5. feat(governance): add protocol, ethics, consent, and readiness models
+6. feat(randomization): add transactional balanced crossover allocator
+7. refactor(api): separate public and operator research views
+8. test: add migration, governance, allocation, API, and frontend behavior coverage
+9. docs: reconcile research platform capability status
 
 ---
 
-*Template last updated: 2026-05-07*
+*Created: 2026-07-10*
