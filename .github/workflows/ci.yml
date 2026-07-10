@@ -3,6 +3,7 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   backend-core:
@@ -69,16 +70,35 @@ jobs:
           cache: pip
           cache-dependency-path: backend/pyproject.toml
       - run: pip install -e ".[dev]"
+      - name: Check legacy prerequisites
+        id: preflight
+        run: |
+          MISSING=""
+          if [ ! -d "data/exports" ]; then
+            MISSING="${MISSING}data/exports directory missing. "
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "status=prerequisites_missing" >> "$GITHUB_OUTPUT"
+            echo "::warning::Legacy prerequisites missing: ${MISSING}"
+          else
+            echo "status=available" >> "$GITHUB_OUTPUT"
+          fi
       - name: Legacy and artifact-dependent tests
+        if: steps.preflight.outputs.status == 'available'
         run: >-
           python3 -m pytest app/tests/
           -m "artifact_dependent or legacy or external_dataset"
           --strict-markers
           --timeout=600
           -q
-        continue-on-error: true
-      - name: Report
+      - name: Report prerequisites missing
+        if: steps.preflight.outputs.status == 'prerequisites_missing'
+        run: |
+          echo "::notice::Legacy validation skipped — prerequisites unavailable."
+          echo "::notice::Run CLI pipelines to generate required artifacts (see docs/ai/SESSION_LOG.md)."
+          exit 2
+      - name: Report outcome
         if: always()
         run: |
-          echo "::notice::Legacy/artifact tests ran. These require generated artifacts under data/exports/ and external datasets."
-          echo "::notice::Prerequisite: run CLI pipelines (see docs/ai/SESSION_LOG.md) before expecting passes."
+          echo "::notice::Legacy/artifact validation job completed."
+          echo "::notice::Preflight: ${{ steps.preflight.outputs.status }}"

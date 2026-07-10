@@ -5,6 +5,7 @@ import tempfile
 import aiosqlite
 import pytest
 
+from app.research.governance import AllocationIntegrityError
 from app.research.sequence_allocator import (
     WILLIAMS_SEQUENCES,
     allocate_sequence,
@@ -98,3 +99,29 @@ class TestAllocation:
         from collections import Counter
         counts = Counter(labels)
         assert max(counts.values()) - min(counts.values()) <= 1
+
+    async def test_corrupted_sequence_label_raises(self, alloc_db):
+        await allocate_sequence("s1", "p0", 42)
+        db = await aiosqlite.connect(alloc_db)
+        await db.execute(
+            "UPDATE sequence_allocations SET sequence_label='INVALID' "
+            "WHERE study_id='s1' AND participant_id='p0'"
+        )
+        await db.commit()
+        await db.close()
+
+        with pytest.raises(AllocationIntegrityError, match="INVALID"):
+            await allocate_sequence("s1", "p0", 42)
+
+    async def test_corrupted_label_in_get_allocation_raises(self, alloc_db):
+        await allocate_sequence("s1", "p0", 42)
+        db = await aiosqlite.connect(alloc_db)
+        await db.execute(
+            "UPDATE sequence_allocations SET sequence_label='CORRUPT' "
+            "WHERE study_id='s1' AND participant_id='p0'"
+        )
+        await db.commit()
+        await db.close()
+
+        with pytest.raises(AllocationIntegrityError, match="CORRUPT"):
+            await get_allocation("s1", "p0")

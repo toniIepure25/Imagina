@@ -46,6 +46,18 @@ class TestCapabilitiesEndpoint:
         data = resp.json()
         assert data["database_foreign_keys_enabled"] is True
 
+    def test_structured_capabilities(self):
+        resp = client.get("/api/research-protocol/capabilities")
+        data = resp.json()
+        for key in ("protocol_freeze", "consent_tracking", "condition_blinding"):
+            assert key in data, f"Missing structured capability: {key}"
+            cap = data[key]
+            assert "schema_available" in cap
+            assert "service_available" in cap
+            assert "runtime_gate_active" in cap
+            assert "status" in cap
+            assert "detail" in cap
+
 
 class TestPublicParticipantView:
     def _create_study_and_participant(self):

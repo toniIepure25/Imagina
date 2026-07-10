@@ -81,6 +81,8 @@ governance-safe, and ready for later synthetic runtime implementation (Merge Gat
 - Ruff: clean
 - TypeScript: clean
 - Frontend build: clean (18 routes)
+- verified_code_head: `0e3d0dd` (last code commit before docs-only commit)
+- branch_head_at_report_time: reported in final agent response, not in-tree
 
 ### Remaining for Merge Gate B
 - Wire feedback conditions into live session loop (policy resolver)

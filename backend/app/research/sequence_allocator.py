@@ -19,6 +19,7 @@ import hashlib
 import uuid
 from datetime import datetime, timezone
 
+from app.research.governance import AllocationIntegrityError
 from app.schemas.research import FeedbackCondition
 from app.storage.database import get_db
 
@@ -65,7 +66,11 @@ async def allocate_sequence(
                     await db.commit()
                     return label, seq
             await db.commit()
-            return seq_label, WILLIAMS_SEQUENCES[0][1]
+            valid_labels = [lbl for lbl, _ in WILLIAMS_SEQUENCES]
+            raise AllocationIntegrityError(
+                f"Persisted sequence label '{seq_label}' is not in the allowed set {valid_labels}. "
+                "This indicates data corruption — refusing to substitute silently."
+            )
 
         count_cursor = await db.execute(
             "SELECT sequence_label, COUNT(*) as cnt FROM sequence_allocations "
@@ -124,7 +129,11 @@ async def get_allocation(study_id: str, participant_id: str) -> tuple[str, list[
         for label, seq in WILLIAMS_SEQUENCES:
             if label == seq_label:
                 return label, seq
-        return None
+        valid_labels = [lbl for lbl, _ in WILLIAMS_SEQUENCES]
+        raise AllocationIntegrityError(
+            f"Persisted sequence label '{seq_label}' is not in the allowed set {valid_labels}. "
+            "This indicates data corruption — refusing to substitute silently."
+        )
     finally:
         await db.close()
 

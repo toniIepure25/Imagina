@@ -44,6 +44,28 @@ export interface InstrumentInfo {
   acquisition_instructions: string;
 }
 
+export interface CapabilityDetail {
+  schema_available: boolean;
+  service_available: boolean;
+  runtime_gate_active: boolean;
+  status: string;
+  detail: string;
+}
+
+export interface SystemCapabilities {
+  study_mode: string;
+  database_foreign_keys_enabled: boolean;
+  migration_version: number;
+  human_collection_allowed: boolean;
+  synthetic_runtime_available: boolean;
+  protocol_freeze: CapabilityDetail;
+  consent_tracking: CapabilityDetail;
+  condition_blinding: CapabilityDetail;
+  sequence_allocation: CapabilityDetail;
+  synthetic_runtime: CapabilityDetail;
+  checked_at: string;
+}
+
 export async function getStudyMode(): Promise<{ study_mode: string }> {
   return apiFetch("/api/research-protocol/mode");
 }
@@ -77,18 +99,6 @@ export async function recordConsent(data: {
 
 export async function listInstruments(): Promise<{ instruments: InstrumentInfo[] }> {
   return apiFetch("/api/research-protocol/instruments");
-}
-
-export interface SystemCapabilities {
-  study_mode: string;
-  database_foreign_keys_enabled: boolean;
-  migration_version: number;
-  human_collection_allowed: boolean;
-  protocol_freeze_enforced: boolean;
-  consent_version_enforced: boolean;
-  condition_blinding_api_enforced: boolean;
-  synthetic_runtime_available: boolean;
-  checked_at: string;
 }
 
 export async function getSystemCapabilities(): Promise<SystemCapabilities> {

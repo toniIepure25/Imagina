@@ -9,12 +9,21 @@ import {
   type SystemCapabilities,
 } from "@/lib/research-api";
 
-type SafeguardStatus = "verified" | "partial" | "unavailable" | "blocked";
+type SafeguardStatus = "verified" | "partial" | "unavailable" | "blocked" | "policy_only";
 
 interface Safeguard {
   label: string;
   status: SafeguardStatus;
   detail: string;
+}
+
+function capStatusToSafeguard(capStatus: string): SafeguardStatus {
+  if (capStatus === "verified_runtime") return "verified";
+  if (capStatus === "implemented") return "partial";
+  if (capStatus === "partial") return "partial";
+  if (capStatus === "blocked") return "blocked";
+  if (capStatus === "policy_only") return "policy_only";
+  return "unavailable";
 }
 
 function deriveSafeguards(caps: SystemCapabilities | null): Safeguard[] {
@@ -33,8 +42,8 @@ function deriveSafeguards(caps: SystemCapabilities | null): Safeguard[] {
     },
     {
       label: "Database migrations",
-      status: caps.migration_version >= 2 ? "verified" : "partial",
-      detail: `Migration version: ${caps.migration_version}`,
+      status: caps.migration_version >= 2 ? "partial" : "unavailable",
+      detail: `Migration version: v${caps.migration_version}`,
     },
     {
       label: "Human collection gate",
@@ -44,42 +53,39 @@ function deriveSafeguards(caps: SystemCapabilities | null): Safeguard[] {
         : "Human collection default-denied",
     },
     {
-      label: "Protocol freeze support",
-      status: caps.protocol_freeze_enforced ? "verified" : "partial",
-      detail: caps.protocol_freeze_enforced
-        ? "Protocol version table available"
-        : "Protocol freeze not yet enforced",
+      label: "Protocol freeze",
+      status: capStatusToSafeguard(caps.protocol_freeze?.status),
+      detail: caps.protocol_freeze?.detail ?? "Unknown",
     },
     {
       label: "Consent version tracking",
-      status: caps.consent_version_enforced ? "verified" : "partial",
-      detail: caps.consent_version_enforced
-        ? "Consent document versioning available"
-        : "Consent versioning not yet enforced",
+      status: capStatusToSafeguard(caps.consent_tracking?.status),
+      detail: caps.consent_tracking?.detail ?? "Unknown",
     },
     {
       label: "Condition blinding (API)",
-      status: caps.condition_blinding_api_enforced ? "verified" : "blocked",
-      detail: caps.condition_blinding_api_enforced
-        ? "Public API hides assignment data"
-        : "Assignment data may be exposed",
+      status: capStatusToSafeguard(caps.condition_blinding?.status),
+      detail: caps.condition_blinding?.detail ?? "Unknown",
+    },
+    {
+      label: "Sequence allocation",
+      status: capStatusToSafeguard(caps.sequence_allocation?.status),
+      detail: caps.sequence_allocation?.detail ?? "Unknown",
     },
     {
       label: "Synthetic runtime",
-      status: caps.synthetic_runtime_available ? "verified" : "unavailable",
-      detail: caps.synthetic_runtime_available
-        ? "Synthetic E2E workflow available"
-        : "Not yet implemented (Merge Gate B)",
+      status: capStatusToSafeguard(caps.synthetic_runtime?.status),
+      detail: caps.synthetic_runtime?.detail ?? "Not yet available",
     },
     {
       label: "Local data only",
-      status: "verified",
-      detail: "All data stored locally in SQLite (no cloud)",
+      status: "policy_only",
+      detail: "Architectural design constraint — not runtime-verified",
     },
     {
       label: "Pseudonym-only identification",
-      status: "verified",
-      detail: "Participants identified by pseudonym, not real names",
+      status: "policy_only",
+      detail: "Architectural design constraint — not runtime-verified",
     },
   ];
 }
@@ -89,6 +95,7 @@ const statusStyles: Record<SafeguardStatus, { icon: string; color: string }> = {
   partial: { icon: "\u25CB", color: "text-yellow-400" },
   unavailable: { icon: "\u2014", color: "text-gray-500" },
   blocked: { icon: "\u2717", color: "text-red-400" },
+  policy_only: { icon: "\u25A0", color: "text-blue-400" },
 };
 
 export default function OperatorDashboard() {
@@ -171,7 +178,8 @@ export default function OperatorDashboard() {
       <div className="p-6 bg-white/5 rounded-xl border border-white/10">
         <h3 className="text-lg font-semibold mb-4">Research Safeguards</h3>
         <p className="text-xs text-gray-500 mb-3">
-          Status derived from backend capability checks, not static claims.
+          Status derived from backend capability checks. Items marked &quot;policy&quot; are
+          architectural design constraints, not runtime-verified properties.
         </p>
         <ul className="space-y-2 text-sm text-gray-300">
           {safeguards.map((sg) => {

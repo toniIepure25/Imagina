@@ -49,6 +49,11 @@ async def _current_version(db: aiosqlite.Connection) -> int:
     return row[0] if row else 0
 
 
+async def current_version(db: aiosqlite.Connection) -> int:
+    await _ensure_version_table(db)
+    return await _current_version(db)
+
+
 async def run_migrations(db: aiosqlite.Connection) -> int:
     await _ensure_version_table(db)
     current = await _current_version(db)

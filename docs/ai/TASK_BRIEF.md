@@ -1,42 +1,48 @@
-# TASK_BRIEF.md — Merge Gate A: Research Platform Integrity Foundation
+# TASK_BRIEF.md — Merge Gate B: Persistent Synthetic Experiment Runtime
 
 ---
 
 ## Goal
 
-Make the `research/scientific-platform` branch structurally honest, migration-safe,
-governance-safe, and ready for the later synthetic runtime implementation (Merge Gate B).
+Build a transport-independent, persistent, deterministic runtime on `research/scientific-platform`
+capable of executing a complete synthetic-only three-condition crossover experiment (adaptive,
+fixed, frozen yoked). The runtime must produce provenance-complete synthetic records, support
+deterministic replay, preserve safety behavior, and expose one working synthetic end-to-end
+flow through backend APIs, CLI, and frontend.
 
 ## Why This Matters
 
-The branch contains useful research scaffolding but has critical integrity gaps: undeclared
-CI deps, unenforced foreign keys, fake safeguard checkmarks, participant-facing data leakage,
-unbalanced randomization, and contradictory documentation. Fixing these makes the foundation
-trustworthy before any runtime integration.
+Merge Gate A established structural integrity (migrations, governance, balanced allocation,
+API blinding, honest documentation). Merge Gate B proves the engineering runtime works
+end-to-end with synthetic data, which is the prerequisite for later human-participant
+studies, objective behavioral validation, and real EEG integration.
 
 ## Scope
 
-- A1: CI truth — add pytest-timeout, strict markers, classified CI jobs, verify.sh --ci
-- A2: Restore EEG validation dashboard, research route structure, rename BehavioralTask
-- A3: Versioned DB migrations, FK enforcement, normalized research tables
-- A4: Governance services — readiness gate, consent corrections, data classification
-- A5: Balanced Williams crossover allocator, persisted and transactional
-- A6: Public/operator API separation, blinding enforcement
-- A7: Documentation truth — reconcile all docs with actual capability status
-- A8: Tests for all new invariants
-- A9: Final verification and SESSION_LOG
+- B0: Residual Merge Gate A integrity corrections
+- B1: Migration v003 — persistent runtime tables (sessions, trials, feedback, safety, yoked libraries, manifests, exports)
+- B2: Persistent session and trial state machines with CAS concurrency
+- B3: Transport-independent ResearchSessionRuntime with injectable clock, IDs, event sinks
+- B4: Unified feedback policy contract (adaptive, fixed, frozen yoked adapters)
+- B5: Frozen yoked trajectory library (generation, freezing, validation, assignment)
+- B6: Synthetic study orchestration, run records, and versioned export
+- B7: Canonical deterministic replay validation
+- B8: Synthetic API endpoints and frontend operator workflow
+- B9: Playwright E2E, Docker smoke, regression coverage
+- B10: Documentation reconciliation
 
 ## Non-Goals
 
-- Persistent experiment execution (Merge Gate B)
-- Session runtime extraction / policy wiring into live loop (Merge Gate B)
-- Fixed/yoked execution in the live loop (Merge Gate B)
-- Synthetic end-to-end orchestration (Merge Gate B)
-- Playwright end-to-end tests (Merge Gate B)
-- Real EEG / MNE / BrainFlow (future)
-- Objective behavioral tasks (future)
-- Statistical model fitting (future)
-- Human participant collection (future)
+- Human data collection
+- Real EEG acquisition (LSL, MNE, BrainFlow)
+- Objective behavioral tasks (binocular rivalry, psychophysics)
+- Statistical model fitting (LMM execution)
+- Publication claims
+- Authentication infrastructure
+- Cloud services or telemetry
+- Generative AI
+- Clinical claims
+- Mind-reading or dream-decoding language
 
 ## Constraints
 
@@ -47,22 +53,25 @@ trustworthy before any runtime integration.
 - [x] Follow existing code conventions
 - [x] Small, focused diffs
 - [x] Do not modify V8–V44 product/demo behavior
+- [x] All synthetic records clearly classified
 
 ## Starting HEAD
 
-`32d65ef6944fb62bed75bdb7a3b78114671fd4c6`
+`6bcd39b050f1cbd06f5f4a4115abda9372efbb28`
 
 ## Commit Sequence
 
-1. ci: classify tests and enforce honest merge checks
-2. fix(frontend): restore EEG validation route and research navigation
-3. refactor(frontend): rename imagery self-report task and correct timing
-4. feat(storage): add versioned migrations and foreign-key enforcement
-5. feat(governance): add protocol, ethics, consent, and readiness models
-6. feat(randomization): add transactional balanced crossover allocator
-7. refactor(api): separate public and operator research views
-8. test: add migration, governance, allocation, API, and frontend behavior coverage
-9. docs: reconcile research platform capability status
+1. fix(research): close Merge Gate A integrity gaps
+2. feat(storage): add persistent synthetic runtime schema
+3. feat(runtime): add persistent session and trial state machines
+4. feat(runtime): implement transport-independent research runtime
+5. feat(runtime): unify adaptive fixed and yoked policy contracts
+6. feat(runtime): add frozen yoked trajectory libraries
+7. feat(runtime): add synthetic study orchestration and export
+8. feat(runtime): add deterministic replay validation
+9. feat(research-ui): add synthetic runtime operator workflow
+10. test(runtime): add synthetic E2E and release smoke coverage
+11. docs: document persistent synthetic runtime boundaries
 
 ---
 
