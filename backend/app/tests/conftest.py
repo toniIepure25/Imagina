@@ -48,6 +48,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_governance_gates": ["research", "integration"],
     "test_sequence_allocator": ["research", "integration"],
     "test_api_blinding": ["research", "integration"],
+    "test_state_machines": ["research", "integration"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
