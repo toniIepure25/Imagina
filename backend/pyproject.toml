@@ -1,7 +1,7 @@
 [project]
 name = "imagina-backend"
-version = "1.0.0"
-description = "IMAGINA V2 — Dream Corridor Scene Stabilizer Backend"
+version = "0.5.0.dev1"
+description = "IMAGINA — Closed-loop mental imagery training research platform"
 requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.115",

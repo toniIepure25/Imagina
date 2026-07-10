@@ -2,6 +2,34 @@
 
 ---
 
+## 2026-07-10 — Phase 0: Repository Truth and Reliability
+
+### Task
+Establish code truth, reconcile versions and documentation, fix CI gaps, remove dead code.
+
+### Changes
+- `backend/pyproject.toml`: version `1.0.0` -> `0.5.0.dev1`, description updated
+- `frontend/package.json`: version `0.1.0` -> `0.5.0-research`, added `typecheck` script
+- `AGENTS.md`: fixed test count from "11 test files" to "34 test files, ~400 tests"
+- `docs/implementation_status.md`: rewritten to match actual codebase state
+- `docs/roadmap.md`: rewritten with research platform pivot
+- `.github/workflows/ci.yml`: added typecheck step, pip caching, docker-compose.release.yml validation
+- `scripts/verify.sh`: added docker-compose.release.yml validation
+- `backend/app/storage/models.py`: DELETED (dead code, 0 imports)
+
+### Decisions
+- Version `0.5.0.dev1` chosen as PEP 440-compliant honest version
+- Dead code removal confirmed safe — `models.py` had zero imports anywhere in the codebase
+- Pre-existing test failures (108) are all from missing generated artifacts (OpenMIIR, real EEG imports); not caused by Phase 0 changes
+
+### Verification
+- ruff: clean
+- pytest: 268 passed, 108 failed (pre-existing), 26 skipped
+- typecheck: passes
+- All pre-existing failures are artifact-dependent tests, not regressions
+
+---
+
 ## 2026-05-11 — V3.9.5.2 Safety Regression Tests + Documentation Finalization
 
 ### Task

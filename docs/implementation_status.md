@@ -1,50 +1,66 @@
 # IMAGINA Implementation Status
 
+## Software Version
+
+`0.5.0.dev1` (backend) / `0.5.0-research` (frontend) — research platform pivot. See `docs/roadmap.md` for the research direction.
+
 ## Current Capabilities
 
+### Closed-Loop Pipeline (WebSocket-driven)
 - FastAPI backend with REST and WebSocket session streaming.
-- Next.js frontend with live session, replay, report, profile-ready layout, and science pages.
-- SQLite event store for local-first session persistence.
-- Deterministic simulated EEG-like feature generation.
-- PID/IQI proxy metric engine, adaptive curriculum, feedback policy, and safety monitor.
+- Next.js 16 frontend with live session, replay, report, profile, and science pages.
+- SQLite event store for local-first session persistence (event sourcing).
+- Deterministic simulated EEG-like feature generation (6 scenarios).
+- PID/IQI proxy metric engine (hand-tuned weighted composites, unvalidated).
+- 8-level adaptive staircase curriculum (3-up/1-down).
+- Feedback policy engine mapping state to 10 scene parameters + prompt text.
+- Safety monitor (fatigue >0.80, overeffort, dissociation keywords, 20-min limit).
+- React Three Fiber 3D Dream Corridor with param-driven feedback visuals.
+- Signal provider abstraction (simulated, manual, replay, dataset.replay, lsl.stub, lsl.real).
+- Calibration profiles, local user profiles, experiment protocol scaffolding.
 - Deterministic replay and JSON/HTML reports.
-- Signal provider, calibration, profile, experiment, export, and report modules are now linked into one V2 research workflow.
-- Experiment runs can create or attach linked sessions, track progress, aggregate summaries, and export experiment JSON.
-- Local profiles update idempotently from completed session summaries and expose a longitudinal progress report.
-- Full end-to-end V2 research workflow: profile → experiment run → linked sessions → calibration → session loop → report → profile update → experiment summary → exports.
-- Session summary reports include signal provider, scenario, calibration quality, and experiment linkage context.
-- 48 backend tests covering PID/IQI, curriculum, safety, calibration, reports, exports, profiles, experiments, and end-to-end workflow integration.
+- DSP fallback chain: scipy Welch -> numpy FFT -> stdlib heuristic.
 
-## Simulated
+### Product/Demo Stack (REST-driven, parallel)
+- ~100 REST endpoints in `api/imagina/routes.py` for guided sessions, skill tree, protocol studio, benchmark SDK, policy lab, and capstone demo.
+- 80+ frontend components including `/imagina/live` control room and `/imagina/showcase`.
+- File-based JSON storage under `data/imagina/` (separate from SQLite event store).
+- 99 CLI modules for research, benchmarking, OpenMIIR analysis.
 
-- EEG-like bandpower features.
-- Signal quality.
-- Imagery strength proxy.
-- Behavioral stability proxy.
+### Testing
+- 34 backend test files with ~400 tests (pytest).
+- Integration tests using TestClient and temp SQLite databases.
+- CLI verification scripts (standalone, not pytest-discoverable).
+- Zero frontend automated tests.
+
+## Simulated (not experimental evidence)
+
+- EEG-like bandpower features (deterministic mathematical functions).
+- Signal quality proxies.
+- Imagery strength proxies.
+- Behavioral stability proxies.
 - Replay demo participants and scenarios.
 
-## Real
+## Not Implemented (required for scientific validation)
 
-- Local event logging.
-- User self-report input.
-- Session/replay/report workflows.
-- Session setup metadata for profile, task, signal provider, simulated scenario, experiment run, and consent.
-- Calibration quality profiles stored per session and surfaced in reports.
-- Deterministic simulation and evaluation hooks.
-- Safety thresholding over proxy metrics and notes.
-
-## Future Work
-
-- Real LSL/Muse/OpenBCI provider implementation.
-- Empirical metric validation against questionnaires or controlled tasks.
-- Real participant studies using the existing experiment protocol scaffolding.
-- Optional learned models after validation.
+- Controlled experiment infrastructure (randomization, condition assignment, counterbalancing).
+- Fixed-feedback and yoked/sham-feedback control conditions.
+- Study-mode separation (demo vs. research data).
+- Consent and ethics gating.
+- Validated outcome measures (VVIQ-2, behavioral imagery tasks).
+- Trial-level data capture with timing and provenance.
+- Schema migrations and versioned research tables.
+- Frontend automated tests.
+- Preregistered analysis pipeline.
+- Power analysis tooling.
 
 ## Known Limitations
 
 - IMAGINA does not decode thoughts or dreams.
-- PID/IQI are experimental proxy metrics.
-- V1/V2 simulated signals are not clinical measurements.
-- Reports are research summaries, not medical evaluation.
-- LSL is still a stub; V2.1 should add optional real provider implementation without changing the current simulated workflow.
-- Profile progress is local-only and depends on sessions completed in the same workspace/database.
+- PID and IQI are experimental proxy metrics with no empirical validation.
+- All default signals are simulated — not biological data.
+- Reports are engineering summaries, not medical or scientific evaluation.
+- The LSL real provider is gated behind `IMAGINA_ENABLE_EXPERIMENTAL_LSL` and requires `pylsl`.
+- Profile progress is local-only.
+- `numpy` and `scipy` are optional runtime dependencies (not in core `pyproject.toml`).
+- The V8-V44 product stack and the WebSocket pipeline are architecturally separate.

@@ -142,11 +142,22 @@ echo "--- Docker ---"
 
 if [ -f "docker-compose.yml" ]; then
     if command -v docker &>/dev/null; then
-        info_msg "Validating docker compose config..."
+        info_msg "Validating docker-compose.yml..."
         if docker compose config --quiet 2>&1; then
-            pass_msg "docker compose config — valid"
+            pass_msg "docker compose config (dev) — valid"
         else
-            skip_msg "docker compose config — validation failed (docker daemon may not be running)"
+            skip_msg "docker compose config (dev) — validation failed (docker daemon may not be running)"
+        fi
+
+        if [ -f "docker-compose.release.yml" ]; then
+            info_msg "Validating docker-compose.release.yml..."
+            if docker compose -f docker-compose.release.yml config --quiet 2>&1; then
+                pass_msg "docker compose config (release) — valid"
+            else
+                skip_msg "docker compose config (release) — validation failed (docker daemon may not be running)"
+            fi
+        else
+            skip_msg "docker compose config (release) — no docker-compose.release.yml found"
         fi
     else
         skip_msg "docker compose config — docker not found"
