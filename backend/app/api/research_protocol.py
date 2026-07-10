@@ -4,7 +4,13 @@ from app.core.config import settings
 from app.research import consent_gate, instrument_registry, participant_registry, study_manager
 from app.research.governance import evaluate_collection_readiness, get_system_capabilities
 from app.research.randomization import verify_counterbalance
-from app.schemas.research import ConsentCreate, ParticipantCreate, StudyCreate
+from app.schemas.research import (
+    ConsentCreate,
+    ParticipantCreate,
+    ParticipantOperatorView,
+    ParticipantPublicView,
+    StudyCreate,
+)
 
 router = APIRouter(prefix="/api/research-protocol", tags=["research-protocol"])
 
@@ -29,6 +35,7 @@ async def get_capabilities():
 
 @router.get("/readiness/{study_id}/{participant_id}")
 async def check_readiness(study_id: str, participant_id: str):
+    _check_study_mode("pilot")
     result = await evaluate_collection_readiness(study_id, participant_id)
     return {"allowed": result.allowed, "checks": [vars(c) for c in result.checks]}
 
@@ -46,7 +53,26 @@ async def get_instrument(instrument_id: str):
     return info.model_dump()
 
 
-@router.post("/studies")
+# --- Public participant API (no assignment data) ---
+
+@router.get("/public/participants/{participant_id}")
+async def get_participant_public(participant_id: str):
+    participant = await participant_registry.get_participant(participant_id)
+    if not participant:
+        raise HTTPException(status_code=404, detail="Participant not found")
+    return ParticipantPublicView(
+        participant_id=participant.participant_id,
+        pseudonym=participant.pseudonym,
+        study_id=participant.study_id,
+        eligibility_confirmed=participant.eligibility_confirmed,
+        sessions_completed=participant.sessions_completed,
+        created_at=participant.created_at,
+    ).model_dump()
+
+
+# --- Operator API (includes assignment data with warning) ---
+
+@router.post("/operator/studies")
 async def create_study(data: StudyCreate):
     _check_study_mode("pilot")
     existing = await study_manager.get_study(data.study_id)
@@ -56,14 +82,14 @@ async def create_study(data: StudyCreate):
     return study.model_dump()
 
 
-@router.get("/studies")
+@router.get("/operator/studies")
 async def list_studies():
     _check_study_mode("pilot")
     studies = await study_manager.list_studies()
     return {"studies": [s.model_dump() for s in studies]}
 
 
-@router.get("/studies/{study_id}")
+@router.get("/operator/studies/{study_id}")
 async def get_study(study_id: str):
     _check_study_mode("pilot")
     study = await study_manager.get_study(study_id)
@@ -72,7 +98,7 @@ async def get_study(study_id: str):
     return study.model_dump()
 
 
-@router.post("/studies/{study_id}/participants")
+@router.post("/operator/studies/{study_id}/participants")
 async def create_participant(study_id: str, data: ParticipantCreate):
     _check_study_mode("pilot")
     if data.study_id != study_id:
@@ -81,26 +107,62 @@ async def create_participant(study_id: str, data: ParticipantCreate):
     if not study:
         raise HTTPException(status_code=404, detail="Study not found")
     participant = await participant_registry.create_participant(data, study.conditions)
-    return participant.model_dump()
+    return ParticipantOperatorView(
+        participant_id=participant.participant_id,
+        pseudonym=participant.pseudonym,
+        study_id=participant.study_id,
+        eligibility_confirmed=participant.eligibility_confirmed,
+        sessions_completed=participant.sessions_completed,
+        created_at=participant.created_at,
+        condition_sequence=participant.condition_sequence,
+        randomization_seed=participant.randomization_seed,
+    ).model_dump()
 
 
-@router.get("/studies/{study_id}/participants")
+@router.get("/operator/studies/{study_id}/participants")
 async def list_participants(study_id: str):
     _check_study_mode("pilot")
     participants = await participant_registry.list_participants(study_id)
-    return {"participants": [p.model_dump() for p in participants]}
+    return {
+        "participants": [
+            ParticipantOperatorView(
+                participant_id=p.participant_id,
+                pseudonym=p.pseudonym,
+                study_id=p.study_id,
+                eligibility_confirmed=p.eligibility_confirmed,
+                sessions_completed=p.sessions_completed,
+                created_at=p.created_at,
+                condition_sequence=p.condition_sequence,
+                randomization_seed=p.randomization_seed,
+            ).model_dump()
+            for p in participants
+        ],
+        "_warning": (
+            "Operator view — contains assignment data."
+            " This is local role-oriented information separation, not authenticated access control."
+        ),
+    }
 
 
-@router.get("/participants/{participant_id}")
-async def get_participant(participant_id: str):
+@router.get("/operator/participants/{participant_id}")
+async def get_participant_operator(participant_id: str):
     _check_study_mode("pilot")
     participant = await participant_registry.get_participant(participant_id)
     if not participant:
         raise HTTPException(status_code=404, detail="Participant not found")
-    return participant.model_dump()
+    return ParticipantOperatorView(
+        participant_id=participant.participant_id,
+        pseudonym=participant.pseudonym,
+        study_id=participant.study_id,
+        eligibility_confirmed=participant.eligibility_confirmed,
+        sessions_completed=participant.sessions_completed,
+        created_at=participant.created_at,
+        condition_sequence=participant.condition_sequence,
+        randomization_seed=participant.randomization_seed,
+    ).model_dump()
 
 
-@router.post("/consent")
+@router.post("/operator/consent")
 async def record_consent(data: ConsentCreate):
     _check_study_mode("pilot")
     participant = await participant_registry.get_participant(data.participant_id)
@@ -113,13 +175,13 @@ async def record_consent(data: ConsentCreate):
     return record.model_dump()
 
 
-@router.get("/consent/{participant_id}/{study_id}")
+@router.get("/operator/consent/{participant_id}/{study_id}")
 async def check_consent(participant_id: str, study_id: str):
     has_consent = await consent_gate.has_valid_consent(participant_id, study_id)
     return {"has_valid_consent": has_consent}
 
 
-@router.post("/consent/{participant_id}/{study_id}/withdraw")
+@router.post("/operator/consent/{participant_id}/{study_id}/withdraw")
 async def withdraw_consent(participant_id: str, study_id: str):
     _check_study_mode("pilot")
     result = await consent_gate.withdraw_consent(participant_id, study_id)
@@ -128,7 +190,7 @@ async def withdraw_consent(participant_id: str, study_id: str):
     return {"withdrawn": True}
 
 
-@router.get("/studies/{study_id}/condition/{participant_id}/{session_index}")
+@router.get("/operator/studies/{study_id}/condition/{participant_id}/{session_index}")
 async def get_condition_assignment(study_id: str, participant_id: str, session_index: int):
     _check_study_mode("pilot")
     assignment = await study_manager.get_condition_for_session(participant_id, study_id, session_index)
@@ -140,10 +202,13 @@ async def get_condition_assignment(study_id: str, participant_id: str, session_i
             raise HTTPException(status_code=400, detail="Session index out of range")
         condition = participant.condition_sequence[session_index]
         assignment = await study_manager.assign_condition(participant_id, study_id, session_index, condition)
-    return assignment.model_dump()
+    return {
+        **assignment.model_dump(),
+        "_warning": "Operator API — condition assignment visible. Not for participant-facing use.",
+    }
 
 
-@router.get("/studies/{study_id}/counterbalance")
+@router.get("/operator/studies/{study_id}/counterbalance")
 async def check_counterbalance(study_id: str):
     _check_study_mode("pilot")
     study = await study_manager.get_study(study_id)
@@ -153,3 +218,19 @@ async def check_counterbalance(study_id: str):
     sequences = [p.condition_sequence for p in participants]
     report = verify_counterbalance(sequences, study.conditions)
     return report
+
+
+# Legacy compatibility aliases — redirect to operator paths
+@router.post("/studies")
+async def legacy_create_study(data: StudyCreate):
+    return await create_study(data)
+
+
+@router.get("/studies")
+async def legacy_list_studies():
+    return await list_studies()
+
+
+@router.get("/studies/{study_id}")
+async def legacy_get_study(study_id: str):
+    return await get_study(study_id)

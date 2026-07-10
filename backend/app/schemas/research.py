@@ -84,6 +84,26 @@ class ConditionAssignment(BaseModel):
     assigned_at: str = ""
 
 
+class ParticipantPublicView(BaseModel):
+    participant_id: str
+    pseudonym: str
+    study_id: str
+    eligibility_confirmed: bool = False
+    sessions_completed: int = 0
+    created_at: str = ""
+
+
+class ParticipantOperatorView(BaseModel):
+    participant_id: str
+    pseudonym: str
+    study_id: str
+    eligibility_confirmed: bool = False
+    sessions_completed: int = 0
+    created_at: str = ""
+    condition_sequence: list[FeedbackCondition] = Field(default_factory=list)
+    randomization_seed: int = 0
+
+
 class InstrumentInfo(BaseModel):
     instrument_id: str
     name: str
