@@ -28,8 +28,14 @@ async def create_study(data: StudyCreate) -> Study:
             status="created",
         )
         await db.execute(
-            "INSERT INTO studies (study_id, created_at, status, payload) VALUES (?, ?, ?, ?)",
-            (study.study_id, now, "created", study.model_dump_json()),
+            "INSERT INTO studies "
+            "(study_id, title, application_mode, data_classification, lifecycle_status, "
+            "study_seed, created_at, updated_at, payload) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                study.study_id, study.title, "pilot", "synthetic", "draft",
+                None, now, now, study.model_dump_json(),
+            ),
         )
         await db.commit()
         return study
@@ -65,7 +71,8 @@ async def get_condition_for_session(
     db = await get_db()
     try:
         cursor = await db.execute(
-            "SELECT payload FROM condition_assignments WHERE participant_id = ? AND study_id = ? AND session_index = ?",
+            "SELECT payload FROM condition_assignments "
+            "WHERE participant_id = ? AND study_id = ? AND session_index = ?",
             (participant_id, study_id, session_index),
         )
         row = await cursor.fetchone()
@@ -90,14 +97,14 @@ async def assign_condition(
             assigned_at=now,
         )
         assignment_id = str(uuid.uuid4())
-        sql = (
-            "INSERT INTO condition_assignments"
-            " (assignment_id, participant_id, study_id, session_index, payload)"
-            " VALUES (?, ?, ?, ?, ?)"
-        )
         await db.execute(
-            sql,
-            (assignment_id, participant_id, study_id, session_index, assignment.model_dump_json()),
+            "INSERT INTO condition_assignments "
+            "(assignment_id, participant_id, study_id, session_index, condition, assigned_at, payload) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                assignment_id, participant_id, study_id, session_index,
+                condition.value, now, assignment.model_dump_json(),
+            ),
         )
         await db.commit()
         return assignment

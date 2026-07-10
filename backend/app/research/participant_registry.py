@@ -26,14 +26,16 @@ async def create_participant(data: ParticipantCreate, conditions: list[FeedbackC
             created_at=now,
             randomization_seed=seed,
         )
-        sql = (
-            "INSERT INTO participants"
-            " (participant_id, study_id, pseudonym, created_at, payload)"
-            " VALUES (?, ?, ?, ?, ?)"
-        )
         await db.execute(
-            sql,
-            (participant_id, data.study_id, data.pseudonym, now, participant.model_dump_json()),
+            "INSERT INTO participants "
+            "(participant_id, study_id, pseudonym, participant_kind, eligibility_confirmed, "
+            "created_at, payload) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                participant_id, data.study_id, data.pseudonym,
+                "synthetic", int(data.eligibility_confirmed),
+                now, participant.model_dump_json(),
+            ),
         )
         await db.commit()
         return participant
