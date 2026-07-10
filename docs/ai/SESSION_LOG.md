@@ -11,9 +11,6 @@ governance-safe, and ready for later synthetic runtime implementation (Merge Gat
 ### Starting HEAD
 `32d65ef6944fb62bed75bdb7a3b78114671fd4c6`
 
-### Final HEAD
-`0e3d0dd96dcbcd3daedd25dae45e4f1953ccd820`
-
 ### Commits (9 total)
 
 1. **ci: classify tests and enforce honest merge checks**
