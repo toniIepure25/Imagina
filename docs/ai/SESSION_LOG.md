@@ -2,6 +2,69 @@
 
 ---
 
+## 2026-07-10 — Phases 0-7: Scientific Research Platform Implementation
+
+### Task
+Transform IMAGINA from a feature-rich research prototype into a scientifically defensible
+research platform capable of supporting a controlled study of closed-loop mental imagery training.
+
+### Phases Completed
+
+#### Phase 0: Repository Truth
+- Fixed versions (backend 0.5.0.dev1, frontend 0.5.0-research)
+- Deleted dead code (storage/models.py)
+- Added frontend typecheck, fixed CI, updated docs
+
+#### Phase 1: Scientific Protocol and Governance
+- Study modes (demo/benchmark/pilot/approved_study)
+- Consent gate with withdrawal support
+- Block randomization with Latin square counterbalancing
+- Instrument registry (VVIQ-2, trial-level measures)
+- Research API endpoints with study-mode gating
+
+#### Phase 2: Research Experiment Engine
+- Feedback conditions (adaptive, fixed, yoked/sham)
+- Trial scheduler with timing
+- Stimulus registry with content hashing
+- Provenance tracking (git SHA, versions, IDs)
+
+#### Phase 3: Statistical Framework
+- Power analysis tooling (within-subjects approximation)
+- Synthetic data generator (deterministic, seeded)
+- LMM specification (R lme4 format)
+- IQI/PID validation analysis
+
+#### Phase 4: Biosignal Acquisition
+- EEG ring buffer with signal quality estimation
+- Marker synchronizer for event/EEG alignment
+- Drop rate and flat channel detection
+
+#### Phase 5: Multimodal Evaluation
+- Convergent validity analysis (inter-modality correlations)
+- Incremental validity specification (hierarchical model)
+- Group-aware evaluation (VVIQ-2 median split)
+
+#### Phase 6: Research Frontend
+- ConsentGate component
+- BehavioralTask component (fixation-imagine-rate flow)
+- OperatorDashboard with instruments and safeguards
+- Research page (/research)
+- Vitest infrastructure with first frontend tests (6 tests)
+
+#### Phase 7: Publication Package
+- Preregistration template (OSF format)
+- Methods section draft
+- Synthetic dataset generation script
+- Updated reproducibility documentation
+
+### Test Summary
+- Backend: 27 + 28 + 20 + 21 + 13 = 109 new research tests (all pass)
+- Frontend: 6 new tests (vitest, all pass)
+- Ruff: clean on all new files
+- TypeScript: clean
+
+---
+
 ## 2026-07-10 — Phase 0: Repository Truth and Reliability
 
 ### Task
