@@ -2,6 +2,107 @@
 
 ---
 
+## 2026-07-10 — Merge Gate A: Research Platform Integrity Foundation
+
+### Task
+Make the research/scientific-platform branch structurally honest, migration-safe,
+governance-safe, and ready for later synthetic runtime implementation (Merge Gate B).
+
+### Starting HEAD
+`32d65ef6944fb62bed75bdb7a3b78114671fd4c6`
+
+### Final HEAD
+`0e3d0dd96dcbcd3daedd25dae45e4f1953ccd820`
+
+### Commits (9 total)
+
+1. **ci: classify tests and enforce honest merge checks**
+   - Added pytest-timeout to declared deps
+   - Added setuptools package discovery (data/ exclusion)
+   - Defined strict pytest markers: core, research, integration, artifact_dependent, external_dataset, hardware, legacy, slow
+   - Created conftest.py with file-level classification (39 files: 18 core, 5 research, 1 artifact_dependent, 2 external_dataset, 2 hardware, 11 legacy)
+   - Split CI: backend-core (hermetic), frontend (with npm test), docker-config, backend-legacy-validation (manual dispatch)
+   - Updated verify.sh with --ci mode
+
+2. **fix(frontend): restore EEG validation route and research navigation**
+   - Restored 516-line OpenMIIR/EEG dashboard to /research/eeg-validation
+   - Created: /research (landing), /research/operator, /research/participant, /research/eeg-validation, /research/synthetic-demo
+
+3. **refactor(frontend): rename imagery self-report task and correct timing**
+   - Renamed BehavioralTask -> ImagerySelfReportTask
+   - Separated timing: fixation_onset, imagery_onset, image_formed, rating_screen_onset, rating_submission
+   - Uses performance.now() for browser timing, UTC for provenance
+   - Calculates imagery_formation_latency_ms and rating_completion_latency_ms separately
+
+4. **feat(storage): add versioned migrations and foreign-key enforcement**
+   - Custom migration runner (ADR-015: chosen over Alembic for simplicity)
+   - v001: legacy tables (idempotent)
+   - v002: normalized research governance tables
+   - PRAGMA foreign_keys = ON on every connection, verified
+   - UNIQUE(study_id, pseudonym) constraint on participants
+
+5. **feat(governance): add protocol, ethics, consent, and readiness models**
+   - evaluate_collection_readiness() with structured checks
+   - Default-deny for human collection
+   - /api/research-protocol/capabilities endpoint
+   - Operator dashboard renders API-derived safeguard status (no static checkmarks)
+   - Consent gate validates participant-study membership
+
+6. **feat(randomization): add transactional balanced crossover allocator**
+   - 6 Williams sequences (ABC, BCA, CAB, CBA, ACB, BAC)
+   - Position balance and first-order carryover balance verified
+   - BEGIN IMMEDIATE transaction, least-used-sequence selection
+   - Deterministic tie-break from study_seed + participant_id
+   - Immutable allocation, withdrawal preserves records
+
+7. **refactor(api): separate public and operator research views**
+   - ParticipantPublicView (no assignment data)
+   - ParticipantOperatorView (includes assignments with warning)
+   - /public/ and /operator/ route separation
+   - Legacy aliases for backward compatibility
+
+8. **test: add migration, governance, allocation, API, and frontend behavior coverage**
+   - 35 new backend tests (migration, governance gates, allocation balance, API blinding)
+   - 5 new frontend tests (timing separation, no hardcoded checkmarks, EEG validation route)
+
+9. **docs: reconcile research platform capability status**
+   - All docs updated with honest capability labels
+   - Preregistration marked as incomplete draft with disclaimers
+   - SESSION_LOG corrected: block randomization was NOT previously used (independent sampling was)
+   - Biosignal phase renamed to "Foundations"
+   - ADR-015 (custom migrations), ADR-016 (Williams design), ADR-017 (API separation)
+
+### Corrections to Previous Session Log
+- **Block randomization claim (Phase 1):** Previously stated "Block randomization with Latin square counterbalancing" was implemented. In reality, `generate_condition_sequence()` used independent `rng.choice(all_orders)` per participant — not a block allocator. Now replaced by balanced Williams allocator.
+- **Phase 4 title:** Was "Biosignal Acquisition" — renamed to "Biosignal Acquisition Foundations" because only ring buffer and marker sync utilities were implemented.
+- **BehavioralTask:** Renamed to ImagerySelfReportTask because it collects subjective ratings, not objective behavioral measures.
+- **LMM analysis:** Is a specification string, not an executable fitted analysis.
+
+### Test Summary (Merge Gate A final)
+- Backend core + research: 266 passed, 280 deselected (0 failures in hermetic suite)
+- Frontend: 11 passed (5 test files)
+- Ruff: clean
+- TypeScript: clean
+- Frontend build: clean (18 routes)
+
+### Remaining for Merge Gate B
+- Wire feedback conditions into live session loop (policy resolver)
+- Persistent research session and trial state machine
+- Provenance-aware yoked feedback source
+- Complete synthetic study-to-export workflow
+- Playwright end-to-end smoke test
+
+### Remaining for Scientific Study Readiness
+- Objective behavioral endpoint (separate scientific review)
+- Confirmatory LMM analysis code
+- Real EEG acquisition worker
+- Ethics submission
+- Preregistration completion
+- Usability pilot
+- Human data collection authorization
+
+---
+
 ## 2026-07-10 — Phases 0-7: Scientific Research Platform Implementation
 
 ### Task
@@ -18,47 +119,48 @@ research platform capable of supporting a controlled study of closed-loop mental
 #### Phase 1: Scientific Protocol and Governance
 - Study modes (demo/benchmark/pilot/approved_study)
 - Consent gate with withdrawal support
-- Block randomization with Latin square counterbalancing
+- **NOTE:** Claimed "block randomization with Latin square counterbalancing" but actually used independent random permutation sampling. Corrected in Merge Gate A.
 - Instrument registry (VVIQ-2, trial-level measures)
 - Research API endpoints with study-mode gating
 
 #### Phase 2: Research Experiment Engine
-- Feedback conditions (adaptive, fixed, yoked/sham)
-- Trial scheduler with timing
+- Feedback conditions (adaptive, fixed, yoked/sham) — scaffold only, not wired into session loop
+- Trial scheduler with timing — in-memory only, not persisted
 - Stimulus registry with content hashing
 - Provenance tracking (git SHA, versions, IDs)
 
 #### Phase 3: Statistical Framework
 - Power analysis tooling (within-subjects approximation)
 - Synthetic data generator (deterministic, seeded)
-- LMM specification (R lme4 format)
-- IQI/PID validation analysis
+- LMM specification (R lme4 format string, not executable analysis)
+- IQI/PID validation analysis (descriptive helpers)
 
-#### Phase 4: Biosignal Acquisition
-- EEG ring buffer with signal quality estimation
-- Marker synchronizer for event/EEG alignment
+#### Phase 4: Biosignal Acquisition Foundations
+- EEG ring buffer with signal quality estimation (utility only)
+- Marker synchronizer for event/EEG alignment (utility only)
 - Drop rate and flat channel detection
+- No real acquisition worker, no LSL lifecycle, no spectral validation
 
 #### Phase 5: Multimodal Evaluation
-- Convergent validity analysis (inter-modality correlations)
+- Convergent validity analysis specification (inter-modality correlations)
 - Incremental validity specification (hierarchical model)
-- Group-aware evaluation (VVIQ-2 median split)
+- Group-aware evaluation specification (VVIQ-2 median split)
 
 #### Phase 6: Research Frontend
 - ConsentGate component
-- BehavioralTask component (fixation-imagine-rate flow)
-- OperatorDashboard with instruments and safeguards
-- Research page (/research)
+- BehavioralTask component (renamed to ImagerySelfReportTask in Merge Gate A)
+- OperatorDashboard (static checkmarks replaced with API-derived status in Merge Gate A)
+- Research page (/research) — previous EEG dashboard replaced, restored in Merge Gate A
 - Vitest infrastructure with first frontend tests (6 tests)
 
 #### Phase 7: Publication Package
-- Preregistration template (OSF format)
-- Methods section draft
+- Preregistration template (incomplete draft, not ready for submission)
+- Methods section draft (incomplete skeleton)
 - Synthetic dataset generation script
 - Updated reproducibility documentation
 
 ### Test Summary
-- Backend: 27 + 28 + 20 + 21 + 13 = 109 new research tests (all pass)
+- Backend: 109 new research tests (all pass)
 - Frontend: 6 new tests (vitest, all pass)
 - Ruff: clean on all new files
 - TypeScript: clean

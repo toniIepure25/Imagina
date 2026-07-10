@@ -310,4 +310,66 @@ Only confirmed mappings produce production manifests. Strong hypotheses produce 
 
 ---
 
-*Last updated: 2026-05-11 — V3.9.5.2*
+## ADR-015: Custom Migration Runner over Alembic
+
+**Status:** Accepted
+**Date:** 2026-07-10
+**Context:** Merge Gate A requires versioned database migrations for the research governance schema. Two options were evaluated: Alembic (standard Python migration tool) and a custom lightweight runner.
+
+**Decision:** Use a custom sequential migration runner because:
+1. IMAGINA is local-first with a single SQLite file — Alembic's multi-database, multi-developer workflow overhead is unnecessary.
+2. The migration runner is ~80 lines, auditable, and tested.
+3. Each migration is a Python module with VERSION, DESCRIPTION, and async upgrade().
+4. The schema_version table tracks applied migrations.
+5. Failed migrations do not advance the version (rollback on error).
+6. All migrations are idempotent (CREATE TABLE IF NOT EXISTS for legacy tables).
+
+**Consequences:**
+- Simpler than Alembic for this use case, but limited: no auto-generation, no downgrade support.
+- Rollback must be handled manually if needed (SQLite ALTER TABLE is limited anyway).
+- If the schema grows significantly, migration to Alembic remains possible.
+
+---
+
+## ADR-016: Balanced Williams Crossover Design
+
+**Status:** Accepted
+**Date:** 2026-07-10
+**Context:** The previous implementation used independent random permutation sampling per participant, which does not guarantee balanced allocation across sequences. For a 3-condition crossover study, proper counterbalancing requires both position balance and first-order carryover balance.
+
+**Decision:** Use the six Williams-style sequences (ABC, BCA, CAB, CBA, ACB, BAC) which provide:
+- Position balance: each condition appears in each period equally over complete blocks.
+- First-order carryover balance: each ordered pair of conditions appears equally.
+- Transactional allocation: BEGIN IMMEDIATE prevents double-allocation under concurrency.
+- Deterministic tie-breaking from study_seed + participant_id hash.
+- Least-used-sequence selection for incomplete cohort balance.
+- Immutable allocation: once committed, cannot be changed.
+
+**Consequences:**
+- Replaces the old independent rng.choice() approach in participant_registry.
+- The old randomization.py generate_condition_sequence() still exists for backward compatibility but is not used by the new allocator.
+- Withdrawal does not erase allocation records (audit trail preserved).
+
+---
+
+## ADR-017: Public/Operator API Separation
+
+**Status:** Accepted
+**Date:** 2026-07-10
+**Context:** The participant API exposed condition_sequence and randomization_seed, contradicting condition blinding claims.
+
+**Decision:** Split research API into:
+- /api/research-protocol/public/ — participant-facing, no assignment data.
+- /api/research-protocol/operator/ — operator-facing, includes assignment data with explicit warning.
+- ParticipantPublicView schema excludes: condition_sequence, randomization_seed, sequence_id, current_condition, future_condition, yoked_source, policy_identifier.
+
+This is honest role-oriented information separation, not authenticated access control.
+
+**Consequences:**
+- Participant-facing integrations cannot accidentally reveal assignment.
+- No authentication system is required in this pass.
+- Operator warning is included in response metadata.
+
+---
+
+*Last updated: 2026-07-10 — Merge Gate A*

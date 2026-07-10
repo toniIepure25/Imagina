@@ -104,11 +104,11 @@
 
 ## RISK-011: Frontend Test Coverage Gap
 
-**Risk:** The frontend has no automated tests (`npm test` script is missing). UI regressions and logic bugs in session flow, scene rendering, or metric displays could go undetected.  
-**Impact:** Medium — frontend bugs could affect user safety (e.g., incorrect safety banner behavior) or scientific data quality (e.g., incorrect metric display).  
-**Mitigation:** Add `npm test` script with a test framework (vitest/jest + testing-library). Prioritize tests for session flow, safety banner, and metric display components.  
+**Risk:** Frontend tests exist but are limited in scope — mostly export/import checks and basic timing verification.  
+**Impact:** Medium — deeper behavioral tests (consent flow, session abort, safety stop) are still missing.  
+**Mitigation:** Vitest infrastructure is in place with 11 passing tests. Playwright end-to-end tests are planned for Merge Gate B.  
 **Owner:** TBD  
-**Status:** Not yet mitigated. No frontend test infrastructure exists.
+**Status:** Partially mitigated. Vitest runs in CI. Playwright not yet implemented.
 
 ---
 
@@ -202,4 +202,24 @@
 
 ---
 
-*Last updated: 2026-05-07 — Phase 3A*
+## RISK-021: Feedback Conditions Not Wired Into Live Session
+
+**Risk:** Feedback conditions (adaptive, fixed, yoked) are defined in `feedback_conditions.py` but `websocket/session_stream.py` always constructs the original `FeedbackPolicyEngine`. Research conditions cannot be executed in a live session.
+**Impact:** High for research — no experiment can run until this is resolved.
+**Mitigation:** Planned for Merge Gate B: dependency-injection architecture for policy selection.
+**Owner:** TBD
+**Status:** Known blocker. Governance infrastructure is in place; runtime integration is not.
+
+---
+
+## RISK-022: Trial Scheduler Is In-Memory Only
+
+**Risk:** `TrialScheduler` stores state in memory, uses wall-clock timestamps, and has no persistence, resume, or abort semantics.
+**Impact:** High — session interruption loses trial data; no provenance trail.
+**Mitigation:** Planned for Merge Gate B: persistent research session and trial state machine.
+**Owner:** TBD
+**Status:** Known blocker for runtime integration.
+
+---
+
+*Last updated: 2026-07-10 — Merge Gate A*

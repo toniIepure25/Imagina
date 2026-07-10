@@ -41,7 +41,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="Dream Corridor Scene Stabilizer — closed-loop mental imagery training prototype",
+    description=(
+        "Dream Corridor Scene Stabilizer — closed-loop mental imagery training research prototype. "
+        "Estimates proxy metrics (PID/IQI) from simulated signals and self-report. "
+        "Does not decode thoughts or dreams. All default signals are simulated."
+    ),
     lifespan=lifespan,
 )
 

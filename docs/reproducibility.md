@@ -56,7 +56,9 @@ See `docs/preregistration.md` for the study preregistration template. Complete b
 
 ### Analysis Pipeline
 
-The planned LMM analysis specification is encoded in `app/research/analysis_pipeline.py:lmm_specification()`. The synthetic dataset can be used to verify the analysis pipeline before real data collection.
+The LMM analysis is a **specification string only** (R lme4 formula format) in `app/research/analysis_pipeline.py:lmm_specification()`. It is not an executable fitted analysis. The synthetic dataset can be used for schema validation but does not contain condition effects suitable for confirmatory analysis.
+
+**Status:** scaffold/specification only. Executable confirmatory analysis requires: finalized primary outcome, objective behavioral endpoint, and real participant data.
 
 ### Environment Reproducibility
 
