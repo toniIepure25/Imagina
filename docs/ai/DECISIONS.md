@@ -372,4 +372,49 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-10 — Merge Gate A*
+## ADR-018: Transport-Independent Research Runtime
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** The existing WebSocket session loop is tightly coupled to FastAPI/WebSocket objects and module-level state. Research sessions need persistent, deterministic, reproducible execution.
+
+**Decision:** Create `ResearchSessionRuntime` that injects all dependencies (clock, ID generator, feedback policy, safety monitor, event sink, database). The runtime has no dependency on FastAPI, WebSocket, or frontend state. Synthetic sessions continue executing even if no client is connected.
+
+**Consequences:**
+- Same runtime code works for API-triggered, CLI, and test execution.
+- Existing demo WebSocket runtime is preserved unchanged.
+- DeterministicClock and DeterministicIdGenerator enable exact replay.
+
+---
+
+## ADR-019: Optimistic Concurrency for State Machines
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** Research sessions and trials need explicit state machines with protection against concurrent modification.
+
+**Decision:** Use `state_version` compare-and-swap (CAS) semantics. Every transition increments the version; zero rows updated means a conflict. Terminal states are immutable. All transitions are persisted in transition tables.
+
+**Consequences:**
+- No silent state corruption from concurrent callers.
+- Full audit trail of every state change.
+- Slight overhead from version checking on every transition.
+
+---
+
+## ADR-020: Canonical Serialization for Replay Hashing
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** Deterministic replay requires comparing scientific outputs between runs. Simple `json.dumps(sort_keys=True)` is insufficient because float precision and non-finite values can cause divergence.
+
+**Decision:** Implement versioned canonical serializer with: sorted keys, compact separators, UTF-8, allow_nan=False, float precision to 8 decimal places. Canonicalization version is tracked in manifests.
+
+**Consequences:**
+- Replay hashes are stable across Python versions (within float representation).
+- NaN/Infinity in scientific output is a hard error, caught early.
+- Version field allows future format evolution without breaking old hashes.
+
+---
+
+*Last updated: 2026-07-13 — Merge Gate B*

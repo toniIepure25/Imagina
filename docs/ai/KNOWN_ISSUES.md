@@ -206,9 +206,9 @@
 
 **Risk:** Feedback conditions (adaptive, fixed, yoked) are defined in `feedback_conditions.py` but `websocket/session_stream.py` always constructs the original `FeedbackPolicyEngine`. Research conditions cannot be executed in a live session.
 **Impact:** High for research — no experiment can run until this is resolved.
-**Mitigation:** Planned for Merge Gate B: dependency-injection architecture for policy selection.
+**Mitigation:** Merge Gate B implemented unified feedback policy adapters (AdaptiveFeedbackPolicy, FixedResearchFeedbackPolicy, FrozenYokedFeedbackPolicy) and a transport-independent ResearchSessionRuntime. The demo WebSocket loop remains unchanged.
 **Owner:** TBD
-**Status:** Known blocker. Governance infrastructure is in place; runtime integration is not.
+**Status:** Mitigated for synthetic sessions. Demo WebSocket loop still uses original engine.
 
 ---
 
@@ -216,10 +216,32 @@
 
 **Risk:** `TrialScheduler` stores state in memory, uses wall-clock timestamps, and has no persistence, resume, or abort semantics.
 **Impact:** High — session interruption loses trial data; no provenance trail.
-**Mitigation:** Planned for Merge Gate B: persistent research session and trial state machine.
+**Mitigation:** Merge Gate B implemented persistent state machines with optimistic concurrency (state_version CAS), transition audit tables, and injectable clocks.
 **Owner:** TBD
-**Status:** Known blocker for runtime integration.
+**Status:** Mitigated for research runtime. Legacy trial scheduler unchanged.
 
 ---
+
+## RISK-023: Synthetic-Only Validation
+
+**Risk:** Merge Gate B proves engineering execution with synthetic data only. No human behavioral or neural data has been collected or validated.
+**Impact:** The system cannot be described as scientifically validated, human-ready, or publication-ready.
+**Mitigation:** Explicit synthetic data classification in all records and exports. Disclaimers in UI and export metadata. Governance gates block human data collection by default.
+**Owner:** TBD
+**Status:** Active — by design.
+
+---
+
+## RISK-024: Export Path Security
+
+**Risk:** The synthetic export API currently uses a configured export root. Path traversal, symlink escape, and overwrite attacks are partially mitigated but not fully hardened.
+**Impact:** Medium — local-only deployment limits exposure, but export endpoints should validate paths rigorously.
+**Mitigation:** Export root is server-configured. Client cannot specify arbitrary paths. Full hardening (fsync, atomic rename, symlink checks) planned for production readiness.
+**Owner:** TBD
+**Status:** Partially mitigated.
+
+---
+
+*Last updated: 2026-07-13 — Merge Gate B*
 
 *Last updated: 2026-07-10 — Merge Gate A*

@@ -59,6 +59,10 @@ studies, objective behavioral validation, and real EEG integration.
 
 `6bcd39b050f1cbd06f5f4a4115abda9372efbb28`
 
+## Actual Starting HEAD (this session)
+
+`ce40448` (continuation from prior Merge Gate B session)
+
 ## Commit Sequence
 
 1. fix(research): close Merge Gate A integrity gaps

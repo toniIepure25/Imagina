@@ -2,6 +2,117 @@
 
 ---
 
+## 2026-07-13 — Merge Gate B: Persistent Synthetic Experiment Runtime
+
+### Task
+Build a transport-independent, persistent, deterministic runtime on `research/scientific-platform`
+capable of executing a complete synthetic-only three-condition crossover experiment.
+
+### Starting HEAD
+`6bcd39b` (Merge Gate A final)
+
+### Commits (11 total)
+
+1. **fix(research): close Merge Gate A integrity gaps** (B0)
+   - CI manual trigger with workflow_dispatch
+   - Structured capabilities (schema_available, service_available, runtime_gate_active, status, detail)
+   - Consent-version correctness with protocol/document version enforcement
+   - AllocationIntegrityError for corrupt sequence labels
+   - Frontend status truth: policy_only for unverified claims
+
+2. **feat(storage): add persistent synthetic runtime schema** (v003)
+   - 15 new tables: research_sessions, research_session_transitions, trials, trial_transitions,
+     trial_responses, feedback_records, safety_events, frozen_yoked_libraries,
+     frozen_yoked_trajectories, frozen_yoked_points, session_manifests, runtime_runs,
+     runtime_commands, runtime_event_outbox, export_runs
+   - CHECK constraints for data_classification and status enums
+   - UNIQUE constraints for session/trial uniqueness
+   - Foreign keys enforced throughout
+
+3. **feat(runtime): add persistent session and trial state machines**
+   - Session states: planned → ready → running → completed/aborted/withdrawn/invalidated/safety_stopped
+   - Trial states: planned → ready → running → completed/aborted/invalidated/safety_stopped
+   - Optimistic concurrency control with state_version CAS
+   - ConcurrencyConflictError, InvalidTransitionError, TerminalStateError
+   - All transitions persisted in transition tables
+
+4. **feat(runtime): implement transport-independent research runtime**
+   - ResearchSessionRuntime with injected dependencies
+   - RuntimeClock protocol (WallClock, DeterministicClock)
+   - IdGenerator protocol (RandomIdGenerator, DeterministicIdGenerator with UUID5)
+   - EventSink protocol (CollectingEventSink, CompositeEventSink, NullEventSink)
+   - No dependency on FastAPI, WebSocket, or frontend state
+
+5. **feat(runtime): unify adaptive fixed and yoked policy contracts**
+   - FeedbackContext, FeedbackDecision, ResearchFeedbackPolicy interface
+   - AdaptiveFeedbackPolicy wrapping existing FeedbackPolicyEngine
+   - FixedResearchFeedbackPolicy with constant frozen params
+   - FrozenYokedFeedbackPolicy replaying immutable trajectories
+
+6. **feat(runtime): add frozen yoked trajectory libraries**
+   - create_library, generate_trajectories, freeze_library, validate_library
+   - Immutability enforced after freezing
+   - Deterministic assignment from study seed + participant + session index
+   - Schedule hash validation
+
+7. **feat(runtime): add synthetic study orchestration and export**
+   - run_synthetic_study: complete synthetic workflow (study → protocol → yoked → participants → sessions → export)
+   - Export: metadata.json, study.json, protocol.json, participants.csv, allocations.csv,
+     sessions.csv, trials.csv, trial_responses.csv, feedback_records.csv, safety_events.csv,
+     checksums.sha256
+   - Runtime run records persisted
+   - allocate_sequence now accepts optional db parameter
+
+8. **feat(runtime): add deterministic replay validation**
+   - Canonical serialization: sorted keys, UTF-8, allow_nan=False, float precision 8 digits
+   - SHA-256 content hashing per session
+   - verify_replay_equivalence with divergence reporting
+   - Canonicalization version tracked
+
+9. **feat(research-ui): add synthetic runtime operator workflow**
+   - /api/synthetic-runtime API router (studies, runs, exports, replay)
+   - 202 Accepted + polling pattern for run status
+   - Idempotency key support
+   - /research/synthetic-demo frontend operator workflow
+   - Disclaimer: "Synthetic engineering validation only"
+
+10. **test(runtime): add synthetic E2E and release smoke coverage**
+    - Playwright config and e2e/synthetic-smoke.spec.ts
+    - Regression tests verifying Gate A behavior (migrations, capabilities, allocation)
+    - 342 backend tests passing (core + research markers)
+
+11. **docs: document persistent synthetic runtime boundaries**
+    - Updated SESSION_LOG, TASK_BRIEF, DECISIONS, KNOWN_ISSUES
+
+### Test Summary (Merge Gate B final)
+- Backend core + research: 342 passed, 280 deselected (0 failures)
+- Ruff: clean
+- Frontend lint: 0 errors (29 pre-existing warnings)
+- Frontend build: clean (18 routes)
+- verified_code_head: (commit 10 SHA, recorded below after docs commit)
+- branch_head_at_report_time: reported in final agent response
+
+### What This Gate Proves
+- Transport-independent runtime executes three-condition synthetic sessions
+- Persistent state machines with optimistic concurrency
+- Deterministic replay validation with canonical hashing
+- Balanced Williams crossover allocation
+- Frozen yoked trajectory immutability
+- Safety monitoring active in all conditions
+- Provenance-complete export with checksums
+- API and frontend operator workflow functional
+
+### What Remains Scientifically Blocked
+- Human data collection authorization
+- Real EEG acquisition (LSL/BrainFlow)
+- Objective behavioral endpoints
+- Confirmatory LMM statistical analysis
+- Ethics submission and preregistration
+- Usability pilot
+- Publication readiness
+
+---
+
 ## 2026-07-10 — Merge Gate A: Research Platform Integrity Foundation
 
 ### Task
