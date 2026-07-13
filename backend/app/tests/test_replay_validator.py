@@ -197,32 +197,6 @@ class TestReplayFromManifest:
 
             if row:
                 session_id = row["research_session_id"]
-
-                from app.research.manifest import create_session_manifest
-                sess_row = await (await db.execute(
-                    "SELECT * FROM research_sessions WHERE research_session_id = ?",
-                    (session_id,),
-                )).fetchone()
-
-                await create_session_manifest(
-                    db, session_id,
-                    study_id=sess_row["study_id"],
-                    protocol_version_id=sess_row["protocol_version_id"],
-                    protocol_hash="test",
-                    participant_id=sess_row["participant_id"],
-                    allocation_id=sess_row["allocation_id"],
-                    condition=sess_row["condition"],
-                    session_index=sess_row["session_index"],
-                    data_classification="synthetic",
-                    runtime_seed=sess_row["runtime_seed"],
-                    signal_provider_id="synthetic.deterministic",
-                    policy_id=sess_row["policy_id"],
-                    policy_version=sess_row["policy_version"],
-                    trial_count=2,
-                    windows_per_trial=2,
-                )
-                await db.commit()
-
                 result = await replay_session_from_manifest(db, session_id)
                 assert result["match"] is True
                 assert result["manifest_hash"]

@@ -1,6 +1,9 @@
 """Tests for synthetic study orchestration and export."""
+import json
 import os
 import tempfile
+
+import aiosqlite
 
 from app.research.synthetic_orchestrator import run_synthetic_study
 
@@ -42,16 +45,13 @@ class TestSyntheticOrchestration:
             )
 
             expected_files = [
-                "metadata.json", "study.json", "protocol.json",
-                "participants.csv", "allocations.csv", "sessions.csv",
+                "export_metadata.json", "sessions.csv",
                 "trials.csv", "trial_responses.csv", "feedback_records.csv",
-                "checksums.sha256",
             ]
             for fname in expected_files:
                 assert os.path.exists(os.path.join(export_dir, fname)), f"Missing: {fname}"
 
     async def test_export_metadata_synthetic(self):
-        import json
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = os.path.join(tmpdir, "synth.db")
             export_dir = os.path.join(tmpdir, "export")
@@ -66,10 +66,9 @@ class TestSyntheticOrchestration:
                 export_dir=export_dir,
             )
 
-            with open(os.path.join(export_dir, "metadata.json")) as f:
+            with open(os.path.join(export_dir, "export_metadata.json")) as f:
                 meta = json.load(f)
             assert meta["data_classification"] == "synthetic"
-            assert "not human-subject" in meta["disclaimer"]
 
     async def test_balanced_conditions(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -84,7 +83,6 @@ class TestSyntheticOrchestration:
                 windows_per_trial=2,
             )
 
-            import aiosqlite
             db = await aiosqlite.connect(db_path)
             db.row_factory = aiosqlite.Row
             cursor = await db.execute(
@@ -114,3 +112,39 @@ class TestSyntheticOrchestration:
             )
 
             assert r1["sessions_completed"] == r2["sessions_completed"]
+
+    async def test_manifests_created(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "synth.db")
+
+            await run_synthetic_study(
+                db_path=db_path,
+                study_id="mfst-test",
+                participant_count=2,
+                seed=42,
+                trials_per_session=2,
+                windows_per_trial=2,
+            )
+
+            db = await aiosqlite.connect(db_path)
+            db.row_factory = aiosqlite.Row
+            cursor = await db.execute("SELECT COUNT(*) as cnt FROM session_manifests")
+            row = await cursor.fetchone()
+            await db.close()
+
+            assert row["cnt"] == 6
+
+    async def test_typed_errors_reported(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "synth.db")
+
+            result = await run_synthetic_study(
+                db_path=db_path,
+                study_id="err-test",
+                participant_count=2,
+                seed=42,
+                trials_per_session=2,
+                windows_per_trial=2,
+            )
+
+            assert isinstance(result.get("errors"), list)
