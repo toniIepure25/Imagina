@@ -89,7 +89,7 @@ capable of executing a complete synthetic-only three-condition crossover experim
 - Ruff: clean
 - Frontend lint: 0 errors (29 pre-existing warnings)
 - Frontend build: clean (18 routes)
-- verified_code_head: (commit 10 SHA, recorded below after docs commit)
+- verified_code_head: `56e4bda` (commit 10 — last code commit before docs)
 - branch_head_at_report_time: reported in final agent response
 
 ### What This Gate Proves
