@@ -42,7 +42,7 @@ jobs:
           cache: pip
           cache-dependency-path: backend/pyproject.toml
       - run: pip install -e ".[dev]"
-      - name: Runtime tests (migration, state machine, runtime, outbox, manifest, orchestrator, export, replay)
+      - name: Runtime tests
         run: >-
           python3 -m pytest
           app/tests/test_migration_runner.py
@@ -54,6 +54,8 @@ jobs:
           app/tests/test_export_service.py
           app/tests/test_replay_validator.py
           app/tests/test_run_service.py
+          app/tests/test_unified_db_integration.py
+          app/tests/test_abort.py
           app/tests/test_regression_gate_a.py
           -v --timeout=300
 
@@ -77,7 +79,7 @@ jobs:
 
   playwright:
     runs-on: ubuntu-latest
-    needs: [backend-core, frontend]
+    needs: [backend-core, backend-runtime, frontend]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -104,6 +106,15 @@ jobs:
         working-directory: frontend
         env:
           NEXT_PUBLIC_API_URL: http://localhost:8000
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            frontend/test-results/
+            frontend/playwright-report/
+          retention-days: 7
 
   docker-config:
     runs-on: ubuntu-latest
@@ -116,7 +127,7 @@ jobs:
 
   docker-smoke:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - name: Build images
@@ -135,10 +146,60 @@ jobs:
           echo "Backend health check failed"
           docker compose logs backend
           exit 1
-      - name: Synthetic API smoke
+      - name: Run synthetic workflow smoke
         run: |
-          curl -sf http://localhost:8000/api/synthetic-runtime/runs || true
-          echo "Synthetic API accessible"
+          set -euo pipefail
+
+          STUDY_ID="docker-smoke-$(date +%s)"
+          IDEM_KEY="docker-smoke-key-$(date +%s)"
+
+          echo "=== Creating synthetic run ==="
+          CREATE=$(curl -sf -X POST http://localhost:8000/api/synthetic-runtime/studies \
+            -H "Content-Type: application/json" \
+            -H "Idempotency-Key: $IDEM_KEY" \
+            -d "{\"study_id\": \"$STUDY_ID\", \"participant_count\": 2, \"seed\": 42, \"trials_per_session\": 2, \"windows_per_trial\": 2}")
+          RUN_ID=$(echo "$CREATE" | python3 -c "import sys,json; print(json.load(sys.stdin)['run_id'])")
+          echo "Run ID: $RUN_ID"
+
+          echo "=== Polling for completion ==="
+          for i in $(seq 1 90); do
+            STATUS=$(curl -sf http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID \
+              | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])")
+            echo "  Poll $i: status=$STATUS"
+            if [ "$STATUS" = "completed" ] || [ "$STATUS" = "completed_with_failures" ]; then
+              break
+            fi
+            if [ "$STATUS" = "failed" ]; then
+              echo "Run failed!"
+              exit 1
+            fi
+            sleep 2
+          done
+
+          if [ "$STATUS" != "completed" ]; then
+            echo "Run did not complete: $STATUS"
+            exit 1
+          fi
+
+          echo "=== Verifying sessions ==="
+          SESSIONS=$(curl -sf http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID/sessions)
+          SESSION_COUNT=$(echo "$SESSIONS" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
+          echo "Session count: $SESSION_COUNT"
+          if [ "$SESSION_COUNT" -lt 6 ]; then
+            echo "Expected at least 6 sessions, got $SESSION_COUNT"
+            exit 1
+          fi
+
+          echo "=== Requesting export ==="
+          EXPORT=$(curl -sf -X POST "http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID/export?allow_overwrite=true")
+          VALID=$(echo "$EXPORT" | python3 -c "import sys,json; print(json.load(sys.stdin)['validation']['valid'])")
+          if [ "$VALID" != "True" ]; then
+            echo "Export validation failed!"
+            exit 1
+          fi
+          echo "Export valid: $VALID"
+
+          echo "=== Docker smoke completed successfully ==="
       - name: Cleanup
         if: always()
         run: docker compose down -v
