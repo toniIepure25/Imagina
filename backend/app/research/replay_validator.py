@@ -1,7 +1,7 @@
 """Deterministic replay validation — canonical hashing and verification.
 
 Verifies that running the same synthetic session with the same manifest
-produces identical scientific content.
+produces identical scientific content. Requires a valid completion seal.
 """
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ import hashlib
 import json
 import os
 import tempfile
+import uuid
+from datetime import datetime, timezone
 from typing import Any
 
 import aiosqlite
@@ -149,16 +151,60 @@ async def verify_replay_equivalence(
 async def replay_session_from_manifest(
     original_db: aiosqlite.Connection,
     research_session_id: str,
+    persist_result: bool = False,
 ) -> dict[str, Any]:
-    """Load sealed manifest, reconstruct deps, rerun, compare hashes."""
-    from app.research.manifest import get_manifest
+    """Load sealed manifest, verify seal, reconstruct deps, rerun, compare hashes."""
+    from app.research.manifest import get_completion_seal, get_manifest, verify_seal_integrity
 
     manifest_data = await get_manifest(original_db, research_session_id)
     if not manifest_data:
         return {"match": False, "error": "No manifest found"}
 
     manifest = manifest_data["manifest"]
-    original_hash_result = await compute_session_replay_hash(original_db, research_session_id)
+
+    seal = await get_completion_seal(original_db, research_session_id)
+    if not seal:
+        return {"match": False, "error": "No completion seal — replay requires sealed session"}
+
+    seal_check = await verify_seal_integrity(original_db, research_session_id)
+    if not seal_check["valid"]:
+        return {"match": False, "error": f"Seal integrity failed: {seal_check['error']}"}
+
+    original_content_hash = seal["scientific_content_hash"]
+
+    current_hash_result = await compute_session_replay_hash(original_db, research_session_id)
+    if current_hash_result["content_hash"] != original_content_hash:
+        return {
+            "match": False,
+            "error": "Original content hash no longer matches sealed hash — data may have been altered",
+        }
+
+    condition = manifest["condition"]
+    if condition == "yoked":
+        yoked_info = manifest.get("yoked", {})
+        if not yoked_info.get("library_id"):
+            return {"match": False, "error": "Yoked session missing library_id"}
+        if not yoked_info.get("trajectory_id"):
+            return {"match": False, "error": "Yoked session missing trajectory_id"}
+
+    replay_run_id = str(uuid.uuid4()) if persist_result else None
+    if persist_result and replay_run_id:
+        manifest_row = await (await original_db.execute(
+            "SELECT manifest_id FROM session_manifests WHERE research_session_id = ?",
+            (research_session_id,),
+        )).fetchone()
+        now = datetime.now(timezone.utc).isoformat()
+        await original_db.execute(
+            "INSERT INTO replay_runs "
+            "(replay_run_id, research_session_id, manifest_id, manifest_hash, "
+            "seal_hash, status, started_at) VALUES (?, ?, ?, ?, ?, 'running', ?)",
+            (
+                replay_run_id, research_session_id,
+                manifest_row["manifest_id"], manifest_data["manifest_hash"],
+                seal["seal_hash"], now,
+            ),
+        )
+        await original_db.commit()
 
     with tempfile.TemporaryDirectory() as tmpdir:
         replay_db_path = os.path.join(tmpdir, "replay.db")
@@ -225,7 +271,6 @@ async def replay_session_from_manifest(
                 manifest["runtime_seed"],
             )
 
-            condition = manifest["condition"]
             if condition == "adaptive":
                 from app.research.feedback_policies import AdaptiveFeedbackPolicy
                 policy = AdaptiveFeedbackPolicy()
@@ -234,15 +279,21 @@ async def replay_session_from_manifest(
                 policy = FixedResearchFeedbackPolicy()
             else:
                 from app.research.feedback_policies import FrozenYokedFeedbackPolicy
+                from app.research.yoked_library import get_trajectory_points
                 yoked_info = manifest.get("yoked", {})
                 traj_id = yoked_info.get("trajectory_id")
-                if traj_id:
-                    from app.research.yoked_library import get_trajectory_points
-                    points = await get_trajectory_points(original_db, traj_id)
-                    policy = FrozenYokedFeedbackPolicy(points, trajectory_id=traj_id)
-                else:
-                    from app.research.feedback_policies import FixedResearchFeedbackPolicy as Fallback
-                    policy = Fallback()
+                if not traj_id:
+                    error_msg = "Yoked replay requires trajectory_id — fallback prohibited"
+                    if persist_result and replay_run_id:
+                        await _persist_replay_failure(original_db, replay_run_id, error_msg)
+                    return {"match": False, "error": error_msg}
+                points = await get_trajectory_points(original_db, traj_id)
+                if not points:
+                    error_msg = f"Yoked trajectory {traj_id} has no points"
+                    if persist_result and replay_run_id:
+                        await _persist_replay_failure(original_db, replay_run_id, error_msg)
+                    return {"match": False, "error": error_msg}
+                policy = FrozenYokedFeedbackPolicy(points, trajectory_id=traj_id)
 
             runtime = ResearchSessionRuntime(
                 db=replay_db,
@@ -261,13 +312,14 @@ async def replay_session_from_manifest(
 
             replay_hash_result = await compute_session_replay_hash(replay_db, research_session_id)
 
-            match = original_hash_result["content_hash"] == replay_hash_result["content_hash"]
+            match = original_content_hash == replay_hash_result["content_hash"]
             result = {
                 "match": match,
-                "original_hash": original_hash_result["content_hash"],
+                "original_hash": original_content_hash,
                 "replay_hash": replay_hash_result["content_hash"],
                 "session_id": research_session_id,
                 "manifest_hash": manifest_data["manifest_hash"],
+                "seal_hash": seal["seal_hash"],
             }
 
             if not match:
@@ -275,9 +327,82 @@ async def replay_session_from_manifest(
                     original_db, replay_db, research_session_id
                 )
 
+            if persist_result and replay_run_id:
+                await _persist_replay_result(
+                    original_db, replay_run_id, research_session_id,
+                    original_content_hash, replay_hash_result["content_hash"],
+                    seal["scientific_content_hash"], match, result.get("divergence"),
+                )
+
             return result
+        except Exception as exc:
+            if persist_result and replay_run_id:
+                await _persist_replay_failure(original_db, replay_run_id, str(exc))
+            raise
         finally:
             await replay_db.close()
+
+
+async def _persist_replay_result(
+    db: aiosqlite.Connection,
+    replay_run_id: str,
+    research_session_id: str,
+    original_hash: str,
+    replay_hash: str,
+    seal_content_hash: str,
+    match: bool,
+    divergence: dict | None,
+) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    result_id = str(uuid.uuid4())
+    await db.execute(
+        "INSERT INTO replay_results "
+        "(replay_result_id, replay_run_id, research_session_id, "
+        "original_content_hash, replay_content_hash, seal_content_hash, "
+        "match, divergence_json, canonicalization_version, verified_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (
+            result_id, replay_run_id, research_session_id,
+            original_hash, replay_hash, seal_content_hash,
+            1 if match else 0,
+            json.dumps(divergence) if divergence else None,
+            CANONICALIZATION_VERSION, now,
+        ),
+    )
+    await db.execute(
+        "UPDATE replay_runs SET status = 'completed', completed_at = ? "
+        "WHERE replay_run_id = ?",
+        (now, replay_run_id),
+    )
+    await db.commit()
+
+
+async def _persist_replay_failure(
+    db: aiosqlite.Connection,
+    replay_run_id: str,
+    error_message: str,
+) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    await db.execute(
+        "UPDATE replay_runs SET status = 'failed', completed_at = ?, error_message = ? "
+        "WHERE replay_run_id = ?",
+        (now, error_message, replay_run_id),
+    )
+    await db.commit()
+
+
+async def get_replay_results(
+    db: aiosqlite.Connection,
+    research_session_id: str,
+) -> list[dict[str, Any]]:
+    rows = await (await db.execute(
+        "SELECT rr.*, rruns.status as run_status "
+        "FROM replay_results rr "
+        "JOIN replay_runs rruns ON rr.replay_run_id = rruns.replay_run_id "
+        "WHERE rr.research_session_id = ? ORDER BY rr.verified_at DESC",
+        (research_session_id,),
+    )).fetchall()
+    return [dict(r) for r in rows]
 
 
 async def _find_divergence(
