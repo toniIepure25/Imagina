@@ -417,4 +417,64 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-13 — Merge Gate B*
+## ADR-021: Persistent Run Lifecycle with Idempotent Commands
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** The Merge Gate B API used an in-memory `_active_runs` dict as source of truth for run state, which was lost on process restart.
+
+**Decision:** Persist all run state in `runtime_runs` table via `RunService`. Idempotency enforced through `runtime_commands` table (same key + same input hash → return existing; different input → 409 conflict). On startup, lifespan hook marks non-terminal runs as `interrupted`.
+
+**Consequences:**
+- Run state survives process restart.
+- Idempotent retries are safe; conflicting inputs are rejected.
+- Recovery scan on startup prevents phantom "running" states.
+
+---
+
+## ADR-022: Injectable Pipeline Adapters for Runtime
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** The runtime had inline `_generate_features`, `_estimate_state`, `_compute_pid`, `_compute_iqi` methods. These could not be swapped for different implementations.
+
+**Decision:** Define protocol interfaces (SignalProvider, FeatureProcessor, StateEstimator, MetricProcessor, CurriculumProcessor) and inject them into the runtime constructor. Provide deterministic implementations for synthetic execution.
+
+**Consequences:**
+- Runtime is transport-independent and adapter-testable.
+- Future LSL/real-EEG adapters implement the same protocols.
+- Session isolation ensured by creating fresh adapter instances per session.
+
+---
+
+## ADR-023: Transactional Outbox for Atomic Event Persistence
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** Domain record writes and event publications were separate operations. A crash between write and publish could lose events.
+
+**Decision:** PersistentOutboxWriter writes events to `runtime_event_outbox` within the same transaction as domain records. OutboxDispatcher reads and forwards committed events to consumers, marking them published.
+
+**Consequences:**
+- No lost events on crash-before-commit (both domain + events roll back).
+- Eventually-observable events on crash-after-commit (outbox rows survive for later dispatch).
+- Dispatch failures tracked with attempt count and last error.
+
+---
+
+## ADR-024: Immutable Session Manifests with Completion Sealing
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** Reproducibility requires a complete record of every configuration parameter used to execute a session. The `session_manifests` table existed but was never populated.
+
+**Decision:** Create a manifest before each session starts, capturing all config (study, protocol, participant, policy, provider, yoked info, seed, processor IDs, software version). After session completes, seal with terminal status, content hash, and seal hash. Manifests are immutable after creation.
+
+**Consequences:**
+- Full provenance chain for every session.
+- Replay-from-manifest is possible: load manifest, reconstruct deps, rerun, compare hashes.
+- Sealed manifests serve as audit records.
+
+---
+
+*Last updated: 2026-07-13 — Merge Gate B.1*

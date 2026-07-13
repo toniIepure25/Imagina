@@ -2,6 +2,106 @@
 
 ---
 
+## 2026-07-13 — Merge Gate B.1: Runtime Completion and Evidence Hardening
+
+### Task
+Close all persistence, replay, export, outbox, manifest, API, Playwright, and CI gaps
+in the Merge Gate B runtime so that the research/scientific-platform branch has a
+fully hardened synthetic-only experiment runtime.
+
+### Starting HEAD
+`67802f3` (Merge Gate B final)
+
+### Commits (11 total)
+
+1. **fix(runtime): persist run lifecycle and idempotent commands**
+   - v004 migration: added current_phase, prepared_sessions, state_version to runtime_runs;
+     dispatch_attempts, last_error to runtime_event_outbox
+   - RunService: create_run with idempotency_key, update_run_phase, update_run_progress,
+     request_abort, check_abort_requested, mark_interrupted_on_startup
+   - API rewritten to use DB-backed state via RunService (no more _active_runs dict)
+   - Startup recovery: lifespan hook marks interrupted runs
+   - 10 tests for lifecycle, idempotency, conflict, abort, restart recovery
+
+2. **refactor(runtime): use injected synthetic provider and pipeline adapters**
+   - pipeline_adapters.py: SignalProvider, FeatureProcessor, StateEstimator,
+     MetricProcessor, CurriculumProcessor protocols + deterministic implementations
+   - Runtime constructor accepts injected adapters (defaults to deterministic)
+   - AdaptiveFeedbackPolicy fixed to use correct schema types (StateEstimate, PIDEstimate,
+     IQIEstimate, CurriculumState) and FeedbackPolicyEngine.compute() API
+   - Removed SyntheticAdaptivePolicy from orchestrator
+
+3. **feat(runtime): make window persistence and events atomic**
+   - PersistentOutboxWriter: writes events to runtime_event_outbox in caller's transaction
+   - OutboxDispatcher: reads committed rows, dispatches to consumer, marks published
+   - CollectingOutboxConsumer for tests, LoggingOutboxConsumer for production
+   - 6 tests: writes, flush_within_transaction, dispatch, idempotent redispatch,
+     failed dispatch tracking, no partial on rollback
+
+4. **feat(runtime): create and seal reproducibility manifests**
+   - manifest.py: create_session_manifest, seal_session_completion, get_manifest, validate_manifest
+   - Manifest captures all config: study/protocol/participant/policy/provider/yoked info
+   - Seal records terminal status, content hash, seal hash
+   - 7 tests for creation, retrieval, validation, sealing
+
+5. **fix(replay): implement canonical serialization and actual rerun**
+   - normalize() recursively handles dict/list/float/None/int/str/bool with 8-decimal precision
+   - canonical_serialize uses normalize before JSON encoding
+   - replay_session_from_manifest: loads manifest, creates isolated DB, reconstructs deps, reruns, compares hashes
+   - 19 tests including normalize, serialization, replay equivalence, replay from manifest
+
+6. **feat(export): add atomic synthetic export and validator**
+   - export_service.py: atomic export (temp dir → write → checksums → rename)
+   - Exports: sessions, session_transitions, trials, trial_transitions, trial_responses,
+     feedback_records, safety_events, runtime_runs CSVs + export_metadata.json
+   - validate_export: checksums, data_classification, file integrity
+   - 6 tests for creation, checksums, idempotent overwrite, validation, tamper detection
+
+7. **fix(runtime): make synthetic orchestration failure-safe**
+   - Replaced all INSERT OR REPLACE with existence checks + INSERT
+   - Added OrchestratorError, StudySetupError, SessionExecutionError typed errors
+   - Orchestrator creates manifests for each session, seals on completion
+   - Uses export_service instead of inline export
+   - 7 tests including manifests_created, typed_errors_reported
+
+8. **fix(api): expose persistent runtime export and replay operations**
+   - Added GET /runs/{run_id}/sessions and /runs/{run_id}/failures
+   - Added GET /exports/{study_id}/validation
+   - Added POST /replay/{study_id}/start (stub)
+   - All status reads from DB
+
+9. **test(e2e): validate complete synthetic workflow**
+   - Playwright config: backend + frontend webServer
+   - E2E tests: create study → poll completion → verify sessions → page loads
+   - Idempotency and conflict E2E tests
+   - Frontend page: added Idempotency-Key header, completed_with_failures handling
+
+10. **ci: enforce runtime replay export and browser smoke gates**
+    - backend-runtime job: runs all runtime-specific test files
+    - playwright job: installs browsers, starts backend+frontend, runs E2E
+    - docker-smoke job (manual): build, compose up, health check, API smoke
+
+11. **docs: close Merge Gate B.1 with documentation**
+
+### Test Results
+- **384 backend tests** passing (core + research markers)
+- **Ruff lint**: clean
+- **Frontend build**: 18 routes, clean TypeScript
+- **New files**: 7 new modules, 7 new test files
+
+### Key Architectural Decisions
+- ADR-021: Persistent run lifecycle with idempotent commands via RunService
+- ADR-022: Injectable pipeline adapters for transport-independent runtime
+- ADR-023: Transactional outbox pattern for atomic event persistence
+- ADR-024: Immutable session manifests with completion sealing
+
+### Remaining Risks
+- RISK-025: Replay from manifest only tested for fixed-condition sessions (adaptive depends on FeedbackPolicyEngine state)
+- RISK-026: Docker smoke test requires daemon availability; manual trigger only
+- RISK-027: Playwright E2E tests require both backend and frontend running; may be flaky in CI
+
+---
+
 ## 2026-07-13 — Merge Gate B: Persistent Synthetic Experiment Runtime
 
 ### Task

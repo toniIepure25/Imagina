@@ -238,10 +238,38 @@
 **Impact:** Medium — local-only deployment limits exposure, but export endpoints should validate paths rigorously.
 **Mitigation:** Export root is server-configured. Client cannot specify arbitrary paths. Full hardening (fsync, atomic rename, symlink checks) planned for production readiness.
 **Owner:** TBD
-**Status:** Partially mitigated.
+**Status:** Partially mitigated — B.1 adds atomic export with temp dir → rename.
 
 ---
 
-*Last updated: 2026-07-13 — Merge Gate B*
+## RISK-025: Adaptive Session Replay Non-Determinism
 
-*Last updated: 2026-07-10 — Merge Gate A*
+**Risk:** Replay-from-manifest is only verified for fixed-condition sessions. Adaptive sessions wrap FeedbackPolicyEngine which uses `utcnow()` internally and may accumulate state.
+**Impact:** Medium — adaptive replay may produce hash mismatches that are false negatives.
+**Mitigation:** Deterministic clock injection into AdaptiveFeedbackPolicy pending. Fixed and yoked replay verified deterministic.
+**Owner:** TBD
+**Status:** Active — known limitation.
+
+---
+
+## RISK-026: Docker Smoke Test Availability
+
+**Risk:** Docker smoke test requires Docker daemon; may not be available in all CI environments.
+**Impact:** Low — docker-smoke job is manual trigger only (workflow_dispatch).
+**Mitigation:** docker-config job validates compose files on every push. Docker smoke is optional evidence.
+**Owner:** TBD
+**Status:** Accepted — by design.
+
+---
+
+## RISK-027: Playwright E2E Flakiness
+
+**Risk:** Playwright E2E tests require both backend and frontend services running simultaneously. Timing-dependent polling may be flaky in resource-constrained CI.
+**Impact:** Low-Medium — false failures in CI may block merges.
+**Mitigation:** Generous timeouts (120s), reuseExistingServer, polling with 2s intervals and 60 iterations.
+**Owner:** TBD
+**Status:** Active — monitoring needed.
+
+---
+
+*Last updated: 2026-07-13 — Merge Gate B.1*

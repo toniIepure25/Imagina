@@ -1,33 +1,57 @@
-# TASK_BRIEF.md — Merge Gate B: Persistent Synthetic Experiment Runtime
+# TASK_BRIEF.md — Merge Gate B.1: Runtime Completion and Evidence Hardening
 
 ---
 
 ## Goal
 
-Build a transport-independent, persistent, deterministic runtime on `research/scientific-platform`
-capable of executing a complete synthetic-only three-condition crossover experiment (adaptive,
-fixed, frozen yoked). The runtime must produce provenance-complete synthetic records, support
-deterministic replay, preserve safety behavior, and expose one working synthetic end-to-end
-flow through backend APIs, CLI, and frontend.
+Close all persistence, replay, export, outbox, manifest, API, Playwright, and CI gaps
+identified during Merge Gate B audit, producing a fully hardened synthetic-only experiment
+runtime on `research/scientific-platform`.
 
 ## Why This Matters
 
-Merge Gate A established structural integrity (migrations, governance, balanced allocation,
-API blinding, honest documentation). Merge Gate B proves the engineering runtime works
-end-to-end with synthetic data, which is the prerequisite for later human-participant
-studies, objective behavioral validation, and real EEG integration.
+Merge Gate B established the core runtime architecture but left critical gaps: run state was
+ephemeral (in-memory dict), outbox table was unpopulated, manifests were never created,
+export lacked atomicity and validation, and Playwright tests only checked page loads.
+Gate B.1 closes these gaps to produce a runtime that can serve as the foundation for
+human-participant studies (after further validation work).
 
 ## Scope
 
-- B0: Residual Merge Gate A integrity corrections
-- B1: Migration v003 — persistent runtime tables (sessions, trials, feedback, safety, yoked libraries, manifests, exports)
-- B2: Persistent session and trial state machines with CAS concurrency
-- B3: Transport-independent ResearchSessionRuntime with injectable clock, IDs, event sinks
-- B4: Unified feedback policy contract (adaptive, fixed, frozen yoked adapters)
-- B5: Frozen yoked trajectory library (generation, freezing, validation, assignment)
-- B6: Synthetic study orchestration, run records, and versioned export
-- B7: Canonical deterministic replay validation
-- B8: Synthetic API endpoints and frontend operator workflow
+- B1-1: Persistent run lifecycle with idempotent commands (v004 migration, RunService)
+- B1-2: Injectable pipeline adapters (SignalProvider, FeatureProcessor, etc.)
+- B1-3: Transactional outbox pattern (PersistentOutboxWriter, OutboxDispatcher)
+- B1-4: Session manifest creation and completion sealing
+- B1-5: Canonical normalization (recursive normalize()) and replay-from-manifest
+- B1-6: Atomic export service with validator (checksums, data classification)
+- B1-7: Orchestrator correctness (no INSERT OR REPLACE, typed errors, manifest integration)
+- B1-8: API semantics (sessions, failures, export validation endpoints)
+- B1-9: Full Playwright E2E workflow (create → poll → verify)
+- B1-10: CI jobs (backend-runtime, playwright, docker-smoke)
+- B1-11: Documentation and final verification
+
+## Non-Goals
+
+- Human participant readiness
+- Real EEG/LSL integration
+- Statistical fitting or analysis
+- Authentication or user tracking
+- Publication-ready scientific claims
+
+## Starting HEAD
+
+`67802f3` on `research/scientific-platform`
+
+## Results
+
+- **384 backend tests** passing (core + research markers)
+- **0 ruff errors**
+- **Frontend build clean** (18 routes)
+- **7 new backend modules**: run_service, pipeline_adapters, outbox, manifest,
+  export_service, v004 migration, pipeline_adapters
+- **7 new test files**: test_run_service, test_outbox, test_manifest,
+  test_export_service (plus updates to existing test files)
+- **11 commits** on `research/scientific-platform`
 - B9: Playwright E2E, Docker smoke, regression coverage
 - B10: Documentation reconciliation
 
