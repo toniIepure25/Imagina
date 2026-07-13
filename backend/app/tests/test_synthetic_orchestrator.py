@@ -57,7 +57,7 @@ class TestSyntheticOrchestration:
         )
 
         expected_files = [
-            "export_metadata.json", "sessions.csv",
+            "metadata.json", "sessions.csv",
             "trials.csv", "trial_responses.csv", "feedback_records.csv",
         ]
         for fname in expected_files:
@@ -77,7 +77,7 @@ class TestSyntheticOrchestration:
             export_dir=export_dir,
         )
 
-        with open(os.path.join(export_dir, "export_metadata.json")) as f:
+        with open(os.path.join(export_dir, "metadata.json")) as f:
             meta = json.load(f)
         assert meta["data_classification"] == "synthetic"
 

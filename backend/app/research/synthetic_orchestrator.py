@@ -311,7 +311,7 @@ async def _execute_study(
 
     export_result = None
     if export_dir and not run_aborted:
-        export_result = await export_synthetic_dataset(db, study_id, export_dir)
+        export_result = await export_synthetic_dataset(db, study_id, export_dir, allow_overwrite=True)
 
     return {
         "study_id": study_id,
