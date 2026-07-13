@@ -74,10 +74,11 @@ async def run_synthetic_study(
     windows_per_trial: int = 3,
     export_dir: str | None = None,
     run_id: str | None = None,
+    abort_check: Any = None,
 ) -> dict[str, Any]:
     return await _execute_study(
         db, study_id, participant_count, seed,
-        trials_per_session, windows_per_trial, export_dir, run_id,
+        trials_per_session, windows_per_trial, export_dir, run_id, abort_check,
     )
 
 
@@ -90,6 +91,7 @@ async def _execute_study(
     windows_per_trial: int,
     export_dir: str | None,
     run_id: str | None = None,
+    abort_check: Any = None,
 ) -> dict[str, Any]:
     now = datetime.now(timezone.utc).isoformat()
 
@@ -153,9 +155,18 @@ async def _execute_study(
 
     sessions_completed = 0
     sessions_failed = 0
+    sessions_aborted = 0
     session_errors: list[SessionExecutionError] = []
+    run_aborted = False
 
     for pid in participant_ids:
+        if run_aborted:
+            break
+
+        if abort_check and await abort_check():
+            run_aborted = True
+            break
+
         alloc_row = await (await db.execute(
             "SELECT allocation_id, sequence_label FROM sequence_allocations "
             "WHERE study_id = ? AND participant_id = ?",
@@ -171,6 +182,10 @@ async def _execute_study(
                 break
 
         for session_idx in range(3):
+            if abort_check and await abort_check():
+                run_aborted = True
+                break
+
             condition = conditions_seq[session_idx].value
             session_id = f"{study_id}-{pid}-s{session_idx}"
             session_seed = seed + session_idx
@@ -240,6 +255,7 @@ async def _execute_study(
                 db=db, clock=clock, id_gen=id_gen,
                 feedback_policy=policy, safety_monitor=safety,
                 event_sink=sink,
+                abort_check=abort_check,
             )
 
             try:
@@ -248,7 +264,12 @@ async def _execute_study(
                     trial_count=trials_per_session,
                     windows_per_trial=windows_per_trial,
                 )
-                sessions_completed += 1
+
+                if terminal_reason == "aborted":
+                    sessions_aborted += 1
+                    run_aborted = True
+                else:
+                    sessions_completed += 1
 
                 content_hash_result = await compute_session_replay_hash(db, session_id)
                 await seal_session_completion(
@@ -267,7 +288,12 @@ async def _execute_study(
 
     final_run_id = run_id or str(uuid.uuid4())
     if not run_id:
-        final_status = "completed_with_failures" if sessions_failed > 0 else "completed"
+        if run_aborted:
+            final_status = "aborted"
+        elif sessions_failed > 0:
+            final_status = "completed_with_failures"
+        else:
+            final_status = "completed"
         await db.execute(
             "INSERT INTO runtime_runs "
             "(run_id, study_id, status, total_sessions, completed_sessions, "
@@ -282,7 +308,7 @@ async def _execute_study(
         await db.commit()
 
     export_result = None
-    if export_dir:
+    if export_dir and not run_aborted:
         export_result = await export_synthetic_dataset(db, study_id, export_dir)
 
     return {
@@ -291,6 +317,8 @@ async def _execute_study(
         "participants": participant_count,
         "sessions_completed": sessions_completed,
         "sessions_failed": sessions_failed,
+        "sessions_aborted": sessions_aborted,
+        "aborted": run_aborted,
         "library_id": library_id,
         "protocol_id": protocol_id,
         "export": export_result,

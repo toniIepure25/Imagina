@@ -222,10 +222,11 @@ class ResearchSessionRuntime:
                 await self._db.commit()
 
                 safety_stopped = False
+                abort_in_window = False
                 for window_idx in range(windows_per_trial):
                     if self._abort_check and await self._abort_check():
                         terminal_reason = "aborted"
-                        safety_stopped = True
+                        abort_in_window = True
                         break
 
                     elapsed = self._clock.monotonic() - session_start_mono
@@ -312,6 +313,18 @@ class ResearchSessionRuntime:
 
                     await self._db.commit()
                     await self._clock.sleep(0.01)
+
+                if abort_in_window:
+                    trial_row_abort = await (await self._db.execute(
+                        "SELECT state_version FROM trials WHERE trial_id=?", (trial_id,)
+                    )).fetchone()
+                    await transition_trial(
+                        self._db, trial_id, "running", trial_row_abort["state_version"],
+                        "aborted", reason_code="abort_requested",
+                        actor="runtime", timestamp=self._clock.utc_now(),
+                    )
+                    await self._db.commit()
+                    break
 
                 if terminal_reason in ("aborted", "safety_stopped") and not safety_stopped:
                     break

@@ -19,7 +19,9 @@ from app.research.run_service import (
     RunConflictError,
     RunNotFoundError,
     RunTerminalError,
+    check_abort_requested,
     create_run,
+    finalize_abort,
     get_run,
     list_runs,
     mark_interrupted_on_startup,
@@ -271,6 +273,9 @@ async def _execute_run(run_id: str, request: StudyCreateRequest):
         export_dir = os.path.join(_EXPORT_ROOT, request.study_id)
         os.makedirs(_EXPORT_ROOT, exist_ok=True)
 
+        async def abort_checker():
+            return await check_abort_requested(db, run_id)
+
         result = await run_synthetic_study(
             db=db,
             study_id=request.study_id,
@@ -280,15 +285,19 @@ async def _execute_run(run_id: str, request: StudyCreateRequest):
             windows_per_trial=request.windows_per_trial,
             export_dir=export_dir,
             run_id=run_id,
+            abort_check=abort_checker,
         )
 
         completed = result["sessions_completed"]
         failed = result["sessions_failed"]
         await update_run_progress(db, run_id, completed, failed)
 
-        final_status = "completed_with_failures" if failed > 0 else "completed"
-        now = datetime.now(timezone.utc).isoformat()
-        await update_run_phase(db, run_id, final_status, "completed", ended_at=now)
+        if result.get("aborted"):
+            await finalize_abort(db, run_id, completed, "abort_requested")
+        else:
+            final_status = "completed_with_failures" if failed > 0 else "completed"
+            now = datetime.now(timezone.utc).isoformat()
+            await update_run_phase(db, run_id, final_status, "completed", ended_at=now)
     except Exception as e:
         try:
             now = datetime.now(timezone.utc).isoformat()

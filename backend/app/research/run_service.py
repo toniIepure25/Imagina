@@ -121,7 +121,9 @@ async def update_run_progress(
     await db.commit()
 
 
-async def request_abort(db: aiosqlite.Connection, run_id: str) -> dict[str, Any]:
+async def request_abort(
+    db: aiosqlite.Connection, run_id: str, actor: str = "api",
+) -> dict[str, Any]:
     row = await (await db.execute(
         "SELECT * FROM runtime_runs WHERE run_id = ?", (run_id,)
     )).fetchone()
@@ -129,6 +131,8 @@ async def request_abort(db: aiosqlite.Connection, run_id: str) -> dict[str, Any]
         raise RunNotFoundError(f"Run {run_id} not found")
     if row["status"] in RUN_TERMINAL_STATUSES:
         raise RunTerminalError(f"Run already {row['status']}")
+    if row["status"] == "abort_requested":
+        return dict(row)
 
     now = datetime.now(timezone.utc).isoformat()
     await db.execute(
@@ -140,6 +144,22 @@ async def request_abort(db: aiosqlite.Connection, run_id: str) -> dict[str, Any]
         "SELECT * FROM runtime_runs WHERE run_id = ?", (run_id,)
     )).fetchone()
     return dict(updated)
+
+
+async def finalize_abort(
+    db: aiosqlite.Connection,
+    run_id: str,
+    completed_sessions: int,
+    terminal_reason: str,
+) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    await db.execute(
+        "UPDATE runtime_runs SET status = 'aborted', "
+        "completed_sessions = ?, error_message = ?, ended_at = ?, updated_at = ? "
+        "WHERE run_id = ? AND status IN ('abort_requested', 'running', 'accepted')",
+        (completed_sessions, terminal_reason, now, now, run_id),
+    )
+    await db.commit()
 
 
 async def check_abort_requested(db: aiosqlite.Connection, run_id: str) -> bool:
