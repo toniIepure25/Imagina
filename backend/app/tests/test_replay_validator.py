@@ -9,9 +9,50 @@ from app.research.replay_validator import (
     canonical_hash,
     canonical_serialize,
     compute_session_replay_hash,
+    normalize,
+    replay_session_from_manifest,
     verify_replay_equivalence,
 )
 from app.research.synthetic_orchestrator import run_synthetic_study
+
+
+class TestNormalize:
+    def test_none(self):
+        assert normalize(None) is None
+
+    def test_bool(self):
+        assert normalize(True) is True
+        assert normalize(False) is False
+
+    def test_int(self):
+        assert normalize(42) == 42
+
+    def test_float_precision(self):
+        assert normalize(0.1 + 0.2) == round(0.3, 8)
+
+    def test_string(self):
+        assert normalize("hello") == "hello"
+
+    def test_dict_sorted(self):
+        result = normalize({"z": 1, "a": 2})
+        keys = list(result.keys())
+        assert keys == ["a", "z"]
+
+    def test_list(self):
+        assert normalize([3.0, 2.0, 1.0]) == [3.0, 2.0, 1.0]
+
+    def test_nested(self):
+        data = {"a": [{"c": 1.1234567890123, "b": 2}]}
+        result = normalize(data)
+        assert result["a"][0]["c"] == round(1.1234567890123, 8)
+
+    def test_rejects_nan(self):
+        with pytest.raises(ValueError, match="non-finite"):
+            normalize(float("nan"))
+
+    def test_rejects_infinity(self):
+        with pytest.raises(ValueError, match="non-finite"):
+            normalize(float("inf"))
 
 
 class TestCanonicalSerialization:
@@ -27,11 +68,11 @@ class TestCanonicalSerialization:
         assert h1 == h2
 
     def test_rejects_nan(self):
-        with pytest.raises(ValueError, match="not JSON compliant"):
+        with pytest.raises(ValueError, match="non-finite"):
             canonical_serialize({"value": float("nan")})
 
     def test_rejects_infinity(self):
-        with pytest.raises(ValueError, match="not JSON compliant"):
+        with pytest.raises(ValueError, match="non-finite"):
             canonical_serialize({"value": float("inf")})
 
     def test_float_precision(self):
@@ -131,3 +172,59 @@ class TestReplayEquivalence:
             await db.close()
 
             assert h1["content_hash"] == h2["content_hash"]
+
+
+class TestReplayFromManifest:
+    async def test_replay_fixed_session(self):
+        """Fixed-condition sessions should replay identically from manifest."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "orig.db")
+
+            await run_synthetic_study(
+                db_path=db_path, study_id="manifest-replay",
+                participant_count=2, seed=42,
+                trials_per_session=2, windows_per_trial=2,
+            )
+
+            db = await aiosqlite.connect(db_path)
+            db.row_factory = aiosqlite.Row
+
+            cursor = await db.execute(
+                "SELECT research_session_id FROM research_sessions "
+                "WHERE condition = 'fixed' LIMIT 1"
+            )
+            row = await cursor.fetchone()
+
+            if row:
+                session_id = row["research_session_id"]
+
+                from app.research.manifest import create_session_manifest
+                sess_row = await (await db.execute(
+                    "SELECT * FROM research_sessions WHERE research_session_id = ?",
+                    (session_id,),
+                )).fetchone()
+
+                await create_session_manifest(
+                    db, session_id,
+                    study_id=sess_row["study_id"],
+                    protocol_version_id=sess_row["protocol_version_id"],
+                    protocol_hash="test",
+                    participant_id=sess_row["participant_id"],
+                    allocation_id=sess_row["allocation_id"],
+                    condition=sess_row["condition"],
+                    session_index=sess_row["session_index"],
+                    data_classification="synthetic",
+                    runtime_seed=sess_row["runtime_seed"],
+                    signal_provider_id="synthetic.deterministic",
+                    policy_id=sess_row["policy_id"],
+                    policy_version=sess_row["policy_version"],
+                    trial_count=2,
+                    windows_per_trial=2,
+                )
+                await db.commit()
+
+                result = await replay_session_from_manifest(db, session_id)
+                assert result["match"] is True
+                assert result["manifest_hash"]
+
+            await db.close()
