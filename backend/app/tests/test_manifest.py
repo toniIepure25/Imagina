@@ -1,4 +1,4 @@
-"""Tests for session manifest creation and completion sealing."""
+"""Tests for session manifest creation, completion sealing, and tamper detection."""
 import os
 import tempfile
 from datetime import datetime, timezone
@@ -8,9 +8,11 @@ import pytest
 
 from app.research.manifest import (
     create_session_manifest,
+    get_completion_seal,
     get_manifest,
     seal_session_completion,
     validate_manifest,
+    verify_seal_integrity,
 )
 from app.storage.migration_runner import run_migrations
 
@@ -68,6 +70,16 @@ async def _create_manifest(db):
     )
 
 
+async def _seal(db):
+    return await seal_session_completion(
+        db, "rs1",
+        terminal_status="completed",
+        terminal_reason="all_trials_done",
+        content_hash="content_hash_abc123",
+        sealed_at=datetime.now(timezone.utc),
+    )
+
+
 class TestManifestCreation:
     async def test_creates_manifest(self, manifest_db):
         mid = await _create_manifest(manifest_db)
@@ -100,24 +112,39 @@ class TestManifestCreation:
         assert len(r1["manifest_hash"]) == 64
 
 
-class TestManifestSealing:
-    async def test_seal_session(self, manifest_db):
+class TestCompletionSeals:
+    async def test_seal_persisted(self, manifest_db):
         await _create_manifest(manifest_db)
         await manifest_db.commit()
-        seal_hash = await seal_session_completion(
-            manifest_db, "rs1",
-            terminal_status="completed",
-            terminal_reason="all_trials_done",
-            content_hash="content123",
-            sealed_at=datetime.now(timezone.utc),
-        )
+        seal_hash = await _seal(manifest_db)
         await manifest_db.commit()
+
         assert len(seal_hash) == 64
+        seal = await get_completion_seal(manifest_db, "rs1")
+        assert seal is not None
+        assert seal["terminal_status"] == "completed"
+        assert seal["scientific_content_hash"] == "content_hash_abc123"
+        assert seal["seal_hash"] == seal_hash
 
-        result = await get_manifest(manifest_db, "rs1")
-        assert result["sealed_at"] is not None
+    async def test_seal_immutable(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+        await _seal(manifest_db)
+        await manifest_db.commit()
 
-    async def test_seal_validates_manifest_exists(self, manifest_db):
+        with pytest.raises(ValueError, match="Seal already exists"):
+            await _seal(manifest_db)
+
+    async def test_seal_integrity_valid(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+        await _seal(manifest_db)
+        await manifest_db.commit()
+
+        result = await verify_seal_integrity(manifest_db, "rs1")
+        assert result["valid"] is True
+
+    async def test_seal_requires_manifest(self, manifest_db):
         with pytest.raises(ValueError, match="No manifest found"):
             await seal_session_completion(
                 manifest_db, "nonexistent",
@@ -126,3 +153,72 @@ class TestManifestSealing:
                 content_hash="abc",
                 sealed_at=datetime.now(timezone.utc),
             )
+
+    async def test_manifest_sealed_at_updated(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+        await _seal(manifest_db)
+        await manifest_db.commit()
+
+        result = await get_manifest(manifest_db, "rs1")
+        assert result["sealed_at"] is not None
+
+
+class TestTamperDetection:
+    async def test_tampered_seal_hash_detected(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+        await _seal(manifest_db)
+        await manifest_db.commit()
+
+        await manifest_db.execute(
+            "UPDATE session_completion_seals "
+            "SET seal_hash = 'tampered_hash' "
+            "WHERE research_session_id = 'rs1'"
+        )
+        await manifest_db.commit()
+
+        result = await verify_seal_integrity(manifest_db, "rs1")
+        assert result["valid"] is False
+        assert "tampering" in result["error"].lower()
+
+    async def test_tampered_content_hash_detected(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+        await _seal(manifest_db)
+        await manifest_db.commit()
+
+        await manifest_db.execute(
+            "UPDATE session_completion_seals "
+            "SET scientific_content_hash = 'tampered_content' "
+            "WHERE research_session_id = 'rs1'"
+        )
+        await manifest_db.commit()
+
+        result = await verify_seal_integrity(manifest_db, "rs1")
+        assert result["valid"] is False
+
+    async def test_tampered_manifest_hash_detected(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+        await _seal(manifest_db)
+        await manifest_db.commit()
+
+        await manifest_db.execute(
+            "UPDATE session_manifests "
+            "SET manifest_hash = 'tampered_manifest_hash' "
+            "WHERE research_session_id = 'rs1'"
+        )
+        await manifest_db.commit()
+
+        result = await verify_seal_integrity(manifest_db, "rs1")
+        assert result["valid"] is False
+        assert "manifest" in result["error"].lower()
+
+    async def test_missing_seal_detected(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+
+        result = await verify_seal_integrity(manifest_db, "rs1")
+        assert result["valid"] is False
+        assert "no completion seal" in result["error"].lower()

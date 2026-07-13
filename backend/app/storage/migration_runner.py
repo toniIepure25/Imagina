@@ -27,6 +27,7 @@ _MIGRATION_MODULES = [
     "app.storage.migrations.v002_research_governance",
     "app.storage.migrations.v003_persistent_synthetic_runtime",
     "app.storage.migrations.v004_runtime_lifecycle",
+    "app.storage.migrations.v005_completion_seals_and_replay",
 ]
 
 _VERSION_TABLE = """
