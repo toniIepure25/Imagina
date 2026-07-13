@@ -2205,6 +2205,79 @@ OpenMIIR real EEG is now integrated and evaluated. This remains an engineering e
 
 ---
 
+## 2026-07-13 — Merge Gate B.2: Integration Closure and PR Readiness
+
+### Task
+Implement Merge Gate B.2 — connect and verify existing B/B.1 components to achieve a truthful, persistent, reproducible synthetic workflow.
+
+### Goal
+Close all persistence, export, replay, and CI gaps; make the `research/scientific-platform` branch PR-ready with evidence-backed claims.
+
+### Commits
+1. `fix(runtime): use one authoritative database per deployment` — eliminated split-brain by passing unified DB connection through orchestrator
+2. `fix(runtime): propagate persistent abort requests to active execution` — wired abort from API through orchestrator to runtime with proper state transitions
+3. `fix(runtime): connect domain writes to transactional outbox` — replaced CollectingEventSink with PersistentOutboxWriter in production orchestrator
+4. `fix(manifest): persist immutable completion seals` — added v005 migration with session_completion_seals, replay_runs, replay_results tables; full seal hash coverage
+5. `fix(replay): enforce sealed manifest reconstruction` — replay_session_from_manifest now requires valid sealed manifest, verifies content hash, persists replay results
+6. `fix(export): finalize atomic validated synthetic packages` — staging-directory export with checksums.sha256, full file set (manifests/, completion_seals/, yoked data), no silent overwrite, validator
+7. `fix(api): expose truthful export replay and lifecycle status` — added export create/status, replay create/status/result, manifest/seal endpoints; evidence-derived export_ready/replay_verified
+8. `test(e2e): prove persistent export and replay workflow` — comprehensive Playwright acceptance tests: full workflow, export validation, replay per condition, persistence after reload, negative tests
+9. `ci: require complete synthetic runtime evidence` — Playwright depends on backend-core+backend-runtime+frontend, uploads artifacts on failure; Docker smoke does real synthetic workflow
+10. `docs: finalize synthetic runtime evidence and PR boundaries` — this entry
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `backend/app/api/synthetic_runtime.py` | Complete API with export/replay/manifest/seal endpoints, typed error envelopes |
+| `backend/app/research/synthetic_orchestrator.py` | Accepts db connection, PersistentOutboxWriter, abort_check propagation |
+| `backend/app/research/runtime.py` | abort_in_window flag for correct abort state transitions |
+| `backend/app/research/run_service.py` | finalize_abort with flexible status handling |
+| `backend/app/research/manifest.py` | Full completion seal persistence, verify_seal_integrity, get_completion_seal |
+| `backend/app/research/replay_validator.py` | Sealed manifest enforcement, persistent replay results, yoked fail-closed |
+| `backend/app/research/export_service.py` | Atomic staging export, comprehensive validator, ExportExistsError |
+| `backend/app/storage/migration_runner.py` | Added v005 migration |
+| `backend/app/storage/migrations/v005_completion_seals_and_replay.py` | New tables: session_completion_seals, replay_runs, replay_results |
+| `backend/app/tests/test_unified_db_integration.py` | New: unified DB integration tests |
+| `backend/app/tests/test_abort.py` | New: abort propagation tests |
+| `backend/app/tests/test_manifest.py` | Expanded: completion seal + tamper detection tests |
+| `backend/app/tests/test_outbox.py` | Expanded: dispatch retry + orchestrator integration |
+| `backend/app/tests/test_export_service.py` | Rewritten: full export contract tests |
+| `backend/app/tests/test_synthetic_orchestrator.py` | Updated for unified DB and metadata.json |
+| `backend/app/tests/test_replay_validator.py` | Updated for unique DB filenames |
+| `backend/app/tests/test_migration_runner.py` | Updated version assertions to v005 |
+| `backend/app/tests/test_regression_gate_a.py` | Updated version assertion |
+| `backend/app/tests/conftest.py` | Added research markers |
+| `frontend/e2e/synthetic-smoke.spec.ts` | Comprehensive acceptance E2E |
+| `.github/workflows/ci.yml` | Playwright artifacts, Docker smoke workflow |
+
+### Tests Run
+- Backend: 416 passed, 280 deselected (core + research markers)
+- Ruff lint: All checks passed
+- Frontend lint: 0 errors, 29 pre-existing warnings
+- Frontend build: Clean (18 routes)
+
+### Local Verification Evidence
+```
+backend_tests: 416 passed
+ruff_lint: passed
+frontend_lint: 0 errors
+frontend_build: clean
+```
+
+### Status
+```
+merge_gate: B.2
+status: LOCAL_VERIFICATION_COMPLETE
+branch: research/scientific-platform
+```
+
+### Remaining Risks
+- Playwright E2E requires live backend+frontend (runs in CI, not locally tested)
+- Docker smoke requires Docker build (CI-only)
+- Remote CI not yet verified on final pushed commit
+
+---
+
 ## Template
 
 Use this template for future entries:

@@ -477,4 +477,48 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-13 — Merge Gate B.1*
+## ADR-025: Unified Database Ownership
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** The orchestrator was creating a separate per-study SQLite file while the API used the main deployment database. This split-brain persistence meant run metadata and scientific session data lived in different files.
+
+**Decision:** The orchestrator now accepts an existing `aiosqlite.Connection` from the API. All runtime entities (runs, sessions, trials, feedback, manifests, seals, outbox, exports) share the same authoritative database.
+
+**Consequences:**
+- Single DB per deployment — no split-brain.
+- API can read sessions/failures directly after orchestrator completes.
+- Process restart can still access all data.
+
+---
+
+## ADR-026: Completion Seals as Append-Only Tamper-Evident Records
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** Manifest sealing (ADR-024) only stored a `sealed_at` timestamp on the manifest row. No separate immutable record existed for content hash, terminal status, or seal hash.
+
+**Decision:** Create `session_completion_seals` table (v005 migration) as an append-only table with UNIQUE(research_session_id). Seal hash covers all seal fields except itself. Service-level code prevents update or deletion of seals.
+
+**Consequences:**
+- Tamper detection: any modification to seal fields is detectable by recomputing seal hash.
+- Session reproducibility requires valid seal + manifest + content hash match.
+- Replay requires a completion seal before proceeding.
+
+---
+
+## ADR-027: Evidence-Derived Export and Replay Status
+
+**Status:** Accepted
+**Date:** 2026-07-13
+**Context:** Previous API returned `export_ready: true` based on run status alone, and `replay_verified: false` as a placeholder.
+
+**Decision:** `export_ready` is true only when a persisted `export_runs` record exists with a passing validation result. `replay_verified` is true only when all replay results for the study's sessions have `match = 1`.
+
+**Consequences:**
+- No false claims of export readiness or replay verification.
+- Status endpoints reflect actual evidence in the database.
+
+---
+
+*Last updated: 2026-07-13 — Merge Gate B.2*
