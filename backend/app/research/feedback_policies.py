@@ -20,41 +20,55 @@ class AdaptiveFeedbackPolicy:
 
     async def compute(self, context: FeedbackContext) -> FeedbackDecision:
         from app.core.time import utcnow
-        from app.schemas.pid_iqi import IQIResult, PIDResult
-        from app.schemas.state import MentalState
+        from app.schemas.curriculum import CurriculumState
+        from app.schemas.metrics import IQIEstimate, PIDEstimate, StateEstimate
 
-        state = MentalState(
+        ts = utcnow()
+        state = StateEstimate(
             session_id=context.session_id,
-            timestamp=utcnow(),
+            timestamp=ts,
             window_index=context.window_index,
             attention_stability=context.state_estimate.get("attention", 0.5),
             relaxation=context.state_estimate.get("relaxation", 0.5),
             imagery_engagement=context.state_estimate.get("engagement", 0.3),
+            behavioral_consistency=0.5,
             fatigue=context.state_estimate.get("fatigue", 0.2),
+            uncertainty=0.3,
             confidence=0.7,
         )
-        pid = PIDResult(
+        pid = PIDEstimate(
             session_id=context.session_id,
-            timestamp=utcnow(),
+            timestamp=ts,
             window_index=context.window_index,
+            pid=context.pid or 0.3,
             neural_proxy_distance=0.3,
             behavioral_distance=0.2,
-            uncertainty=0.2,
-            pid_score=context.pid or 0.3,
+            uncertainty_component=0.2,
+            interpretation="good",
         )
-        iqi = IQIResult(
+        iqi = IQIEstimate(
             session_id=context.session_id,
-            timestamp=utcnow(),
+            timestamp=ts,
             window_index=context.window_index,
-            attention_component=context.state_estimate.get("attention", 0.5),
+            iqi=context.iqi or 0.5,
+            stability_component=context.state_estimate.get("attention", 0.5),
             engagement_component=context.state_estimate.get("engagement", 0.3),
-            behavioral_component=0.5,
             relaxation_component=context.state_estimate.get("relaxation", 0.5),
-            confidence_weight=0.7,
-            iqi_score=context.iqi or 0.5,
+            confidence=0.7,
+        )
+        curriculum = CurriculumState(
+            session_id=context.session_id,
+            timestamp=ts,
+            current_level=context.curriculum_level,
+            level_name=f"level_{context.curriculum_level}",
+            consecutive_successes=0,
+            consecutive_failures=0,
+            difficulty=context.curriculum_level / 8.0,
         )
 
-        action = self._engine.compute_feedback(state, pid, iqi)
+        action = self._engine.compute(
+            context.session_id, state, pid, iqi, curriculum, context.window_index,
+        )
         scene_params = {
             "scene_clarity": action.scene_clarity,
             "blur": action.blur,

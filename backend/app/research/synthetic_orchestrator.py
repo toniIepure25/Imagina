@@ -8,6 +8,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import logging
 import os
 import uuid
 from datetime import datetime, timezone
@@ -17,6 +18,7 @@ import aiosqlite
 
 from app.research.event_sinks import CollectingEventSink
 from app.research.feedback_policies import (
+    AdaptiveFeedbackPolicy,
     FixedResearchFeedbackPolicy,
     FrozenYokedFeedbackPolicy,
 )
@@ -33,6 +35,8 @@ from app.research.yoked_library import (
 )
 from app.storage.migration_runner import run_migrations
 
+logger = logging.getLogger(__name__)
+
 
 class SyntheticSafetyMonitor:
     async def check(self, state, window_index, elapsed_s) -> SafetyDecision:
@@ -44,33 +48,6 @@ class SyntheticSafetyMonitor:
                 metric_value=fatigue, action="stop_session",
             )
         return SafetyDecision(should_stop=False)
-
-
-class SyntheticAdaptivePolicy:
-    policy_id = "adaptive"
-    policy_version = "1.0"
-
-    async def compute(self, context):
-        from app.research.runtime import FeedbackDecision
-        iqi = context.iqi or 0.5
-        return FeedbackDecision(
-            scene_params={
-                "scene_clarity": round(0.3 + 0.4 * iqi, 4),
-                "blur": round(0.4 - 0.2 * iqi, 4),
-                "wall_distortion": round(0.3 - 0.1 * iqi, 4),
-                "light_stability": round(0.5 + 0.2 * iqi, 4),
-                "texture_detail": round(0.1 + 0.2 * iqi, 4),
-                "particle_stability": 0.6,
-                "door_complexity": 0.0,
-                "fog_density": round(0.35 - 0.1 * iqi, 4),
-                "color_saturation": round(0.4 + 0.2 * iqi, 4),
-                "breathing_cue_strength": 0.2,
-            },
-            prompt_text="Continue imagining the corridor.",
-            reason="adaptive_synthetic",
-            policy_id=self.policy_id,
-            policy_version=self.policy_version,
-        )
 
 
 async def run_synthetic_study(
@@ -200,7 +177,7 @@ async def _execute_study(
             safety = SyntheticSafetyMonitor()
 
             if condition == "adaptive":
-                policy = SyntheticAdaptivePolicy()
+                policy = AdaptiveFeedbackPolicy()
             elif condition == "fixed":
                 policy = FixedResearchFeedbackPolicy()
             else:
@@ -221,7 +198,8 @@ async def _execute_study(
                     windows_per_trial=windows_per_trial,
                 )
                 sessions_completed += 1
-            except Exception:
+            except Exception as exc:
+                logger.error("Session %s failed: %s", session_id, exc)
                 sessions_failed += 1
 
     final_run_id = run_id or str(uuid.uuid4())
