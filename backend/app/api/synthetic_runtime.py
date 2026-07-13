@@ -76,6 +76,23 @@ def _run_to_response(row: dict[str, Any]) -> RunStatusResponse:
     )
 
 
+async def _ensure_study_exists(db, study_id: str, seed: int) -> None:
+    """Create minimal study record so runtime_runs FK is satisfied."""
+    existing = await (await db.execute(
+        "SELECT study_id FROM studies WHERE study_id = ?", (study_id,)
+    )).fetchone()
+    if not existing:
+        now = datetime.now(timezone.utc).isoformat()
+        await db.execute(
+            "INSERT INTO studies "
+            "(study_id, title, application_mode, data_classification, lifecycle_status, "
+            "study_seed, created_at, updated_at) "
+            "VALUES (?, ?, 'research', 'synthetic', 'active', ?, ?, ?)",
+            (study_id, f"Synthetic Study {study_id}", seed, now, now),
+        )
+        await db.commit()
+
+
 @router.post("/studies", status_code=202)
 async def create_synthetic_study(
     request: StudyCreateRequest,
@@ -86,6 +103,8 @@ async def create_synthetic_study(
 
     db = await get_db()
     try:
+        await _ensure_study_exists(db, request.study_id, request.seed)
+
         input_params = request.model_dump()
         run_row = await create_run(
             db, request.study_id, idempotency_key, input_params,
@@ -250,11 +269,10 @@ async def _execute_run(run_id: str, request: StudyCreateRequest):
         await update_run_phase(db, run_id, "running", "running", started_at=now)
 
         export_dir = os.path.join(_EXPORT_ROOT, request.study_id)
-        db_path = os.path.join(_EXPORT_ROOT, f"{request.study_id}.db")
         os.makedirs(_EXPORT_ROOT, exist_ok=True)
 
         result = await run_synthetic_study(
-            db_path=db_path,
+            db=db,
             study_id=request.study_id,
             participant_count=request.participant_count,
             seed=request.seed,

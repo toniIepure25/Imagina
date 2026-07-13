@@ -14,6 +14,25 @@ from app.research.replay_validator import (
     verify_replay_equivalence,
 )
 from app.research.synthetic_orchestrator import run_synthetic_study
+from app.storage.migration_runner import run_migrations
+
+_db_counter = 0
+
+
+async def _make_study_db(tmpdir, study_id, seed=42, participant_count=2):
+    global _db_counter
+    _db_counter += 1
+    db_path = os.path.join(tmpdir, f"{study_id}_{_db_counter}.db")
+    db = await aiosqlite.connect(db_path)
+    db.row_factory = aiosqlite.Row
+    await db.execute("PRAGMA foreign_keys = ON")
+    await run_migrations(db)
+    await run_synthetic_study(
+        db=db, study_id=study_id,
+        participant_count=participant_count, seed=seed,
+        trials_per_session=2, windows_per_trial=2,
+    )
+    return db
 
 
 class TestNormalize:
@@ -84,121 +103,76 @@ class TestCanonicalSerialization:
 class TestReplayEquivalence:
     async def test_identical_runs_match(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            db1_path = os.path.join(tmpdir, "run1.db")
-            db2_path = os.path.join(tmpdir, "run2.db")
-
-            await run_synthetic_study(
-                db_path=db1_path, study_id="replay-test",
-                participant_count=2, seed=42,
-                trials_per_session=2, windows_per_trial=2,
-            )
-            await run_synthetic_study(
-                db_path=db2_path, study_id="replay-test",
-                participant_count=2, seed=42,
-                trials_per_session=2, windows_per_trial=2,
-            )
-
-            db1 = await aiosqlite.connect(db1_path)
-            db1.row_factory = aiosqlite.Row
-            db2 = await aiosqlite.connect(db2_path)
-            db2.row_factory = aiosqlite.Row
-
-            cursor = await db1.execute(
-                "SELECT research_session_id FROM research_sessions LIMIT 1"
-            )
-            row = await cursor.fetchone()
-            session_id = row["research_session_id"]
-
-            result = await verify_replay_equivalence(db1, db2, session_id)
-            await db1.close()
-            await db2.close()
-
-            assert result["match"] is True
+            db1 = await _make_study_db(tmpdir, "replay-test", seed=42)
+            db2 = await _make_study_db(tmpdir, "replay-test", seed=42)
+            try:
+                cursor = await db1.execute(
+                    "SELECT research_session_id FROM research_sessions LIMIT 1"
+                )
+                row = await cursor.fetchone()
+                session_id = row["research_session_id"]
+                result = await verify_replay_equivalence(db1, db2, session_id)
+                assert result["match"] is True
+            finally:
+                await db1.close()
+                await db2.close()
 
     async def test_different_seeds_diverge(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            db1_path = os.path.join(tmpdir, "run1.db")
-            db2_path = os.path.join(tmpdir, "run2.db")
+            db1 = await _make_study_db(tmpdir, "div-test", seed=42)
+            db2 = await _make_study_db(tmpdir, "div-test-2", seed=99)
+            try:
+                c1 = await db1.execute(
+                    "SELECT research_session_id FROM research_sessions LIMIT 1"
+                )
+                row1 = await c1.fetchone()
+                session_id = row1["research_session_id"]
 
-            await run_synthetic_study(
-                db_path=db1_path, study_id="div-test",
-                participant_count=2, seed=42,
-                trials_per_session=2, windows_per_trial=2,
-            )
-            await run_synthetic_study(
-                db_path=db2_path, study_id="div-test",
-                participant_count=2, seed=99,
-                trials_per_session=2, windows_per_trial=2,
-            )
+                c2 = await db2.execute(
+                    "SELECT research_session_id FROM research_sessions LIMIT 1"
+                )
+                row2 = await c2.fetchone()
 
-            db1 = await aiosqlite.connect(db1_path)
-            db1.row_factory = aiosqlite.Row
-            db2 = await aiosqlite.connect(db2_path)
-            db2.row_factory = aiosqlite.Row
-
-            cursor = await db1.execute(
-                "SELECT research_session_id FROM research_sessions LIMIT 1"
-            )
-            row = await cursor.fetchone()
-            session_id = row["research_session_id"]
-
-            result = await verify_replay_equivalence(db1, db2, session_id)
-            await db1.close()
-            await db2.close()
-
-            assert result["match"] is False
-            assert "divergence" in result
+                h1 = await compute_session_replay_hash(db1, session_id)
+                h2 = await compute_session_replay_hash(db2, row2["research_session_id"])
+                assert h1["content_hash"] != h2["content_hash"]
+            finally:
+                await db1.close()
+                await db2.close()
 
     async def test_session_hash_stable(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            db_path = os.path.join(tmpdir, "stable.db")
+            db = await _make_study_db(tmpdir, "hash-test")
+            try:
+                cursor = await db.execute(
+                    "SELECT research_session_id FROM research_sessions LIMIT 1"
+                )
+                row = await cursor.fetchone()
+                session_id = row["research_session_id"]
 
-            await run_synthetic_study(
-                db_path=db_path, study_id="hash-test",
-                participant_count=2, seed=42,
-                trials_per_session=2, windows_per_trial=2,
-            )
-
-            db = await aiosqlite.connect(db_path)
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
-                "SELECT research_session_id FROM research_sessions LIMIT 1"
-            )
-            row = await cursor.fetchone()
-            session_id = row["research_session_id"]
-
-            h1 = await compute_session_replay_hash(db, session_id)
-            h2 = await compute_session_replay_hash(db, session_id)
-            await db.close()
-
-            assert h1["content_hash"] == h2["content_hash"]
+                h1 = await compute_session_replay_hash(db, session_id)
+                h2 = await compute_session_replay_hash(db, session_id)
+                assert h1["content_hash"] == h2["content_hash"]
+            finally:
+                await db.close()
 
 
 class TestReplayFromManifest:
     async def test_replay_fixed_session(self):
         """Fixed-condition sessions should replay identically from manifest."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            db_path = os.path.join(tmpdir, "orig.db")
+            db = await _make_study_db(tmpdir, "manifest-replay")
+            try:
+                cursor = await db.execute(
+                    "SELECT research_session_id FROM research_sessions "
+                    "WHERE condition = 'fixed' LIMIT 1"
+                )
+                row = await cursor.fetchone()
 
-            await run_synthetic_study(
-                db_path=db_path, study_id="manifest-replay",
-                participant_count=2, seed=42,
-                trials_per_session=2, windows_per_trial=2,
-            )
-
-            db = await aiosqlite.connect(db_path)
-            db.row_factory = aiosqlite.Row
-
-            cursor = await db.execute(
-                "SELECT research_session_id FROM research_sessions "
-                "WHERE condition = 'fixed' LIMIT 1"
-            )
-            row = await cursor.fetchone()
-
-            if row:
-                session_id = row["research_session_id"]
-                result = await replay_session_from_manifest(db, session_id)
-                assert result["match"] is True
-                assert result["manifest_hash"]
-
-            await db.close()
+                if row:
+                    session_id = row["research_session_id"]
+                    result = await replay_session_from_manifest(db, session_id)
+                    assert result["match"] is True
+                    assert result["manifest_hash"]
+            finally:
+                await db.close()

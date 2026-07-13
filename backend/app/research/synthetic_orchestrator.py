@@ -33,7 +33,6 @@ from app.research.yoked_library import (
     generate_trajectories,
     get_trajectory_points,
 )
-from app.storage.migration_runner import run_migrations
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +66,7 @@ class SyntheticSafetyMonitor:
 
 
 async def run_synthetic_study(
-    db_path: str,
+    db: aiosqlite.Connection,
     study_id: str = "synthetic-001",
     participant_count: int = 6,
     seed: int = 42,
@@ -76,18 +75,10 @@ async def run_synthetic_study(
     export_dir: str | None = None,
     run_id: str | None = None,
 ) -> dict[str, Any]:
-    db = await aiosqlite.connect(db_path)
-    db.row_factory = aiosqlite.Row
-    await db.execute("PRAGMA foreign_keys = ON")
-    await run_migrations(db)
-
-    try:
-        return await _execute_study(
-            db, study_id, participant_count, seed,
-            trials_per_session, windows_per_trial, export_dir, run_id,
-        )
-    finally:
-        await db.close()
+    return await _execute_study(
+        db, study_id, participant_count, seed,
+        trials_per_session, windows_per_trial, export_dir, run_id,
+    )
 
 
 async def _execute_study(
