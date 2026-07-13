@@ -33,7 +33,10 @@ export default function SyntheticDemoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/synthetic-runtime/studies`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": `${studyId}-${Date.now()}`,
+        },
         body: JSON.stringify({
           study_id: studyId,
           participant_count: participantCount,
@@ -64,7 +67,7 @@ export default function SyntheticDemoPage() {
         if (res.ok) {
           const data: RunStatus = await res.json();
           setRunStatus(data);
-          if (data.status === "completed" || data.status === "failed" || data.status === "aborted") {
+          if (data.status === "completed" || data.status === "completed_with_failures" || data.status === "failed" || data.status === "aborted") {
             setPolling(false);
           }
         }
