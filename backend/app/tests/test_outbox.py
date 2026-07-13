@@ -135,3 +135,77 @@ class TestOutboxDispatcher:
 
         pending = await count_pending(outbox_db)
         assert pending == 0
+
+    async def test_dispatch_retry_after_consumer_failure(self, outbox_db):
+        writer = PersistentOutboxWriter(outbox_db)
+        ts = datetime.now(timezone.utc)
+        await writer.publish(RuntimeEvent("ev1", "rs1", {"a": 1}, ts))
+        await writer.flush()
+        await outbox_db.commit()
+
+        class FailOnce:
+            def __init__(self):
+                self.call_count = 0
+                self.received = []
+
+            async def handle(self, event_type, payload, session_id, created_at):
+                self.call_count += 1
+                if self.call_count == 1:
+                    raise RuntimeError("Transient")
+                self.received.append(event_type)
+
+        consumer = FailOnce()
+        await dispatch_pending(outbox_db, consumer)
+        assert await count_pending(outbox_db) == 1
+
+        await dispatch_pending(outbox_db, consumer)
+        assert await count_pending(outbox_db) == 0
+        assert len(consumer.received) == 1
+
+    async def test_recovery_of_pending_after_restart(self, outbox_db):
+        writer = PersistentOutboxWriter(outbox_db)
+        ts = datetime.now(timezone.utc)
+        await writer.publish(RuntimeEvent("crash_ev", "rs1", {"data": 1}, ts))
+        await writer.flush()
+        await outbox_db.commit()
+
+        assert await count_pending(outbox_db) == 1
+
+        consumer = CollectingOutboxConsumer()
+        dispatched = await dispatch_pending(outbox_db, consumer)
+        assert dispatched == 1
+        assert consumer.received[0]["event_type"] == "crash_ev"
+
+
+class TestProductionOutbox:
+    async def test_orchestrator_writes_outbox_events(self):
+        """Production orchestrator uses PersistentOutboxWriter, not CollectingEventSink."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "prod_outbox.db")
+            db = await aiosqlite.connect(db_path)
+            db.row_factory = aiosqlite.Row
+            await db.execute("PRAGMA foreign_keys = ON")
+            await run_migrations(db)
+
+            from app.research.synthetic_orchestrator import run_synthetic_study
+
+            await run_synthetic_study(
+                db=db, study_id="outbox-prod",
+                participant_count=2, seed=42,
+                trials_per_session=2, windows_per_trial=2,
+            )
+
+            row = await (await db.execute(
+                "SELECT COUNT(*) as cnt FROM runtime_event_outbox"
+            )).fetchone()
+            assert row["cnt"] > 0
+
+            published = await (await db.execute(
+                "SELECT COUNT(*) as cnt FROM runtime_event_outbox WHERE published_at IS NOT NULL"
+            )).fetchone()
+            assert published["cnt"] == row["cnt"]
+
+            pending = await count_pending(db)
+            assert pending == 0
+
+            await db.close()

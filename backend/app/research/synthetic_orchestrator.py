@@ -13,7 +13,7 @@ from typing import Any
 
 import aiosqlite
 
-from app.research.event_sinks import CollectingEventSink
+from app.research.event_sinks import PersistentOutboxWriter
 from app.research.export_service import export_synthetic_dataset
 from app.research.feedback_policies import (
     AdaptiveFeedbackPolicy,
@@ -22,6 +22,7 @@ from app.research.feedback_policies import (
 )
 from app.research.id_generator import DeterministicIdGenerator
 from app.research.manifest import create_session_manifest, seal_session_completion
+from app.research.outbox import LoggingOutboxConsumer, dispatch_pending
 from app.research.replay_validator import compute_session_replay_hash
 from app.research.runtime import ResearchSessionRuntime, SafetyDecision
 from app.research.runtime_clock import DeterministicClock
@@ -240,7 +241,7 @@ async def _execute_study(
 
             clock = DeterministicClock()
             id_gen = DeterministicIdGenerator(study_id, protocol_hash, session_seed)
-            sink = CollectingEventSink()
+            sink = PersistentOutboxWriter(db)
             safety = SyntheticSafetyMonitor()
 
             if condition == "adaptive":
@@ -280,6 +281,7 @@ async def _execute_study(
                     sealed_at=datetime.now(timezone.utc),
                 )
                 await db.commit()
+                await dispatch_pending(db, LoggingOutboxConsumer())
             except Exception as exc:
                 err = SessionExecutionError(session_id, condition, exc)
                 session_errors.append(err)
