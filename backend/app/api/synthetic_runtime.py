@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException
@@ -146,6 +147,43 @@ async def abort_run(run_id: str):
         await db.close()
 
 
+@router.get("/runs/{run_id}/sessions")
+async def get_run_sessions(run_id: str):
+    db = await get_db()
+    try:
+        row = await get_run(db, run_id)
+        if not row:
+            raise HTTPException(status_code=404, detail="Run not found")
+
+        sessions = await (await db.execute(
+            "SELECT research_session_id, participant_id, condition, status, "
+            "session_index, runtime_seed "
+            "FROM research_sessions WHERE study_id = ? ORDER BY research_session_id",
+            (row["study_id"],),
+        )).fetchall()
+        return [dict(s) for s in sessions]
+    finally:
+        await db.close()
+
+
+@router.get("/runs/{run_id}/failures")
+async def get_run_failures(run_id: str):
+    db = await get_db()
+    try:
+        row = await get_run(db, run_id)
+        if not row:
+            raise HTTPException(status_code=404, detail="Run not found")
+
+        sessions = await (await db.execute(
+            "SELECT research_session_id, participant_id, condition, status, terminal_reason "
+            "FROM research_sessions WHERE study_id = ? AND status NOT IN ('completed', 'planned')",
+            (row["study_id"],),
+        )).fetchall()
+        return [dict(s) for s in sessions]
+    finally:
+        await db.close()
+
+
 @router.get("/exports/{study_id}")
 async def get_export(study_id: str):
     export_dir = os.path.join(_EXPORT_ROOT, study_id)
@@ -153,6 +191,17 @@ async def get_export(study_id: str):
         raise HTTPException(status_code=404, detail="Export not found")
     files = os.listdir(export_dir)
     return {"study_id": study_id, "files": files, "export_dir": study_id}
+
+
+@router.get("/exports/{study_id}/validation")
+async def get_export_validation(study_id: str):
+    export_dir = os.path.join(_EXPORT_ROOT, study_id)
+    if not os.path.isdir(export_dir):
+        raise HTTPException(status_code=404, detail="Export not found")
+
+    from app.research.export_service import validate_export
+    result = validate_export(export_dir)
+    return {"study_id": study_id, **result}
 
 
 @router.get("/replay/{study_id}")
@@ -172,6 +221,15 @@ async def get_replay_status(study_id: str):
         await db.close()
 
 
+@router.post("/replay/{study_id}/start", status_code=202)
+async def start_replay_verification(study_id: str):
+    return {
+        "study_id": study_id,
+        "status": "replay_not_implemented_yet",
+        "message": "Replay verification is available via CLI and tests. API endpoint pending.",
+    }
+
+
 async def recover_interrupted_runs() -> int:
     db = await get_db()
     try:
@@ -188,9 +246,8 @@ async def _execute_run(run_id: str, request: StudyCreateRequest):
 
     db = await get_db()
     try:
-        await update_run_phase(db, run_id, "running", "running",
-                               started_at=__import__("datetime").datetime.now(
-                                   __import__("datetime").timezone.utc).isoformat())
+        now = datetime.now(timezone.utc).isoformat()
+        await update_run_phase(db, run_id, "running", "running", started_at=now)
 
         export_dir = os.path.join(_EXPORT_ROOT, request.study_id)
         db_path = os.path.join(_EXPORT_ROOT, f"{request.study_id}.db")
@@ -211,20 +268,14 @@ async def _execute_run(run_id: str, request: StudyCreateRequest):
         failed = result["sessions_failed"]
         await update_run_progress(db, run_id, completed, failed)
 
-        if failed > 0:
-            final_status = "completed_with_failures"
-        else:
-            final_status = "completed"
-
-        await update_run_phase(db, run_id, final_status, "completed",
-                               ended_at=__import__("datetime").datetime.now(
-                                   __import__("datetime").timezone.utc).isoformat())
+        final_status = "completed_with_failures" if failed > 0 else "completed"
+        now = datetime.now(timezone.utc).isoformat()
+        await update_run_phase(db, run_id, final_status, "completed", ended_at=now)
     except Exception as e:
         try:
+            now = datetime.now(timezone.utc).isoformat()
             await update_run_phase(db, run_id, "failed", "failed",
-                                   error_message=str(e),
-                                   ended_at=__import__("datetime").datetime.now(
-                                       __import__("datetime").timezone.utc).isoformat())
+                                   error_message=str(e), ended_at=now)
         except Exception:
             pass
         logger.exception("Run %s failed", run_id)
