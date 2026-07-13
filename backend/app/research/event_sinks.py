@@ -6,9 +6,13 @@ committed domain events for subscribers (WebSocket, logging, test collection).
 """
 from __future__ import annotations
 
+import json
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Protocol
+
+import aiosqlite
 
 
 @dataclass
@@ -61,3 +65,52 @@ class NullEventSink:
 
     async def flush(self) -> None:
         pass
+
+
+class PersistentOutboxWriter:
+    """Writes events to runtime_event_outbox inside the caller's transaction."""
+
+    def __init__(self, db: aiosqlite.Connection):
+        self._db = db
+        self._pending: list[RuntimeEvent] = []
+
+    async def publish(self, event: RuntimeEvent) -> None:
+        self._pending.append(event)
+
+    async def flush(self) -> None:
+        for event in self._pending:
+            await self._db.execute(
+                "INSERT INTO runtime_event_outbox "
+                "(outbox_id, research_session_id, event_type, payload_json, "
+                "created_at, dispatch_attempts) "
+                "VALUES (?, ?, ?, ?, ?, 0)",
+                (
+                    str(uuid.uuid4()),
+                    event.research_session_id,
+                    event.event_type,
+                    json.dumps(event.payload, default=str),
+                    event.timestamp.isoformat(),
+                ),
+            )
+        self._pending.clear()
+
+    async def flush_within_transaction(self) -> int:
+        """Write pending events as part of the current transaction (no commit)."""
+        count = 0
+        for event in self._pending:
+            await self._db.execute(
+                "INSERT INTO runtime_event_outbox "
+                "(outbox_id, research_session_id, event_type, payload_json, "
+                "created_at, dispatch_attempts) "
+                "VALUES (?, ?, ?, ?, ?, 0)",
+                (
+                    str(uuid.uuid4()),
+                    event.research_session_id,
+                    event.event_type,
+                    json.dumps(event.payload, default=str),
+                    event.timestamp.isoformat(),
+                ),
+            )
+            count += 1
+        self._pending.clear()
+        return count
