@@ -81,6 +81,7 @@ async def run_synthetic_study(
     trials_per_session: int = 5,
     windows_per_trial: int = 3,
     export_dir: str | None = None,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
     db = await aiosqlite.connect(db_path)
     db.row_factory = aiosqlite.Row
@@ -90,7 +91,7 @@ async def run_synthetic_study(
     try:
         return await _execute_study(
             db, study_id, participant_count, seed,
-            trials_per_session, windows_per_trial, export_dir,
+            trials_per_session, windows_per_trial, export_dir, run_id,
         )
     finally:
         await db.close()
@@ -104,6 +105,7 @@ async def _execute_study(
     trials_per_session: int,
     windows_per_trial: int,
     export_dir: str | None,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
     now = datetime.now(timezone.utc).isoformat()
 
@@ -222,19 +224,21 @@ async def _execute_study(
             except Exception:
                 sessions_failed += 1
 
-    run_id = str(uuid.uuid4())
-    await db.execute(
-        "INSERT INTO runtime_runs "
-        "(run_id, study_id, status, total_sessions, completed_sessions, "
-        "failed_sessions, runtime_seed, created_at, ended_at) "
-        "VALUES (?, ?, 'completed', ?, ?, ?, ?, ?, ?)",
-        (
-            run_id, study_id,
-            participant_count * 3, sessions_completed, sessions_failed,
-            seed, now, datetime.now(timezone.utc).isoformat(),
-        ),
-    )
-    await db.commit()
+    final_run_id = run_id or str(uuid.uuid4())
+    if not run_id:
+        await db.execute(
+            "INSERT INTO runtime_runs "
+            "(run_id, study_id, status, total_sessions, completed_sessions, "
+            "failed_sessions, runtime_seed, created_at, ended_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                final_run_id, study_id,
+                "completed_with_failures" if sessions_failed > 0 else "completed",
+                participant_count * 3, sessions_completed, sessions_failed,
+                seed, now, datetime.now(timezone.utc).isoformat(),
+            ),
+        )
+        await db.commit()
 
     export_result = None
     if export_dir:
@@ -242,7 +246,7 @@ async def _execute_study(
 
     return {
         "study_id": study_id,
-        "run_id": run_id,
+        "run_id": final_run_id,
         "participants": participant_count,
         "sessions_completed": sessions_completed,
         "sessions_failed": sessions_failed,

@@ -24,7 +24,7 @@ async def reg_db():
 class TestGateARegression:
     async def test_migrations_run_on_fresh_db(self, reg_db):
         version = await current_version(reg_db)
-        assert version >= 3
+        assert version >= 4
 
     async def test_williams_sequences_exist(self):
         assert len(WILLIAMS_SEQUENCES) == 6

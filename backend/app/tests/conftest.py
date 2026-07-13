@@ -55,6 +55,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_synthetic_orchestrator": ["research", "integration"],
     "test_replay_validator": ["research", "integration"],
     "test_regression_gate_a": ["research", "integration"],
+    "test_run_service": ["research", "integration"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 

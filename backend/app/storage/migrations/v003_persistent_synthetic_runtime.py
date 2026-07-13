@@ -248,7 +248,8 @@ CREATE TABLE IF NOT EXISTS runtime_runs (
     idempotency_key TEXT UNIQUE,
     status TEXT NOT NULL DEFAULT 'created'
         CHECK(status IN (
-            'created','running','completed','failed','interrupted','aborted'
+            'created','accepted','running','completed','completed_with_failures',
+            'failed','interrupted','aborted','abort_requested'
         )),
     total_sessions INTEGER NOT NULL DEFAULT 0,
     completed_sessions INTEGER NOT NULL DEFAULT 0,

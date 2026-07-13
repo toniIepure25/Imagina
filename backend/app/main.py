@@ -36,6 +36,8 @@ from app.websocket.session_stream import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    from app.api.synthetic_runtime import recover_interrupted_runs
+    await recover_interrupted_runs()
     yield
 
 

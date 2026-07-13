@@ -2,23 +2,41 @@
 
 All endpoints are restricted to synthetic data classification.
 No endpoint can create or run a human_research study.
+Run state is persisted in the database and survives process restart.
 """
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
-import uuid
-from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
+
+from app.research.run_service import (
+    RunConflictError,
+    RunNotFoundError,
+    RunTerminalError,
+    create_run,
+    get_run,
+    list_runs,
+    mark_interrupted_on_startup,
+    request_abort,
+    update_run_phase,
+    update_run_progress,
+)
+from app.storage.database import get_db
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/synthetic-runtime", tags=["synthetic-runtime"])
 
-_EXPORT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", "synthetic_exports")
+_EXPORT_ROOT = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", "synthetic_exports"
+)
 
-_active_runs: dict[str, dict[str, Any]] = {}
+_task_registry: dict[str, asyncio.Task] = {}
 
 
 class StudyCreateRequest(BaseModel):
@@ -27,13 +45,13 @@ class StudyCreateRequest(BaseModel):
     seed: int = Field(default=42)
     trials_per_session: int = Field(default=5, ge=1, le=30)
     windows_per_trial: int = Field(default=3, ge=1, le=20)
-    idempotency_key: str = Field(default_factory=lambda: str(uuid.uuid4()))
 
 
 class RunStatusResponse(BaseModel):
     run_id: str
     study_id: str
     status: str
+    current_phase: str | None = None
     sessions_completed: int = 0
     sessions_failed: int = 0
     total_sessions: int = 0
@@ -42,60 +60,90 @@ class RunStatusResponse(BaseModel):
     error: str | None = None
 
 
+def _run_to_response(row: dict[str, Any]) -> RunStatusResponse:
+    return RunStatusResponse(
+        run_id=row["run_id"],
+        study_id=row["study_id"],
+        status=row["status"],
+        current_phase=row.get("current_phase"),
+        sessions_completed=row.get("completed_sessions", 0),
+        sessions_failed=row.get("failed_sessions", 0),
+        total_sessions=row.get("total_sessions", 0),
+        export_ready=row["status"] in ("completed", "completed_with_failures"),
+        replay_verified=False,
+        error=row.get("error_message"),
+    )
+
+
 @router.post("/studies", status_code=202)
-async def create_synthetic_study(request: StudyCreateRequest):
-    if request.study_id in _active_runs:
-        existing = _active_runs[request.study_id]
-        if existing.get("idempotency_key") == request.idempotency_key:
-            return {"run_id": existing["run_id"], "status": existing["status"]}
-        raise HTTPException(status_code=409, detail="Study already exists with different parameters")
+async def create_synthetic_study(
+    request: StudyCreateRequest,
+    idempotency_key: str = Header(None, alias="Idempotency-Key"),
+):
+    if not idempotency_key:
+        raise HTTPException(status_code=422, detail="Idempotency-Key header required")
 
-    run_id = str(uuid.uuid4())
-    run_info = {
-        "run_id": run_id,
-        "study_id": request.study_id,
-        "status": "accepted",
-        "idempotency_key": request.idempotency_key,
-        "sessions_completed": 0,
-        "sessions_failed": 0,
-        "total_sessions": request.participant_count * 3,
-        "export_ready": False,
-        "replay_verified": False,
-        "error": None,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    _active_runs[request.study_id] = run_info
+    db = await get_db()
+    try:
+        input_params = request.model_dump()
+        run_row = await create_run(
+            db, request.study_id, idempotency_key, input_params,
+            request.seed, request.participant_count * 3,
+        )
 
-    asyncio.create_task(_execute_run(request, run_id))
+        if run_row["status"] != "accepted":
+            return _run_to_response(run_row)
 
-    return {"run_id": run_id, "status": "accepted", "poll_url": f"/api/synthetic-runtime/runs/{run_id}"}
+        task = asyncio.create_task(
+            _execute_run(run_row["run_id"], request)
+        )
+        _task_registry[run_row["run_id"]] = task
+
+        return {
+            "run_id": run_row["run_id"],
+            "status": "accepted",
+            "poll_url": f"/api/synthetic-runtime/runs/{run_row['run_id']}",
+        }
+    except RunConflictError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    finally:
+        await db.close()
 
 
 @router.get("/runs/{run_id}")
 async def get_run_status(run_id: str):
-    for info in _active_runs.values():
-        if info["run_id"] == run_id:
-            return RunStatusResponse(**{k: info[k] for k in RunStatusResponse.model_fields})
-    raise HTTPException(status_code=404, detail="Run not found")
+    db = await get_db()
+    try:
+        row = await get_run(db, run_id)
+        if not row:
+            raise HTTPException(status_code=404, detail="Run not found")
+        return _run_to_response(row)
+    finally:
+        await db.close()
 
 
 @router.get("/runs")
-async def list_runs():
-    return [
-        RunStatusResponse(**{k: info[k] for k in RunStatusResponse.model_fields})
-        for info in _active_runs.values()
-    ]
+async def list_all_runs():
+    db = await get_db()
+    try:
+        rows = await list_runs(db)
+        return [_run_to_response(r) for r in rows]
+    finally:
+        await db.close()
 
 
 @router.post("/runs/{run_id}/abort")
 async def abort_run(run_id: str):
-    for info in _active_runs.values():
-        if info["run_id"] == run_id:
-            if info["status"] in ("completed", "failed"):
-                raise HTTPException(status_code=409, detail=f"Run already {info['status']}")
-            info["status"] = "aborted"
-            return {"run_id": run_id, "status": "aborted"}
-    raise HTTPException(status_code=404, detail="Run not found")
+    db = await get_db()
+    try:
+        row = await request_abort(db, run_id)
+        return _run_to_response(row)
+    except RunNotFoundError:
+        raise HTTPException(status_code=404, detail="Run not found")
+    except RunTerminalError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    finally:
+        await db.close()
 
 
 @router.get("/exports/{study_id}")
@@ -103,38 +151,51 @@ async def get_export(study_id: str):
     export_dir = os.path.join(_EXPORT_ROOT, study_id)
     if not os.path.isdir(export_dir):
         raise HTTPException(status_code=404, detail="Export not found")
-
     files = os.listdir(export_dir)
-    return {
-        "study_id": study_id,
-        "files": files,
-        "export_dir": study_id,
-    }
+    return {"study_id": study_id, "files": files, "export_dir": study_id}
 
 
 @router.get("/replay/{study_id}")
 async def get_replay_status(study_id: str):
-    for info in _active_runs.values():
-        if info["study_id"] == study_id:
-            return {
-                "study_id": study_id,
-                "replay_verified": info.get("replay_verified", False),
-                "replay_hash": info.get("replay_hash"),
-            }
-    raise HTTPException(status_code=404, detail="Study not found")
+    db = await get_db()
+    try:
+        rows = await list_runs(db, study_id)
+        if not rows:
+            raise HTTPException(status_code=404, detail="Study not found")
+        latest = rows[0]
+        return {
+            "study_id": study_id,
+            "replay_verified": False,
+            "run_status": latest["status"],
+        }
+    finally:
+        await db.close()
 
 
-async def _execute_run(request: StudyCreateRequest, run_id: str):
+async def recover_interrupted_runs() -> int:
+    db = await get_db()
+    try:
+        count = await mark_interrupted_on_startup(db)
+        if count > 0:
+            logger.warning("Marked %d interrupted run(s) on startup", count)
+        return count
+    finally:
+        await db.close()
+
+
+async def _execute_run(run_id: str, request: StudyCreateRequest):
     from app.research.synthetic_orchestrator import run_synthetic_study
 
-    info = _active_runs[request.study_id]
-    info["status"] = "running"
-
-    export_dir = os.path.join(_EXPORT_ROOT, request.study_id)
-    db_path = os.path.join(_EXPORT_ROOT, f"{request.study_id}.db")
-    os.makedirs(_EXPORT_ROOT, exist_ok=True)
-
+    db = await get_db()
     try:
+        await update_run_phase(db, run_id, "running", "running",
+                               started_at=__import__("datetime").datetime.now(
+                                   __import__("datetime").timezone.utc).isoformat())
+
+        export_dir = os.path.join(_EXPORT_ROOT, request.study_id)
+        db_path = os.path.join(_EXPORT_ROOT, f"{request.study_id}.db")
+        os.makedirs(_EXPORT_ROOT, exist_ok=True)
+
         result = await run_synthetic_study(
             db_path=db_path,
             study_id=request.study_id,
@@ -143,11 +204,30 @@ async def _execute_run(request: StudyCreateRequest, run_id: str):
             trials_per_session=request.trials_per_session,
             windows_per_trial=request.windows_per_trial,
             export_dir=export_dir,
+            run_id=run_id,
         )
-        info["sessions_completed"] = result["sessions_completed"]
-        info["sessions_failed"] = result["sessions_failed"]
-        info["export_ready"] = True
-        info["status"] = "completed"
+
+        completed = result["sessions_completed"]
+        failed = result["sessions_failed"]
+        await update_run_progress(db, run_id, completed, failed)
+
+        if failed > 0:
+            final_status = "completed_with_failures"
+        else:
+            final_status = "completed"
+
+        await update_run_phase(db, run_id, final_status, "completed",
+                               ended_at=__import__("datetime").datetime.now(
+                                   __import__("datetime").timezone.utc).isoformat())
     except Exception as e:
-        info["status"] = "failed"
-        info["error"] = str(e)
+        try:
+            await update_run_phase(db, run_id, "failed", "failed",
+                                   error_message=str(e),
+                                   ended_at=__import__("datetime").datetime.now(
+                                       __import__("datetime").timezone.utc).isoformat())
+        except Exception:
+            pass
+        logger.exception("Run %s failed", run_id)
+    finally:
+        await db.close()
+        _task_registry.pop(run_id, None)
