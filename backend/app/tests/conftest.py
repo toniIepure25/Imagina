@@ -58,6 +58,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_run_service": ["research", "integration"],
     "test_outbox": ["research", "integration"],
     "test_manifest": ["research", "integration"],
+    "test_export_service": ["research", "integration"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
