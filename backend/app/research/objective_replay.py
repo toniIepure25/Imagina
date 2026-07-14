@@ -165,12 +165,13 @@ async def _reconstruct_session_from_db(db, session_id: str) -> ObjectiveSessionR
             "SELECT * FROM objective_trial_responses WHERE trial_spec_id = ?",
             (spec["id"],),
         )).fetchone()
+        if not resp:
+            continue
         score = await (await db.execute(
-            "SELECT * FROM objective_trial_scores WHERE trial_spec_id = ?",
-            (spec["id"],),
+            "SELECT * FROM objective_trial_scores WHERE response_id = ?",
+            (resp["id"],),
         )).fetchone()
-
-        if not resp or not score:
+        if not score:
             continue
 
         trial_id = f"{session_id}-t{spec['trial_index']}-{spec['task_family']}"
@@ -208,7 +209,7 @@ async def _reconstruct_session_from_db(db, session_id: str) -> ObjectiveSessionR
             confidence=resp["confidence"] or 0,
             vividness=resp["vividness"] or 0,
             effort=resp["effort"] or 0,
-            latency_ms=resp["response_latency_ms"] if "response_latency_ms" in resp.keys() else resp.get("latency_ms", 0),
+            latency_ms=resp["latency_ms"] if "latency_ms" in resp.keys() else 0,
             scoring_version=SCORING_VERSION,
             endpoint_registry_hash=score["endpoint_registry_hash"] or "",
         ))

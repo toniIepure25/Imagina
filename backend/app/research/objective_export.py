@@ -104,9 +104,12 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
                     "effort": resp["effort"],
                 })
 
-            score = await (await db.execute(
-                "SELECT * FROM objective_trial_scores WHERE trial_spec_id = ?", (spec["id"],),
-            )).fetchone()
+            score_row = None
+            if resp:
+                score_row = await (await db.execute(
+                    "SELECT * FROM objective_trial_scores WHERE response_id = ?", (resp["id"],),
+                )).fetchone()
+            score = score_row
             if score:
                 package.component_scores.append({
                     "trial_spec_id": spec["id"],
