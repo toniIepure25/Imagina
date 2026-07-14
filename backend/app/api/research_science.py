@@ -100,7 +100,7 @@ async def get_design(design_id: str):
 @router.post("/simulations", status_code=202)
 async def create_simulation(req: SimulationCreateRequest):
     from app.research.cognitive_agent import SCENARIOS
-    from app.research.design_simulation import SIMULATION_MODES, run_simulation
+    from app.research.design_simulation import SIMULATION_MODES
 
     scenario = SCENARIOS.get(req.scenario_id)
     if not scenario:
@@ -126,24 +126,14 @@ async def create_simulation(req: SimulationCreateRequest):
                         "result": json.loads(summary["summary_json"]) if summary else {}}
             if status == "aborted":
                 return {"id": run_id, "status": "aborted"}
-            if status in ("queued", "claimed", "running", "checkpointed"):
-                await db.execute(
-                    "UPDATE simulation_runs SET status = 'claimed', started_at = datetime('now') WHERE id = ?",
-                    (run_id,),
-                )
-                await db.commit()
-            elif status == "failed":
-                await db.execute(
-                    "UPDATE simulation_runs SET status = 'claimed', started_at = datetime('now'), error_message = NULL WHERE id = ?",
-                    (run_id,),
-                )
-                await db.commit()
+            if status in ("queued", "claimed", "running", "checkpointed", "failed"):
+                return {"id": run_id, "status": status}
         else:
             cursor = await db.execute(
                 """INSERT INTO simulation_runs
                    (study_id, scenario_id, mode, n_iterations, n_participants,
                     base_seed, status, started_at)
-                   VALUES (?, ?, ?, ?, ?, ?, 'claimed', datetime('now'))""",
+                   VALUES (?, ?, ?, ?, ?, ?, 'queued', datetime('now'))""",
                 (idem_key, req.scenario_id, req.mode, mode_config["iterations"],
                  req.n_participants, req.base_seed),
             )
@@ -152,58 +142,7 @@ async def create_simulation(req: SimulationCreateRequest):
     finally:
         await db.close()
 
-    db = await get_db()
-    try:
-        await db.execute(
-            "UPDATE simulation_runs SET status = 'running' WHERE id = ?", (run_id,),
-        )
-        await db.commit()
-    finally:
-        await db.close()
-
-    try:
-        result = run_simulation(
-            scenario,
-            n_iterations=mode_config["iterations"],
-            n_participants=req.n_participants,
-            base_seed=req.base_seed,
-            mode=req.mode,
-        )
-        db = await get_db()
-        try:
-            result_json = json.dumps(result.to_dict(), default=str)
-            await db.execute(
-                "UPDATE simulation_runs SET status = 'completed', completed_at = datetime('now') WHERE id = ?",
-                (run_id,),
-            )
-            await db.execute(
-                """INSERT OR REPLACE INTO simulation_summaries
-                   (run_id, power, type_i_error, coverage, bias, rmse,
-                    convergence_rate, fallback_rate, valid_inference_rate,
-                    nc_fp_rate, oracle_effect, oracle_se, summary_json)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (run_id, result.power, result.type_i_error, result.coverage,
-                 result.bias, result.rmse, result.convergence_rate,
-                 result.fallback_rate, result.valid_inference_rate,
-                 result.negative_control_fp_rate, result.oracle_effect,
-                 result.oracle_se, result_json),
-            )
-            await db.commit()
-        finally:
-            await db.close()
-    except Exception as e:
-        db = await get_db()
-        try:
-            await db.execute(
-                "UPDATE simulation_runs SET status = 'failed', error_message = ? WHERE id = ?",
-                (str(e), run_id),
-            )
-            await db.commit()
-        finally:
-            await db.close()
-        raise HTTPException(status_code=500, detail=str(e))
-
-    return {"id": run_id, "status": "completed", "result": result.to_dict()}
+    return {"id": run_id, "status": "queued"}
 
 
 @router.get("/simulations/{run_id}")
