@@ -2,19 +2,26 @@
 
 Extends the existing research runtime to support objective psychophysics
 task types while preventing evaluation leakage into the adaptive policy.
+Includes the objective session executor for running task blocks through
+the persistent runtime with LeakageGuard enforcement.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import dataclass, field
 from typing import Any
 
-from app.research.objective_endpoints import REGISTRY_VERSION, registry_hash
+from app.research.objective_endpoints import (
+    REGISTRY_VERSION,
+    registry_hash,
+)
 from app.research.psychophysics.calibration import CALIBRATION_VERSION
-from app.research.psychophysics.common import BATTERY_VERSION, TaskFamily
+from app.research.psychophysics.common import BATTERY_VERSION, StimulusSpec, TaskFamily
 from app.research.psychophysics.scoring import SCORING_VERSION
+from app.research.rng_registry import derive_seed
 
-OBJECTIVE_RUNTIME_VERSION = "1.0"
+OBJECTIVE_RUNTIME_VERSION = "2.0"
 
 TASK_TYPES = {
     "imagery_reconstruction": TaskFamily.FEATURE_RECONSTRUCTION,
@@ -106,9 +113,9 @@ class LeakageGuard:
     def check_policy_input(self, context: dict[str, Any]) -> list[str]:
         """Return list of leaked field names, empty if clean."""
         violations: list[str] = []
-        for field in self._reserved_fields:
-            if field in context:
-                violations.append(field)
+        for fname in self._reserved_fields:
+            if fname in context:
+                violations.append(fname)
         for key in context:
             if key.startswith("objective_") and key != "objective_battery_version":
                 violations.append(key)
@@ -116,6 +123,162 @@ class LeakageGuard:
 
     def is_trial_finalized(self, trial_id: str) -> bool:
         return trial_id in self._finalized_trials
+
+
+class OutcomeLeakageError(Exception):
+    """Raised when objective outcomes leak into the adaptive policy path."""
+
+
+@dataclass
+class LeakageAuditRecord:
+    trial_id: str
+    policy_input_fields: list[str]
+    forbidden_fields_checked: list[str]
+    violations: list[str]
+    outcome_finalization_time: str | None = None
+    policy_decision_time: str | None = None
+    passed: bool = True
+
+    def to_dict(self) -> dict[str, Any]:
+        return {k: v for k, v in self.__dict__.items()}
+
+
+@dataclass
+class ObjectiveTrialResult:
+    trial_id: str
+    task_family: str
+    target: dict[str, Any]
+    response: dict[str, Any]
+    component_errors: dict[str, float]
+    composite_error: float
+    confidence: float
+    vividness: float
+    effort: float
+    latency_ms: float
+    scoring_version: str = SCORING_VERSION
+    endpoint_registry_hash: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {k: v for k, v in self.__dict__.items()}
+
+
+@dataclass
+class ObjectiveSessionResult:
+    session_id: str
+    participant_id: str
+    condition: str
+    period: int
+    trials: list[ObjectiveTrialResult] = field(default_factory=list)
+    leakage_audit: list[LeakageAuditRecord] = field(default_factory=list)
+    manifest_hash: str = ""
+    content_hash: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "session_id": self.session_id,
+            "participant_id": self.participant_id,
+            "condition": self.condition,
+            "period": self.period,
+            "n_trials": len(self.trials),
+            "trials": [t.to_dict() for t in self.trials],
+            "leakage_audit": [a.to_dict() for a in self.leakage_audit],
+            "manifest_hash": self.manifest_hash,
+            "content_hash": self.content_hash,
+        }
+
+
+def execute_objective_session(
+    session_id: str,
+    participant_id: str,
+    condition: str,
+    period: int,
+    trial_specs: list[dict[str, Any]],
+    response_provider: Any,
+    leakage_guard: LeakageGuard,
+    seed: int,
+    prev_condition: str | None = None,
+) -> ObjectiveSessionResult:
+    """Execute an objective task block through the persistent runtime."""
+    result = ObjectiveSessionResult(
+        session_id=session_id,
+        participant_id=participant_id,
+        condition=condition,
+        period=period,
+    )
+    reg_hash = registry_hash()
+
+    for spec in trial_specs:
+        trial_id = f"{session_id}-t{spec['trial_index']}-{spec['task_family']}"
+        target = StimulusSpec(
+            orientation_deg=spec.get("target_orientation", 45),
+            hue_deg=spec.get("target_hue", 120),
+            spatial_frequency_cpd=spec.get("target_sf", 3.0),
+            position_x=spec.get("target_pos_x", 500),
+            position_y=spec.get("target_pos_y", 400),
+            size=spec.get("target_size", 50),
+        )
+
+        trial_seed = derive_seed(seed, "simulation",
+                                  participant_id=participant_id,
+                                  session_index=period,
+                                  trial_index=spec["trial_index"])
+
+        resp = response_provider.generate_response(
+            target=target,
+            expected=target,
+            condition=condition,
+            session_index=period,
+            trial_index=spec["trial_index"],
+            is_perceptual_control=spec.get("is_perceptual_control", False),
+            seed=trial_seed,
+            delay_s=spec.get("delay_s", 0.0),
+            prev_condition=prev_condition,
+        )
+
+        comp_errors = resp.get("component_errors", {})
+        composite = resp.get("composite_error", 0.0)
+
+        leakage_guard.finalize_trial(trial_id)
+
+        policy_context = {"condition": condition, "period": period, "session_id": session_id}
+        violations = leakage_guard.check_policy_input(policy_context)
+        audit = LeakageAuditRecord(
+            trial_id=trial_id,
+            policy_input_fields=list(policy_context.keys()),
+            forbidden_fields_checked=list(leakage_guard._reserved_fields),
+            violations=violations,
+            passed=len(violations) == 0,
+        )
+        result.leakage_audit.append(audit)
+
+        if violations:
+            raise OutcomeLeakageError(
+                f"Objective outcomes leaked into policy context: {violations}"
+            )
+
+        trial_result = ObjectiveTrialResult(
+            trial_id=trial_id,
+            task_family=spec["task_family"],
+            target=target.to_dict(),
+            response=resp.get("response", {}),
+            component_errors=comp_errors,
+            composite_error=composite,
+            confidence=resp.get("confidence", 0),
+            vividness=resp.get("vividness", 0),
+            effort=resp.get("effort", 0),
+            latency_ms=resp.get("latency_ms", 0),
+            endpoint_registry_hash=reg_hash,
+        )
+        result.trials.append(trial_result)
+
+    content = json.dumps(
+        [t.to_dict() for t in result.trials],
+        sort_keys=True, separators=(",", ":"), default=str,
+    )
+    result.content_hash = hashlib.sha256(content.encode()).hexdigest()
+    result.manifest_hash = compute_objective_manifest_hash(manifest_objective_fields())
+
+    return result
 
 
 def compute_objective_manifest_hash(
