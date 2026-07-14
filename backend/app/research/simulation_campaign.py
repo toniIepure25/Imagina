@@ -2,6 +2,10 @@
 
 Runs at least 1000 replicates per core scenario, stores per-batch
 and combined summaries, and reports calibrated operating characteristics.
+
+Fails closed: campaigns with zero valid replicates report metrics as None
+and campaign_valid=False. No numerical Type-I error, power, or coverage
+is reported when there are zero valid replicates.
 """
 from __future__ import annotations
 
@@ -24,9 +28,9 @@ from app.research.cognitive_agent import (
     SCENARIO_SUBJECTIVE_ONLY,
     AgentScenario,
 )
-from app.research.design_simulation import run_simulation
+from app.research.design_simulation import SimulationResult, run_simulation
 
-CAMPAIGN_VERSION = "1.0"
+CAMPAIGN_VERSION = "2.0"
 
 CORE_SCENARIOS: dict[str, AgentScenario] = {
     "strict_null": SCENARIO_STRICT_NULL,
@@ -50,18 +54,21 @@ class BatchSummary:
     batch_index: int
     batch_seed: int
     n_iterations: int
+    n_valid: int
+    n_invalid: int
+    campaign_valid: bool
     oracle_effect: float
     oracle_se: float
-    type_i_error: float
-    power: float
-    bias: float
-    rmse: float
-    coverage: float
+    type_i_error: float | None
+    power: float | None
+    bias: float | None
+    rmse: float | None
+    coverage: float | None
     convergence_rate: float
     fallback_rate: float
     valid_inference_rate: float
-    negative_control_fp_rate: float
-    interval_width: float
+    negative_control_fp_rate: float | None
+    interval_width: float | None
     elapsed_s: float
 
     def to_dict(self) -> dict[str, Any]:
@@ -72,23 +79,27 @@ class BatchSummary:
 class ScenarioSummary:
     scenario_id: str
     total_replicates: int
+    n_valid_replicates: int
+    n_invalid_replicates: int
     n_batches: int
+    campaign_valid: bool
+    invalid_reason: str
     oracle_effect: float
     oracle_se: float
-    type_i_error: float
-    type_i_se: float
-    power: float
-    power_se: float
-    bias: float
-    bias_se: float
-    rmse: float
-    coverage: float
-    coverage_se: float
-    interval_width: float
+    type_i_error: float | None
+    type_i_se: float | None
+    power: float | None
+    power_se: float | None
+    bias: float | None
+    bias_se: float | None
+    rmse: float | None
+    coverage: float | None
+    coverage_se: float | None
+    interval_width: float | None
     convergence_rate: float
     fallback_rate: float
     valid_inference_rate: float
-    negative_control_fp_rate: float
+    negative_control_fp_rate: float | None
     elapsed_s: float
     calibration_pass: bool = False
     issues: list[str] = field(default_factory=list)
@@ -123,25 +134,35 @@ class CampaignResult:
         }
 
 
-def _combine_proportions(values: list[float], counts: list[int]) -> tuple[float, float]:
-    """Weighted average of proportions with binomial SE."""
-    total = sum(counts)
+def _safe_combine_proportions(
+    values: list[float | None],
+    counts: list[int],
+) -> tuple[float | None, float | None]:
+    valid_pairs = [(v, c) for v, c in zip(values, counts) if v is not None and c > 0]
+    if not valid_pairs:
+        return None, None
+    total = sum(c for _, c in valid_pairs)
     if total == 0:
-        return 0.0, 0.0
-    weighted = sum(v * c for v, c in zip(values, counts)) / total
+        return None, None
+    weighted = sum(v * c for v, c in valid_pairs) / total
     se = math.sqrt(weighted * (1 - weighted) / total) if total > 1 else 0.0
     return weighted, se
 
 
-def _combine_means(means: list[float], counts: list[int]) -> tuple[float, float]:
-    """Weighted average of means with SE."""
-    total = sum(counts)
+def _safe_combine_means(
+    means: list[float | None],
+    counts: list[int],
+) -> tuple[float | None, float | None]:
+    valid_pairs = [(m, c) for m, c in zip(means, counts) if m is not None and c > 0]
+    if not valid_pairs:
+        return None, None
+    total = sum(c for _, c in valid_pairs)
     if total == 0:
-        return 0.0, 0.0
-    weighted = sum(m * c for m, c in zip(means, counts)) / total
-    if total > 1 and len(means) > 1:
-        var = sum(c * (m - weighted) ** 2 for m, c in zip(means, counts)) / total
-        se = math.sqrt(var / len(means))
+        return None, None
+    weighted = sum(m * c for m, c in valid_pairs) / total
+    if total > 1 and len(valid_pairs) > 1:
+        var = sum(c * (m - weighted) ** 2 for m, c in valid_pairs) / total
+        se = math.sqrt(var / len(valid_pairs))
     else:
         se = 0.0
     return weighted, se
@@ -184,6 +205,9 @@ def run_scenario_campaign(
             batch_index=bi,
             batch_seed=batch_seed,
             n_iterations=batch_n,
+            n_valid=result.n_valid_replicates,
+            n_invalid=result.n_invalid_replicates,
+            campaign_valid=result.campaign_valid,
             oracle_effect=result.oracle_effect,
             oracle_se=result.oracle_se,
             type_i_error=result.type_i_error,
@@ -205,57 +229,87 @@ def run_scenario_campaign(
 
     total_elapsed = time.time() - start
     counts = [b.n_iterations for b in batch_results]
+    valid_counts = [b.n_valid for b in batch_results]
+    total_valid = sum(valid_counts)
+    total_invalid = sum(b.n_invalid for b in batch_results)
+    total_n = sum(counts)
 
-    type_i, type_i_se = _combine_proportions([b.type_i_error for b in batch_results], counts)
-    power_val, power_se = _combine_proportions([b.power for b in batch_results], counts)
-    coverage, coverage_se = _combine_proportions([b.coverage for b in batch_results], counts)
-    convergence, _ = _combine_proportions([b.convergence_rate for b in batch_results], counts)
-    fallback, _ = _combine_proportions([b.fallback_rate for b in batch_results], counts)
-    valid_inf, _ = _combine_proportions([b.valid_inference_rate for b in batch_results], counts)
-    nc_fp, _ = _combine_proportions([b.negative_control_fp_rate for b in batch_results], counts)
+    type_i, type_i_se = _safe_combine_proportions(
+        [b.type_i_error for b in batch_results], valid_counts)
+    power_val, power_se = _safe_combine_proportions(
+        [b.power for b in batch_results], valid_counts)
+    coverage_val, coverage_se = _safe_combine_proportions(
+        [b.coverage for b in batch_results], valid_counts)
+    convergence, _ = _safe_combine_proportions(
+        [b.convergence_rate for b in batch_results], counts)
+    fallback, _ = _safe_combine_proportions(
+        [b.fallback_rate for b in batch_results], counts)
+    valid_inf, _ = _safe_combine_proportions(
+        [b.valid_inference_rate for b in batch_results], counts)
+    nc_fp, _ = _safe_combine_proportions(
+        [b.negative_control_fp_rate for b in batch_results], counts)
 
-    bias_val, bias_se = _combine_means([b.bias for b in batch_results], counts)
-    rmse_val, _ = _combine_means([b.rmse for b in batch_results], counts)
-    iw_val, _ = _combine_means([b.interval_width for b in batch_results], counts)
+    bias_val, bias_se = _safe_combine_means(
+        [b.bias for b in batch_results], valid_counts)
+    rmse_val, _ = _safe_combine_means(
+        [b.rmse for b in batch_results], valid_counts)
+    iw_val, _ = _safe_combine_means(
+        [b.interval_width for b in batch_results], valid_counts)
 
     oracle_effect = batch_results[0].oracle_effect if batch_results else 0.0
     oracle_se = batch_results[0].oracle_se if batch_results else 0.0
 
     issues: list[str] = []
     is_null = scenario.adaptive_precision_effect == 0 and scenario.adaptive_control_effect == 0
-    if is_null:
-        mc_tol = 2.576 * math.sqrt(0.05 * 0.95 / sum(counts)) if sum(counts) > 0 else 0.1
+
+    if total_valid == 0:
+        issues.append("zero_valid_replicates")
+    elif valid_inf is not None and valid_inf < 0.50:
+        issues.append(f"valid_inference_too_low_{valid_inf:.4f}")
+
+    if is_null and type_i is not None:
+        mc_tol = 2.576 * math.sqrt(0.05 * 0.95 / total_valid) if total_valid > 0 else 0.1
         if type_i > 0.05 + mc_tol:
-            issues.append(f"Type-I error inflated: {type_i:.4f} > 0.05 + {mc_tol:.4f}")
-    if coverage < 0.90:
-        issues.append(f"Coverage too low: {coverage:.4f}")
-    if fallback > 0.50:
-        issues.append(f"Fallback dominates: {fallback:.4f}")
-    if valid_inf < 0.50:
-        issues.append(f"Valid inference too low: {valid_inf:.4f}")
+            issues.append(f"type_i_inflated_{type_i:.4f}")
+
+    if coverage_val is not None and coverage_val < 0.90:
+        issues.append(f"coverage_too_low_{coverage_val:.4f}")
+
+    if fallback is not None and fallback > 0.50:
+        issues.append(f"fallback_dominates_{fallback:.4f}")
+
+    invalid_reason = "; ".join(issues) if issues else ""
+    campaign_valid = len(issues) == 0
+
+    def _r(v: float | None, n: int = 4) -> float | None:
+        return round(v, n) if v is not None else None
 
     return ScenarioSummary(
         scenario_id=scenario_id,
-        total_replicates=sum(counts),
+        total_replicates=total_n,
+        n_valid_replicates=total_valid,
+        n_invalid_replicates=total_invalid,
         n_batches=len(batch_results),
+        campaign_valid=campaign_valid,
+        invalid_reason=invalid_reason,
         oracle_effect=oracle_effect,
         oracle_se=oracle_se,
-        type_i_error=round(type_i, 4),
-        type_i_se=round(type_i_se, 4),
-        power=round(power_val, 4),
-        power_se=round(power_se, 4),
-        bias=round(bias_val, 6),
-        bias_se=round(bias_se, 6),
-        rmse=round(rmse_val, 6),
-        coverage=round(coverage, 4),
-        coverage_se=round(coverage_se, 4),
-        interval_width=round(iw_val, 6),
-        convergence_rate=round(convergence, 4),
-        fallback_rate=round(fallback, 4),
-        valid_inference_rate=round(valid_inf, 4),
-        negative_control_fp_rate=round(nc_fp, 4),
+        type_i_error=_r(type_i),
+        type_i_se=_r(type_i_se),
+        power=_r(power_val),
+        power_se=_r(power_se),
+        bias=_r(bias_val, 6),
+        bias_se=_r(bias_se, 6),
+        rmse=_r(rmse_val, 6),
+        coverage=_r(coverage_val),
+        coverage_se=_r(coverage_se),
+        interval_width=_r(iw_val, 6),
+        convergence_rate=_r(convergence) or 0.0,
+        fallback_rate=_r(fallback) or 0.0,
+        valid_inference_rate=_r(valid_inf) or 0.0,
+        negative_control_fp_rate=_r(nc_fp),
         elapsed_s=total_elapsed,
-        calibration_pass=len(issues) == 0,
+        calibration_pass=campaign_valid,
         issues=issues,
     )
 
@@ -268,49 +322,51 @@ def run_full_campaign(
     scenarios: dict[str, AgentScenario] | None = None,
     checkpoint_callback: Any = None,
 ) -> CampaignResult:
-    """Run the full research-mode simulation campaign across all core scenarios."""
+    """Run campaigns across all core scenarios."""
     if scenarios is None:
         scenarios = CORE_SCENARIOS
 
     campaign_id = hashlib.sha256(
         json.dumps({
             "replicates": total_replicates,
-            "batch_size": batch_size,
-            "n_participants": n_participants,
+            "participants": n_participants,
             "seed": base_seed,
-            "scenarios": sorted(scenarios.keys()),
             "version": CAMPAIGN_VERSION,
+            "scenarios": sorted(scenarios.keys()),
         }, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()[:16]
 
-    result = CampaignResult(campaign_id=f"campaign-{campaign_id}")
+    result = CampaignResult(campaign_id=campaign_id)
     start = time.time()
 
     for sid, scenario in scenarios.items():
-        scenario_seed = base_seed + hash(sid) % 100000
         ss = run_scenario_campaign(
             sid, scenario,
             total_replicates=total_replicates,
             batch_size=batch_size,
             n_participants=n_participants,
-            base_seed=scenario_seed,
+            base_seed=base_seed,
             checkpoint_callback=checkpoint_callback,
         )
         result.scenario_summaries[sid] = ss
         result.total_replicates += ss.total_replicates
+        result.total_scenarios += 1
 
-    result.total_scenarios = len(result.scenario_summaries)
+        if not ss.campaign_valid:
+            result.gate_issues.append(f"{sid}: {ss.invalid_reason}")
+
     result.elapsed_s = time.time() - start
-
-    for sid, ss in result.scenario_summaries.items():
-        if not ss.calibration_pass:
-            for issue in ss.issues:
-                result.gate_issues.append(f"[{sid}] {issue}")
-
     result.overall_pass = len(result.gate_issues) == 0
+
     return result
 
 
 def campaign_hash(result: CampaignResult) -> str:
-    data = json.dumps(result.to_dict(), sort_keys=True, separators=(",", ":"), default=str)
+    data = json.dumps({
+        "campaign_id": result.campaign_id,
+        "version": result.version,
+        "total_replicates": result.total_replicates,
+        "overall_pass": result.overall_pass,
+        "gate_issues": result.gate_issues,
+    }, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(data.encode()).hexdigest()

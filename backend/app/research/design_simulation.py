@@ -24,7 +24,10 @@ from app.research.cognitive_agent import (
 from app.research.rng_registry import derive_seed
 from app.research.statistics.confirmatory import run_primary_analysis
 
-SIMULATION_VERSION = "2.1"
+SIMULATION_VERSION = "3.0"
+
+MIN_VALID_INFERENCE_RATE = 0.50
+MAX_FALLBACK_RATE = 0.50
 
 SIMULATION_MODES = {
     "unit": {"iterations": 15, "description": "Structural invariants only"},
@@ -57,25 +60,30 @@ class SimulationResult:
     n_participants: int
     sessions_per_participant: int
     trials_per_task: int
-    power: float
-    power_se: float
-    type_i_error: float
-    type_i_se: float
-    mean_estimate: float
-    bias: float
-    bias_se: float
-    rmse: float
-    coverage: float
-    coverage_se: float
-    interval_width: float
+    power: float | None
+    power_se: float | None
+    type_i_error: float | None
+    type_i_se: float | None
+    mean_estimate: float | None
+    bias: float | None
+    bias_se: float | None
+    rmse: float | None
+    coverage: float | None
+    coverage_se: float | None
+    interval_width: float | None
     convergence_rate: float
     fallback_rate: float
     valid_inference_rate: float
-    negative_control_fp_rate: float
+    negative_control_fp_rate: float | None
     oracle_effect: float
     oracle_se: float
     seed_set: list[int]
     scenario_version: str
+    campaign_valid: bool = True
+    invalid_reason: str = ""
+    n_valid_replicates: int = 0
+    n_invalid_replicates: int = 0
+    bootstrap_valid_rate: float | None = None
     mode: str = "unit"
     simulation_version: str = SIMULATION_VERSION
 
@@ -168,7 +176,11 @@ def run_simulation(
     alpha: float = 0.05,
     mode: str = "unit",
 ) -> SimulationResult:
-    """Run Monte Carlo simulation for operating characteristics."""
+    """Run Monte Carlo simulation for operating characteristics.
+
+    Fails closed: campaigns with zero valid replicates report metrics as None,
+    not 0.0. Campaign validity is explicitly flagged.
+    """
     if n_iterations is None:
         n_iterations = SIMULATION_MODES.get(mode, SIMULATION_MODES["unit"])["iterations"]
 
@@ -178,7 +190,7 @@ def run_simulation(
     rejections = 0
     nc_rejections = 0
     nc_analyses = 0
-    estimates: list[float] = []
+    valid_estimates: list[float] = []
     ci_covers: list[bool] = []
     ci_widths: list[float] = []
     converged_count = 0
@@ -201,17 +213,14 @@ def run_simulation(
             converged_count += 1
         if is_valid:
             valid_count += 1
-        if result.is_fallback:
-            fallback_count += 1
-
-        estimates.append(result.effect_estimate)
-        if is_valid and result.p_value <= alpha:
-            rejections += 1
-
-        if is_valid:
+            valid_estimates.append(result.effect_estimate)
+            if result.p_value <= alpha:
+                rejections += 1
             covered = result.ci_lower <= oracle_truth <= result.ci_upper
             ci_covers.append(covered)
             ci_widths.append(result.ci_upper - result.ci_lower)
+        if result.is_fallback:
+            fallback_count += 1
 
         if nc_data:
             nc_result = run_primary_analysis(nc_data, alpha=alpha)
@@ -220,8 +229,10 @@ def run_simulation(
                 nc_rejections += 1
 
     n = n_iterations
-    valid_n = valid_count if valid_count > 0 else 1
-    rejection_rate = rejections / valid_n
+    n_invalid = n - valid_count
+    valid_rate = valid_count / n if n > 0 else 0.0
+    fallback_rate_val = fallback_count / n if n > 0 else 0.0
+    convergence_rate_val = converged_count / n if n > 0 else 0.0
 
     is_null = all(
         getattr(scenario, attr) == 0
@@ -229,51 +240,83 @@ def run_simulation(
                       "adaptive_stability_effect"]
     )
 
-    mean_est = sum(estimates) / n if estimates else 0.0
+    invalid_reasons: list[str] = []
+    if valid_count == 0:
+        invalid_reasons.append("zero_valid_replicates")
+    if valid_rate < MIN_VALID_INFERENCE_RATE:
+        invalid_reasons.append(f"valid_rate_{valid_rate:.2f}_below_{MIN_VALID_INFERENCE_RATE}")
+    if is_null and abs(oracle_truth) > 1e-8:
+        invalid_reasons.append(f"strict_null_oracle_nonzero_{oracle_truth}")
+
+    campaign_valid = len(invalid_reasons) == 0
+
+    if valid_count == 0:
+        return SimulationResult(
+            scenario_id=scenario.scenario_id, n_iterations=n,
+            n_participants=n_participants,
+            sessions_per_participant=sessions_per_participant,
+            trials_per_task=trials_per_task,
+            power=None, power_se=None, type_i_error=None, type_i_se=None,
+            mean_estimate=None, bias=None, bias_se=None, rmse=None,
+            coverage=None, coverage_se=None, interval_width=None,
+            convergence_rate=convergence_rate_val,
+            fallback_rate=fallback_rate_val,
+            valid_inference_rate=0.0,
+            negative_control_fp_rate=None,
+            oracle_effect=round(oracle_truth, 6),
+            oracle_se=round(oracle.effect_se, 6),
+            seed_set=seed_set, scenario_version=scenario.version,
+            campaign_valid=False, invalid_reason="; ".join(invalid_reasons),
+            n_valid_replicates=0, n_invalid_replicates=n_invalid,
+            mode=mode,
+        )
+
+    rejection_rate = rejections / valid_count
+    mean_est = sum(valid_estimates) / valid_count
     bias_val = mean_est - oracle_truth
-    mse = sum((e - oracle_truth) ** 2 for e in estimates) / n if estimates else 0.0
+    mse = sum((e - oracle_truth) ** 2 for e in valid_estimates) / valid_count
     rmse = math.sqrt(mse)
-    coverage = sum(1 for c in ci_covers if c) / len(ci_covers) if ci_covers else 0.0
+    coverage_val = sum(1 for c in ci_covers if c) / len(ci_covers) if ci_covers else 0.0
     avg_width = sum(ci_widths) / len(ci_widths) if ci_widths else 0.0
 
-    power = rejection_rate if not is_null else 0.0
-    type_i = rejection_rate if is_null else 0.0
-    rate_se = math.sqrt(rejection_rate * (1 - rejection_rate) / valid_n) if valid_n > 1 else 0.0
+    power_val = rejection_rate if not is_null else None
+    type_i_val = rejection_rate if is_null else None
+    rate_se = math.sqrt(rejection_rate * (1 - rejection_rate) / valid_count) if valid_count > 1 else 0.0
     cov_n = len(ci_covers) if ci_covers else 1
-    cov_se = math.sqrt(coverage * (1 - coverage) / cov_n) if cov_n > 1 else 0.0
+    cov_se = math.sqrt(coverage_val * (1 - coverage_val) / cov_n) if cov_n > 1 else 0.0
 
     bias_se_val = 0.0
-    if n > 1:
-        est_var = sum((e - mean_est) ** 2 for e in estimates) / (n - 1)
-        bias_se_val = math.sqrt(est_var / n)
+    if valid_count > 1:
+        est_var = sum((e - mean_est) ** 2 for e in valid_estimates) / (valid_count - 1)
+        bias_se_val = math.sqrt(est_var / valid_count)
 
-    nc_fp = nc_rejections / nc_analyses if nc_analyses > 0 else 0.0
+    nc_fp = nc_rejections / nc_analyses if nc_analyses > 0 else None
 
     return SimulationResult(
-        scenario_id=scenario.scenario_id,
-        n_iterations=n,
+        scenario_id=scenario.scenario_id, n_iterations=n,
         n_participants=n_participants,
         sessions_per_participant=sessions_per_participant,
         trials_per_task=trials_per_task,
-        power=round(power, 4),
-        power_se=round(rate_se, 4),
-        type_i_error=round(type_i, 4),
-        type_i_se=round(rate_se, 4),
+        power=round(power_val, 4) if power_val is not None else None,
+        power_se=round(rate_se, 4) if not is_null else None,
+        type_i_error=round(type_i_val, 4) if type_i_val is not None else None,
+        type_i_se=round(rate_se, 4) if is_null else None,
         mean_estimate=round(mean_est, 6),
-        bias=round(bias_val, 6),
-        bias_se=round(bias_se_val, 6),
+        bias=round(bias_val, 6), bias_se=round(bias_se_val, 6),
         rmse=round(rmse, 6),
-        coverage=round(coverage, 4),
-        coverage_se=round(cov_se, 4),
+        coverage=round(coverage_val, 4), coverage_se=round(cov_se, 4),
         interval_width=round(avg_width, 6),
-        convergence_rate=round(converged_count / n, 4) if n > 0 else 0.0,
-        fallback_rate=round(fallback_count / n, 4) if n > 0 else 0.0,
-        valid_inference_rate=round(valid_count / n, 4) if n > 0 else 0.0,
-        negative_control_fp_rate=round(nc_fp, 4),
+        convergence_rate=round(convergence_rate_val, 4),
+        fallback_rate=round(fallback_rate_val, 4),
+        valid_inference_rate=round(valid_rate, 4),
+        negative_control_fp_rate=round(nc_fp, 4) if nc_fp is not None else None,
         oracle_effect=round(oracle_truth, 6),
         oracle_se=round(oracle.effect_se, 6),
-        seed_set=seed_set,
-        scenario_version=scenario.version,
+        seed_set=seed_set, scenario_version=scenario.version,
+        campaign_valid=campaign_valid,
+        invalid_reason="; ".join(invalid_reasons) if invalid_reasons else "",
+        n_valid_replicates=valid_count,
+        n_invalid_replicates=n_invalid,
         mode=mode,
     )
 

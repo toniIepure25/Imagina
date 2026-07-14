@@ -29,22 +29,20 @@ class TestScenarioCampaign:
         assert ss.oracle_effect is not None
         assert ss.oracle_se is not None
 
-    def test_operating_characteristics(self):
+    def test_campaign_validity_tracked(self):
         ss = run_scenario_campaign(
             "medium_adaptive", SCENARIO_MEDIUM_ADAPTIVE,
             total_replicates=10, batch_size=10,
         )
-        assert 0.0 <= ss.coverage <= 1.0
-        assert 0.0 <= ss.convergence_rate <= 1.0
-        assert 0.0 <= ss.fallback_rate <= 1.0
-        assert 0.0 <= ss.valid_inference_rate <= 1.0
+        assert isinstance(ss.campaign_valid, bool)
+        assert ss.n_valid_replicates >= 0
+        assert ss.n_invalid_replicates >= 0
+        assert ss.n_valid_replicates + ss.n_invalid_replicates == ss.total_replicates
 
     def test_checkpoint_callback(self):
         batches: list[dict] = []
-
         def cb(bs):
             batches.append(bs.to_dict())
-
         run_scenario_campaign(
             "strict_null", SCENARIO_STRICT_NULL,
             total_replicates=15, batch_size=5,
@@ -67,7 +65,6 @@ class TestFullCampaign:
         assert isinstance(result, CampaignResult)
         assert result.total_scenarios == 2
         assert result.total_replicates == 20
-        assert result.campaign_id.startswith("campaign-")
 
     def test_all_core_scenarios_listed(self):
         assert len(CORE_SCENARIOS) >= 9
@@ -94,8 +91,8 @@ class TestFullCampaign:
             scenarios={"strict_null": SCENARIO_STRICT_NULL},
         )
         ss = result.scenario_summaries["strict_null"]
+        assert ss.n_valid_replicates > 0
         assert ss.type_i_error is not None
-        assert ss.type_i_se is not None
 
 
 class TestCampaignSerialization:

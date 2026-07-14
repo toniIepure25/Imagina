@@ -6,8 +6,8 @@ Usage:
 """
 import argparse
 import json
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
@@ -16,6 +16,12 @@ from app.research.simulation_campaign import (
     campaign_hash,
     run_full_campaign,
 )
+
+
+def _fmt(v, digits=4):
+    if v is None:
+        return "N/A"
+    return f"{v:.{digits}f}"
 
 
 def main():
@@ -34,8 +40,9 @@ def main():
 
     def checkpoint(bs):
         print(f"  Batch {bs.batch_index}: {bs.scenario_id} "
-              f"type_i={bs.type_i_error:.4f} power={bs.power:.4f} "
-              f"coverage={bs.coverage:.4f} ({bs.elapsed_s:.1f}s)")
+              f"valid={bs.n_valid}/{bs.n_iterations} "
+              f"type_i={_fmt(bs.type_i_error)} power={_fmt(bs.power)} "
+              f"coverage={_fmt(bs.coverage)} ({bs.elapsed_s:.1f}s)")
 
     print(f"Starting campaign: {args.replicates} replicates, "
           f"{len(scenarios)} scenarios, batch_size={args.batch}")
@@ -61,17 +68,18 @@ def main():
 
     for sid, ss in result.scenario_summaries.items():
         status = "PASS" if ss.calibration_pass else "FAIL"
-        print(f"[{status}] {sid}:")
-        print(f"  oracle={ss.oracle_effect:.6f} (SE={ss.oracle_se:.6f})")
-        print(f"  type_i={ss.type_i_error:.4f} (SE={ss.type_i_se:.4f})")
-        print(f"  power={ss.power:.4f} (SE={ss.power_se:.4f})")
-        print(f"  bias={ss.bias:.6f} (SE={ss.bias_se:.6f})")
-        print(f"  rmse={ss.rmse:.6f}")
-        print(f"  coverage={ss.coverage:.4f} (SE={ss.coverage_se:.4f})")
-        print(f"  convergence={ss.convergence_rate:.4f}")
-        print(f"  fallback={ss.fallback_rate:.4f}")
-        print(f"  valid_inference={ss.valid_inference_rate:.4f}")
-        print(f"  neg_control_fp={ss.negative_control_fp_rate:.4f}")
+        valid_str = f"valid={ss.n_valid_replicates}/{ss.total_replicates}"
+        print(f"[{status}] {sid}: ({valid_str})")
+        print(f"  oracle={_fmt(ss.oracle_effect, 6)} (SE={_fmt(ss.oracle_se, 6)})")
+        print(f"  type_i={_fmt(ss.type_i_error)} (SE={_fmt(ss.type_i_se)})")
+        print(f"  power={_fmt(ss.power)} (SE={_fmt(ss.power_se)})")
+        print(f"  bias={_fmt(ss.bias, 6)} (SE={_fmt(ss.bias_se, 6)})")
+        print(f"  rmse={_fmt(ss.rmse, 6)}")
+        print(f"  coverage={_fmt(ss.coverage)} (SE={_fmt(ss.coverage_se)})")
+        print(f"  convergence={_fmt(ss.convergence_rate)}")
+        print(f"  fallback={_fmt(ss.fallback_rate)}")
+        print(f"  valid_inference={_fmt(ss.valid_inference_rate)}")
+        print(f"  neg_control_fp={_fmt(ss.negative_control_fp_rate)}")
         if ss.issues:
             for issue in ss.issues:
                 print(f"  ISSUE: {issue}")
