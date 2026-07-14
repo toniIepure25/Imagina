@@ -236,7 +236,11 @@ def generate_trial_response(
 
     Returns both the response and all computed scores using production scoring.
     """
-    rng = random.Random(seed + hash((agent.participant_id, session_index, trial_index)))
+    from app.research.rng_registry import derive_seed
+    rng = random.Random(derive_seed(seed, "imagery_noise",
+                                    participant_id=agent.participant_id,
+                                    session_index=session_index,
+                                    trial_index=trial_index))
 
     # --- Compute effective precision for this trial ---
     base_precision = agent.baseline_imagery_precision
