@@ -14,6 +14,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+science = [
+    "numpy>=1.24,<3",
+    "scipy>=1.11,<2",
+    "pandas>=2.0,<3",
+    "statsmodels>=0.14,<1",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
@@ -116,9 +122,13 @@ markers = [
     "core: hermetic core pipeline tests (default merge-gate suite)",
     "research: hermetic research-platform module tests",
     "integration: cross-module integration tests requiring temp DB",
+    "statistical: statistical analysis and power tests requiring science extras",
+    "simulation: simulation-based validation tests (Monte Carlo, generative agents)",
+    "psychophysics: objective imagery precision battery tests",
     "artifact_dependent: requires generated CLI artifacts under data/exports/",
     "external_dataset: requires downloaded external datasets (e.g. OpenMIIR)",
     "hardware: requires physical hardware or pylsl",
     "legacy: V31-V36 product iteration tests requiring generated artifacts",
     "slow: tests that take >30s",
+    "science_deps: tests requiring numpy/scipy/statsmodels (science extras)",
 ]
