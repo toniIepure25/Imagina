@@ -15,7 +15,7 @@ from typing import Any
 
 import aiosqlite
 
-CANONICALIZATION_VERSION = "1.1"
+CANONICALIZATION_VERSION = "2.0"
 FLOAT_PRECISION = 8
 
 
@@ -180,6 +180,11 @@ async def replay_session_from_manifest(
         }
 
     condition = manifest["condition"]
+
+    dep_error = _verify_manifest_dependencies(manifest)
+    if dep_error:
+        return {"match": False, "error": dep_error}
+
     if condition == "yoked":
         yoked_info = manifest.get("yoked", {})
         if not yoked_info.get("library_id"):
@@ -403,6 +408,50 @@ async def get_replay_results(
         (research_session_id,),
     )).fetchall()
     return [dict(r) for r in rows]
+
+
+def _verify_manifest_dependencies(manifest: dict[str, Any]) -> str | None:
+    """Fail-closed verification of manifest dependency fields.
+
+    Returns an error string if any dependency is missing, unknown, or
+    mismatched. Returns None if all dependencies are valid.
+    """
+    from app.research.manifest import DEPENDENCY_REGISTRY
+
+    required_components = [
+        ("signal_provider", ["id", "version"]),
+        ("feature_processor", ["id", "version"]),
+        ("state_estimator", ["id", "version"]),
+        ("metric_processor", ["id", "version"]),
+        ("curriculum_processor", ["id", "version"]),
+        ("feedback_policy", ["id", "version"]),
+        ("safety_monitor", ["id", "version"]),
+    ]
+
+    for comp_name, required_fields in required_components:
+        comp = manifest.get(comp_name)
+        if not comp or not isinstance(comp, dict):
+            return f"Missing or invalid {comp_name} in manifest"
+        for field in required_fields:
+            if not comp.get(field):
+                return f"Missing {comp_name}.{field} in manifest"
+        dep_id = comp["id"]
+        if dep_id not in DEPENDENCY_REGISTRY and dep_id != "synthetic":
+            return f"Unknown {comp_name} ID: {dep_id}"
+
+    for optional in ("id_generator", "clock"):
+        comp = manifest.get(optional)
+        if comp and isinstance(comp, dict):
+            if not comp.get("id") or not comp.get("version"):
+                return f"Incomplete {optional} in manifest"
+
+    if manifest.get("canonicalization_version") and manifest["canonicalization_version"] != CANONICALIZATION_VERSION:
+        return (
+            f"Canonicalization version mismatch: manifest={manifest['canonicalization_version']}, "
+            f"current={CANONICALIZATION_VERSION}"
+        )
+
+    return None
 
 
 async def _find_divergence(

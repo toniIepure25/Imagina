@@ -222,3 +222,84 @@ class TestTamperDetection:
         result = await verify_seal_integrity(manifest_db, "rs1")
         assert result["valid"] is False
         assert "no completion seal" in result["error"].lower()
+
+
+class TestManifestDependencyFields:
+    async def test_round_trip_all_fields(self, manifest_db):
+        await _create_manifest(manifest_db)
+        await manifest_db.commit()
+        result = await get_manifest(manifest_db, "rs1")
+        m = result["manifest"]
+        assert m["signal_provider"]["id"] == "synthetic.deterministic"
+        assert m["feature_processor"]["id"] == "passthrough"
+        assert m["state_estimator"]["id"] == "rule_based"
+        assert m["metric_processor"]["id"] == "composite"
+        assert m["curriculum_processor"]["id"] == "fixed_level"
+        assert m["feedback_policy"]["id"] == "adaptive"
+        assert m["safety_monitor"]["id"] == "synthetic"
+        assert m["id_generator"]["id"] == "deterministic"
+        assert m["clock"]["id"] == "deterministic"
+        assert m["canonicalization_version"] == "2.0"
+        assert m["db_schema_version"] == 6
+        assert m["manifest_schema_version"] == 2
+
+    async def test_unknown_version_replay_fails(self, manifest_db):
+        from app.research.replay_validator import _verify_manifest_dependencies
+        m = {
+            "signal_provider": {"id": "synthetic.deterministic", "version": "1.0"},
+            "feature_processor": {"id": "UNKNOWN_PROCESSOR", "version": "9.9"},
+            "state_estimator": {"id": "rule_based", "version": "1.0"},
+            "metric_processor": {"id": "composite", "version": "1.0"},
+            "curriculum_processor": {"id": "fixed_level", "version": "1.0"},
+            "feedback_policy": {"id": "adaptive", "version": "1.0"},
+            "safety_monitor": {"id": "synthetic", "version": "1.0"},
+        }
+        err = _verify_manifest_dependencies(m)
+        assert err is not None
+        assert "Unknown" in err
+
+    async def test_missing_field_replay_fails(self, manifest_db):
+        from app.research.replay_validator import _verify_manifest_dependencies
+        m = {
+            "signal_provider": {"id": "synthetic.deterministic"},
+            "feature_processor": {"id": "passthrough", "version": "1.0"},
+            "state_estimator": {"id": "rule_based", "version": "1.0"},
+            "metric_processor": {"id": "composite", "version": "1.0"},
+            "curriculum_processor": {"id": "fixed_level", "version": "1.0"},
+            "feedback_policy": {"id": "adaptive", "version": "1.0"},
+            "safety_monitor": {"id": "synthetic", "version": "1.0"},
+        }
+        err = _verify_manifest_dependencies(m)
+        assert err is not None
+        assert "Missing" in err
+
+    async def test_canonicalization_version_mismatch_fails(self, manifest_db):
+        from app.research.replay_validator import _verify_manifest_dependencies
+        m = {
+            "signal_provider": {"id": "synthetic.deterministic", "version": "1.0"},
+            "feature_processor": {"id": "passthrough", "version": "1.0"},
+            "state_estimator": {"id": "rule_based", "version": "1.0"},
+            "metric_processor": {"id": "composite", "version": "1.0"},
+            "curriculum_processor": {"id": "fixed_level", "version": "1.0"},
+            "feedback_policy": {"id": "adaptive", "version": "1.0"},
+            "safety_monitor": {"id": "synthetic", "version": "1.0"},
+            "canonicalization_version": "0.9",
+        }
+        err = _verify_manifest_dependencies(m)
+        assert err is not None
+        assert "Canonicalization" in err
+
+    async def test_valid_dependencies_pass(self, manifest_db):
+        from app.research.replay_validator import _verify_manifest_dependencies
+        m = {
+            "signal_provider": {"id": "synthetic.deterministic", "version": "1.0"},
+            "feature_processor": {"id": "passthrough", "version": "1.0"},
+            "state_estimator": {"id": "rule_based", "version": "1.0"},
+            "metric_processor": {"id": "composite", "version": "1.0"},
+            "curriculum_processor": {"id": "fixed_level", "version": "1.0"},
+            "feedback_policy": {"id": "adaptive", "version": "1.0"},
+            "safety_monitor": {"id": "synthetic", "version": "1.0"},
+            "canonicalization_version": "2.0",
+        }
+        err = _verify_manifest_dependencies(m)
+        assert err is None

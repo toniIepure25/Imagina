@@ -8,18 +8,76 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import subprocess
 import uuid
 from datetime import datetime
 from typing import Any
 
 import aiosqlite
 
-MANIFEST_SCHEMA_VERSION = 1
+from app.research.replay_validator import canonical_serialize
+
+MANIFEST_SCHEMA_VERSION = 2
+CANONICALIZATION_VERSION = "2.0"
 SOFTWARE_VERSION = "0.5.0"
+DB_SCHEMA_VERSION = 6
+
+logger = logging.getLogger(__name__)
 
 
-def _canonical_json(data: Any) -> str:
-    return json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True, default=str)
+def _resolve_git_sha() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            stderr=subprocess.DEVNULL,
+            timeout=5,
+        ).decode("utf-8").strip()
+    except Exception:
+        return "unknown"
+
+
+_GIT_SHA: str = _resolve_git_sha()
+
+DEPENDENCY_REGISTRY: dict[str, type] = {}
+
+
+def register_dependency(dep_id: str, cls: type) -> None:
+    DEPENDENCY_REGISTRY[dep_id] = cls
+
+
+def resolve_dependency(dep_id: str) -> type | None:
+    return DEPENDENCY_REGISTRY.get(dep_id)
+
+
+def _init_registry() -> None:
+    from app.research.feedback_policies import (
+        AdaptiveFeedbackPolicy,
+        FixedResearchFeedbackPolicy,
+        FrozenYokedFeedbackPolicy,
+    )
+    from app.research.pipeline_adapters import (
+        CompositeMetricProcessor,
+        DeterministicSignalProvider,
+        FixedCurriculumProcessor,
+        PassthroughFeatureProcessor,
+        RuleBasedStateEstimator,
+    )
+    register_dependency("synthetic.deterministic", DeterministicSignalProvider)
+    register_dependency("passthrough", PassthroughFeatureProcessor)
+    register_dependency("rule_based", RuleBasedStateEstimator)
+    register_dependency("composite", CompositeMetricProcessor)
+    register_dependency("fixed_level", FixedCurriculumProcessor)
+    register_dependency("adaptive", AdaptiveFeedbackPolicy)
+    register_dependency("fixed", FixedResearchFeedbackPolicy)
+    register_dependency("yoked", FrozenYokedFeedbackPolicy)
+
+
+_init_registry()
+
+
+def _canonical_hash(data: Any) -> str:
+    return hashlib.sha256(canonical_serialize(data)).hexdigest()
 
 
 async def create_session_manifest(
@@ -37,61 +95,126 @@ async def create_session_manifest(
     runtime_seed: int,
     signal_provider_id: str,
     signal_provider_version: str = "1.0",
+    signal_provider_config_hash: str | None = None,
     policy_id: str,
     policy_version: str,
     policy_config_hash: str | None = None,
+    feature_processor_id: str = "passthrough",
+    feature_processor_version: str = "1.0",
+    feature_processor_config_hash: str | None = None,
+    state_estimator_id: str = "rule_based",
+    state_estimator_version: str = "1.0",
+    state_estimator_config_hash: str | None = None,
+    metric_processor_id: str = "composite",
+    metric_processor_version: str = "1.0",
+    metric_processor_config_hash: str | None = None,
+    curriculum_processor_id: str = "fixed_level",
+    curriculum_processor_version: str = "1.0",
+    curriculum_processor_config_hash: str | None = None,
+    safety_monitor_id: str = "synthetic",
+    safety_monitor_version: str = "1.0",
+    safety_monitor_config_hash: str | None = None,
+    id_generator_id: str = "deterministic",
+    id_generator_version: str = "1.0",
+    clock_id: str = "deterministic",
+    clock_version: str = "1.0",
     yoked_library_id: str | None = None,
     yoked_trajectory_id: str | None = None,
     yoked_schedule_hash: str | None = None,
+    yoked_content_hash: str | None = None,
     safety_config: dict[str, Any] | None = None,
-    processor_ids: dict[str, str] | None = None,
-    git_sha: str = "synthetic",
+    schedule_hash: str | None = None,
+    allocation_sequence_label: str | None = None,
+    git_sha: str | None = None,
     trial_count: int = 5,
     windows_per_trial: int = 3,
+    processor_ids: dict[str, str] | None = None,
 ) -> str:
     manifest_data = {
         "manifest_schema_version": MANIFEST_SCHEMA_VERSION,
+        "canonicalization_version": CANONICALIZATION_VERSION,
         "research_session_id": research_session_id,
         "study_id": study_id,
         "protocol_version_id": protocol_version_id,
         "protocol_hash": protocol_hash,
         "participant_id": participant_id,
         "allocation_id": allocation_id,
+        "allocation_sequence_label": allocation_sequence_label,
         "condition": condition,
         "session_index": session_index,
         "data_classification": data_classification,
         "runtime_seed": runtime_seed,
+        "schedule_hash": schedule_hash,
         "signal_provider": {
             "id": signal_provider_id,
             "version": signal_provider_version,
+            "config_hash": signal_provider_config_hash,
+        },
+        "feature_processor": {
+            "id": feature_processor_id,
+            "version": feature_processor_version,
+            "config_hash": feature_processor_config_hash,
+        },
+        "state_estimator": {
+            "id": state_estimator_id,
+            "version": state_estimator_version,
+            "config_hash": state_estimator_config_hash,
+        },
+        "metric_processor": {
+            "id": metric_processor_id,
+            "version": metric_processor_version,
+            "config_hash": metric_processor_config_hash,
+        },
+        "curriculum_processor": {
+            "id": curriculum_processor_id,
+            "version": curriculum_processor_version,
+            "config_hash": curriculum_processor_config_hash,
         },
         "feedback_policy": {
             "id": policy_id,
             "version": policy_version,
             "config_hash": policy_config_hash,
         },
+        "safety_monitor": {
+            "id": safety_monitor_id,
+            "version": safety_monitor_version,
+            "config_hash": safety_monitor_config_hash,
+        },
+        "id_generator": {
+            "id": id_generator_id,
+            "version": id_generator_version,
+        },
+        "clock": {
+            "id": clock_id,
+            "version": clock_version,
+        },
         "yoked": {
             "library_id": yoked_library_id,
             "trajectory_id": yoked_trajectory_id,
             "schedule_hash": yoked_schedule_hash,
+            "content_hash": yoked_content_hash,
         },
         "safety_config": safety_config or {},
-        "processors": processor_ids or {},
         "trial_count": trial_count,
         "windows_per_trial": windows_per_trial,
+        "db_schema_version": DB_SCHEMA_VERSION,
         "software_version": SOFTWARE_VERSION,
-        "git_sha": git_sha,
+        "git_sha": git_sha or _GIT_SHA,
     }
 
-    manifest_json = _canonical_json(manifest_data)
-    manifest_hash = hashlib.sha256(manifest_json.encode("utf-8")).hexdigest()
+    if processor_ids:
+        manifest_data["processors_legacy"] = processor_ids
+
+    manifest_json_bytes = canonical_serialize(manifest_data)
+    manifest_json = manifest_json_bytes.decode("utf-8")
+    manifest_hash = hashlib.sha256(manifest_json_bytes).hexdigest()
     manifest_id = str(uuid.uuid4())
 
     await db.execute(
         "INSERT INTO session_manifests "
         "(manifest_id, research_session_id, manifest_json, manifest_hash, schema_version) "
         "VALUES (?, ?, ?, ?, ?)",
-        (manifest_id, research_session_id, manifest_json, manifest_hash, 4),
+        (manifest_id, research_session_id, manifest_json, manifest_hash, DB_SCHEMA_VERSION),
     )
 
     return manifest_id
@@ -105,8 +228,8 @@ async def seal_session_completion(
     terminal_reason: str,
     content_hash: str,
     sealed_at: datetime,
-    canonicalization_version: str = "1.1",
-    git_sha: str = "synthetic",
+    canonicalization_version: str = CANONICALIZATION_VERSION,
+    git_sha: str | None = None,
 ) -> str:
     manifest_row = await (await db.execute(
         "SELECT manifest_id, manifest_hash FROM session_manifests "
@@ -125,6 +248,7 @@ async def seal_session_completion(
     if existing_seal:
         raise ValueError(f"Seal already exists for session {research_session_id}")
 
+    resolved_sha = git_sha or _GIT_SHA
     seal_fields = {
         "research_session_id": research_session_id,
         "manifest_id": manifest_row["manifest_id"],
@@ -135,10 +259,10 @@ async def seal_session_completion(
         "canonicalization_version": canonicalization_version,
         "sealed_at": sealed_at.isoformat(),
         "software_version": SOFTWARE_VERSION,
-        "git_sha": git_sha,
+        "git_sha": resolved_sha,
     }
-    seal_json = _canonical_json(seal_fields)
-    seal_hash = hashlib.sha256(seal_json.encode("utf-8")).hexdigest()
+    seal_json_bytes = canonical_serialize(seal_fields)
+    seal_hash = hashlib.sha256(seal_json_bytes).hexdigest()
 
     seal_id = str(uuid.uuid4())
     await db.execute(
@@ -152,7 +276,7 @@ async def seal_session_completion(
             manifest_row["manifest_id"], manifest_row["manifest_hash"],
             terminal_status, terminal_reason, content_hash,
             canonicalization_version, sealed_at.isoformat(),
-            seal_hash, SOFTWARE_VERSION, git_sha,
+            seal_hash, SOFTWARE_VERSION, resolved_sha,
         ),
     )
 
@@ -196,7 +320,7 @@ async def verify_seal_integrity(
         "git_sha": seal["git_sha"],
     }
     expected_hash = hashlib.sha256(
-        _canonical_json(seal_fields).encode("utf-8")
+        canonical_serialize(seal_fields)
     ).hexdigest()
 
     if expected_hash != seal["seal_hash"]:
