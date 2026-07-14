@@ -4,8 +4,6 @@ Tests that try to make the system produce false conclusions.
 Each scenario verifies that the analysis pipeline correctly handles
 adversarial conditions and does not overclaim.
 """
-import pytest
-
 from app.research.cognitive_agent import (
     SCENARIO_CARRYOVER,
     SCENARIO_MEDIUM_ADAPTIVE,
@@ -13,8 +11,6 @@ from app.research.cognitive_agent import (
     SCENARIO_PRACTICE_ONLY,
     SCENARIO_STRICT_NULL,
     SCENARIO_SUBJECTIVE_ONLY,
-    SCENARIOS,
-    AgentScenario,
     generate_population,
     generate_trial_response,
 )

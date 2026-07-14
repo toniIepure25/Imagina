@@ -2432,11 +2432,30 @@ Transform IMAGINA from a synthetic experiment-execution platform into a scientif
 - ADR-034: Williams sequences for counterbalancing
 - ADR-035: LeakageGuard for adaptation/evaluation separation
 
+### Test Counts
+```
+science_tests: 154 passed, 0 failed
+  objective_endpoints: 38
+  psychophysics: 22
+  calibration: 12
+  objective_runtime: 10
+  statistics: 13
+  estimands: 13
+  cognitive_agent: 13
+  design_simulation: 10
+  measurement_validity: 10
+  falsification: 12
+ruff: all checks passed
+frontend_lint: 0 errors
+frontend_build: 21 routes (3 new research pages)
+```
+
 ### Status
 ```
 gate: C0
-status: IN_PROGRESS
+status: COMPLETE
 branch: research/scientific-measurement-c0
+HEAD: 8766477
 ```
 
 ---
