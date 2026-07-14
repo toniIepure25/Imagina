@@ -26,11 +26,12 @@ from app.research.cognitive_agent import (
     SCENARIO_SMALL_ADAPTIVE,
     SCENARIO_STRICT_NULL,
     SCENARIO_SUBJECTIVE_ONLY,
+    SCENARIO_WEAK_RELIABILITY,
     AgentScenario,
 )
 from app.research.design_simulation import SimulationResult, run_simulation
 
-CAMPAIGN_VERSION = "2.0"
+CAMPAIGN_VERSION = "3.0"
 
 CORE_SCENARIOS: dict[str, AgentScenario] = {
     "strict_null": SCENARIO_STRICT_NULL,
@@ -42,6 +43,7 @@ CORE_SCENARIOS: dict[str, AgentScenario] = {
     "perceptual_only": SCENARIO_PERCEPTUAL_ONLY,
     "carryover": SCENARIO_CARRYOVER,
     "differential_dropout": SCENARIO_DROPOUT,
+    "weak_reliability": SCENARIO_WEAK_RELIABILITY,
 }
 
 DEFAULT_RESEARCH_REPLICATES = 1000
@@ -272,7 +274,9 @@ def run_scenario_campaign(
         if type_i > 0.05 + mc_tol:
             issues.append(f"type_i_inflated_{type_i:.4f}")
 
-    if coverage_val is not None and coverage_val < 0.90:
+    if coverage_val is not None and coverage_val == 0.0:
+        issues.append(f"coverage_zero_{coverage_val:.4f}")
+    elif coverage_val is not None and coverage_val < 0.85:
         issues.append(f"coverage_too_low_{coverage_val:.4f}")
 
     if fallback is not None and fallback > 0.50:

@@ -165,11 +165,19 @@ SCENARIO_PERCEPTUAL_ONLY = AgentScenario(
     description="Motor/perceptual matching improves but not imagery",
 )
 
+SCENARIO_WEAK_RELIABILITY = AgentScenario(
+    scenario_id="weak_reliability",
+    adaptive_precision_effect=0.06,
+    adaptive_control_effect=0.04,
+    description="Small effect with weaker reliability due to smaller signal",
+)
+
 SCENARIOS: dict[str, AgentScenario] = {
     s.scenario_id: s for s in [
         SCENARIO_STRICT_NULL, SCENARIO_SMALL_ADAPTIVE, SCENARIO_MEDIUM_ADAPTIVE,
         SCENARIO_SUBJECTIVE_ONLY, SCENARIO_PRACTICE_ONLY, SCENARIO_PLACEBO_EXPECTANCY,
         SCENARIO_CARRYOVER, SCENARIO_DROPOUT, SCENARIO_PERCEPTUAL_ONLY,
+        SCENARIO_WEAK_RELIABILITY,
     ]
 }
 
