@@ -24,10 +24,17 @@ from app.research.cognitive_agent import (
 from app.research.rng_registry import derive_seed
 from app.research.statistics.confirmatory import run_primary_analysis
 
-SIMULATION_VERSION = "2.0"
+SIMULATION_VERSION = "2.1"
 
-FAST_ITERATIONS = 20
-CI_ITERATIONS = 100
+SIMULATION_MODES = {
+    "unit": {"iterations": 15, "description": "Structural invariants only"},
+    "ci": {"iterations": 150, "description": "Broad regression thresholds"},
+    "research": {"iterations": 1000, "description": "Checkpointed and resumable"},
+    "publication_candidate": {"iterations": 5000, "description": "Configurable 5000+"},
+}
+
+FAST_ITERATIONS = 15
+CI_ITERATIONS = 150
 RESEARCH_ITERATIONS = 1000
 
 WILLIAMS_SEQUENCES = [
@@ -56,8 +63,11 @@ class SimulationResult:
     type_i_se: float
     mean_estimate: float
     bias: float
+    bias_se: float
     rmse: float
     coverage: float
+    coverage_se: float
+    interval_width: float
     convergence_rate: float
     fallback_rate: float
     valid_inference_rate: float
@@ -66,6 +76,7 @@ class SimulationResult:
     oracle_se: float
     seed_set: list[int]
     scenario_version: str
+    mode: str = "unit"
     simulation_version: str = SIMULATION_VERSION
 
     def to_dict(self) -> dict[str, Any]:
@@ -147,14 +158,18 @@ def _generate_study_data(
 
 def run_simulation(
     scenario: AgentScenario,
-    n_iterations: int = FAST_ITERATIONS,
+    n_iterations: int | None = None,
     n_participants: int = 18,
     sessions_per_participant: int = 3,
     trials_per_task: int = 5,
     base_seed: int = 42,
     alpha: float = 0.05,
+    mode: str = "unit",
 ) -> SimulationResult:
     """Run Monte Carlo simulation for operating characteristics."""
+    if n_iterations is None:
+        n_iterations = SIMULATION_MODES.get(mode, SIMULATION_MODES["unit"])["iterations"]
+
     oracle = compute_oracle_effect(scenario, n_agents=100, seed=base_seed + 999999)
     oracle_truth = oracle.effect
 
@@ -163,6 +178,7 @@ def run_simulation(
     nc_analyses = 0
     estimates: list[float] = []
     ci_covers: list[bool] = []
+    ci_widths: list[float] = []
     converged_count = 0
     fallback_count = 0
     valid_count = 0
@@ -178,11 +194,12 @@ def run_simulation(
 
         result = run_primary_analysis(imagery_data, alpha=alpha)
 
-        is_valid = result.converged and not result.is_fallback
+        is_valid = result.inference_valid
         if result.converged and not result.is_fallback:
             converged_count += 1
+        if is_valid:
             valid_count += 1
-        elif result.is_fallback:
+        if result.is_fallback:
             fallback_count += 1
 
         estimates.append(result.effect_estimate)
@@ -192,11 +209,12 @@ def run_simulation(
         if is_valid:
             covered = result.ci_lower <= oracle_truth <= result.ci_upper
             ci_covers.append(covered)
+            ci_widths.append(result.ci_upper - result.ci_lower)
 
         if nc_data:
             nc_result = run_primary_analysis(nc_data, alpha=alpha)
             nc_analyses += 1
-            if nc_result.converged and not nc_result.is_fallback and nc_result.p_value <= alpha:
+            if nc_result.inference_valid and nc_result.p_value <= alpha:
                 nc_rejections += 1
 
     n = n_iterations
@@ -210,15 +228,22 @@ def run_simulation(
     )
 
     mean_est = sum(estimates) / n if estimates else 0.0
-    bias = mean_est - oracle_truth
+    bias_val = mean_est - oracle_truth
     mse = sum((e - oracle_truth) ** 2 for e in estimates) / n if estimates else 0.0
     rmse = math.sqrt(mse)
     coverage = sum(1 for c in ci_covers if c) / len(ci_covers) if ci_covers else 0.0
+    avg_width = sum(ci_widths) / len(ci_widths) if ci_widths else 0.0
 
     power = rejection_rate if not is_null else 0.0
     type_i = rejection_rate if is_null else 0.0
-    power_se = math.sqrt(rejection_rate * (1 - rejection_rate) / valid_n) if valid_n > 1 else 0.0
-    type_i_se = power_se
+    rate_se = math.sqrt(rejection_rate * (1 - rejection_rate) / valid_n) if valid_n > 1 else 0.0
+    cov_n = len(ci_covers) if ci_covers else 1
+    cov_se = math.sqrt(coverage * (1 - coverage) / cov_n) if cov_n > 1 else 0.0
+
+    bias_se_val = 0.0
+    if n > 1:
+        est_var = sum((e - mean_est) ** 2 for e in estimates) / (n - 1)
+        bias_se_val = math.sqrt(est_var / n)
 
     nc_fp = nc_rejections / nc_analyses if nc_analyses > 0 else 0.0
 
@@ -229,13 +254,16 @@ def run_simulation(
         sessions_per_participant=sessions_per_participant,
         trials_per_task=trials_per_task,
         power=round(power, 4),
-        power_se=round(power_se, 4),
+        power_se=round(rate_se, 4),
         type_i_error=round(type_i, 4),
-        type_i_se=round(type_i_se, 4),
+        type_i_se=round(rate_se, 4),
         mean_estimate=round(mean_est, 6),
-        bias=round(bias, 6),
+        bias=round(bias_val, 6),
+        bias_se=round(bias_se_val, 6),
         rmse=round(rmse, 6),
         coverage=round(coverage, 4),
+        coverage_se=round(cov_se, 4),
+        interval_width=round(avg_width, 6),
         convergence_rate=round(converged_count / n, 4) if n > 0 else 0.0,
         fallback_rate=round(fallback_count / n, 4) if n > 0 else 0.0,
         valid_inference_rate=round(valid_count / n, 4) if n > 0 else 0.0,
@@ -244,6 +272,7 @@ def run_simulation(
         oracle_se=round(oracle.effect_se, 6),
         seed_set=seed_set,
         scenario_version=scenario.version,
+        mode=mode,
     )
 
 
