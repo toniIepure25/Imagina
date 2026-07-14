@@ -134,8 +134,8 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
         package.calibration_hash = hashlib.sha256(cal_data.encode()).hexdigest()[:16]
 
     sim_runs = await (await db.execute(
-        "SELECT * FROM simulation_runs WHERE study_id LIKE ? AND status = 'completed'",
-        (f"%{study_id}%",),
+        "SELECT * FROM simulation_runs WHERE study_id = ? AND status = 'completed'",
+        (study_id,),
     )).fetchall()
     for run in sim_runs:
         summary = await (await db.execute(
@@ -145,22 +145,24 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
             package.replicate_summaries.append(json.loads(summary["summary_json"]))
 
     oracles = await (await db.execute(
-        "SELECT * FROM oracle_estimands WHERE scenario_id LIKE ?", (f"%{study_id}%",),
+        "SELECT * FROM oracle_estimands WHERE study_id = ? OR scenario_id = ?",
+        (study_id, study_id),
     )).fetchall()
     package.oracle_estimands = [dict(o) for o in oracles]
     if oracles:
         package.oracle_spec_hash = oracles[0]["spec_hash"] or ""
 
     specs = await (await db.execute(
-        "SELECT * FROM analysis_specifications WHERE study_id LIKE ?", (f"%{study_id}%",),
+        "SELECT * FROM analysis_specifications WHERE study_id = ?",
+        (study_id,),
     )).fetchall()
     if specs:
         package.analysis_specification = dict(specs[0])
         package.analysis_spec_hash = specs[0]["spec_hash"]
 
     a_runs = await (await db.execute(
-        "SELECT ar.* FROM analysis_runs ar JOIN analysis_specifications asp ON ar.spec_id = asp.id WHERE asp.study_id LIKE ?",
-        (f"%{study_id}%",),
+        "SELECT ar.* FROM analysis_runs ar JOIN analysis_specifications asp ON ar.spec_id = asp.id WHERE asp.study_id = ?",
+        (study_id,),
     )).fetchall()
     for run in a_runs:
         results = await (await db.execute(
@@ -179,10 +181,22 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
     )).fetchall()
     package.seal_evidence = [json.loads(s["seal_json"]) for s in seals]
 
-    replays = await (await db.execute(
-        "SELECT * FROM replay_divergences WHERE study_id = ?", (study_id,),
+    replay_runs = await (await db.execute(
+        "SELECT * FROM objective_replay_runs WHERE study_id = ?", (study_id,),
     )).fetchall()
-    package.replay_results = [dict(r) for r in replays]
+    for rr in replay_runs:
+        rr_results = await (await db.execute(
+            "SELECT * FROM objective_replay_results WHERE replay_run_id = ?", (rr["id"],),
+        )).fetchall()
+        package.replay_results.append({
+            "replay_run_id": rr["id"],
+            "session_id": rr["session_id"],
+            "exact_match": bool(rr["exact_match"]),
+            "manifest_verified": bool(rr["manifest_verified"]),
+            "seal_verified": bool(rr["seal_verified"]),
+            "n_divergences": rr["n_divergences"],
+            "results": [dict(r) for r in rr_results],
+        })
 
     return package
 

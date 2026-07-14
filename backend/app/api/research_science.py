@@ -1,14 +1,15 @@
 """Persistent science API router.
 
-All state is stored in the authoritative SQLite database using v007 tables.
-No in-memory dictionaries. Research-mode work returns 202 Accepted with a
-persistent run ID. Supports poll, restart recovery, and idempotency.
+All state is stored in the authoritative SQLite database.
+Simulation runs follow a durable lifecycle:
+  queued → claimed → running → completed | failed | aborted
+
+Supports poll, restart recovery, idempotency, and abort.
 """
 from __future__ import annotations
 
 import json
 import time
-import uuid
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -16,6 +17,8 @@ from pydantic import BaseModel
 from app.storage.database import get_db
 
 router = APIRouter(prefix="/api/research-science", tags=["research-science"])
+
+VALID_STATUSES = {"queued", "claimed", "running", "checkpointed", "completed", "failed", "aborted"}
 
 
 class DesignCreateRequest(BaseModel):
@@ -104,33 +107,56 @@ async def create_simulation(req: SimulationCreateRequest):
         raise HTTPException(status_code=400, detail=f"Unknown scenario: {req.scenario_id}")
 
     idem_key = req.idempotency_key or f"sim-{req.scenario_id}-{req.mode}-{req.base_seed}"
+    mode_config = SIMULATION_MODES.get(req.mode, SIMULATION_MODES["unit"])
 
     db = await get_db()
     try:
         existing = await (await db.execute(
             "SELECT id, status FROM simulation_runs WHERE study_id = ?", (idem_key,),
         )).fetchone()
+
         if existing:
             run_id = existing["id"]
-            if existing["status"] == "completed":
+            status = existing["status"]
+            if status == "completed":
                 summary = await (await db.execute(
                     "SELECT summary_json FROM simulation_summaries WHERE run_id = ?", (run_id,),
                 )).fetchone()
-                return {
-                    "id": run_id, "status": "completed",
-                    "result": json.loads(summary["summary_json"]) if summary else {},
-                }
-            return {"id": run_id, "status": existing["status"]}
+                return {"id": run_id, "status": "completed",
+                        "result": json.loads(summary["summary_json"]) if summary else {}}
+            if status == "aborted":
+                return {"id": run_id, "status": "aborted"}
+            if status in ("queued", "claimed", "running", "checkpointed"):
+                await db.execute(
+                    "UPDATE simulation_runs SET status = 'claimed', started_at = datetime('now') WHERE id = ?",
+                    (run_id,),
+                )
+                await db.commit()
+            elif status == "failed":
+                await db.execute(
+                    "UPDATE simulation_runs SET status = 'claimed', started_at = datetime('now'), error_message = NULL WHERE id = ?",
+                    (run_id,),
+                )
+                await db.commit()
+        else:
+            cursor = await db.execute(
+                """INSERT INTO simulation_runs
+                   (study_id, scenario_id, mode, n_iterations, n_participants,
+                    base_seed, status, started_at)
+                   VALUES (?, ?, ?, ?, ?, ?, 'claimed', datetime('now'))""",
+                (idem_key, req.scenario_id, req.mode, mode_config["iterations"],
+                 req.n_participants, req.base_seed),
+            )
+            run_id = cursor.lastrowid
+            await db.commit()
+    finally:
+        await db.close()
 
-        mode_config = SIMULATION_MODES.get(req.mode, SIMULATION_MODES["unit"])
-        cursor = await db.execute(
-            """INSERT INTO simulation_runs
-               (study_id, scenario_id, mode, n_iterations, n_participants, base_seed, status, started_at)
-               VALUES (?, ?, ?, ?, ?, ?, 'running', datetime('now'))""",
-            (idem_key, req.scenario_id, req.mode, mode_config["iterations"],
-             req.n_participants, req.base_seed),
+    db = await get_db()
+    try:
+        await db.execute(
+            "UPDATE simulation_runs SET status = 'running' WHERE id = ?", (run_id,),
         )
-        run_id = cursor.lastrowid
         await db.commit()
     finally:
         await db.close()
@@ -189,21 +215,38 @@ async def get_simulation(run_id: int):
         )).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Simulation not found")
-
-        response = {
+        response: dict = {
             "id": row["id"], "scenario_id": row["scenario_id"],
             "mode": row["mode"], "status": row["status"],
             "started_at": row["started_at"],
         }
-
         if row["status"] == "completed":
             summary = await (await db.execute(
                 "SELECT summary_json FROM simulation_summaries WHERE run_id = ?", (run_id,),
             )).fetchone()
             if summary:
                 response["result"] = json.loads(summary["summary_json"])
-
         return response
+    finally:
+        await db.close()
+
+
+@router.post("/simulations/{run_id}/abort", status_code=200)
+async def abort_simulation(run_id: int):
+    db = await get_db()
+    try:
+        row = await (await db.execute(
+            "SELECT status FROM simulation_runs WHERE id = ?", (run_id,),
+        )).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Simulation not found")
+        if row["status"] in ("completed", "aborted"):
+            return {"id": run_id, "status": row["status"], "message": "already terminal"}
+        await db.execute(
+            "UPDATE simulation_runs SET status = 'aborted' WHERE id = ?", (run_id,),
+        )
+        await db.commit()
+        return {"id": run_id, "status": "aborted"}
     finally:
         await db.close()
 
@@ -325,9 +368,7 @@ async def get_analysis(run_id: int):
         )).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Analysis not found")
-
-        response = {"id": row["id"], "status": row["status"]}
-
+        response: dict = {"id": row["id"], "status": row["status"]}
         if row["status"] == "completed":
             results = await (await db.execute(
                 "SELECT estimator_type, result_json FROM analysis_results WHERE run_id = ?",
@@ -336,40 +377,7 @@ async def get_analysis(run_id: int):
             response["results"] = {
                 r["estimator_type"]: json.loads(r["result_json"]) for r in results
             }
-
         return response
-    finally:
-        await db.close()
-
-
-@router.get("/analyses/{run_id}/diagnostics")
-async def get_analysis_diagnostics(run_id: int):
-    db = await get_db()
-    try:
-        row = await (await db.execute(
-            "SELECT * FROM analysis_runs WHERE id = ?", (run_id,),
-        )).fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Analysis not found")
-        if row["status"] != "completed":
-            return {"status": row["status"]}
-
-        primary = await (await db.execute(
-            "SELECT result_json FROM analysis_results WHERE run_id = ? AND estimator_type = 'primary'",
-            (run_id,),
-        )).fetchone()
-        if not primary:
-            return {"status": "completed", "primary": None}
-
-        result = json.loads(primary["result_json"])
-        return {
-            "status": "completed",
-            "model_type": result.get("model_type"),
-            "convergence": result.get("converged"),
-            "inference_valid": result.get("inference_valid"),
-            "is_fallback": result.get("is_fallback"),
-            "residual_diagnostics": result.get("residual_diagnostics"),
-        }
     finally:
         await db.close()
 
@@ -385,7 +393,7 @@ async def get_endpoint_registry():
 
 @router.get("/oracles/{scenario_id}")
 async def get_oracle(scenario_id: str):
-    from app.research.causal_oracle import compute_full_oracle, oracle_spec_hash
+    from app.research.causal_oracle import compute_full_oracle
     from app.research.cognitive_agent import SCENARIOS
 
     scenario = SCENARIOS.get(scenario_id)

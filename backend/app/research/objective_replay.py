@@ -278,42 +278,56 @@ async def replay_from_db(
             valid=bool(seal_row["valid"]),
         )
 
-    if seal:
-        result = replay_objective_session(original, manifest, seal, scenario, trial_specs, seed, prev_condition)
-    else:
-        pop = generate_population(1, seed=seed, scenario=scenario)
-        agent = pop[0] if pop else None
-        if not agent:
-            return ReplayResult(session_id=session_id, exact_match=False,
-                                divergences=[ReplayDivergence("population", -1, "expected", "empty")])
+    if not seal:
+        result = ReplayResult(session_id=session_id, exact_match=False,
+                              divergences=[ReplayDivergence("seal", -1, "required", "missing")])
+        await _persist_replay_run(db, session_id, result)
+        return result
 
-        provider = SyntheticCognitiveResponseProvider(agent, scenario)
-        guard = LeakageGuard()
-        replayed = execute_objective_session(
-            session_id, original.participant_id, original.condition,
-            original.period, trial_specs, provider, guard, seed,
-            prev_condition=prev_condition,
-        )
+    if not manifest_row:
+        result = ReplayResult(session_id=session_id, exact_match=False,
+                              divergences=[ReplayDivergence("manifest", -1, "required", "missing")])
+        await _persist_replay_run(db, session_id, result)
+        return result
 
-        result = ReplayResult(
-            session_id=session_id,
-            exact_match=replayed.content_hash == original.content_hash,
-            original_content_hash=original.content_hash,
-            replayed_content_hash=replayed.content_hash,
-        )
-        for i, (o, r) in enumerate(zip(original.trials, replayed.trials)):
-            if o.composite_error != r.composite_error:
-                result.divergences.append(ReplayDivergence("composite_error", i, o.composite_error, r.composite_error))
+    result = replay_objective_session(original, manifest, seal, scenario, trial_specs, seed, prev_condition)
+
+    await _persist_replay_run(db, session_id, result)
+    return result
+
+
+async def _persist_replay_run(db, session_id: str, result: ReplayResult) -> None:
+    """Persist a replay run and its results to DB."""
+    run_cursor = await db.execute(
+        """INSERT INTO objective_replay_runs
+           (study_id, session_id, exact_match, manifest_verified,
+            seal_verified, n_divergences, original_content_hash,
+            replayed_content_hash, replay_version)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (session_id, session_id, int(result.exact_match),
+         int(result.manifest_verified), int(result.seal_verified),
+         len(result.divergences), result.original_content_hash,
+         result.replayed_content_hash, result.replay_version),
+    )
+    replay_run_id = run_cursor.lastrowid
 
     for d in result.divergences:
         await db.execute(
-            """INSERT INTO replay_divergences
-               (study_id, session_id, trial_index, field_name,
-                original_value, replay_value, divergence_magnitude)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (session_id, session_id, d.trial_index, d.field,
-             str(d.original), str(d.replayed), None),
+            """INSERT INTO objective_replay_results
+               (replay_run_id, trial_index, field_name,
+                original_value, replayed_value, match)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (replay_run_id, d.trial_index, d.field,
+             str(d.original), str(d.replayed), 0),
         )
-    await db.commit()
 
-    return result
+    if result.exact_match:
+        await db.execute(
+            """INSERT INTO objective_replay_results
+               (replay_run_id, trial_index, field_name,
+                original_value, replayed_value, match)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (replay_run_id, -1, "exact_match", "true", "true", 1),
+        )
+
+    await db.commit()
