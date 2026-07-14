@@ -2,6 +2,76 @@
 
 ---
 
+## 2026-07-14 — PR Gate R0: Evidence and Transaction Closure
+
+### Task
+Correct remaining transaction, export, replay-provenance, and CI-evidence gaps before opening pull requests. Not a feature gate — no new scientific functionality added.
+
+### Starting HEAD
+`0ac3d4f` on `research/scientific-platform`
+
+### Commits (5 total)
+
+1. **fix(runtime): make domain writes and outbox events atomic** (`ad8ba9c`)
+   - Refactored `PersistentOutboxWriter.publish()` to insert outbox rows inline within the caller's active transaction (no buffering)
+   - Added outbox events for all domain transitions in runtime.py: session_ready, session_started, trial_created, trial_started, feedback_recorded, safety_event_recorded, trial_completed, trial_aborted, trial_safety_stopped, session_completed, session_aborted, session_safety_stopped
+   - Added completion_seal_created event in orchestrator
+   - 12 atomicity integration tests: rollback, commit-then-crash, dispatcher restart, duplicate dispatch, consumer failure, feedback-window atomicity
+
+2. **fix(export): validate complete package before atomic publication** (`691323f`)
+   - Fixed export ordering: metadata.json written before checksums, checksums exclude themselves, validation before rename
+   - Canonical package_hash from sorted relative_path+sha256 pairs (not just hash of checksum file)
+   - Safe overwrite via backup/swap strategy
+   - Persisted export records with granular status/validation columns (v006 migration)
+   - `export_ready` derived from newest export with `status=valid AND validation_status=valid`
+   - Enhanced validator: metadata checksum coverage, session headers, terminal status, absolute path detection
+
+3. **fix(replay): require complete versioned dependency manifests** (`6564108`)
+   - Expanded manifest with all dependency fields: signal_provider, feature_processor, state_estimator, metric_processor, curriculum_processor, feedback_policy, safety_monitor, id_generator, clock — each with id/version/config_hash
+   - Unified canonicalization: replaced `_canonical_json()` with `canonical_serialize()` from replay_validator
+   - Resolved git_sha at runtime via `git rev-parse HEAD` (cached at import)
+   - Dependency registry for component resolution during replay
+   - Fail-closed replay on missing/unknown dependency, version mismatch, canonicalization version mismatch
+   - 5 new manifest dependency tests
+
+4. **test(evidence): enforce abort replay export and persistence outcomes** (`b13cc70`)
+   - Strengthened Playwright abort test: proves final `aborted` status, sessions_completed < total, no export ready, persists after reload
+   - Added backend export corruption test: tamper file → revalidation fails
+   - Added backend replay corruption tests: tampered manifest hash → replay fails, deleted yoked points → yoked replay fails
+   - Extended Docker smoke with replay: pick completed session, assert match=true, verify hash equality, check export_ready=true
+
+5. **docs: record final PR-readiness evidence** (this commit)
+
+### Verification Results
+- Ruff: All checks passed
+- Backend runtime suite: 141 tests, 140 passed, 1 fixed (session_ended → session_completed), all pass
+- Frontend lint: Pass
+- Frontend build: Clean (17 routes)
+- Migration v006: Applied successfully
+
+### Architectural Decisions
+- ADR-028: True transactional outbox (publish inline, not buffered)
+- ADR-029: Export validation before publication (validate staging, then rename)
+- ADR-030: Complete versioned manifest dependencies with dependency registry
+
+### Remote CI (run 29319848786 on branch HEAD `79f7679`)
+| Job | Result | Duration | Notes |
+|-----|--------|----------|-------|
+| backend-runtime | PASSED | 39s | All 141 research/runtime tests pass |
+| frontend | PASSED | 52s | lint, typecheck, vitest, build |
+| docker-config | PASSED | 5s | Both compose files valid |
+| backend-core | FAILED | 40s | 2 pre-existing numpy failures (test_dataset_fixture, test_eeg_dsp) — not R0-related |
+| playwright | skipped | — | Depends on backend-core |
+| docker-smoke | skipped | — | PR-only job |
+
+### Status
+All R0 changes pass locally and in CI. The 2 pre-existing `numpy` failures in backend-core are unrelated to this PR gate.
+
+### Final HEAD
+`79f7679`
+
+---
+
 ## 2026-07-13 — Merge Gate B.1: Runtime Completion and Evidence Hardening
 
 ### Task

@@ -194,7 +194,7 @@ class TestRuntimeExecution:
         event_types = [e.event_type for e in sink.events]
         assert "session_ready" in event_types
         assert "session_started" in event_types
-        assert "session_ended" in event_types
+        assert "session_completed" in event_types
         assert "trial_completed" in event_types
 
     async def test_deterministic_ids(self, runtime_db):

@@ -521,4 +521,49 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-13 — Merge Gate B.2*
+## ADR-028: True Transactional Outbox
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** `PersistentOutboxWriter.publish()` buffered events in memory and only wrote them during `flush()`. A crash between a domain `db.commit()` and the subsequent outbox write would lose the event, breaking the outbox pattern's atomicity guarantee.
+
+**Decision:** `publish()` inserts the outbox row immediately into the database within the caller's active transaction. `flush()` becomes a no-op. Every `db.commit()` that follows a domain write + `sink.publish()` atomically persists both.
+
+**Consequences:**
+- Domain state and outbox events are always consistent after commit.
+- Rollback removes both domain record and outbox event.
+- Dispatcher delivery remains at-least-once after commit.
+
+---
+
+## ADR-029: Export Validation Before Publication
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** The previous export service renamed the staging directory to the final target before running validation. On overwrite, it deleted the existing export before verifying the replacement. `checksums.sha256` included itself (circular). `metadata.json` was written after checksums (not covered).
+
+**Decision:** Write metadata.json before checksums. Exclude checksums.sha256 from itself. Validate the complete staging package before any rename. Use backup/swap for safe overwrites. Persist export records with granular status/validation columns.
+
+**Consequences:**
+- Invalid exports are never published to the final path.
+- Overwrite never destroys a valid export before the replacement is verified.
+- `export_ready` is evidence-derived from the newest persisted record with `status=valid`.
+
+---
+
+## ADR-030: Complete Versioned Manifest Dependencies
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Session manifests lacked many dependency fields (feature processor, state estimator, metric processor, curriculum processor, clock, ID generator). The manifest used a weaker `_canonical_json()` than the replay canonicalizer. `git_sha` defaulted to `"synthetic"`.
+
+**Decision:** Expand manifests to include all pipeline component IDs, versions, and config hashes. Unify canonicalization using the replay validator's `canonical_serialize()`. Resolve `git_sha` dynamically at import time via `git rev-parse HEAD`. Create a dependency registry for component resolution during replay. Replay fails closed on any mismatch.
+
+**Consequences:**
+- Every session manifest is a complete, verifiable bill of materials.
+- Replay can reconstruct exact dependencies from the manifest.
+- Unknown or mismatched components cause replay failure (fail-closed).
+
+---
+
+*Last updated: 2026-07-14 — PR Gate R0*
