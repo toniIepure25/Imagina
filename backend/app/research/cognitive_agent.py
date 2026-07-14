@@ -28,7 +28,7 @@ from app.research.objective_endpoints import (
 )
 from app.research.psychophysics.common import ResponseSpec, StimulusSpec
 
-MODEL_VERSION = "1.0"
+MODEL_VERSION = "2.0"
 
 
 @dataclass
@@ -131,7 +131,8 @@ SCENARIO_PRACTICE_ONLY = AgentScenario(
     scenario_id="practice_only",
     fixed_practice_effect=0.08,
     yoked_practice_effect=0.08,
-    adaptive_precision_effect=0.08,
+    adaptive_precision_effect=0.0,
+    adaptive_learning_boost=0.08,
     description="All conditions improve equally from practice",
 )
 
@@ -252,20 +253,26 @@ def generate_trial_response(
         practice = session_index * agent.learning_rate
 
         if condition == "adaptive":
-            effect = (
-                scenario.adaptive_precision_effect * agent.condition_treatment_response
-                + scenario.adaptive_learning_boost
-            ) * session_index
+            precision_eff = scenario.adaptive_precision_effect * agent.condition_treatment_response
+            control_eff = scenario.adaptive_control_effect * agent.imagery_control
+            stability_eff = scenario.adaptive_stability_effect * agent.imagery_stability
+            learning_eff = scenario.adaptive_learning_boost
+            fatigue_reg = scenario.adaptive_fatigue_regulation
+            effect = (precision_eff + control_eff + stability_eff + learning_eff) * session_index
             effective += effect + practice
+            effective -= agent.fatigue_susceptibility * trial_index * 0.01 * (1.0 - fatigue_reg)
         elif condition == "fixed":
             effective += scenario.fixed_practice_effect * session_index + practice
+            effective -= agent.fatigue_susceptibility * trial_index * 0.01
         elif condition == "yoked":
             effective += scenario.yoked_practice_effect * session_index + practice
+            effective -= agent.fatigue_susceptibility * trial_index * 0.01
+
+        effective += agent.period_effect * session_index * scenario.period_effect_strength
+        effective += agent.expectancy_response * (0.5 if condition == "adaptive" else 0.0)
 
         if prev_condition == "adaptive" and condition != "adaptive":
             effective += agent.carryover_effect * scenario.carryover_strength
-
-        effective -= agent.fatigue_susceptibility * trial_index * 0.01
 
         if delay_s > 0:
             stability_loss = delay_s * 0.01 * (1.0 - agent.imagery_stability)

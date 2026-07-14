@@ -2,29 +2,45 @@
 
 Repeatedly generates complete studies, runs confirmatory analysis, and
 estimates power, Type-I error, bias, RMSE, and CI coverage across scenarios.
+Uses observed-scale oracle for truth, all 4 task families, and applied dropout.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import math
+import random
 from dataclasses import dataclass
 from typing import Any
 
+from app.research.causal_oracle import DEFAULT_TARGETS, compute_oracle_effect
 from app.research.cognitive_agent import (
     SCENARIOS,
     AgentScenario,
     generate_population,
     generate_trial_response,
+    should_dropout,
 )
-from app.research.psychophysics.common import StimulusSpec
+from app.research.rng_registry import derive_seed
 from app.research.statistics.confirmatory import run_primary_analysis
 
-SIMULATION_VERSION = "1.0"
+SIMULATION_VERSION = "2.0"
 
 FAST_ITERATIONS = 20
-CI_ITERATIONS = 50
-RESEARCH_ITERATIONS = 500
+CI_ITERATIONS = 100
+RESEARCH_ITERATIONS = 1000
+
+WILLIAMS_SEQUENCES = [
+    ["adaptive", "fixed", "yoked"],
+    ["fixed", "yoked", "adaptive"],
+    ["yoked", "adaptive", "fixed"],
+    ["yoked", "fixed", "adaptive"],
+    ["adaptive", "yoked", "fixed"],
+    ["fixed", "adaptive", "yoked"],
+]
+
+TASK_FAMILIES = ["feature_reconstruction", "imagery_manipulation", "delayed_imagery", "perceptual_control"]
+DELAYS = [0.0, 0.0, 3.0, 0.0]
 
 
 @dataclass
@@ -43,7 +59,11 @@ class SimulationResult:
     rmse: float
     coverage: float
     convergence_rate: float
+    fallback_rate: float
+    valid_inference_rate: float
     negative_control_fp_rate: float
+    oracle_effect: float
+    oracle_se: float
     seed_set: list[int]
     scenario_version: str
     simulation_version: str = SIMULATION_VERSION
@@ -69,6 +89,62 @@ class DesignRecommendation:
         return {k: v for k, v in self.__dict__.items()}
 
 
+def _generate_study_data(
+    scenario: AgentScenario,
+    n_participants: int,
+    sessions_per_participant: int,
+    trials_per_task: int,
+    sim_seed: int,
+) -> tuple[list[dict], list[dict]]:
+    """Generate one complete study with all task families, dropout, etc."""
+    pop = generate_population(n_participants, seed=sim_seed, scenario=scenario)
+    imagery_data: list[dict] = []
+    nc_data: list[dict] = []
+
+    for ai, agent in enumerate(pop):
+        seq = WILLIAMS_SEQUENCES[ai % len(WILLIAMS_SEQUENCES)]
+        dropout_rng = random.Random(derive_seed(sim_seed, "dropout", participant_id=agent.participant_id))
+        dropped = False
+
+        for si in range(min(sessions_per_participant, len(seq))):
+            if dropped:
+                break
+            if si > 0 and should_dropout(agent, si, scenario, dropout_rng):
+                dropped = True
+                break
+
+            cond = seq[si]
+            prev_cond = seq[si - 1] if si > 0 else None
+
+            for tf_idx, task_family in enumerate(TASK_FAMILIES):
+                is_pc = task_family == "perceptual_control"
+                delay = DELAYS[tf_idx]
+                target_pool = DEFAULT_TARGETS
+
+                for ti in range(trials_per_task):
+                    target = target_pool[ti % len(target_pool)]
+                    trial_seed = derive_seed(sim_seed, "simulation",
+                                             participant_id=agent.participant_id,
+                                             session_index=si, trial_index=tf_idx * trials_per_task + ti)
+                    r = generate_trial_response(
+                        agent, target, target, cond, si, ti,
+                        scenario, is_pc, trial_seed,
+                        delay_s=delay,
+                        prev_condition=prev_cond,
+                    )
+                    r["period"] = si
+                    r["baseline_precision"] = agent.baseline_imagery_precision
+                    r["task_family"] = task_family
+                    r["carryover_indicator"] = prev_cond if prev_cond else "none"
+
+                    if is_pc:
+                        nc_data.append(r)
+                    else:
+                        imagery_data.append(r)
+
+    return imagery_data, nc_data
+
+
 def run_simulation(
     scenario: AgentScenario,
     n_iterations: int = FAST_ITERATIONS,
@@ -79,74 +155,72 @@ def run_simulation(
     alpha: float = 0.05,
 ) -> SimulationResult:
     """Run Monte Carlo simulation for operating characteristics."""
-    target = StimulusSpec(45, 120, 3.0, 500, 400, 50)
+    oracle = compute_oracle_effect(scenario, n_agents=100, seed=base_seed + 999999)
+    oracle_truth = oracle.effect
 
     rejections = 0
+    nc_rejections = 0
+    nc_analyses = 0
     estimates: list[float] = []
     ci_covers: list[bool] = []
     converged_count = 0
+    fallback_count = 0
+    valid_count = 0
     seed_set: list[int] = []
-
-    sequences = [
-        ["adaptive", "fixed", "yoked"],
-        ["fixed", "yoked", "adaptive"],
-        ["yoked", "adaptive", "fixed"],
-        ["yoked", "fixed", "adaptive"],
-        ["adaptive", "yoked", "fixed"],
-        ["fixed", "adaptive", "yoked"],
-    ]
 
     for iteration in range(n_iterations):
         sim_seed = base_seed + iteration * 1000
         seed_set.append(sim_seed)
 
-        pop = generate_population(n_participants, seed=sim_seed, scenario=scenario)
-        trial_data: list[dict] = []
+        imagery_data, nc_data = _generate_study_data(
+            scenario, n_participants, sessions_per_participant, trials_per_task, sim_seed,
+        )
 
-        for ai, agent in enumerate(pop):
-            seq = sequences[ai % len(sequences)]
-            for si in range(min(sessions_per_participant, len(seq))):
-                cond = seq[si]
-                prev_cond = seq[si - 1] if si > 0 else None
-                for ti in range(trials_per_task):
-                    r = generate_trial_response(
-                        agent, target, target, cond, si, ti,
-                        scenario, False, sim_seed + si * 100 + ti,
-                        prev_condition=prev_cond,
-                    )
-                    r["period"] = si
-                    r["baseline_precision"] = agent.baseline_imagery_precision
-                    r["task_family"] = "feature_reconstruction"
-                    r["carryover_indicator"] = prev_cond if prev_cond else "none"
-                    trial_data.append(r)
+        result = run_primary_analysis(imagery_data, alpha=alpha)
 
-        result = run_primary_analysis(trial_data, alpha=alpha)
-
-        if result.converged:
+        is_valid = result.converged and not result.is_fallback
+        if result.converged and not result.is_fallback:
             converged_count += 1
+            valid_count += 1
+        elif result.is_fallback:
+            fallback_count += 1
+
         estimates.append(result.effect_estimate)
-        if result.p_value <= alpha:
+        if is_valid and result.p_value <= alpha:
             rejections += 1
 
-        true_effect = -(scenario.adaptive_precision_effect - scenario.yoked_practice_effect)
-        covered = result.ci_lower <= true_effect <= result.ci_upper
-        ci_covers.append(covered)
+        if is_valid:
+            covered = result.ci_lower <= oracle_truth <= result.ci_upper
+            ci_covers.append(covered)
+
+        if nc_data:
+            nc_result = run_primary_analysis(nc_data, alpha=alpha)
+            nc_analyses += 1
+            if nc_result.converged and not nc_result.is_fallback and nc_result.p_value <= alpha:
+                nc_rejections += 1
 
     n = n_iterations
-    rejection_rate = rejections / n
-    is_null = (scenario.adaptive_precision_effect == scenario.yoked_practice_effect == 0)
+    valid_n = valid_count if valid_count > 0 else 1
+    rejection_rate = rejections / valid_n
+
+    is_null = all(
+        getattr(scenario, attr) == 0
+        for attr in ["adaptive_precision_effect", "adaptive_control_effect",
+                      "adaptive_stability_effect"]
+    )
 
     mean_est = sum(estimates) / n if estimates else 0.0
-    true_eff = -(scenario.adaptive_precision_effect - scenario.yoked_practice_effect)
-    bias = mean_est - true_eff
-    mse = sum((e - true_eff) ** 2 for e in estimates) / n if estimates else 0.0
+    bias = mean_est - oracle_truth
+    mse = sum((e - oracle_truth) ** 2 for e in estimates) / n if estimates else 0.0
     rmse = math.sqrt(mse)
-    coverage = sum(1 for c in ci_covers if c) / n if ci_covers else 0.0
+    coverage = sum(1 for c in ci_covers if c) / len(ci_covers) if ci_covers else 0.0
 
     power = rejection_rate if not is_null else 0.0
     type_i = rejection_rate if is_null else 0.0
-    power_se = math.sqrt(rejection_rate * (1 - rejection_rate) / n) if n > 1 else 0.0
+    power_se = math.sqrt(rejection_rate * (1 - rejection_rate) / valid_n) if valid_n > 1 else 0.0
     type_i_se = power_se
+
+    nc_fp = nc_rejections / nc_analyses if nc_analyses > 0 else 0.0
 
     return SimulationResult(
         scenario_id=scenario.scenario_id,
@@ -163,7 +237,11 @@ def run_simulation(
         rmse=round(rmse, 6),
         coverage=round(coverage, 4),
         convergence_rate=round(converged_count / n, 4) if n > 0 else 0.0,
-        negative_control_fp_rate=0.0,
+        fallback_rate=round(fallback_count / n, 4) if n > 0 else 0.0,
+        valid_inference_rate=round(valid_count / n, 4) if n > 0 else 0.0,
+        negative_control_fp_rate=round(nc_fp, 4),
+        oracle_effect=round(oracle_truth, 6),
+        oracle_se=round(oracle.effect_se, 6),
         seed_set=seed_set,
         scenario_version=scenario.version,
     )
