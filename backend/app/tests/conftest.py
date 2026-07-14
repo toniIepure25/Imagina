@@ -70,6 +70,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_design_simulation": ["research", "simulation", "science_deps"],
     "test_measurement_validity": ["research", "psychophysics"],
     "test_objective_runtime": ["research", "psychophysics"],
+    "test_falsification": ["research", "simulation", "science_deps"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
