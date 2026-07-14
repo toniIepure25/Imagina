@@ -65,6 +65,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_psychophysics": ["research", "psychophysics"],
     "test_calibration": ["research", "psychophysics"],
     "test_cognitive_agent": ["research", "simulation"],
+    "test_estimands": ["research", "statistical"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
