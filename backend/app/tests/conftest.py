@@ -74,6 +74,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_rng_registry": ["research", "core"],
     "test_causal_oracle": ["research", "simulation", "science_deps"],
     "test_scenario_contracts": ["research", "simulation", "science_deps"],
+    "test_crossover_design": ["research", "simulation"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
