@@ -113,7 +113,8 @@ def _generate_study_data(
     nc_data: list[dict] = []
 
     for ai, agent in enumerate(pop):
-        seq = WILLIAMS_SEQUENCES[ai % len(WILLIAMS_SEQUENCES)]
+        seq_idx = ai % len(WILLIAMS_SEQUENCES)
+        seq = WILLIAMS_SEQUENCES[seq_idx]
         dropout_rng = random.Random(derive_seed(sim_seed, "dropout", participant_id=agent.participant_id))
         dropped = False
 
@@ -144,6 +145,7 @@ def _generate_study_data(
                         prev_condition=prev_cond,
                     )
                     r["period"] = si
+                    r["sequence"] = seq_idx
                     r["baseline_precision"] = agent.baseline_imagery_precision
                     r["task_family"] = task_family
                     r["carryover_indicator"] = prev_cond if prev_cond else "none"
