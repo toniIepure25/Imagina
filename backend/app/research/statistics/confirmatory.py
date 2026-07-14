@@ -224,7 +224,7 @@ def run_primary_analysis(
             family=Gaussian(),
             cov_struct=Exchangeable(),
         )
-        result = model.fit(maxiter=100, cov_type="robust")
+        result = model.fit(maxiter=100, cov_type="bias_reduced")
     except Exception as exc:
         return _make_invalid_result(trial_data, estimand_id, GEE_FORMULA,
                                     f"gee_exception_{type(exc).__name__}")
@@ -282,7 +282,7 @@ def run_primary_analysis(
         cluster_size_max=diag["cluster_size_max"],
         condition_number=round(cond_num, 2),
         rank_deficient=rank_deficient,
-        covariance_type="robust_sandwich",
+        covariance_type="bias_reduced_sandwich",
         residual_diagnostics={
             "residual_mean": round(float(np.mean(resid)), 6),
             "residual_sd": round(residual_sd, 6),
