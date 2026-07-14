@@ -1,5 +1,5 @@
 """Tests for the confirmatory analysis package."""
-
+import warnings
 
 from app.research.cognitive_agent import (
     SCENARIO_MEDIUM_ADAPTIVE,
@@ -7,8 +7,16 @@ from app.research.cognitive_agent import (
     generate_population,
     generate_trial_response,
 )
+from app.research.design_simulation import WILLIAMS_SEQUENCES
 from app.research.psychophysics.common import StimulusSpec
-from app.research.statistics.confirmatory import AnalysisResult, run_primary_analysis
+from app.research.statistics.confirmatory import (
+    AnalysisResult,
+    run_bootstrap_ci,
+    run_full_analysis,
+    run_hierarchical_analysis,
+    run_primary_analysis,
+    run_randomization_test,
+)
 from app.research.statistics.design_matrix import build_design_matrix, design_matrix_hash
 from app.research.statistics.multiplicity import classify_endpoints, holm_correction
 
@@ -17,18 +25,20 @@ def _generate_study_data(n_participants: int, scenario, seed: int) -> list[dict]
     pop = generate_population(n_participants, seed=seed, scenario=scenario)
     target = StimulusSpec(45, 120, 3.0, 500, 400, 50)
     data: list[dict] = []
-    conditions = ["adaptive", "fixed", "yoked"]
-    for agent in pop:
-        for si, cond in enumerate(conditions):
+    for ai, agent in enumerate(pop):
+        seq_idx = ai % len(WILLIAMS_SEQUENCES)
+        seq = WILLIAMS_SEQUENCES[seq_idx]
+        for si, cond in enumerate(seq):
             for ti in range(5):
                 r = generate_trial_response(
                     agent, target, target, cond, si, ti,
                     scenario, False, seed + si * 100 + ti,
                 )
                 r["period"] = si
+                r["sequence"] = seq_idx
                 r["baseline_precision"] = agent.baseline_imagery_precision
                 r["task_family"] = "feature_reconstruction"
-                r["carryover_indicator"] = "none"
+                r["carryover_indicator"] = seq[si - 1] if si > 0 else "none"
                 data.append(r)
     return data
 
@@ -49,40 +59,114 @@ class TestDesignMatrix:
         assert h1 == h2
 
 
-class TestConfirmatoryAnalysis:
-    def test_analysis_returns_result(self):
+class TestGEEPrimaryEstimator:
+    def test_model_type_is_gee(self):
         data = _generate_study_data(12, SCENARIO_STRICT_NULL, 42)
-        result = run_primary_analysis(data)
-        assert isinstance(result, AnalysisResult)
-        assert result.n_participants >= 12
-        assert result.n_trials > 0
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_primary_analysis(data)
+        assert result.model_type == "statsmodels.GEE"
+        assert not result.is_fallback
+        assert result.inference_valid
 
-    def test_null_scenario_no_significant_effect(self):
+    def test_returns_cluster_diagnostics(self):
+        data = _generate_study_data(12, SCENARIO_STRICT_NULL, 42)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_primary_analysis(data)
+        assert result.n_clusters >= 12
+        assert result.cluster_size_min > 0
+        assert result.covariance_type == "robust_sandwich"
+
+    def test_null_no_significant_effect(self):
         data = _generate_study_data(24, SCENARIO_STRICT_NULL, 42)
-        result = run_primary_analysis(data)
-        assert result.p_value > 0.001 or result.is_fallback
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_primary_analysis(data)
+        assert result.inference_valid
+        assert result.p_value > 0.01
 
     def test_medium_effect_detectable(self):
-        data = _generate_study_data(30, SCENARIO_MEDIUM_ADAPTIVE, 42)
-        result = run_primary_analysis(data)
-        assert result.effect_estimate != 0.0
-        assert result.standard_error > 0
+        data = _generate_study_data(24, SCENARIO_MEDIUM_ADAPTIVE, 42)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_primary_analysis(data)
+        assert result.inference_valid
+        assert result.effect_estimate < 0
 
-    def test_result_has_diagnostics(self):
-        data = _generate_study_data(12, SCENARIO_STRICT_NULL, 42)
+    def test_too_few_clusters_rejected(self):
+        data = _generate_study_data(4, SCENARIO_STRICT_NULL, 42)
         result = run_primary_analysis(data)
-        assert result.model_spec_hash is not None
-        assert result.analysis_population == "intention_to_treat"
-
-    def test_too_few_participants_uses_fallback(self):
-        data = _generate_study_data(2, SCENARIO_STRICT_NULL, 42)
-        result = run_primary_analysis(data)
-        assert result.is_fallback is True
+        assert not result.inference_valid
 
     def test_empty_data(self):
         result = run_primary_analysis([])
-        assert result.is_fallback is True
-        assert result.converged is False
+        assert result.is_fallback
+        assert not result.inference_valid
+
+
+class TestHierarchicalSensitivity:
+    def test_model_type_correctly_named(self):
+        data = _generate_study_data(18, SCENARIO_STRICT_NULL, 42)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_hierarchical_analysis(data)
+        if result.inference_valid:
+            assert result.model_type == "random_intercept_sensitivity"
+
+    def test_agrees_with_primary_direction(self):
+        data = _generate_study_data(18, SCENARIO_MEDIUM_ADAPTIVE, 42)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            primary = run_primary_analysis(data)
+            hier = run_hierarchical_analysis(data)
+        if primary.inference_valid and hier.inference_valid:
+            assert (primary.effect_estimate < 0) == (hier.effect_estimate < 0)
+
+
+class TestBootstrapAlignment:
+    def test_bootstrap_resamples_participants_and_refits_gee(self):
+        data = _generate_study_data(18, SCENARIO_MEDIUM_ADAPTIVE, 42)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            boot = run_bootstrap_ci(data, n_bootstrap=30, seed=42)
+        assert boot["valid"]
+        assert boot["n_success"] > 0
+        assert boot["ci"] is not None
+        lo, hi = boot["ci"]
+        assert lo < hi
+
+    def test_null_bootstrap_covers_zero(self):
+        data = _generate_study_data(18, SCENARIO_STRICT_NULL, 42)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            boot = run_bootstrap_ci(data, n_bootstrap=30, seed=42)
+        if boot["valid"] and boot["ci"] is not None:
+            lo, hi = boot["ci"]
+            assert lo <= 0 <= hi, f"Null bootstrap CI [{lo}, {hi}] does not cover 0"
+
+
+class TestRandomizationInference:
+    def test_model_type_is_sign_flip(self):
+        data = _generate_study_data(12, SCENARIO_STRICT_NULL, 42)
+        result = run_randomization_test(data, n_permutations=100, seed=42)
+        assert result.model_type == "paired_sign_flip"
+        assert result.inference_valid
+
+    def test_null_high_p_value(self):
+        data = _generate_study_data(18, SCENARIO_STRICT_NULL, 42)
+        result = run_randomization_test(data, n_permutations=200, seed=42)
+        assert result.p_value > 0.05
+
+
+class TestFullAnalysis:
+    def test_all_estimators_present(self):
+        data = _generate_study_data(18, SCENARIO_STRICT_NULL, 42)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            multi = run_full_analysis(data, n_bootstrap=20, seed=42)
+        assert multi.primary is not None
+        assert multi.randomization is not None
 
 
 class TestMultiplicity:
