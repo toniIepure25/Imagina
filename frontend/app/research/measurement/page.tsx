@@ -1,6 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import AppShell from "@/components/layout/AppShell";
+
+interface RegistryData {
+  endpoints: Record<string, { id: string; domain: string; role: string; direction: string; objective: boolean; version: string }>;
+  hash: string;
+}
 
 const CONSTRUCTS = [
   { name: "Imagery Precision", domain: "imagery_precision", objective: true,
@@ -50,6 +56,16 @@ const ENDPOINTS = [
 ];
 
 export default function MeasurementPage() {
+  const [registry, setRegistry] = useState<RegistryData | null>(null);
+  const [registryError, setRegistryError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/research-science/endpoint-registry")
+      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+      .then(setRegistry)
+      .catch(() => setRegistryError("Endpoint registry API unavailable"));
+  }, []);
+
   return (
     <AppShell>
       <div className="max-w-5xl mx-auto space-y-8 p-6">
@@ -59,6 +75,18 @@ export default function MeasurementPage() {
         </div>
 
         <h1 className="text-2xl font-bold">Measurement Workbench</h1>
+
+        {registry && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm">
+            <strong>Live Registry:</strong> {Object.keys(registry.endpoints).length} endpoints |
+            Hash: <code className="text-xs">{registry.hash.slice(0, 12)}...</code>
+          </div>
+        )}
+        {registryError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+            {registryError} — showing static definitions below
+          </div>
+        )}
 
         <section>
           <h2 className="text-xl font-semibold mb-3">Construct Map</h2>

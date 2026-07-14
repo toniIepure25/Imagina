@@ -21,6 +21,8 @@ interface AnalysisResult {
   n_missing: number;
   analysis_population: string;
   is_fallback: boolean;
+  inference_valid: boolean;
+  primary_estimator_status: string;
 }
 
 export default function AnalysisPage() {
@@ -32,13 +34,14 @@ export default function AnalysisPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/research/analysis/run", { method: "POST" });
+      const res = await fetch("/api/research-science/analyses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
       if (!res.ok) {
         setError(`Analysis API returned ${res.status}`);
         return;
       }
       const data = await res.json();
-      setResult(data.primary || data);
+      const r = data.result?.primary || data.primary || data;
+      setResult(r);
     } catch {
       setError("Analysis endpoint not available.");
     } finally {

@@ -24,8 +24,15 @@ interface SimResult {
   bias: number;
   rmse: number;
   coverage: number;
+  coverage_se: number;
   convergence_rate: number;
+  fallback_rate: number;
+  valid_inference_rate: number;
+  negative_control_fp_rate: number;
+  oracle_effect: number;
+  oracle_se: number;
   n_iterations: number;
+  mode: string;
 }
 
 export default function DesignSimulationPage() {
