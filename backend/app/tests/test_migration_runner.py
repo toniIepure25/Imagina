@@ -54,13 +54,13 @@ async def legacy_db():
 class TestEmptyDatabaseUpgrade:
     async def test_migrations_run_from_empty(self, empty_db):
         version = await run_migrations(empty_db)
-        assert version == 5
+        assert version == 6
 
     async def test_version_table_created(self, empty_db):
         await run_migrations(empty_db)
         cursor = await empty_db.execute("SELECT COUNT(*) FROM schema_version")
         row = await cursor.fetchone()
-        assert row[0] == 5
+        assert row[0] == 6
 
     async def test_studies_table_exists(self, empty_db):
         await run_migrations(empty_db)
@@ -106,7 +106,7 @@ class TestIdempotentStartup:
     async def test_second_run_is_noop(self, empty_db):
         v1 = await run_migrations(empty_db)
         v2 = await run_migrations(empty_db)
-        assert v1 == v2 == 5
+        assert v1 == v2 == 6
 
 
 class TestV003RuntimeSchema:

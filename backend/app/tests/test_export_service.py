@@ -107,7 +107,7 @@ class TestAtomicExport:
                 with open(meta_path) as f:
                     meta = json.load(f)
                 assert meta["data_classification"] == "synthetic"
-                assert meta["export_schema_version"] == "3.0"
+                assert meta["export_schema_version"] == "3.1"
             finally:
                 await db.close()
 

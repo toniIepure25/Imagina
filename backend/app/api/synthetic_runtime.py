@@ -80,10 +80,15 @@ async def _run_to_response(row: dict[str, Any], db=None) -> dict[str, Any]:
 
     if db and row["status"] in ("completed", "completed_with_failures"):
         export_row = await (await db.execute(
-            "SELECT export_id FROM export_runs WHERE study_id = ? ORDER BY created_at DESC LIMIT 1",
+            "SELECT export_id, status, validation_status FROM export_runs "
+            "WHERE study_id = ? ORDER BY created_at DESC LIMIT 1",
             (row["study_id"],),
         )).fetchone()
-        export_ready = export_row is not None
+        export_ready = (
+            export_row is not None
+            and export_row["status"] == "valid"
+            and export_row["validation_status"] == "valid"
+        )
 
         replay_rows = await (await db.execute(
             "SELECT match FROM replay_results rr "

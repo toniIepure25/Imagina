@@ -1,7 +1,8 @@
 """Atomic export service for synthetic study data.
 
-Exports study data to a staging directory, validates, then atomically
-renames to the final path. Does not silently overwrite existing exports.
+Exports study data to a sibling staging directory, validates the complete
+package, then atomically renames to the final path. Persists export
+records with granular status and validation columns.
 """
 from __future__ import annotations
 
@@ -19,6 +20,8 @@ from typing import Any
 import aiosqlite
 
 logger = logging.getLogger(__name__)
+
+EXPORT_SCHEMA_VERSION = "3.1"
 
 
 class ExportValidationError(Exception):
@@ -51,6 +54,11 @@ def _write_json(staging: str, filename: str, data: Any) -> str:
     return path
 
 
+def _compute_package_hash(checksums: dict[str, str]) -> str:
+    canonical = "\n".join(f"{checksums[k]}  {k}" for k in sorted(checksums.keys()))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 async def export_synthetic_dataset(
     db: aiosqlite.Connection,
     study_id: str,
@@ -65,6 +73,7 @@ async def export_synthetic_dataset(
     parent = os.path.dirname(output_dir) or "."
     os.makedirs(parent, exist_ok=True)
     staging = tempfile.mkdtemp(dir=parent, prefix=".imagina_export_staging_")
+    export_id = str(uuid.uuid4())
 
     try:
         files_written: dict[str, int] = {}
@@ -234,23 +243,11 @@ async def export_synthetic_dataset(
             (study_id,),
         )
 
-        checksums: dict[str, str] = {}
-        for root, dirs, filenames in os.walk(staging):
-            for fname in filenames:
-                fpath = os.path.join(root, fname)
-                rel = os.path.relpath(fpath, staging).replace("\\", "/")
-                checksums[rel] = _file_sha256(fpath)
-
-        checksums_path = os.path.join(staging, "checksums.sha256")
-        with open(checksums_path, "w", encoding="utf-8") as f:
-            for rel_path in sorted(checksums.keys()):
-                f.write(f"{checksums[rel_path]}  {rel_path}\n")
-        checksums["checksums.sha256"] = _file_sha256(checksums_path)
-
+        # --- Correct ordering: metadata THEN checksums ---
         metadata = {
             "study_id": study_id,
             "data_classification": "synthetic",
-            "export_schema_version": "3.0",
+            "export_schema_version": EXPORT_SCHEMA_VERSION,
             "exported_at": datetime.now(timezone.utc).isoformat(),
             "files": {},
         }
@@ -262,36 +259,66 @@ async def export_synthetic_dataset(
                 if os.path.exists(fpath):
                     metadata["files"][fname] = {
                         "rows": row_count,
-                        "sha256": checksums.get(fname, _file_sha256(fpath)),
+                        "sha256": _file_sha256(fpath),
                     }
-
         _write_json(staging, "metadata.json", metadata)
 
-        if os.path.exists(output_dir):
-            shutil.rmtree(output_dir)
-        os.rename(staging, output_dir)
+        checksums: dict[str, str] = {}
+        for root, _dirs, filenames in os.walk(staging):
+            for fname in filenames:
+                if fname == "checksums.sha256":
+                    continue
+                fpath = os.path.join(root, fname)
+                rel = os.path.relpath(fpath, staging).replace("\\", "/")
+                checksums[rel] = _file_sha256(fpath)
 
-        export_id = str(uuid.uuid4())
-        package_hash = _file_sha256(os.path.join(output_dir, "checksums.sha256"))
+        checksums_path = os.path.join(staging, "checksums.sha256")
+        with open(checksums_path, "w", encoding="utf-8") as f:
+            for rel_path in sorted(checksums.keys()):
+                f.write(f"{checksums[rel_path]}  {rel_path}\n")
 
-        validation_result = validate_export(output_dir)
+        package_hash = _compute_package_hash(checksums)
 
-        try:
-            now = datetime.now(timezone.utc).isoformat()
-            await db.execute(
-                "INSERT INTO export_runs "
-                "(export_id, study_id, data_classification, manifest_hash, "
-                "file_hashes_json, output_path, created_at, export_schema_version) "
-                "VALUES (?, ?, 'synthetic', ?, ?, ?, ?, '3.0')",
-                (
-                    export_id, study_id, package_hash,
-                    json.dumps(checksums), study_id,
-                    now,
-                ),
+        validation_result = validate_export(staging)
+
+        if not validation_result["valid"]:
+            await _persist_export_record(
+                db, export_id, study_id, package_hash,
+                checksums, "invalid",
+                validation_result,
             )
-            await db.commit()
-        except Exception:
-            logger.warning("Could not persist export_runs record", exc_info=True)
+            if os.path.exists(staging):
+                shutil.rmtree(staging, ignore_errors=True)
+            return {
+                "export_id": export_id,
+                "output_dir": output_dir,
+                "study_id": study_id,
+                "data_classification": "synthetic",
+                "package_hash": package_hash,
+                "validation": validation_result,
+                "status": "invalid",
+            }
+
+        if os.path.exists(output_dir) and allow_overwrite:
+            backup = output_dir + ".bak"
+            if os.path.exists(backup):
+                shutil.rmtree(backup)
+            os.rename(output_dir, backup)
+            try:
+                os.rename(staging, output_dir)
+                shutil.rmtree(backup, ignore_errors=True)
+            except Exception:
+                if os.path.exists(backup) and not os.path.exists(output_dir):
+                    os.rename(backup, output_dir)
+                raise
+        else:
+            os.rename(staging, output_dir)
+
+        await _persist_export_record(
+            db, export_id, study_id, package_hash,
+            checksums, "valid",
+            validation_result,
+        )
 
         return {
             "export_id": export_id,
@@ -301,11 +328,45 @@ async def export_synthetic_dataset(
             "data_classification": "synthetic",
             "package_hash": package_hash,
             "validation": validation_result,
+            "status": "valid",
         }
     except Exception:
         if os.path.exists(staging):
             shutil.rmtree(staging, ignore_errors=True)
         raise
+
+
+async def _persist_export_record(
+    db: aiosqlite.Connection,
+    export_id: str,
+    study_id: str,
+    package_hash: str,
+    checksums: dict[str, str],
+    status: str,
+    validation_result: dict[str, Any],
+) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    validation_errors = json.dumps(validation_result.get("errors", []))
+    try:
+        await db.execute(
+            "INSERT INTO export_runs "
+            "(export_id, study_id, data_classification, manifest_hash, "
+            "file_hashes_json, output_path, created_at, export_schema_version, "
+            "status, validation_status, validation_errors_json, finalized_at) "
+            "VALUES (?, ?, 'synthetic', ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                export_id, study_id, package_hash,
+                json.dumps(checksums), study_id,
+                now, EXPORT_SCHEMA_VERSION,
+                status,
+                "valid" if validation_result["valid"] else "invalid",
+                validation_errors,
+                now if status == "valid" else None,
+            ),
+        )
+        await db.commit()
+    except Exception:
+        logger.warning("Could not persist export_runs record", exc_info=True)
 
 
 async def _export_table(
@@ -333,16 +394,25 @@ async def _export_table(
     return len(rows)
 
 
+REQUIRED_FILES = {
+    "metadata.json", "study.json", "protocol.json",
+    "sessions.csv", "participants.csv", "allocations.csv",
+}
+
+REQUIRED_SESSION_HEADERS = {
+    "research_session_id", "study_id", "participant_id", "condition",
+    "data_classification", "status",
+}
+
+TERMINAL_STATUSES = {"completed", "safety_stopped", "aborted"}
+
+
 def validate_export(export_dir: str) -> dict[str, Any]:
     errors: list[str] = []
 
     meta_path = os.path.join(export_dir, "metadata.json")
     if not os.path.exists(meta_path):
-        old_meta = os.path.join(export_dir, "export_metadata.json")
-        if os.path.exists(old_meta):
-            meta_path = old_meta
-        else:
-            return {"valid": False, "errors": ["Missing metadata.json"]}
+        return {"valid": False, "errors": ["Missing metadata.json"]}
 
     with open(meta_path) as f:
         metadata = json.load(f)
@@ -351,6 +421,7 @@ def validate_export(export_dir: str) -> dict[str, Any]:
         errors.append(f"Data classification is '{metadata.get('data_classification')}', expected 'synthetic'")
 
     checksums_path = os.path.join(export_dir, "checksums.sha256")
+    checksums_cover_metadata = False
     if os.path.exists(checksums_path):
         with open(checksums_path, encoding="utf-8") as f:
             for line in f:
@@ -361,6 +432,8 @@ def validate_export(export_dir: str) -> dict[str, Any]:
                 if len(parts) != 2:
                     continue
                 expected_hash, rel_path = parts
+                if rel_path == "metadata.json":
+                    checksums_cover_metadata = True
                 fpath = os.path.join(export_dir, rel_path.replace("/", os.sep))
                 if not os.path.exists(fpath):
                     errors.append(f"Checksums reference missing file: {rel_path}")
@@ -368,6 +441,11 @@ def validate_export(export_dir: str) -> dict[str, Any]:
                 actual = _file_sha256(fpath)
                 if actual != expected_hash:
                     errors.append(f"Checksum mismatch for {rel_path}")
+    else:
+        errors.append("Missing checksums.sha256")
+
+    if not checksums_cover_metadata:
+        errors.append("metadata.json is not covered by checksums")
 
     for fname, info in metadata.get("files", {}).items():
         if fname.endswith("/"):
@@ -378,13 +456,23 @@ def validate_export(export_dir: str) -> dict[str, Any]:
                 errors.append(f"Missing file with data: {fname}")
 
     sessions_path = os.path.join(export_dir, "sessions.csv")
+    session_ids: set[str] = set()
     if os.path.exists(sessions_path):
         with open(sessions_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
+            headers = set(reader.fieldnames or [])
+            missing_headers = REQUIRED_SESSION_HEADERS - headers
+            if missing_headers:
+                errors.append(f"sessions.csv missing headers: {sorted(missing_headers)}")
             for row in reader:
+                sid = row.get("research_session_id", "")
+                if sid in session_ids:
+                    errors.append(f"Duplicate session ID: {sid}")
+                session_ids.add(sid)
                 if row.get("data_classification") != "synthetic":
-                    errors.append(f"Non-synthetic session found: {row.get('research_session_id')}")
-                    break
+                    errors.append(f"Non-synthetic session: {sid}")
+                if row.get("status") not in TERMINAL_STATUSES:
+                    errors.append(f"Non-terminal session {sid}: status={row.get('status')}")
 
     manifests_dir = os.path.join(export_dir, "manifests")
     if os.path.isdir(manifests_dir):
@@ -393,7 +481,9 @@ def validate_export(export_dir: str) -> dict[str, Any]:
                 fpath = os.path.join(manifests_dir, fname)
                 try:
                     with open(fpath) as f:
-                        json.load(f)
+                        mdata = json.load(f)
+                    if "_manifest_hash" in mdata:
+                        pass
                 except json.JSONDecodeError:
                     errors.append(f"Invalid manifest JSON: {fname}")
 
@@ -409,6 +499,19 @@ def validate_export(export_dir: str) -> dict[str, Any]:
                         errors.append(f"Seal missing seal_hash: {fname}")
                 except json.JSONDecodeError:
                     errors.append(f"Invalid seal JSON: {fname}")
+
+    for dirpath, _dirnames, filenames in os.walk(export_dir):
+        for fname in filenames:
+            fpath = os.path.join(dirpath, fname)
+            try:
+                with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+                    content = f.read()
+                if "consent" in fname.lower() or "ethics" in fname.lower():
+                    errors.append(f"Prohibited file: {fname}")
+                if any(prefix in content for prefix in ("C:\\", "D:\\", "/home/", "/Users/")):
+                    errors.append(f"Absolute filesystem path detected in: {fname}")
+            except Exception:
+                pass
 
     return {
         "valid": len(errors) == 0,
