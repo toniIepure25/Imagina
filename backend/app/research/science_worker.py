@@ -8,8 +8,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import os
-import time
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -125,7 +123,6 @@ class ScienceWorker:
             checkpoint_iter = row["checkpoint_iteration"] or 0
 
             from app.research.cognitive_agent import SCENARIOS
-            from app.research.design_simulation import SIMULATION_MODES, run_simulation
 
             scenario = SCENARIOS.get(scenario_id)
             if not scenario:
@@ -188,16 +185,13 @@ class ScienceWorker:
 
         if start_iter > 0:
             effective_iterations = n_iterations - start_iter
-            effective_seed = base_seed + start_iter * 1000
         else:
             effective_iterations = n_iterations
-            effective_seed = base_seed
 
         for batch_start in range(0, effective_iterations, CHECKPOINT_EVERY):
             await self._check_abort(db, run_id)
 
             batch_size = min(CHECKPOINT_EVERY, effective_iterations - batch_start)
-            batch_seed = effective_seed + batch_start * 1000
 
             await db.execute(
                 """UPDATE simulation_runs

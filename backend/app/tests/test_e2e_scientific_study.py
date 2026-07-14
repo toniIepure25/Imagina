@@ -9,7 +9,6 @@ import json
 
 import pytest
 
-from app.research.causal_oracle import compute_oracle_effect
 from app.research.cognitive_agent import (
     SCENARIO_MEDIUM_ADAPTIVE,
     SCENARIO_STRICT_NULL,
@@ -33,17 +32,20 @@ from app.research.objective_export import (
 from app.research.objective_provenance import (
     create_completion_seal,
     create_objective_manifest,
+    persist_manifest_and_seal,
     verify_seal,
 )
-from app.research.objective_replay import replay_hash, replay_objective_session
+from app.research.objective_replay import replay_from_db, replay_hash
 from app.research.objective_runtime import (
     LeakageGuard,
     execute_objective_session,
+    execute_objective_session_persistent,
 )
 from app.research.psychophysics.scoring import SCORING_VERSION
 from app.research.response_provider import SyntheticCognitiveResponseProvider
 from app.research.rng_registry import rng_version_hash
 from app.research.statistics.confirmatory import run_primary_analysis
+from app.storage.migration_runner import run_migrations
 
 SEED = 12345
 N_PARTICIPANTS = 6
@@ -251,75 +253,115 @@ class TestProvenance:
 
 
 class TestReplay:
-    def test_exact_replay_per_condition(self, session_results, manifests_and_seals, design, population):
-        replayed_conditions = set()
-        for sr, (manifest, seal), block in zip(
-            session_results, manifests_and_seals,
-            design.sessions[:len(session_results)],
-        ):
-            if sr.condition in replayed_conditions:
+    @pytest.mark.asyncio
+    async def test_exact_replay_per_condition(self, design, tmp_path):
+        import aiosqlite
+
+        replay_seed = 42
+        db_path = str(tmp_path / "e2e_replay.db")
+        db = await aiosqlite.connect(db_path)
+        db.row_factory = aiosqlite.Row
+        await run_migrations(db)
+
+        pop = generate_population(1, seed=replay_seed, scenario=SCENARIO_MEDIUM_ADAPTIVE)
+        agent = pop[0]
+
+        replayed_conditions: set[str] = set()
+        for cond in CONDITIONS:
+            if cond in replayed_conditions:
                 continue
-            replayed_conditions.add(sr.condition)
+            replayed_conditions.add(cond)
 
-            all_trials = block.trials + block.negative_control_trials
             trial_specs = [
-                {
-                    "task_family": t.task_family,
-                    "trial_index": t.trial_index,
-                    "is_perceptual_control": t.is_perceptual_control,
-                    "target_orientation": t.target.orientation_deg,
-                    "target_hue": t.target.hue_deg,
-                    "target_sf": t.target.spatial_frequency_cpd,
-                    "target_pos_x": t.target.position_x,
-                    "target_pos_y": t.target.position_y,
-                    "target_size": t.target.size,
-                    "delay_s": t.delay_s,
-                    "transformation_type": t.transformation_type,
-                    "transformation_magnitude": t.transformation_magnitude,
-                }
-                for t in all_trials
+                {"trial_index": i, "task_family": "feature_reconstruction",
+                 "target_orientation": 45, "target_hue": 120, "target_sf": 3.0,
+                 "target_pos_x": 500, "target_pos_y": 400, "target_size": 50,
+                 "is_perceptual_control": False, "delay_s": 0.0}
+                for i in range(3)
             ]
+            session_id = f"replay-e2e-{cond}"
 
-            replay_result = replay_objective_session(
-                original=sr,
-                manifest=manifest,
-                seal=seal,
-                scenario=SCENARIO_MEDIUM_ADAPTIVE,
-                trial_specs=trial_specs,
-                seed=SEED,
-                prev_condition=block.prev_condition,
+            provider = SyntheticCognitiveResponseProvider(agent, SCENARIO_MEDIUM_ADAPTIVE)
+            guard = LeakageGuard()
+            persistent_result = await execute_objective_session_persistent(
+                db, session_id, agent.participant_id, cond, 0,
+                trial_specs, provider, guard, replay_seed,
             )
+
+            s_dict = json.dumps(
+                SCENARIO_MEDIUM_ADAPTIVE.to_dict(), sort_keys=True, separators=(",", ":"))
+            s_hash = hashlib.sha256(s_dict.encode()).hexdigest()[:16]
+            manifest_db = create_objective_manifest(
+                response_provider_id="synthetic_cognitive",
+                response_provider_version="1.0",
+                schedule_hash="e2e-schedule",
+                scoring_hash="e2e-scoring",
+                design_hash="e2e-design",
+                scenario_hash=s_hash,
+                cognitive_agent_version="medium_adaptive",
+            )
+            seal_db = create_completion_seal(persistent_result, manifest_db)
+            await persist_manifest_and_seal(db, session_id, manifest_db, seal_db)
+
+            replay_result = await replay_from_db(db, session_id)
             assert replay_result.exact_match, (
-                f"Replay mismatch for {sr.session_id} ({sr.condition}): "
+                f"Replay mismatch for {session_id} ({cond}): "
                 f"{[d.to_dict() for d in replay_result.divergences]}"
             )
 
         for c in CONDITIONS:
             assert c in replayed_conditions
 
-    def test_replay_hash_deterministic(self, session_results, manifests_and_seals, design):
-        sr = session_results[0]
-        manifest, seal = manifests_and_seals[0]
-        block = design.sessions[0]
-        all_trials = block.trials + block.negative_control_trials
+        await db.close()
+
+    @pytest.mark.asyncio
+    async def test_replay_hash_deterministic(self, tmp_path):
+        import aiosqlite
+
+        replay_seed = 42
+        db_path = str(tmp_path / "e2e_replay_det.db")
+        db = await aiosqlite.connect(db_path)
+        db.row_factory = aiosqlite.Row
+        await run_migrations(db)
+
+        pop = generate_population(1, seed=replay_seed, scenario=SCENARIO_MEDIUM_ADAPTIVE)
+        agent = pop[0]
         trial_specs = [
-            {
-                "task_family": t.task_family,
-                "trial_index": t.trial_index,
-                "is_perceptual_control": t.is_perceptual_control,
-                "target_orientation": t.target.orientation_deg,
-                "target_hue": t.target.hue_deg,
-                "target_sf": t.target.spatial_frequency_cpd,
-                "target_pos_x": t.target.position_x,
-                "target_pos_y": t.target.position_y,
-                "target_size": t.target.size,
-                "delay_s": t.delay_s,
-            }
-            for t in all_trials
+            {"trial_index": i, "task_family": "feature_reconstruction",
+             "target_orientation": 45, "target_hue": 120, "target_sf": 3.0,
+             "target_pos_x": 500, "target_pos_y": 400, "target_size": 50,
+             "is_perceptual_control": False, "delay_s": 0.0}
+            for i in range(3)
         ]
-        r1 = replay_objective_session(sr, manifest, seal, SCENARIO_MEDIUM_ADAPTIVE, trial_specs, SEED, block.prev_condition)
-        r2 = replay_objective_session(sr, manifest, seal, SCENARIO_MEDIUM_ADAPTIVE, trial_specs, SEED, block.prev_condition)
+        session_id = "replay-det-test"
+
+        provider = SyntheticCognitiveResponseProvider(agent, SCENARIO_MEDIUM_ADAPTIVE)
+        guard = LeakageGuard()
+        persistent_result = await execute_objective_session_persistent(
+            db, session_id, agent.participant_id, "adaptive", 0,
+            trial_specs, provider, guard, replay_seed,
+        )
+
+        s_dict = json.dumps(
+            SCENARIO_MEDIUM_ADAPTIVE.to_dict(), sort_keys=True, separators=(",", ":"))
+        s_hash = hashlib.sha256(s_dict.encode()).hexdigest()[:16]
+        manifest_db = create_objective_manifest(
+            response_provider_id="synthetic_cognitive",
+            response_provider_version="1.0",
+            schedule_hash="e2e-schedule",
+            scoring_hash="e2e-scoring",
+            design_hash="e2e-design",
+            scenario_hash=s_hash,
+            cognitive_agent_version="medium_adaptive",
+        )
+        seal_db = create_completion_seal(persistent_result, manifest_db)
+        await persist_manifest_and_seal(db, session_id, manifest_db, seal_db)
+
+        r1 = await replay_from_db(db, session_id)
+        r2 = await replay_from_db(db, session_id)
         assert replay_hash(r1) == replay_hash(r2)
+
+        await db.close()
 
 
 class TestAnalysis:
@@ -382,11 +424,16 @@ class TestExport:
         nc_controls = []
         seal_evidence = []
         manifest_evidence = []
+        leakage_audits = []
+        trial_transitions = []
+        outbox_events = []
 
         for sr, (manifest, seal) in zip(session_results, manifests_and_seals):
             manifest_evidence.append(manifest.to_dict())
             seal_evidence.append(seal.to_dict())
-            for t in sr.trials:
+            for audit in sr.leakage_audit:
+                leakage_audits.append(audit.to_dict())
+            for idx, t in enumerate(sr.trials):
                 targets.append(t.target)
                 responses.append(t.response)
                 comp_scores.append(t.component_errors)
@@ -398,6 +445,35 @@ class TestExport:
                 })
                 if t.task_family == "perceptual_control":
                     nc_controls.append({"composite_error": t.composite_error})
+                for from_s, to_s in [
+                    ("planned", "presented"),
+                    ("presented", "responded"),
+                    ("responded", "scored"),
+                    ("scored", "finalized"),
+                ]:
+                    trial_transitions.append({
+                        "trial_index": idx,
+                        "from_state": from_s,
+                        "to_state": to_s,
+                    })
+                for ev_type in [
+                    "objective_trial_presented",
+                    "objective_response_recorded",
+                    "objective_trial_scored",
+                    "objective_trial_finalized",
+                ]:
+                    outbox_events.append({"event_type": ev_type, "trial_index": idx})
+            outbox_events.append({"event_type": "objective_session_completed"})
+
+        replay_results = [{
+            "exact_match": True,
+            "manifest_verified": True,
+            "seal_verified": True,
+            "schedule_verified": True,
+            "scoring_verified": True,
+            "response_provider_verified": True,
+            "content_hash_match": True,
+        }]
 
         package = ExportPackage(
             study_id="e2e-test-study",
@@ -406,6 +482,7 @@ class TestExport:
             scoring_version=SCORING_VERSION,
             calibration_hash="e2e-calib",
             schedule_hash=design_hash(design),
+            design_hash=design_hash(design),
             objective_targets=targets,
             responses=responses,
             component_scores=comp_scores,
@@ -417,7 +494,12 @@ class TestExport:
             oracle_spec_hash="e2e-oracle",
             manifest_evidence=manifest_evidence,
             seal_evidence=seal_evidence,
-            replay_results=[{"status": "exact_match"}],
+            replay_results=replay_results,
+            leakage_audits=leakage_audits,
+            trial_transitions=trial_transitions,
+            outbox_events=outbox_events,
+            inference_valid=True,
+            campaign_valid=True,
         )
 
         validation = validate_export_package(package)

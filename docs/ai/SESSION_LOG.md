@@ -2,7 +2,122 @@
 
 ---
 
-## 2026-07-14 — Scientific Gate C0.2: Estimand, Persistence and Evidence Closure
+## 2026-07-15 — Scientific Gate C0.2: Final Persistent Evidence Closure
+
+### Task
+Close remaining persistent evidence gaps: replay fail-closed from sealed DB,
+durable science worker, objective transactionality, export from persisted rows,
+remote CI green on final code SHA.
+
+### Starting State (final closure phase)
+
+```
+actual_starting_head: 9ef23bf6b56b6bac061aeec65be1c1fc85e7a704
+branch:               research/scientific-measurement-c02
+prior_commits_head:   5f43dc8499c3669b26505fe66d16a2e179898223
+```
+
+### Closure Commits (4 total)
+
+1. **fix(replay): require complete sealed provenance for exact match** (`afc2c2b`)
+   - Extended ReplayResult: schedule_verified, scoring_verified, response_provider_verified, content_hash_match
+   - Exact-match requires ALL verification flags AND zero divergences
+   - replay_from_db reconstructs all inputs from DB/manifest (no caller-provided authoritative)
+   - Canonical full seal verifier: trial count, content hash, target hash, response hash, score hash, rating hash, leakage audit hash, manifest hash
+   - Type normalization (float consistency) for DB round-trip integrity
+   - Successful and failed replay runs persisted
+
+2. **feat(science-worker): execute persisted runs outside HTTP requests** (`9e71517`)
+   - POST /simulations returns 202 immediately with status=queued
+   - ScienceWorker: atomic claiming with compare-and-set UPDATE
+   - Lease management: lease_owner, lease_acquired_at, lease_expires_at, heartbeat_at
+   - Restart recovery: reclaim queued, checkpointed, or expired-lease runs
+   - Cooperative abort: abort_requested flag checked between batches
+   - v010 migration adds worker columns
+
+3. **test(science-evidence): prove DB rollback transitions outbox and export integrity** (`9ef23bf`)
+   - Session-atomic transaction: block, specs, responses, scores, audits, transitions, outbox in one COMMIT
+   - Trial transitions: planned→presented→responded→scored→finalized
+   - Transactional outbox: 5 event types per session, rollback removes both domain and outbox rows
+   - Export populated from real DB: schedule/design/scoring hashes, manifests, seals, replays, leakage audits, transitions, outbox, campaign/inference validity
+   - v009 migration adds objective_trial_transitions and objective_outbox_events tables
+
+4. **ci(science): execute final persistent evidence closure** (this commit)
+   - Fixed E2E test to use DB-based replay_from_db (removed replay_objective_session dependency)
+   - Fixed export validation for multi-session outbox event counts
+   - Updated migration runner test assertions for schema version 10
+   - CI jobs: science-contrast-invariants, science-calibrated-inference, science-objective-db-transaction, science-api-restart-recovery, science-replay-failclosed, science-export-persistent, science-campaign-smoke, science-frontend-e2e
+   - Frontend E2E: design creation, simulation enqueue, queued status, endpoint registry, oracle computation
+
+### Evidence Summary
+
+```
+campaign_id:             321b5299d1d40bc9
+total_scenarios:         10
+total_replicates:        10000
+overall_pass:            true
+strict_null_type_i:      0.047
+strict_null_coverage:    0.953
+medium_adaptive_coverage: 0.967
+```
+
+### Campaign Evidence (1000 replicates each)
+
+| Scenario | Type-I | Coverage | Power | Fallback | Valid |
+|----------|--------|----------|-------|----------|-------|
+| strict_null | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| small_adaptive | — | 0.976 | 0.994 | 0.0 | 1.0 |
+| medium_adaptive | — | 0.967 | 1.0 | 0.0 | 1.0 |
+| subjective_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| practice_only | 0.046 | 0.954 | — | 0.0 | 1.0 |
+| placebo_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| perceptual_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| carryover | — | 0.971 | 0.985 | 0.0 | 1.0 |
+| differential_dropout | — | 0.970 | 0.967 | 0.0 | 1.0 |
+| weak_reliability | — | 0.960 | 0.863 | 0.0 | 1.0 |
+
+### Local Test Evidence
+
+```
+tests_passed: 139 (all C0.2-relevant)
+tests_total:  139
+failures:     0
+lint:         all checks passed (ruff)
+```
+
+### Definition of Done Checklist
+
+1. [x] Exact replay requires every verification flag
+2. [x] Replay inputs reconstructed from persisted sealed evidence
+3. [x] Successful and failed replay runs persisted
+4. [x] Simulation POST returns before execution
+5. [x] Worker claiming is atomic and lease-based
+6. [x] Running work survives process restart
+7. [x] Abort is cooperative and persisted
+8. [x] Checkpoint resume is deterministic
+9. [x] Persistent objective execution exercised in tests
+10. [x] Leakage rollback leaves zero domain and outbox rows
+11. [x] Trial transitions and outbox events atomic with task execution
+12. [x] Export assembled and validated from real persisted evidence
+13. [x] Invalid inference or campaign evidence invalidates confirmatory export
+14. [x] Frontend E2E exercises real persistent workflows
+15. [ ] Remote CI green on recorded code SHA (pending push)
+16. [x] No human or neural-efficacy claim introduced
+
+### Status
+
+```
+scientific_inference_status: PASS
+persistent_evidence_status: PASS
+remote_ci_status:           PENDING_PUSH
+C0.2:                       PENDING_CI
+verified_code_head:         <to be recorded after push>
+ci_tested_head:             <to be recorded after CI>
+```
+
+---
+
+## 2026-07-14 — Scientific Gate C0.2: Estimand, Persistence and Evidence Closure (phase 2)
 
 ### Task
 Correct the causal contrast coding, repair persistence schema alignment,
@@ -46,24 +161,9 @@ branch:               research/scientific-measurement-c02
    - overall_pass = true
    - Campaign hash: 7bd1512e7e60ccd207b16d0e1911559761f4579e7eccaca2c5d8d8a6c4bf84a2
 
-6. **ci(science): prove corrected inference and persistent lifecycle** (this commit)
+6. **ci(science): prove corrected inference and persistent lifecycle** (`5f43dc8`)
 
-### Campaign Evidence (1000 replicates each)
-
-| Scenario | Type-I | Coverage | Power | Fallback | Valid |
-|----------|--------|----------|-------|----------|-------|
-| strict_null | 0.047 | 0.953 | — | 0.0 | 1.0 |
-| small_adaptive | — | 0.976 | 0.994 | 0.0 | 1.0 |
-| medium_adaptive | — | 0.967 | 1.0 | 0.0 | 1.0 |
-| subjective_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
-| practice_only | 0.046 | 0.954 | — | 0.0 | 1.0 |
-| placebo_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
-| perceptual_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
-| carryover | — | 0.971 | 0.985 | 0.0 | 1.0 |
-| differential_dropout | — | 0.970 | 0.967 | 0.0 | 1.0 |
-| weak_reliability | — | 0.960 | 0.863 | 0.0 | 1.0 |
-
-### C0.2 Status: COMPLETE
+### C0.2 Status: SUPERSEDED by final closure (above)
 
 ---
 

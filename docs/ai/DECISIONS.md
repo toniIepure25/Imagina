@@ -763,4 +763,51 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-14 — Scientific Gate C0.2 COMPLETE*
+---
+
+## ADR-033: Replay Reconstructs Inputs Exclusively from Sealed DB Evidence
+
+**Status:** Accepted
+**Date:** 2026-07-15
+**Context:** Earlier replay accepted caller-provided trial_specs, scenario, seed, and response provider. This violated the fail-closed principle because corrupted or mismatched inputs could produce spurious exact matches.
+
+**Decision:** `replay_from_db(db, session_id)` is the sole replay API. All replay inputs (scenario, trial specs, seed, response provider) are resolved from the canonical persisted manifest, frozen design, schedule rows, and scenario specification. No caller-provided authoritative inputs accepted.
+
+**Consequences:**
+- Replay is truly fail-closed: missing or corrupted evidence always fails
+- exact_match requires ALL verification flags (manifest, seal, schedule, scoring, response_provider, content_hash)
+- Cannot replay sessions that lack manifest or seal records
+
+---
+
+## ADR-034: Durable Science Worker with Atomic Claiming
+
+**Status:** Accepted
+**Date:** 2026-07-15
+**Context:** POST /simulations previously called run_simulation() synchronously, making execution non-durable and blocking the HTTP response.
+
+**Decision:** POST /simulations returns 202 immediately with status=queued. A dedicated ScienceWorker claims runs atomically using compare-and-set UPDATE with lease management. Workers can reclaim queued, checkpointed, or expired-lease runs. Cooperative abort via persisted abort_requested flag.
+
+**Consequences:**
+- Simulation execution survives process restart
+- Two workers cannot claim the same run (atomic CAS)
+- Abort is cooperative and preserves checkpoints
+- v010 migration adds lease/abort/checkpoint columns
+
+---
+
+## ADR-035: Multi-Session Export Outbox Validation
+
+**Status:** Accepted
+**Date:** 2026-07-15
+**Context:** Export validation assumed exactly one objective_session_completed event (formula: n_trials * 4 + 1). Multi-session exports have one completion event per session.
+
+**Decision:** Count actual objective_session_completed events in outbox_events. Expected outbox count = n_trials * 4 + max(n_completion_events, 1).
+
+**Consequences:**
+- Single-session and multi-session exports both validate correctly
+- Formula remains strict (exact count match required)
+
+---
+
+*Last updated: 2026-07-15 — Scientific Gate C0.2 Final Persistent Evidence Closure*

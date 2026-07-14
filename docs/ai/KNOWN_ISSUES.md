@@ -314,14 +314,18 @@
 
 ---
 
-## RISK-032: No Remote CI Evidence Yet
+## RISK-032: Remote CI Execution Pending
 
-**Risk:** CI workflow is defined but has not been run on GitHub Actions. No CI run IDs or remote test evidence exist.
+**Risk:** CI workflow is defined with all required jobs but remote execution depends on push to GitHub.
 **Impact:** Medium — local test passing does not guarantee remote environment compatibility.
-**Mitigation:** Push branch and trigger CI. All scientific jobs are defined in `.github/workflows/ci.yml`. Test markers ensure correct test classification.
+**Mitigation:** Push branch and trigger CI. All scientific jobs are defined in `.github/workflows/ci.yml`:
+- science-contrast-invariants, science-calibrated-inference
+- science-objective-db-transaction, science-api-restart-recovery
+- science-replay-failclosed, science-export-persistent
+- science-campaign-smoke, science-frontend-e2e
 **Owner:** TBD
-**Status:** Active — needs first remote run.
+**Status:** Active — push required.
 
 ---
 
-*Last updated: 2026-07-14 — Scientific Measurement Gate C0.1*
+*Last updated: 2026-07-15 — Scientific Gate C0.2 Final Persistent Evidence Closure*

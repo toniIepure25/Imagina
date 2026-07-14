@@ -21,7 +21,23 @@ from app.research.psychophysics.common import BATTERY_VERSION, StimulusSpec, Tas
 from app.research.psychophysics.scoring import SCORING_VERSION
 from app.research.rng_registry import derive_seed
 
-OBJECTIVE_RUNTIME_VERSION = "2.0"
+OBJECTIVE_RUNTIME_VERSION = "2.1"
+
+
+def _normalize_trial_specs(specs: list[dict]) -> list[dict]:
+    """Normalize trial spec numeric values to float for consistent hashing."""
+    result = []
+    for s in specs:
+        ns = {}
+        for k, v in s.items():
+            if isinstance(v, bool):
+                ns[k] = v
+            elif isinstance(v, (int, float)) and k not in ("trial_index",):
+                ns[k] = float(v)
+            else:
+                ns[k] = v
+        result.append(ns)
+    return result
 
 TASK_TYPES = {
     "imagery_reconstruction": TaskFamily.FEATURE_RECONSTRUCTION,
@@ -261,17 +277,18 @@ def execute_objective_session(
         leakage_guard.finalize_trial(trial_id)
         result.leakage_audit.append(audit)
 
+        r = resp.get("response", {})
         trial_result = ObjectiveTrialResult(
             trial_id=trial_id,
             task_family=spec["task_family"],
             target=target.to_dict(),
-            response=resp.get("response", {}),
+            response=r,
             component_errors=comp_errors,
-            composite_error=composite,
-            confidence=resp.get("confidence", 0),
-            vividness=resp.get("vividness", 0),
-            effort=resp.get("effort", 0),
-            latency_ms=resp.get("latency_ms", 0),
+            composite_error=float(composite),
+            confidence=float(resp.get("confidence", 0)),
+            vividness=float(resp.get("vividness", 0)),
+            effort=float(resp.get("effort", 0)),
+            latency_ms=float(r.get("latency_ms", resp.get("latency_ms", 0))),
             endpoint_registry_hash=reg_hash,
         )
         result.trials.append(trial_result)
@@ -314,13 +331,14 @@ async def execute_objective_session_persistent(
 
     await db.execute("BEGIN")
     try:
+        normalized_specs = _normalize_trial_specs(trial_specs)
+        schedule_hash = hashlib.sha256(json.dumps(normalized_specs, sort_keys=True).encode()).hexdigest()[:16]
         block_cursor = await db.execute(
             """INSERT INTO objective_task_blocks
                (study_id, session_id, participant_id, period, condition,
                 task_family, block_index, schedule_hash)
                VALUES (?, ?, ?, ?, ?, 'mixed', 0, ?)""",
-            (session_id, session_id, participant_id, period, condition,
-             hashlib.sha256(json.dumps(trial_specs, sort_keys=True).encode()).hexdigest()[:16]),
+            (session_id, session_id, participant_id, period, condition, schedule_hash),
         )
         block_id = block_cursor.lastrowid
 
@@ -393,7 +411,8 @@ async def execute_objective_session_persistent(
                  r.get("orientation_deg", 0), r.get("hue_deg", 0),
                  r.get("spatial_frequency_cpd", 0), r.get("position_x", 0),
                  r.get("position_y", 0), r.get("size", 0),
-                 resp.get("latency_ms", 0), resp.get("confidence", 0),
+                 r.get("latency_ms", resp.get("latency_ms", 0)),
+                 resp.get("confidence", 0),
                  resp.get("vividness", 0), resp.get("effort", 0)),
             )
             response_id = resp_cursor.lastrowid
@@ -461,17 +480,18 @@ async def execute_objective_session_persistent(
             leakage_guard.finalize_trial(trial_id)
             result.leakage_audit.append(audit)
 
+            r_latency = r.get("latency_ms", resp.get("latency_ms", 0))
             trial_result = ObjectiveTrialResult(
                 trial_id=trial_id,
                 task_family=spec["task_family"],
                 target=target.to_dict(),
                 response=r,
                 component_errors=comp_errors,
-                composite_error=composite,
-                confidence=resp.get("confidence", 0),
-                vividness=resp.get("vividness", 0),
-                effort=resp.get("effort", 0),
-                latency_ms=resp.get("latency_ms", 0),
+                composite_error=float(composite),
+                confidence=float(resp.get("confidence", 0)),
+                vividness=float(resp.get("vividness", 0)),
+                effort=float(resp.get("effort", 0)),
+                latency_ms=float(r_latency),
                 endpoint_registry_hash=reg_hash,
             )
             result.trials.append(trial_result)

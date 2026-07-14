@@ -9,7 +9,6 @@ Supports poll, restart recovery, idempotency, and abort.
 from __future__ import annotations
 
 import json
-import time
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel

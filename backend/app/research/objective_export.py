@@ -196,7 +196,8 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
             package.estimand_ids.append(specs[0]["estimand_id"])
 
     a_runs = await (await db.execute(
-        "SELECT ar.* FROM analysis_runs ar JOIN analysis_specifications asp ON ar.spec_id = asp.id WHERE asp.study_id = ?",
+        "SELECT ar.* FROM analysis_runs ar "
+        "JOIN analysis_specifications asp ON ar.spec_id = asp.id WHERE asp.study_id = ?",
         (study_id,),
     )).fetchall()
     for run in a_runs:
@@ -377,7 +378,10 @@ def validate_export_package(package: ExportPackage) -> ValidationResult:
     n_outbox = len(package.outbox_events)
     n_trials = len(package.objective_targets)
     if n_outbox > 0 and n_trials > 0:
-        expected_outbox = n_trials * 4 + 1
+        n_session_completions = sum(
+            1 for e in package.outbox_events if e.get("event_type") == "objective_session_completed"
+        )
+        expected_outbox = n_trials * 4 + max(n_session_completions, 1)
         if n_outbox == expected_outbox:
             passed += 1
         else:

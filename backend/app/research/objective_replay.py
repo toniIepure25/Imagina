@@ -12,7 +12,8 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from app.research.cognitive_agent import AgentScenario, SCENARIOS, generate_population
+from app.research.cognitive_agent import SCENARIOS, generate_population
+from app.research.objective_endpoints import registry_hash
 from app.research.objective_provenance import (
     CompletionSeal,
     ObjectiveManifest,
@@ -25,7 +26,6 @@ from app.research.objective_runtime import (
     execute_objective_session,
 )
 from app.research.psychophysics.scoring import SCORING_VERSION
-from app.research.objective_endpoints import registry_hash
 from app.research.response_provider import SyntheticCognitiveResponseProvider
 
 REPLAY_VERSION = "2.0"
@@ -110,12 +110,12 @@ async def _reconstruct_session_from_db(db, session_id: str) -> ObjectiveSessionR
 
         trial_id = f"{session_id}-t{spec['trial_index']}-{spec['task_family']}"
         target = {
-            "orientation_deg": spec["target_orientation"],
-            "hue_deg": spec["target_hue"],
-            "spatial_frequency_cpd": spec["target_sf"],
-            "position_x": spec["target_pos_x"],
-            "position_y": spec["target_pos_y"],
-            "size": spec["target_size"],
+            "orientation_deg": float(spec["target_orientation"]),
+            "hue_deg": float(spec["target_hue"]),
+            "spatial_frequency_cpd": float(spec["target_sf"]),
+            "position_x": float(spec["target_pos_x"]),
+            "position_y": float(spec["target_pos_y"]),
+            "size": float(spec["target_size"]),
         }
         response = {
             "orientation_deg": resp["response_orientation"],
@@ -124,13 +124,14 @@ async def _reconstruct_session_from_db(db, session_id: str) -> ObjectiveSessionR
             "position_x": resp["response_pos_x"],
             "position_y": resp["response_pos_y"],
             "size": resp["response_size"],
+            "latency_ms": resp["latency_ms"] if "latency_ms" in resp.keys() else 0,
         }
         comp_errors = {
-            "orientation": score["orientation_error"] or 0,
-            "hue": score["hue_error"] or 0,
-            "spatial_frequency": score["sf_error"] or 0,
-            "position": score["position_error"] or 0,
-            "size": score["size_error"] or 0,
+            "orientation": float(score["orientation_error"] or 0),
+            "hue": float(score["hue_error"] or 0),
+            "spatial_frequency": float(score["sf_error"] or 0),
+            "position": float(score["position_error"] or 0),
+            "size": float(score["size_error"] or 0),
         }
 
         trials.append(ObjectiveTrialResult(
@@ -139,13 +140,29 @@ async def _reconstruct_session_from_db(db, session_id: str) -> ObjectiveSessionR
             target=target,
             response=response,
             component_errors=comp_errors,
-            composite_error=score["composite_error"] or 0,
-            confidence=resp["confidence"] or 0,
-            vividness=resp["vividness"] or 0,
-            effort=resp["effort"] or 0,
-            latency_ms=resp["latency_ms"] if "latency_ms" in resp.keys() else 0,
+            composite_error=float(score["composite_error"] or 0),
+            confidence=float(resp["confidence"] or 0),
+            vividness=float(resp["vividness"] or 0),
+            effort=float(resp["effort"] or 0),
+            latency_ms=float(resp["latency_ms"]) if "latency_ms" in resp.keys() else 0.0,
             scoring_version=SCORING_VERSION,
             endpoint_registry_hash=score["endpoint_registry_hash"] or "",
+        ))
+
+    from app.research.objective_runtime import LeakageAuditRecord
+
+    leakage_audits: list[LeakageAuditRecord] = []
+    audit_rows = await (await db.execute(
+        "SELECT * FROM objective_leakage_audits WHERE block_id = ?",
+        (block["id"],),
+    )).fetchall()
+    for arow in audit_rows:
+        leakage_audits.append(LeakageAuditRecord(
+            trial_id=arow["trial_id"],
+            policy_input_fields=json.loads(arow["policy_fields"]) if arow["policy_fields"] else [],
+            forbidden_fields_checked=json.loads(arow["checked_fields"]) if arow["checked_fields"] else [],
+            violations=json.loads(arow["violations"]) if arow["violations"] else [],
+            passed=bool(arow["passed"]),
         ))
 
     result = ObjectiveSessionResult(
@@ -154,6 +171,7 @@ async def _reconstruct_session_from_db(db, session_id: str) -> ObjectiveSessionR
         condition=block["condition"],
         period=block["period"],
         trials=trials,
+        leakage_audit=leakage_audits,
     )
 
     content = json.dumps(
@@ -166,19 +184,19 @@ async def _reconstruct_session_from_db(db, session_id: str) -> ObjectiveSessionR
 
 
 def _reconstruct_trial_specs_from_db_rows(specs) -> list[dict[str, Any]]:
-    """Reconstruct trial spec dicts from DB spec rows."""
+    """Reconstruct trial spec dicts from DB spec rows, normalized for consistent hashing."""
     result = []
     for spec in specs:
         result.append({
             "trial_index": spec["trial_index"],
             "task_family": spec["task_family"],
-            "target_orientation": spec["target_orientation"],
-            "target_hue": spec["target_hue"],
-            "target_sf": spec["target_sf"],
-            "target_pos_x": spec["target_pos_x"],
-            "target_pos_y": spec["target_pos_y"],
-            "target_size": spec["target_size"],
-            "delay_s": spec["delay_s"] or 0.0,
+            "target_orientation": float(spec["target_orientation"]),
+            "target_hue": float(spec["target_hue"]),
+            "target_sf": float(spec["target_sf"]),
+            "target_pos_x": float(spec["target_pos_x"]),
+            "target_pos_y": float(spec["target_pos_y"]),
+            "target_size": float(spec["target_size"]),
+            "delay_s": float(spec["delay_s"] or 0),
             "is_perceptual_control": bool(spec["is_perceptual_control"]),
         })
     return result
@@ -194,17 +212,23 @@ def _verify_manifest_integrity(
 
     recomputed_hash = manifest.hash()
     if manifest_row["manifest_hash"] != recomputed_hash:
-        issues.append(f"manifest_hash recompute mismatch: stored={manifest_row['manifest_hash']}, recomputed={recomputed_hash}")
+        issues.append(
+            f"manifest_hash recompute mismatch: stored={manifest_row['manifest_hash']}, "
+            f"recomputed={recomputed_hash}"
+        )
 
     if seal.manifest_hash != recomputed_hash:
-        issues.append(f"seal.manifest_hash != recomputed manifest hash")
+        issues.append("seal.manifest_hash != recomputed manifest hash")
 
     field_issues = manifest.validate()
     issues.extend(field_issues)
 
     current_reg_hash = registry_hash()
     if manifest.endpoint_registry_hash and manifest.endpoint_registry_hash != current_reg_hash:
-        issues.append(f"endpoint_registry_hash mismatch: manifest={manifest.endpoint_registry_hash}, current={current_reg_hash}")
+        issues.append(
+            f"endpoint_registry_hash mismatch: manifest={manifest.endpoint_registry_hash}, "
+            f"current={current_reg_hash}"
+        )
 
     if not manifest.scoring_version:
         issues.append("missing scoring_version")

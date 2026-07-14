@@ -48,12 +48,12 @@ class StimulusSpec:
 
     def to_dict(self) -> dict[str, float]:
         return {
-            "orientation_deg": self.orientation_deg,
-            "hue_deg": self.hue_deg,
-            "spatial_frequency_cpd": self.spatial_frequency_cpd,
-            "position_x": self.position_x,
-            "position_y": self.position_y,
-            "size": self.size,
+            "orientation_deg": float(self.orientation_deg),
+            "hue_deg": float(self.hue_deg),
+            "spatial_frequency_cpd": float(self.spatial_frequency_cpd),
+            "position_x": float(self.position_x),
+            "position_y": float(self.position_y),
+            "size": float(self.size),
         }
 
 
