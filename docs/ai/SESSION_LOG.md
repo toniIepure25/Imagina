@@ -2,6 +2,30 @@
 
 ---
 
+## 2026-07-14 — Scientific Measurement Gate C0.2: Inferential Recovery
+
+### Task
+Recover scientifically valid primary inference and replace remaining
+in-memory prototype paths with persistent, replayable evidence.
+
+### Starting State
+
+```
+local_head:               22b49c46b242f19486b3a4a660e442d69599e4d9
+remote_head_before_push:  9a43e6068... (commit 15 of C0.1)
+remote_head_after_push:   22b49c46b242f19486b3a4a660e442d69599e4d9
+branch:                   research/scientific-measurement-c02
+```
+
+C0.1 status: **PARTIAL_INFERENCE_BLOCKED**
+- 19 commits delivered; all 173 science tests pass locally
+- Primary estimator (labeled "GEE-like MixedLM") produces 100% fallback
+- Coverage = 0, power = 0, valid_inference_rate = 0 in all scenarios
+- Strict-null DGP has expectancy leakage (positive adaptive-only expectancy)
+- No remote CI run IDs — workflow defined but not triggered
+
+---
+
 ## 2026-07-14 — Scientific Measurement Gate C0.1: Calibrated Inference
 
 ### Task
