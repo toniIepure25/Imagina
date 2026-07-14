@@ -1,7 +1,7 @@
-"""v009: Add leakage audit, trial transition, replay run tables."""
+"""v009: Add leakage audit, trial transition, replay run, and outbox tables."""
 
 VERSION = 9
-DESCRIPTION = "Persist leakage audits, trial transitions, and replay runs"
+DESCRIPTION = "Persist leakage audits, trial transitions, replay runs, and objective outbox"
 
 
 async def upgrade(db) -> None:
@@ -22,9 +22,10 @@ async def upgrade(db) -> None:
         CREATE TABLE IF NOT EXISTS objective_trial_transitions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             block_id INTEGER NOT NULL REFERENCES objective_task_blocks(id),
-            from_trial_index INTEGER,
-            to_trial_index INTEGER NOT NULL,
-            transition_type TEXT NOT NULL DEFAULT 'sequential',
+            trial_spec_id INTEGER REFERENCES objective_trial_specs(id),
+            trial_index INTEGER NOT NULL,
+            from_state TEXT NOT NULL,
+            to_state TEXT NOT NULL,
             created_at TEXT NOT NULL DEFAULT (datetime('now'))
         )
     """)
@@ -58,6 +59,17 @@ async def upgrade(db) -> None:
             replayed_value TEXT,
             divergence_magnitude REAL,
             match INTEGER NOT NULL DEFAULT 1
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS objective_outbox_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_id INTEGER NOT NULL REFERENCES objective_task_blocks(id),
+            event_type TEXT NOT NULL,
+            trial_index INTEGER,
+            payload TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
         )
     """)
 

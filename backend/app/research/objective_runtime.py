@@ -419,6 +419,45 @@ async def execute_objective_session_persistent(
                  json.dumps(audit.forbidden_fields_checked)),
             )
 
+            trial_idx = spec["trial_index"]
+            for from_st, to_st in [
+                ("planned", "presented"),
+                ("presented", "responded"),
+                ("responded", "scored"),
+                ("scored", "finalized"),
+            ]:
+                await db.execute(
+                    """INSERT INTO objective_trial_transitions
+                       (block_id, trial_spec_id, trial_index, from_state, to_state)
+                       VALUES (?, ?, ?, ?, ?)""",
+                    (block_id, trial_spec_id, trial_idx, from_st, to_st),
+                )
+
+            await db.execute(
+                """INSERT INTO objective_outbox_events
+                   (block_id, event_type, trial_index, payload)
+                   VALUES (?, 'objective_trial_presented', ?, ?)""",
+                (block_id, trial_idx, json.dumps({"trial_id": trial_id})),
+            )
+            await db.execute(
+                """INSERT INTO objective_outbox_events
+                   (block_id, event_type, trial_index, payload)
+                   VALUES (?, 'objective_response_recorded', ?, ?)""",
+                (block_id, trial_idx, json.dumps({"trial_id": trial_id})),
+            )
+            await db.execute(
+                """INSERT INTO objective_outbox_events
+                   (block_id, event_type, trial_index, payload)
+                   VALUES (?, 'objective_trial_scored', ?, ?)""",
+                (block_id, trial_idx, json.dumps({"trial_id": trial_id, "composite": composite})),
+            )
+            await db.execute(
+                """INSERT INTO objective_outbox_events
+                   (block_id, event_type, trial_index, payload)
+                   VALUES (?, 'objective_trial_finalized', ?, ?)""",
+                (block_id, trial_idx, json.dumps({"trial_id": trial_id})),
+            )
+
             leakage_guard.finalize_trial(trial_id)
             result.leakage_audit.append(audit)
 
@@ -436,6 +475,13 @@ async def execute_objective_session_persistent(
                 endpoint_registry_hash=reg_hash,
             )
             result.trials.append(trial_result)
+
+        await db.execute(
+            """INSERT INTO objective_outbox_events
+               (block_id, event_type, trial_index, payload)
+               VALUES (?, 'objective_session_completed', ?, ?)""",
+            (block_id, -1, json.dumps({"session_id": session_id, "n_trials": len(trial_specs)})),
+        )
 
         await db.execute("COMMIT")
     except OutcomeLeakageError:
