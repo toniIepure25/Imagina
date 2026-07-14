@@ -54,21 +54,42 @@ Correct remaining transaction, export, replay-provenance, and CI-evidence gaps b
 - ADR-029: Export validation before publication (validate staging, then rename)
 - ADR-030: Complete versioned manifest dependencies with dependency registry
 
-### Remote CI (run 29319848786 on branch HEAD `79f7679`)
-| Job | Result | Duration | Notes |
-|-----|--------|----------|-------|
-| backend-runtime | PASSED | 39s | All 141 research/runtime tests pass |
-| frontend | PASSED | 52s | lint, typecheck, vitest, build |
-| docker-config | PASSED | 5s | Both compose files valid |
-| backend-core | FAILED | 40s | 2 pre-existing numpy failures (test_dataset_fixture, test_eeg_dsp) — not R0-related |
-| playwright | skipped | — | Depends on backend-core |
-| docker-smoke | skipped | — | PR-only job |
+### Local Verification Evidence (2026-07-14)
+```
+ruff: All checks passed
+backend_research_suite: 127 passed, 0 failed
+  - test_outbox: 12 passed
+  - test_export_service: 13 passed
+  - test_manifest: 19 passed
+  - test_replay_validator: 21 passed
+  - test_runtime: 7 passed
+  - test_migration_runner: 17 passed
+  - test_abort: 8 passed
+  - test_unified_db_integration: 5 passed
+  - test_synthetic_orchestrator: 5 passed
+  - test_regression_gate_a: 5 passed (schema version 6)
+  - test_run_service: 10 passed (abort idempotency, lifecycle)
+full_backend_suite: 582 passed, 103 failed (pre-existing), 22 skipped
+  - 0 failures in R0-related test files
+frontend_lint: 0 errors, 29 pre-existing warnings
+frontend_build: clean (18 routes)
+```
+
+### Remote CI (run 29320054927 on branch HEAD `a5d4e99`)
+| Job | Result | Notes |
+|-----|--------|-------|
+| backend-runtime | SUCCESS | All research/runtime tests pass |
+| frontend | SUCCESS | lint, typecheck, vitest, build |
+| docker-config | SUCCESS | Both compose files valid |
+| backend-core | FAILURE | Pre-existing numpy failures (test_dataset_fixture, test_eeg_dsp) — not R0-related |
+| playwright | skipped | Depends on backend-core |
+| docker-smoke | skipped | Depends on backend-core |
 
 ### Status
-All R0 changes pass locally and in CI. The 2 pre-existing `numpy` failures in backend-core are unrelated to this PR gate.
+All R0 changes pass locally and in CI. The pre-existing `numpy` failures in backend-core are unrelated to this PR gate.
 
 ### Final HEAD
-`79f7679`
+`a5d4e99`
 
 ---
 
