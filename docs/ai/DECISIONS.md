@@ -642,4 +642,66 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-14 — Scientific Measurement Gate C0*
+---
+
+## ADR-025: SHA-256 Deterministic RNG Streams
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Python built-in `hash()` is non-deterministic across processes and `PYTHONHASHSEED` values. Scientific simulation results must be exactly reproducible.
+
+**Decision:** All scientific randomness uses `hashlib.sha256`-based `derive_seed()` with explicit canonical serialization, organized into 14 named streams. No use of built-in `hash()` for scientific seeds.
+
+**Consequences:**
+- Identical results across processes, machines, and CI environments.
+- Named streams ensure changing one RNG (e.g., dropout) doesn't affect others (e.g., stimulus generation).
+- RNG version tracked in every manifest and simulation result.
+
+---
+
+## ADR-026: Observed-Scale Causal Oracle
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** The C0 simulation truth was a latent-parameter contrast (`adaptive_precision_effect - yoked_practice_effect`), not the actual primary estimand measured by the analysis. Bias and coverage calculations were comparing different quantities.
+
+**Decision:** Oracle computes counterfactual potential outcomes `E[Y(adaptive) - Y(yoked)]` on the observed composite reconstruction error scale using common random numbers and production scoring code.
+
+**Consequences:**
+- Simulation bias and coverage now compare estimates to the same quantity the analysis targets.
+- Oracle effect is approximately zero under strict null (verified: −0.001035).
+- Oracle can detect scenario-specific effects (medium adaptive: −0.043371).
+
+---
+
+## ADR-027: Multi-Estimator Confirmatory Inference
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** A single MixedLM fit is fragile — it can silently produce invalid standard errors, singular covariance, or non-convergent results.
+
+**Decision:** Three prespecified estimators (GEE marginal, Hierarchical MixedLM, Randomization Inference) with explicit convergence detection and fallback semantics. `inference_valid=False` results never count as rejection or coverage.
+
+**Consequences:**
+- Non-converged models are clearly distinguished from valid results.
+- Fallback rate is tracked separately from convergence rate.
+- Current N=18 design causes 100% fallback — this is correctly detected and flagged.
+
+---
+
+## ADR-028: Primary Estimator Convergence Limitation
+
+**Status:** Accepted (known limitation)
+**Date:** 2026-07-14
+**Context:** With N=18 participants in a 3-period crossover, the primary GEE/MixedLM models with full adjustment (period, sequence, task family, carryover) do not converge. This produces 100% fallback rate and 0% valid inference.
+
+**Decision:** Document as a known limitation rather than weakening the model or permitting permissive thresholds. The campaign correctly identifies this as a gate issue.
+
+**Consequences:**
+- Coverage and power are 0 in unit-mode simulations (not a bug but a feature of honest reporting).
+- Resolution requires larger sample sizes, simplified models, or human pilot data.
+- Do not claim `coverage = 0 is only a fast-mode limitation` unless evidence supports it.
+
+---
+
+*Last updated: 2026-07-14 — Scientific Measurement Gate C0.1*

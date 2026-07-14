@@ -302,4 +302,26 @@
 
 ---
 
-*Last updated: 2026-07-14 — Scientific Measurement Gate C0*
+---
+
+## RISK-031: Primary Estimator 100% Fallback
+
+**Risk:** The primary GEE/MixedLM crossover estimator does not converge with the default N=18 design (3-period, full covariate adjustment). All replicates use fallback aggregate estimation, yielding `inference_valid=False` and coverage/power of 0.
+**Impact:** Critical — no valid inferential results are produced. Operating characteristics cannot be evaluated for the primary model.
+**Mitigation:** Correctly detected and flagged by the campaign calibration checks. Resolution paths: (a) increase sample size, (b) simplify model terms (fewer covariates), (c) use human pilot data to determine appropriate model complexity. Do not weaken fallback detection or use permissive thresholds.
+**Owner:** TBD
+**Status:** Active — blocking for publication-quality evidence.
+
+---
+
+## RISK-032: No Remote CI Evidence Yet
+
+**Risk:** CI workflow is defined but has not been run on GitHub Actions. No CI run IDs or remote test evidence exist.
+**Impact:** Medium — local test passing does not guarantee remote environment compatibility.
+**Mitigation:** Push branch and trigger CI. All scientific jobs are defined in `.github/workflows/ci.yml`. Test markers ensure correct test classification.
+**Owner:** TBD
+**Status:** Active — needs first remote run.
+
+---
+
+*Last updated: 2026-07-14 — Scientific Measurement Gate C0.1*

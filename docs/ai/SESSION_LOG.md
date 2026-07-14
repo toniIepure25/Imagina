@@ -2,6 +2,146 @@
 
 ---
 
+## 2026-07-14 — Scientific Measurement Gate C0.1: Calibrated Inference
+
+### Task
+Convert the C0 scientific prototype into a statistically calibrated, fully
+persistent and replayable synthetic experimental system.
+
+### Starting HEAD
+`849dbb7a50` on `research/scientific-measurement-c0`
+
+### Branch
+`research/scientific-measurement-c01`
+
+### Commits (19 total)
+
+1. **fix(simulation): replace process-randomized seeds with stable random streams** (`cfa50d8`)
+   - Created `rng_registry.py` with SHA-256 `derive_seed()` and 14 named streams
+   - Replaced all `hash()` usage in cognitive agent trial seeds
+   - Tests prove determinism across invocations and namespace isolation
+
+2. **fix(estimands): align simulation truth with observed endpoint estimands** (`7c368dd`)
+   - Created `causal_oracle.py` with counterfactual oracle computing `E[Y(adaptive) - Y(yoked)]`
+   - Oracle uses common random numbers and production scoring
+   - Strict-null oracle effect ≈ 0 (−0.001035, SE 0.000018)
+
+3. **fix(simulation): execute all declared cognitive mechanisms and scenarios** (`1330297`)
+   - Wired all unused `AgentScenario` parameters: control, stability, fatigue, period, expectancy
+   - Implemented dropout via `should_dropout()`, all 4 task families, real negative controls
+   - Scenario contract tests verify data-generating behavior before inference
+
+4. **feat(design): add frozen crossover schedules and potential-outcome assignments** (`b34f069`)
+   - Created `crossover_design.py` with versioned `CrossoverDesign` object
+   - Williams sequence counterbalancing, balanced across condition/period/task/sequence
+   - Design hash: `2868b4816a96bf91...`
+
+5. **feat(statistics): implement calibrated crossover estimators** (`280ca84`)
+   - Three prespecified estimators: GEE marginal, Hierarchical MixedLM, Randomization Inference
+   - Cluster bootstrap confidence intervals with deterministic streams
+   - Explicit fallback semantics: `inference_valid`, `fallback_used`, `primary_estimator_status`
+
+6. **fix(simulation): calibrate type-I error power bias and coverage** (`ac3944d`)
+   - Rebuilt `run_simulation()` around observed-scale oracle truth
+   - Monte Carlo SE for all proportions; simulation modes (unit/ci/research/publication)
+   - Oracle-based bias, RMSE, and coverage calculations
+
+7. **feat(design): add robust sample-size optimization** (`a60d7e7`)
+   - Multi-scenario search grid across participants, sessions, trials, reliability
+   - Pareto table of designs balancing power, burden, robustness
+
+8. **feat(storage): persist objective psychophysics and analysis provenance** (`aa89884`)
+   - Migration v007 with 13 normalized tables for objective data
+   - Foreign keys, domain constraints, structured subcomponent storage
+
+9. **feat(runtime): execute objective tasks through the research runtime** (`7de07f9`)
+   - `ResponseProvider` interface with `SyntheticCognitiveResponseProvider`
+   - `execute_objective_session()` with LeakageGuard enforcement
+   - Audit records for every trial's policy input check
+
+10. **feat(provenance): seal objective measurement and analysis specifications** (`0887a21`)
+    - `ObjectiveManifest` with 22 provenance fields
+    - `CompletionSeal` covering targets, responses, scores, ratings, audit
+    - Verification detects any score or endpoint weight change
+
+11. **feat(replay): reconstruct and rescore objective sessions** (`458e195`)
+    - Deterministic replay from stable random streams
+    - Structured divergence detection (target, response, score, rating, schedule)
+    - Corruption tests for orientation, hue, weight, calibration, delay, version
+
+12. **feat(export): include complete objective scientific evidence packages** (`096382e`)
+    - `ExportPackage` with all objective provenance, analysis, simulation evidence
+    - 12-check validation including referential integrity and hash verification
+
+13. **feat(api): expose persistent measurement simulation and analysis workflows** (`ac12b55`)
+    - `/api/research-science` router with designs, simulations, analyses, oracles
+    - Endpoint registry, calibrations, and oracle estimands endpoints
+
+14. **feat(research-ui): connect workbench to persisted scientific runs** (`07c25b7`)
+    - Measurement page fetches live endpoint registry
+    - Design-simulation page shows oracle effect, MC SE, coverage, fallback
+    - Analysis page consumes multi-estimator results from science APIs
+
+15. **test(science): enforce calibrated inference and adversarial failure** (`9a43e60`)
+    - Strict MC-aware Type-I bounds, oracle-null verification
+    - Falsification: subjective-only, practice-only, perceptual-only, carryover, dropout
+    - Invalid inference detection: fallback ≠ convergence, no rejection when `inference_valid=false`
+
+16. **test(e2e): prove complete objective synthetic study lifecycle** (`d927e6a`)
+    - 31 tests covering design→agents→execute→seal→export→replay→analysis→simulation
+    - Exact condition/period/task-family balance, zero leakage, zero invalid seals
+
+17. **research(simulation): execute calibrated operating-characteristic campaign** (`f19f792`)
+    - `simulation_campaign.py` with batched execution and checkpointing
+    - 9 core scenarios, configurable replicates, campaign hash
+    - CLI script `scripts/run_simulation_campaign.py`
+
+18. **ci(science): enforce calibrated scientific lifecycle** (`fdd7570`)
+    - 7 CI jobs: science-unit, science-statistics, science-simulation,
+      science-runtime-e2e, science-replay-export, science-frontend
+    - Evidence artifact upload for simulation summaries
+
+19. **docs(science): record calibrated evidence and remaining human blockers** (this commit)
+
+### Evidence Summary
+
+| Item | Value |
+|------|-------|
+| RNG version | 1.0 |
+| Design version | 1.0 |
+| Design hash | `2868b4816a96bf91...` |
+| Endpoint registry hash | `24c56b2d2db81fba...` |
+| Scoring version | 1.0 |
+| Model version | 2.0 |
+| Analysis spec version | 2.0 |
+| Simulation version | 2.1 |
+| Oracle version | 1.0 |
+| Null oracle effect | −0.001035 (SE 0.000018) |
+| Small oracle effect | −0.026453 (SE 0.000329) |
+| Medium oracle effect | −0.043371 (SE 0.000536) |
+| Primary convergence (unit) | 0.0000 |
+| Fallback rate (unit) | 1.0000 |
+
+### Known Limitations
+
+1. Primary estimator (GEE/MixedLM) consistently falls back at N=18 due
+   to model complexity exceeding cluster count. Coverage and power are
+   consequently 0 in unit mode.
+2. `coverage = 0` is a structural limitation, not a fast-mode artifact.
+3. No real EEG, human participants, or clinical claims.
+
+### Remaining Human-Validation Blockers
+
+- Human psychometric reliability
+- Human construct validity
+- Usability testing
+- Recruitment feasibility
+- Ethics approval
+- Real neural measurement
+- External replication
+
+---
+
 ## 2026-07-14 — PR Gate R0: Evidence and Transaction Closure
 
 ### Task
