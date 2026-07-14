@@ -10,14 +10,18 @@ from app.research.cognitive_agent import (
 
 
 class TestOracleNull:
-    def test_null_oracle_approximately_zero(self):
+    def test_null_oracle_exactly_zero(self):
         r = compute_oracle_effect(SCENARIO_STRICT_NULL, n_agents=100, seed=42)
-        assert abs(r.effect) < 0.05, f"Null oracle effect {r.effect} not near zero"
+        assert abs(r.effect) <= 1e-10, f"Null oracle effect {r.effect} not zero"
 
-    def test_null_oracle_se_small(self):
+    def test_null_oracle_se_zero(self):
         r = compute_oracle_effect(SCENARIO_STRICT_NULL, n_agents=100, seed=42)
-        assert r.effect_se >= 0
-        assert r.effect_se < 0.01
+        assert abs(r.effect_se) <= 1e-10, f"Null SE {r.effect_se} not zero"
+
+    def test_null_participant_contrasts_all_zero(self):
+        r = compute_oracle_effect(SCENARIO_STRICT_NULL, n_agents=50, seed=42)
+        for i, c in enumerate(r.participant_contrasts):
+            assert abs(c) <= 1e-10, f"Participant {i} contrast {c} not zero"
 
 
 class TestOracleEffectDirection:
@@ -25,17 +29,17 @@ class TestOracleEffectDirection:
         r = compute_oracle_effect(SCENARIO_MEDIUM_ADAPTIVE, n_agents=100, seed=42)
         assert r.effect < 0, f"Medium adaptive effect {r.effect} should be negative (lower error)"
 
-    def test_subjective_only_objective_null(self):
+    def test_subjective_only_objective_zero(self):
         r = compute_oracle_effect(SCENARIO_SUBJECTIVE_ONLY, n_agents=100, seed=42)
-        assert abs(r.effect) < 0.05, f"Subjective-only objective effect {r.effect} not near zero"
+        assert abs(r.effect) <= 1e-10, f"Subjective-only objective effect {r.effect} not zero"
 
-    def test_practice_only_null(self):
+    def test_practice_only_zero(self):
         r = compute_oracle_effect(SCENARIO_PRACTICE_ONLY, n_agents=100, seed=42)
-        assert abs(r.effect) < 0.05, f"Practice-only effect {r.effect} not near zero"
+        assert abs(r.effect) <= 1e-10, f"Practice-only effect {r.effect} not zero"
 
-    def test_perceptual_only_imagery_null(self):
+    def test_perceptual_only_imagery_zero(self):
         r = compute_oracle_effect(SCENARIO_PERCEPTUAL_ONLY, n_agents=100, seed=42)
-        assert abs(r.effect) < 0.05, f"Perceptual-only imagery effect {r.effect} not near zero"
+        assert abs(r.effect) <= 1e-10, f"Perceptual-only imagery effect {r.effect} not zero"
 
 
 class TestOracleContrasts:
@@ -58,4 +62,4 @@ class TestOracleMetadata:
 
     def test_version(self):
         r = compute_oracle_effect(SCENARIO_STRICT_NULL, n_agents=50, seed=42)
-        assert r.oracle_version == "1.0"
+        assert r.oracle_version == "2.0"
