@@ -29,6 +29,7 @@ _MIGRATION_MODULES = [
     "app.storage.migrations.v004_runtime_lifecycle",
     "app.storage.migrations.v005_completion_seals_and_replay",
     "app.storage.migrations.v006_export_runs_status",
+    "app.storage.migrations.v007_objective_measurement",
 ]
 
 _VERSION_TABLE = """
