@@ -170,6 +170,24 @@ class TestExportValidator:
             finally:
                 await db.close()
 
+    async def test_tamper_file_revalidation_fails(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            sid = "tamper-reval"
+            db = await _make_db(tmpdir, sid)
+            export_dir = os.path.join(tmpdir, "tamper-reval-export")
+            result = await export_synthetic_dataset(db, sid, export_dir, allow_overwrite=True)
+            assert result["validation"]["valid"] is True
+
+            study_path = os.path.join(export_dir, "study.json")
+            assert os.path.exists(study_path)
+            with open(study_path, "a", encoding="utf-8") as f:
+                f.write("\n/* tampered */")
+
+            revalidation = validate_export(export_dir)
+            assert revalidation["valid"] is False
+            assert any("mismatch" in e.lower() or "checksum" in e.lower() for e in revalidation["errors"])
+            await db.close()
+
     async def test_export_persists_in_export_runs(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db = await _make_db(tmpdir, "persist-export")

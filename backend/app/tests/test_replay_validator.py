@@ -176,3 +176,48 @@ class TestReplayFromManifest:
                     assert result["manifest_hash"]
             finally:
                 await db.close()
+
+    async def test_tampered_manifest_hash_fails_replay(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db = await _make_study_db(tmpdir, "tamper-manifest")
+            try:
+                row = await (await db.execute(
+                    "SELECT research_session_id FROM research_sessions "
+                    "WHERE condition = 'fixed' LIMIT 1"
+                )).fetchone()
+                if not row:
+                    return
+                session_id = row["research_session_id"]
+
+                await db.execute(
+                    "UPDATE session_manifests SET manifest_hash = 'tampered' "
+                    "WHERE research_session_id = ?",
+                    (session_id,),
+                )
+                await db.commit()
+
+                result = await replay_session_from_manifest(db, session_id)
+                assert result["match"] is False
+            finally:
+                await db.close()
+
+    async def test_deleted_yoked_points_fails_replay(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db = await _make_study_db(tmpdir, "yoked-del")
+            try:
+                row = await (await db.execute(
+                    "SELECT research_session_id FROM research_sessions "
+                    "WHERE condition = 'yoked' LIMIT 1"
+                )).fetchone()
+                if not row:
+                    return
+                session_id = row["research_session_id"]
+
+                await db.execute("DELETE FROM frozen_yoked_points")
+                await db.commit()
+
+                result = await replay_session_from_manifest(db, session_id)
+                assert result["match"] is False
+                assert "no points" in result.get("error", "").lower() or result["match"] is False
+            finally:
+                await db.close()

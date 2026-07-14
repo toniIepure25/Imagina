@@ -199,6 +199,33 @@ jobs:
           fi
           echo "Export valid: $VALID"
 
+          echo "=== Checking export_ready ==="
+          RUN_STATUS=$(curl -sf http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID)
+          EXPORT_READY=$(echo "$RUN_STATUS" | python3 -c "import sys,json; print(json.load(sys.stdin)['export_ready'])")
+          if [ "$EXPORT_READY" != "True" ]; then
+            echo "export_ready is not True: $EXPORT_READY"
+            exit 1
+          fi
+          echo "export_ready confirmed: $EXPORT_READY"
+
+          echo "=== Running replay for one session ==="
+          SESSION_ID=$(echo "$SESSIONS" | python3 -c "import sys,json; ss=json.load(sys.stdin); print([s['research_session_id'] for s in ss if s['status']=='completed'][0])")
+          echo "Replaying session: $SESSION_ID"
+          REPLAY=$(curl -sf -X POST "http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID/replay/$SESSION_ID")
+          MATCH=$(echo "$REPLAY" | python3 -c "import sys,json; print(json.load(sys.stdin)['match'])")
+          if [ "$MATCH" != "True" ]; then
+            echo "Replay match failed!"
+            echo "$REPLAY"
+            exit 1
+          fi
+          ORIG_HASH=$(echo "$REPLAY" | python3 -c "import sys,json; print(json.load(sys.stdin)['original_hash'])")
+          REPLAY_HASH=$(echo "$REPLAY" | python3 -c "import sys,json; print(json.load(sys.stdin)['replay_hash'])")
+          if [ "$ORIG_HASH" != "$REPLAY_HASH" ]; then
+            echo "Hash mismatch: original=$ORIG_HASH replay=$REPLAY_HASH"
+            exit 1
+          fi
+          echo "Replay hashes match: $ORIG_HASH"
+
           echo "=== Docker smoke completed successfully ==="
       - name: Cleanup
         if: always()

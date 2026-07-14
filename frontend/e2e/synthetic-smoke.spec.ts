@@ -225,7 +225,10 @@ test.describe("Negative E2E Tests", () => {
     expect(r2.status()).toBe(409);
   });
 
-  test("abort during active run", async ({ page, request }) => {
+  test("abort during active run proves final state", async ({
+    page,
+    request,
+  }) => {
     const studyId = `e2e-abort-001`;
     const key = `e2e-abort-key-001`;
 
@@ -245,14 +248,29 @@ test.describe("Negative E2E Tests", () => {
     await page.waitForTimeout(2000);
 
     const abortRes = await request.post(`${API}/runs/${run_id}/abort`);
-    expect([200, 409]).toContain(abortRes.status());
+    expect(abortRes.status()).toBe(200);
 
-    for (let i = 0; i < 60; i++) {
+    let finalStatus = "";
+    let finalBody: Record<string, unknown> = {};
+    for (let i = 0; i < 90; i++) {
       const pollRes = await request.get(`${API}/runs/${run_id}`);
-      const body = await pollRes.json();
-      if (["aborted", "completed", "failed"].includes(body.status)) break;
+      finalBody = (await pollRes.json()) as Record<string, unknown>;
+      finalStatus = finalBody.status as string;
+      if (["aborted", "completed", "failed"].includes(finalStatus)) break;
       await page.waitForTimeout(1000);
     }
+
+    expect(finalStatus).toBe("aborted");
+    expect(
+      (finalBody.sessions_completed as number) <
+        (finalBody.total_sessions as number)
+    ).toBe(true);
+    expect(finalBody.export_ready).toBe(false);
+
+    await page.reload();
+    const afterReload = await request.get(`${API}/runs/${run_id}`);
+    const reloaded = await afterReload.json();
+    expect(reloaded.status).toBe("aborted");
   });
 
   test("missing idempotency key rejected", async ({ request }) => {
