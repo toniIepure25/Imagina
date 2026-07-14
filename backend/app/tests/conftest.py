@@ -62,6 +62,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_unified_db_integration": ["research", "integration"],
     "test_abort": ["research", "integration"],
     "test_objective_endpoints": ["research", "psychophysics"],
+    "test_psychophysics": ["research", "psychophysics"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
