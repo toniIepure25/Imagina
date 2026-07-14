@@ -37,6 +37,24 @@ const routes: RouteCard[] = [
     description: "Deterministic three-condition synthetic study workflow.",
     status: "planned",
   },
+  {
+    href: "/research/measurement",
+    title: "Measurement Workbench",
+    description: "Construct map, task battery, objective/subjective endpoints, scoring.",
+    status: "available",
+  },
+  {
+    href: "/research/design-simulation",
+    title: "Design Simulation",
+    description: "Power, Type-I error, bias, coverage across scenario grid.",
+    status: "available",
+  },
+  {
+    href: "/research/analysis",
+    title: "Analysis Workbench",
+    description: "Primary estimand, confirmatory model, diagnostics, sensitivity.",
+    status: "available",
+  },
 ];
 
 const statusColors: Record<string, string> = {
