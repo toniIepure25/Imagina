@@ -63,6 +63,127 @@ class ValidationResult:
         return {k: v for k, v in self.__dict__.items()}
 
 
+async def build_export_from_db(db, study_id: str) -> ExportPackage:
+    """Build a complete ExportPackage from persisted DB evidence."""
+    package = ExportPackage(study_id=study_id)
+    package.endpoint_registry_hash = registry_hash()
+
+    blocks = await (await db.execute(
+        "SELECT * FROM objective_task_blocks WHERE study_id = ?", (study_id,),
+    )).fetchall()
+
+    for block in blocks:
+        specs = await (await db.execute(
+            "SELECT * FROM objective_trial_specs WHERE block_id = ? ORDER BY trial_index",
+            (block["id"],),
+        )).fetchall()
+        for spec in specs:
+            package.objective_targets.append({
+                "block_id": block["id"], "trial_index": spec["trial_index"],
+                "task_family": spec["task_family"],
+                "orientation": spec["target_orientation"], "hue": spec["target_hue"],
+                "sf": spec["target_sf"], "pos_x": spec["target_pos_x"],
+                "pos_y": spec["target_pos_y"], "size": spec["target_size"],
+            })
+
+            resp = await (await db.execute(
+                "SELECT * FROM objective_trial_responses WHERE trial_spec_id = ?", (spec["id"],),
+            )).fetchone()
+            if resp:
+                package.responses.append({
+                    "trial_spec_id": spec["id"],
+                    "orientation": resp["response_orientation"], "hue": resp["response_hue"],
+                    "sf": resp["response_sf"], "pos_x": resp["response_pos_x"],
+                    "pos_y": resp["response_pos_y"], "size": resp["response_size"],
+                    "confidence": resp["confidence"], "vividness": resp["vividness"],
+                    "effort": resp["effort"],
+                })
+                package.subjective_outcomes.append({
+                    "trial_spec_id": spec["id"],
+                    "confidence": resp["confidence"], "vividness": resp["vividness"],
+                    "effort": resp["effort"],
+                })
+
+            score = await (await db.execute(
+                "SELECT * FROM objective_trial_scores WHERE trial_spec_id = ?", (spec["id"],),
+            )).fetchone()
+            if score:
+                package.component_scores.append({
+                    "trial_spec_id": spec["id"],
+                    "orientation_error": score["orientation_error"],
+                    "hue_error": score["hue_error"],
+                    "sf_error": score["sf_error"],
+                    "position_error": score["position_error"],
+                    "size_error": score["size_error"],
+                })
+                package.composite_scores.append({
+                    "trial_spec_id": spec["id"],
+                    "composite_error": score["composite_error"],
+                    "scoring_version": score["scoring_version"],
+                })
+
+    cals = await (await db.execute(
+        "SELECT * FROM objective_calibrations WHERE study_id = ?", (study_id,),
+    )).fetchall()
+    package.calibrations = [dict(c) for c in cals]
+    if cals:
+        cal_data = json.dumps([dict(c) for c in cals], sort_keys=True, separators=(",", ":"), default=str)
+        package.calibration_hash = hashlib.sha256(cal_data.encode()).hexdigest()[:16]
+
+    sim_runs = await (await db.execute(
+        "SELECT * FROM simulation_runs WHERE study_id LIKE ? AND status = 'completed'",
+        (f"%{study_id}%",),
+    )).fetchall()
+    for run in sim_runs:
+        summary = await (await db.execute(
+            "SELECT summary_json FROM simulation_summaries WHERE run_id = ?", (run["id"],),
+        )).fetchone()
+        if summary:
+            package.replicate_summaries.append(json.loads(summary["summary_json"]))
+
+    oracles = await (await db.execute(
+        "SELECT * FROM oracle_estimands WHERE scenario_id LIKE ?", (f"%{study_id}%",),
+    )).fetchall()
+    package.oracle_estimands = [dict(o) for o in oracles]
+    if oracles:
+        package.oracle_spec_hash = oracles[0]["spec_hash"] or ""
+
+    specs = await (await db.execute(
+        "SELECT * FROM analysis_specifications WHERE study_id LIKE ?", (f"%{study_id}%",),
+    )).fetchall()
+    if specs:
+        package.analysis_specification = dict(specs[0])
+        package.analysis_spec_hash = specs[0]["spec_hash"]
+
+    a_runs = await (await db.execute(
+        "SELECT ar.* FROM analysis_runs ar JOIN analysis_specifications asp ON ar.spec_id = asp.id WHERE asp.study_id LIKE ?",
+        (f"%{study_id}%",),
+    )).fetchall()
+    for run in a_runs:
+        results = await (await db.execute(
+            "SELECT * FROM analysis_results WHERE run_id = ?", (run["id"],),
+        )).fetchall()
+        for r in results:
+            package.analysis_results.append(json.loads(r["result_json"]) if r["result_json"] else dict(r))
+
+    manifests = await (await db.execute(
+        "SELECT * FROM objective_manifests WHERE study_id = ?", (study_id,),
+    )).fetchall()
+    package.manifest_evidence = [json.loads(m["manifest_json"]) for m in manifests]
+
+    seals = await (await db.execute(
+        "SELECT * FROM objective_completion_seals WHERE study_id = ?", (study_id,),
+    )).fetchall()
+    package.seal_evidence = [json.loads(s["seal_json"]) for s in seals]
+
+    replays = await (await db.execute(
+        "SELECT * FROM replay_divergences WHERE study_id = ?", (study_id,),
+    )).fetchall()
+    package.replay_results = [dict(r) for r in replays]
+
+    return package
+
+
 def validate_export_package(package: ExportPackage) -> ValidationResult:
     """Validate completeness and integrity of an export package."""
     issues: list[str] = []
