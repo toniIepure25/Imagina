@@ -41,7 +41,6 @@ HIERARCHICAL_FORMULA = (
     "composite_error ~ adaptive_vs_yoked"
     " + fixed_vs_yoked"
     " + period"
-    " + baseline_precision"
     " + C(task_family)"
     " + carryover_indicator_num"
 )
@@ -326,7 +325,7 @@ def run_hierarchical_analysis(
             groups=df["participant_id"],
             re_formula="~1",
         )
-        result = model.fit(reml=True, method="lbfgs", maxiter=300)
+        result = model.fit(reml=True, method="powell", maxiter=500)
         converged = result.converged
 
         if not converged:
