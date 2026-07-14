@@ -46,7 +46,12 @@ class ObjectiveManifest:
     cognitive_agent_version: str = ""
     scenario_hash: str = ""
     oracle_spec_hash: str = ""
+    primary_estimator_spec_hash: str = ""
+    randomization_spec_hash: str = ""
+    bootstrap_spec_hash: str = ""
     analysis_spec_hash: str = ""
+    design_id: str = ""
+    design_hash: str = ""
     rng_version: str = RNG_VERSION
     rng_version_hash: str = ""
     objective_runtime_version: str = OBJECTIVE_RUNTIME_VERSION
@@ -82,8 +87,13 @@ def create_objective_manifest(
     cognitive_agent_version: str = "",
     scenario_hash: str = "",
     oracle_spec_hash: str = "",
+    primary_estimator_spec_hash: str = "",
+    randomization_spec_hash: str = "",
+    bootstrap_spec_hash: str = "",
     analysis_spec_hash: str = "",
     scoring_hash: str = "",
+    design_id: str = "",
+    design_hash: str = "",
 ) -> ObjectiveManifest:
     return ObjectiveManifest(
         endpoint_registry_hash=registry_hash(),
@@ -98,7 +108,12 @@ def create_objective_manifest(
         cognitive_agent_version=cognitive_agent_version,
         scenario_hash=scenario_hash,
         oracle_spec_hash=oracle_spec_hash,
+        primary_estimator_spec_hash=primary_estimator_spec_hash,
+        randomization_spec_hash=randomization_spec_hash,
+        bootstrap_spec_hash=bootstrap_spec_hash,
         analysis_spec_hash=analysis_spec_hash,
+        design_id=design_id,
+        design_hash=design_hash,
         rng_version_hash=rng_version_hash(),
     )
 
@@ -176,4 +191,80 @@ def verify_seal(seal: CompletionSeal, session_result: ObjectiveSessionResult) ->
         issues.append(f"trial_count mismatch: seal={seal.trial_count}, actual={len(session_result.trials)}")
     if seal.content_hash != session_result.content_hash:
         issues.append("content_hash mismatch")
+
+    targets = json.dumps(
+        [t.target for t in session_result.trials],
+        sort_keys=True, separators=(",", ":"), default=str,
+    )
+    if hashlib.sha256(targets.encode()).hexdigest()[:16] != seal.target_hash:
+        issues.append("target_hash mismatch")
+
+    responses = json.dumps(
+        [t.response for t in session_result.trials],
+        sort_keys=True, separators=(",", ":"), default=str,
+    )
+    if hashlib.sha256(responses.encode()).hexdigest()[:16] != seal.response_hash:
+        issues.append("response_hash mismatch")
+
+    scores = json.dumps(
+        [{"composite": t.composite_error, "components": t.component_errors}
+         for t in session_result.trials],
+        sort_keys=True, separators=(",", ":"), default=str,
+    )
+    if hashlib.sha256(scores.encode()).hexdigest()[:16] != seal.score_hash:
+        issues.append("score_hash mismatch")
+
+    ratings = json.dumps(
+        [{"confidence": t.confidence, "vividness": t.vividness, "effort": t.effort}
+         for t in session_result.trials],
+        sort_keys=True, separators=(",", ":"), default=str,
+    )
+    if hashlib.sha256(ratings.encode()).hexdigest()[:16] != seal.rating_hash:
+        issues.append("rating_hash mismatch")
+
+    audit = json.dumps(
+        [a.to_dict() for a in session_result.leakage_audit],
+        sort_keys=True, separators=(",", ":"), default=str,
+    )
+    if hashlib.sha256(audit.encode()).hexdigest()[:16] != seal.leakage_audit_hash:
+        issues.append("leakage_audit_hash mismatch")
+
     return issues
+
+
+async def persist_manifest_and_seal(
+    db,
+    study_id: str,
+    manifest: ObjectiveManifest,
+    seal: CompletionSeal,
+) -> dict[str, int]:
+    """Persist manifest and seal to DB. Returns row IDs."""
+    m_cursor = await db.execute(
+        """INSERT INTO objective_manifests
+           (study_id, manifest_hash, manifest_json, provenance_version)
+           VALUES (?, ?, ?, ?)""",
+        (study_id, manifest.hash(),
+         json.dumps(manifest.to_dict(), sort_keys=True, separators=(",", ":")),
+         PROVENANCE_VERSION),
+    )
+    manifest_id = m_cursor.lastrowid
+
+    s_cursor = await db.execute(
+        """INSERT INTO objective_completion_seals
+           (study_id, session_id, seal_hash, content_hash,
+            manifest_hash, trial_count, target_hash,
+            response_hash, score_hash, rating_hash,
+            leakage_audit_hash, calibration_ref, valid,
+            seal_version, seal_json)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (study_id, seal.session_id, seal.seal_hash(),
+         seal.content_hash, seal.manifest_hash, seal.trial_count,
+         seal.target_hash, seal.response_hash, seal.score_hash,
+         seal.rating_hash, seal.leakage_audit_hash,
+         seal.calibration_ref, int(seal.valid), seal.seal_version,
+         json.dumps(seal.to_dict(), sort_keys=True, separators=(",", ":"))),
+    )
+    seal_id = s_cursor.lastrowid
+    await db.commit()
+
+    return {"manifest_id": manifest_id, "seal_id": seal_id}
