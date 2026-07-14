@@ -2,7 +2,72 @@
 
 ---
 
-## 2026-07-14 — Scientific Measurement Gate C0.2: Inferential Recovery
+## 2026-07-14 — Scientific Gate C0.2: Estimand, Persistence and Evidence Closure
+
+### Task
+Correct the causal contrast coding, repair persistence schema alignment,
+execute the full 1000-replicate research campaign, and close C0.2.
+
+### Starting State (repair phase)
+
+```
+actual_starting_head: 36662f244c07bb64af983bb82304923489df9773
+branch:               research/scientific-measurement-c02
+```
+
+### Repair Commits (6 total)
+
+1. **fix(statistics): align GEE coefficients with prespecified contrasts** (`db4ba9a`)
+   - Replaced effect coding (adaptive=1,yoked=-1) with indicator coding (adaptive_ind=1,yoked=0)
+   - Coefficient now equals adjusted E[Y|adaptive] - E[Y|yoked]
+   - Rank deficiency fails closed (inference_valid=False)
+   - Period and sequence treated as categorical C()
+   - Known-means tests verify exact contrast recovery (-0.30 ± 0.02)
+
+2. **fix(simulation): recalibrate coverage bias and power for corrected estimand** (`0a2452f`)
+   - Added weak_reliability scenario (10th core scenario)
+   - medium_adaptive coverage now 0.96 (was 0.0 with effect coding)
+   - Campaign validity fails on zero coverage
+
+3. **fix(storage): align objective execution with canonical schema** (`15ac0b5`)
+   - Runtime uses latency_ms (matching v007), response_id for scores
+   - Session-atomic transaction: BEGIN/COMMIT wraps block+all trials
+   - Leakage rollback leaves zero rows
+   - v009 migration adds leakage_audits, trial_transitions, replay_runs tables
+
+4. **fix(science-runtime): enforce durable execution and sealed evidence** (`5862207`)
+   - Simulation lifecycle: queued→claimed→running→completed|failed|aborted
+   - Replay requires both manifest and seal (fails without)
+   - Export uses explicit FK joins (no LIKE queries)
+   - Replay runs persisted (success and failure)
+
+5. **research(simulation): complete calibrated core scenario campaign** (`2622a8f`)
+   - 1000 replicates × 10 scenarios = 10000 total replicates
+   - overall_pass = true
+   - Campaign hash: 7bd1512e7e60ccd207b16d0e1911559761f4579e7eccaca2c5d8d8a6c4bf84a2
+
+6. **ci(science): prove corrected inference and persistent lifecycle** (this commit)
+
+### Campaign Evidence (1000 replicates each)
+
+| Scenario | Type-I | Coverage | Power | Fallback | Valid |
+|----------|--------|----------|-------|----------|-------|
+| strict_null | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| small_adaptive | — | 0.976 | 0.994 | 0.0 | 1.0 |
+| medium_adaptive | — | 0.967 | 1.0 | 0.0 | 1.0 |
+| subjective_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| practice_only | 0.046 | 0.954 | — | 0.0 | 1.0 |
+| placebo_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| perceptual_only | 0.047 | 0.953 | — | 0.0 | 1.0 |
+| carryover | — | 0.971 | 0.985 | 0.0 | 1.0 |
+| differential_dropout | — | 0.970 | 0.967 | 0.0 | 1.0 |
+| weak_reliability | — | 0.960 | 0.863 | 0.0 | 1.0 |
+
+### C0.2 Status: COMPLETE
+
+---
+
+## 2026-07-14 — Scientific Measurement Gate C0.2: Inferential Recovery (phase 1)
 
 ### Task
 Recover scientifically valid primary inference and replace remaining

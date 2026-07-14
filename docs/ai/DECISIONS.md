@@ -748,4 +748,19 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-14 — Scientific Measurement Gate C0.2*
+## ADR-032: Indicator Coding for Causal Contrast Identity
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** The previous effect coding (adaptive=1,yoked=-1) made the GEE coefficient represent the deviation from the unweighted grand mean, not the adaptive−yoked contrast. This caused the coefficient to be misaligned with the oracle estimand, producing zero coverage for medium_adaptive.
+
+**Decision:** Use indicator (reference) coding: `adaptive_ind = 1 if adaptive else 0`, `fixed_ind = 1 if fixed else 0`, with yoked as the zero reference. The coefficient on `adaptive_ind` now equals `adjusted E[Y|adaptive] − E[Y|yoked]` — identical to the oracle estimand.
+
+**Consequences:**
+- Known-means test verifies recovery of exact contrast values
+- medium_adaptive coverage is now 0.967 (was 0.0)
+- All 10 scenarios pass at 1000 replicates
+
+---
+
+*Last updated: 2026-07-14 — Scientific Gate C0.2 COMPLETE*

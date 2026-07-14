@@ -380,7 +380,7 @@ jobs:
           app/tests/test_objective_provenance.py
           -v --timeout=120
 
-  science-persistence:
+  science-contrast-invariants:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -393,20 +393,99 @@ jobs:
           cache: pip
           cache-dependency-path: backend/pyproject.toml
       - run: pip install -e ".[dev,science]"
-      - name: DB persistence and provenance tests
+      - name: Known-means contrast recovery
+        run: >-
+          python3 -m pytest
+          app/tests/test_statistics.py::TestContrastRecovery
+          -v --timeout=60
+
+  science-calibrated-inference:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Medium-effect oracle coverage and calibration
+        run: >-
+          python3 -m pytest
+          app/tests/test_design_simulation.py
+          -v --timeout=300
+
+  science-objective-db-runtime:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Schema migration and persistent objective execution
+        run: >-
+          python3 -m pytest
+          app/tests/test_migration_runner.py
+          app/tests/test_objective_runtime.py
+          app/tests/test_objective_runtime_integration.py
+          -v --timeout=120
+
+  science-seal-replay-export:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Provenance seal and replay tests
         run: >-
           python3 -m pytest
           app/tests/test_objective_provenance.py
-          app/tests/test_objective_export.py
           app/tests/test_objective_replay.py
-          app/tests/test_migration_runner.py
+          app/tests/test_objective_export.py
           -v --timeout=120
-      - name: Research campaign smoke (50 replicates)
+
+  science-campaign-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Campaign smoke (strict_null + medium_adaptive, 50 replicates)
         run: >-
           python3 -c "
           from app.research.simulation_campaign import run_full_campaign, CORE_SCENARIOS;
-          r = run_full_campaign(50, 50, 18, 42, {k: CORE_SCENARIOS[k] for k in ['strict_null']});
-          assert r.scenario_summaries['strict_null'].campaign_valid, 'strict_null failed';
+          scenarios = {k: CORE_SCENARIOS[k] for k in ['strict_null', 'medium_adaptive']};
+          r = run_full_campaign(50, 50, 18, 42, scenarios);
+          assert r.overall_pass, f'Campaign failed: {r.gate_issues}';
+          sn = r.scenario_summaries['strict_null'];
+          assert sn.type_i_error is not None and sn.type_i_error < 0.15;
+          assert sn.coverage is not None and sn.coverage > 0.85;
+          ma = r.scenario_summaries['medium_adaptive'];
+          assert ma.coverage is not None and ma.coverage > 0.85;
+          assert ma.power is not None and ma.power > 0.80;
           print('Campaign smoke OK')
           "
 
