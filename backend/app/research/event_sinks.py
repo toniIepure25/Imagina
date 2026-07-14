@@ -68,49 +68,29 @@ class NullEventSink:
 
 
 class PersistentOutboxWriter:
-    """Writes events to runtime_event_outbox inside the caller's transaction."""
+    """Writes events to runtime_event_outbox inline within the caller's transaction.
+
+    Each publish() call inserts the outbox row immediately so it is covered
+    by the next db.commit() — guaranteeing atomicity with domain writes.
+    """
 
     def __init__(self, db: aiosqlite.Connection):
         self._db = db
-        self._pending: list[RuntimeEvent] = []
 
     async def publish(self, event: RuntimeEvent) -> None:
-        self._pending.append(event)
+        await self._db.execute(
+            "INSERT INTO runtime_event_outbox "
+            "(outbox_id, research_session_id, event_type, payload_json, "
+            "created_at, dispatch_attempts) "
+            "VALUES (?, ?, ?, ?, ?, 0)",
+            (
+                str(uuid.uuid4()),
+                event.research_session_id,
+                event.event_type,
+                json.dumps(event.payload, default=str),
+                event.timestamp.isoformat(),
+            ),
+        )
 
     async def flush(self) -> None:
-        for event in self._pending:
-            await self._db.execute(
-                "INSERT INTO runtime_event_outbox "
-                "(outbox_id, research_session_id, event_type, payload_json, "
-                "created_at, dispatch_attempts) "
-                "VALUES (?, ?, ?, ?, ?, 0)",
-                (
-                    str(uuid.uuid4()),
-                    event.research_session_id,
-                    event.event_type,
-                    json.dumps(event.payload, default=str),
-                    event.timestamp.isoformat(),
-                ),
-            )
-        self._pending.clear()
-
-    async def flush_within_transaction(self) -> int:
-        """Write pending events as part of the current transaction (no commit)."""
-        count = 0
-        for event in self._pending:
-            await self._db.execute(
-                "INSERT INTO runtime_event_outbox "
-                "(outbox_id, research_session_id, event_type, payload_json, "
-                "created_at, dispatch_attempts) "
-                "VALUES (?, ?, ?, ?, ?, 0)",
-                (
-                    str(uuid.uuid4()),
-                    event.research_session_id,
-                    event.event_type,
-                    json.dumps(event.payload, default=str),
-                    event.timestamp.isoformat(),
-                ),
-            )
-            count += 1
-        self._pending.clear()
-        return count
+        pass

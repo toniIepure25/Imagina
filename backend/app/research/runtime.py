@@ -130,6 +130,9 @@ class ResearchSessionRuntime:
         self._metrics = metric_processor or CompositeMetricProcessor()
         self._curriculum = curriculum_processor or FixedCurriculumProcessor()
 
+    def _evt(self, event_type: str, session_id: str, payload: dict, trial_id: str | None = None) -> RuntimeEvent:
+        return RuntimeEvent(event_type, session_id, payload, self._clock.utc_now(), trial_id=trial_id)
+
     async def run_session(
         self,
         research_session_id: str,
@@ -157,22 +160,20 @@ class ResearchSessionRuntime:
                     self._db, research_session_id, "planned", version, "ready",
                     actor="runtime", timestamp=self._clock.utc_now(),
                 )
-                await self._db.commit()
-                await self._sink.publish(RuntimeEvent(
+                await self._sink.publish(self._evt(
                     "session_ready", research_session_id, {"state_version": version},
-                    self._clock.utc_now(),
                 ))
+                await self._db.commit()
 
             if status in ("planned", "ready"):
                 version = await transition_session(
                     self._db, research_session_id, "ready", version, "running",
                     actor="runtime", timestamp=self._clock.utc_now(),
                 )
-                await self._db.commit()
-                await self._sink.publish(RuntimeEvent(
+                await self._sink.publish(self._evt(
                     "session_started", research_session_id, {"state_version": version},
-                    self._clock.utc_now(),
                 ))
+                await self._db.commit()
 
             session_start_mono = self._clock.monotonic()
             terminal_reason = "completed"
@@ -198,6 +199,10 @@ class ResearchSessionRuntime:
                         (trial_id, research_session_id, trial_idx,
                          f"corridor_stim_{trial_idx}", self._clock.utc_now().isoformat()),
                     )
+                    await self._sink.publish(self._evt(
+                        "trial_created", research_session_id,
+                        {"trial_id": trial_id, "trial_index": trial_idx}, trial_id=trial_id,
+                    ))
                     await self._db.commit()
                 else:
                     trial_id = existing["trial_id"]
@@ -219,6 +224,10 @@ class ResearchSessionRuntime:
                     actor="runtime", timestamp=self._clock.utc_now(),
                 )
                 trial_mono_start = self._clock.monotonic()
+                await self._sink.publish(self._evt(
+                    "trial_started", research_session_id,
+                    {"trial_id": trial_id, "trial_index": trial_idx}, trial_id=trial_id,
+                ))
                 await self._db.commit()
 
                 safety_stopped = False
@@ -266,8 +275,8 @@ class ResearchSessionRuntime:
                         (research_session_id,)
                     )).fetchone()
 
-                    fb_id = self._id_gen.generate("feedback", research_session_id,
-                                                  (trial_idx * windows_per_trial) + window_idx)
+                    global_window = (trial_idx * windows_per_trial) + window_idx
+                    fb_id = self._id_gen.generate("feedback", research_session_id, global_window)
                     await self._db.execute(
                         "INSERT INTO feedback_records "
                         "(feedback_record_id, research_session_id, trial_id, window_index, "
@@ -276,7 +285,7 @@ class ResearchSessionRuntime:
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         (
                             fb_id, research_session_id, trial_id,
-                            (trial_idx * windows_per_trial) + window_idx,
+                            global_window,
                             condition_row["condition"],
                             decision.policy_id, decision.policy_version,
                             pid_val, iqi_val,
@@ -285,8 +294,13 @@ class ResearchSessionRuntime:
                             self._clock.utc_now().isoformat(), elapsed,
                         ),
                     )
+                    await self._sink.publish(self._evt(
+                        "feedback_recorded", research_session_id,
+                        {"feedback_id": fb_id, "window_index": global_window}, trial_id=trial_id,
+                    ))
 
                     if safety.should_stop:
+                        safety_evt_id = self._id_gen.generate("safety", research_session_id, trial_idx)
                         await self._db.execute(
                             "INSERT INTO safety_events "
                             "(safety_event_id, research_session_id, trial_id, severity, "
@@ -294,18 +308,26 @@ class ResearchSessionRuntime:
                             "timestamp_utc, mono_elapsed) "
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             (
-                                self._id_gen.generate("safety", research_session_id, trial_idx),
+                                safety_evt_id,
                                 research_session_id, trial_id, safety.severity,
                                 safety.reason_code, safety.metric_name, safety.metric_value,
                                 safety.action, self._clock.utc_now().isoformat(), elapsed,
                             ),
                         )
-                        await self._db.commit()
+                        await self._sink.publish(self._evt(
+                            "safety_event_recorded", research_session_id,
+                            {"safety_event_id": safety_evt_id, "reason": safety.reason_code},
+                            trial_id=trial_id,
+                        ))
                         await transition_trial(
                             self._db, trial_id, "running", tv, "safety_stopped",
                             reason_code=safety.reason_code, actor="safety_monitor",
                             timestamp=self._clock.utc_now(),
                         )
+                        await self._sink.publish(self._evt(
+                            "trial_safety_stopped", research_session_id,
+                            {"trial_id": trial_id, "reason": safety.reason_code}, trial_id=trial_id,
+                        ))
                         await self._db.commit()
                         safety_stopped = True
                         terminal_reason = "safety_stopped"
@@ -323,6 +345,10 @@ class ResearchSessionRuntime:
                         "aborted", reason_code="abort_requested",
                         actor="runtime", timestamp=self._clock.utc_now(),
                     )
+                    await self._sink.publish(self._evt(
+                        "trial_aborted", research_session_id,
+                        {"trial_id": trial_id, "reason": "abort_requested"}, trial_id=trial_id,
+                    ))
                     await self._db.commit()
                     break
 
@@ -339,6 +365,10 @@ class ResearchSessionRuntime:
                         "safety_stopped", reason_code="trial_safety_stop",
                         actor="safety_monitor", timestamp=self._clock.utc_now(),
                     )
+                    await self._sink.publish(self._evt(
+                        "session_safety_stopped", research_session_id,
+                        {"reason": "trial_safety_stop"},
+                    ))
                     await self._db.commit()
                     break
 
@@ -373,13 +403,11 @@ class ResearchSessionRuntime:
                     self._db, trial_id, "running", trial_row2["state_version"],
                     "completed", actor="runtime", timestamp=self._clock.utc_now(),
                 )
-                await self._db.commit()
-
-                await self._sink.publish(RuntimeEvent(
+                await self._sink.publish(self._evt(
                     "trial_completed", research_session_id,
-                    {"trial_id": trial_id, "trial_index": trial_idx},
-                    self._clock.utc_now(), trial_id=trial_id,
+                    {"trial_id": trial_id, "trial_index": trial_idx}, trial_id=trial_id,
                 ))
+                await self._db.commit()
 
             if terminal_reason == "completed":
                 session_row = await (await self._db.execute(
@@ -390,6 +418,9 @@ class ResearchSessionRuntime:
                     self._db, research_session_id, "running", session_row["state_version"],
                     "completed", actor="runtime", timestamp=self._clock.utc_now(),
                 )
+                await self._sink.publish(self._evt(
+                    "session_completed", research_session_id, {"reason": "all_trials_done"},
+                ))
                 await self._db.commit()
             elif terminal_reason == "aborted":
                 session_row = await (await self._db.execute(
@@ -401,16 +432,12 @@ class ResearchSessionRuntime:
                     "aborted", reason_code="abort_requested",
                     actor="runtime", timestamp=self._clock.utc_now(),
                 )
+                await self._sink.publish(self._evt(
+                    "session_aborted", research_session_id, {"reason": "abort_requested"},
+                ))
                 await self._db.commit()
 
         finally:
             await self._provider.stop()
-
-        await self._sink.publish(RuntimeEvent(
-            "session_ended", research_session_id,
-            {"terminal_reason": terminal_reason},
-            self._clock.utc_now(),
-        ))
-        await self._sink.flush()
 
         return terminal_reason

@@ -13,7 +13,7 @@ from typing import Any
 
 import aiosqlite
 
-from app.research.event_sinks import PersistentOutboxWriter
+from app.research.event_sinks import PersistentOutboxWriter, RuntimeEvent
 from app.research.export_service import export_synthetic_dataset
 from app.research.feedback_policies import (
     AdaptiveFeedbackPolicy,
@@ -273,13 +273,18 @@ async def _execute_study(
                     sessions_completed += 1
 
                 content_hash_result = await compute_session_replay_hash(db, session_id)
-                await seal_session_completion(
+                seal_hash = await seal_session_completion(
                     db, session_id,
                     terminal_status=terminal_reason,
                     terminal_reason=terminal_reason,
                     content_hash=content_hash_result["content_hash"],
                     sealed_at=datetime.now(timezone.utc),
                 )
+                await sink.publish(RuntimeEvent(
+                    "completion_seal_created", session_id,
+                    {"seal_hash": seal_hash, "content_hash": content_hash_result["content_hash"]},
+                    datetime.now(timezone.utc),
+                ))
                 await db.commit()
                 await dispatch_pending(db, LoggingOutboxConsumer())
             except Exception as exc:

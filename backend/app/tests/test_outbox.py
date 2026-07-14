@@ -1,4 +1,4 @@
-"""Tests for outbox pattern — persistent event dispatch."""
+"""Tests for outbox pattern — persistent event dispatch and atomicity."""
 import os
 import tempfile
 from datetime import datetime, timezone
@@ -48,23 +48,20 @@ async def outbox_db():
 
 
 class TestPersistentOutboxWriter:
-    async def test_writes_events_to_outbox(self, outbox_db):
+    async def test_publish_writes_inline(self, outbox_db):
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
         await writer.publish(RuntimeEvent("test_event", "rs1", {"key": "val"}, ts))
-        await writer.flush()
         await outbox_db.commit()
 
         pending = await count_pending(outbox_db)
         assert pending == 1
 
-    async def test_flush_within_transaction(self, outbox_db):
+    async def test_multiple_publishes_before_commit(self, outbox_db):
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
         await writer.publish(RuntimeEvent("ev1", "rs1", {"a": 1}, ts))
         await writer.publish(RuntimeEvent("ev2", "rs1", {"b": 2}, ts))
-        count = await writer.flush_within_transaction()
-        assert count == 2
         await outbox_db.commit()
 
         pending = await count_pending(outbox_db)
@@ -76,7 +73,6 @@ class TestOutboxDispatcher:
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
         await writer.publish(RuntimeEvent("ev1", "rs1", {"a": 1}, ts))
-        await writer.flush()
         await outbox_db.commit()
 
         consumer = CollectingOutboxConsumer()
@@ -92,7 +88,6 @@ class TestOutboxDispatcher:
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
         await writer.publish(RuntimeEvent("ev1", "rs1", {"x": 1}, ts))
-        await writer.flush()
         await outbox_db.commit()
 
         consumer = CollectingOutboxConsumer()
@@ -105,7 +100,6 @@ class TestOutboxDispatcher:
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
         await writer.publish(RuntimeEvent("ev1", "rs1", {"a": 1}, ts))
-        await writer.flush()
         await outbox_db.commit()
 
         class FailingConsumer:
@@ -124,49 +118,51 @@ class TestOutboxDispatcher:
         pending = await count_pending(outbox_db)
         assert pending == 1
 
-    async def test_no_partial_on_rollback(self, outbox_db):
-        """If we rollback before commit, outbox events should not appear."""
+
+class TestTransactionalAtomicity:
+    async def test_rollback_removes_domain_and_outbox(self, outbox_db):
+        """1. Failure before commit: no domain record, no outbox record."""
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
-        await writer.publish(RuntimeEvent("ev1", "rs1", {"a": 1}, ts))
-        count = await writer.flush_within_transaction()
-        assert count == 1
+        await outbox_db.execute(
+            "INSERT INTO trials (trial_id, research_session_id, trial_index, "
+            "stimulus_id, status, state_version, planned_at) "
+            "VALUES ('t-rollback', 'rs1', 99, 'stim', 'planned', 0, ?)",
+            (ts.isoformat(),),
+        )
+        await writer.publish(RuntimeEvent("trial_created", "rs1", {"trial_id": "t-rollback"}, ts))
         await outbox_db.rollback()
 
-        pending = await count_pending(outbox_db)
-        assert pending == 0
+        trial = await (await outbox_db.execute(
+            "SELECT trial_id FROM trials WHERE trial_id = 't-rollback'"
+        )).fetchone()
+        assert trial is None
+        assert await count_pending(outbox_db) == 0
 
-    async def test_dispatch_retry_after_consumer_failure(self, outbox_db):
+    async def test_commit_preserves_both_domain_and_outbox(self, outbox_db):
+        """2. Commit-then-crash: domain + outbox both exist, outbox pending."""
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
-        await writer.publish(RuntimeEvent("ev1", "rs1", {"a": 1}, ts))
-        await writer.flush()
+        await outbox_db.execute(
+            "INSERT INTO trials (trial_id, research_session_id, trial_index, "
+            "stimulus_id, status, state_version, planned_at) "
+            "VALUES ('t-commit', 'rs1', 98, 'stim', 'planned', 0, ?)",
+            (ts.isoformat(),),
+        )
+        await writer.publish(RuntimeEvent("trial_created", "rs1", {"trial_id": "t-commit"}, ts))
         await outbox_db.commit()
 
-        class FailOnce:
-            def __init__(self):
-                self.call_count = 0
-                self.received = []
-
-            async def handle(self, event_type, payload, session_id, created_at):
-                self.call_count += 1
-                if self.call_count == 1:
-                    raise RuntimeError("Transient")
-                self.received.append(event_type)
-
-        consumer = FailOnce()
-        await dispatch_pending(outbox_db, consumer)
+        trial = await (await outbox_db.execute(
+            "SELECT trial_id FROM trials WHERE trial_id = 't-commit'"
+        )).fetchone()
+        assert trial is not None
         assert await count_pending(outbox_db) == 1
 
-        await dispatch_pending(outbox_db, consumer)
-        assert await count_pending(outbox_db) == 0
-        assert len(consumer.received) == 1
-
-    async def test_recovery_of_pending_after_restart(self, outbox_db):
+    async def test_dispatcher_restart_delivers_pending(self, outbox_db):
+        """3. Dispatcher restart: pending event is delivered."""
         writer = PersistentOutboxWriter(outbox_db)
         ts = datetime.now(timezone.utc)
-        await writer.publish(RuntimeEvent("crash_ev", "rs1", {"data": 1}, ts))
-        await writer.flush()
+        await writer.publish(RuntimeEvent("restart_ev", "rs1", {"data": 1}, ts))
         await outbox_db.commit()
 
         assert await count_pending(outbox_db) == 1
@@ -174,12 +170,103 @@ class TestOutboxDispatcher:
         consumer = CollectingOutboxConsumer()
         dispatched = await dispatch_pending(outbox_db, consumer)
         assert dispatched == 1
-        assert consumer.received[0]["event_type"] == "crash_ev"
+        assert consumer.received[0]["event_type"] == "restart_ev"
+        assert await count_pending(outbox_db) == 0
+
+    async def test_duplicate_dispatch_idempotent(self, outbox_db):
+        """4. Duplicate dispatch: consumer receives once only."""
+        writer = PersistentOutboxWriter(outbox_db)
+        ts = datetime.now(timezone.utc)
+        await writer.publish(RuntimeEvent("dup_ev", "rs1", {"x": 1}, ts))
+        await outbox_db.commit()
+
+        consumer = CollectingOutboxConsumer()
+        await dispatch_pending(outbox_db, consumer)
+        d2 = await dispatch_pending(outbox_db, consumer)
+        assert d2 == 0
+        assert len(consumer.received) == 1
+
+    async def test_consumer_failure_leaves_retryable(self, outbox_db):
+        """5. Consumer failure: event remains pending, attempt/error tracked."""
+        writer = PersistentOutboxWriter(outbox_db)
+        ts = datetime.now(timezone.utc)
+        await writer.publish(RuntimeEvent("fail_ev", "rs1", {"a": 1}, ts))
+        await outbox_db.commit()
+
+        class FailOnce:
+            def __init__(self):
+                self.calls = 0
+                self.received = []
+
+            async def handle(self, event_type, payload, session_id, created_at):
+                self.calls += 1
+                if self.calls == 1:
+                    raise RuntimeError("Transient")
+                self.received.append(event_type)
+
+        consumer = FailOnce()
+        await dispatch_pending(outbox_db, consumer)
+        assert await count_pending(outbox_db) == 1
+
+        row = await (await outbox_db.execute(
+            "SELECT dispatch_attempts, last_error FROM runtime_event_outbox LIMIT 1"
+        )).fetchone()
+        assert row["dispatch_attempts"] == 1
+        assert "Transient" in row["last_error"]
+
+        await dispatch_pending(outbox_db, consumer)
+        assert await count_pending(outbox_db) == 0
+        assert len(consumer.received) == 1
+
+    async def test_feedback_window_atomicity(self, outbox_db):
+        """6. Feedback + outbox event: both present after commit, neither after rollback."""
+        writer = PersistentOutboxWriter(outbox_db)
+        ts = datetime.now(timezone.utc)
+
+        await outbox_db.execute(
+            "INSERT INTO feedback_records "
+            "(feedback_record_id, research_session_id, window_index, "
+            "condition, policy_id, policy_version, pid_value, iqi_value, "
+            "scene_params_json, reason_code, safety_override, timestamp_utc, mono_elapsed) "
+            "VALUES ('fb-atom-1', 'rs1', 0, 'adaptive', 'adaptive', '1.0', 0.3, 0.5, "
+            "'{}', 'ok', 0, ?, 0.0)",
+            (ts.isoformat(),),
+        )
+        await writer.publish(RuntimeEvent("feedback_recorded", "rs1", {"feedback_id": "fb-atom-1"}, ts))
+        await outbox_db.commit()
+
+        fb = await (await outbox_db.execute(
+            "SELECT feedback_record_id FROM feedback_records WHERE feedback_record_id = 'fb-atom-1'"
+        )).fetchone()
+        assert fb is not None
+        assert await count_pending(outbox_db) >= 1
+
+        consumer = CollectingOutboxConsumer()
+        await dispatch_pending(outbox_db, consumer)
+
+        await outbox_db.execute(
+            "INSERT INTO feedback_records "
+            "(feedback_record_id, research_session_id, window_index, "
+            "condition, policy_id, policy_version, pid_value, iqi_value, "
+            "scene_params_json, reason_code, safety_override, timestamp_utc, mono_elapsed) "
+            "VALUES ('fb-atom-2', 'rs1', 1, 'adaptive', 'adaptive', '1.0', 0.3, 0.5, "
+            "'{}', 'ok', 0, ?, 0.0)",
+            (ts.isoformat(),),
+        )
+        await writer.publish(RuntimeEvent("feedback_recorded", "rs1", {"feedback_id": "fb-atom-2"}, ts))
+        await outbox_db.rollback()
+
+        fb2 = await (await outbox_db.execute(
+            "SELECT feedback_record_id FROM feedback_records WHERE feedback_record_id = 'fb-atom-2'"
+        )).fetchone()
+        assert fb2 is None
+        pending_after = await count_pending(outbox_db)
+        assert pending_after == 0
 
 
 class TestProductionOutbox:
     async def test_orchestrator_writes_outbox_events(self):
-        """Production orchestrator uses PersistentOutboxWriter, not CollectingEventSink."""
+        """Production orchestrator uses PersistentOutboxWriter inline."""
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = os.path.join(tmpdir, "prod_outbox.db")
             db = await aiosqlite.connect(db_path)
