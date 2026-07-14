@@ -32,6 +32,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output", type=str, default=None)
     parser.add_argument("--scenarios", type=str, nargs="*", default=None)
+    parser.add_argument("--persist", action="store_true", help="Persist results to DB")
     args = parser.parse_args()
 
     scenarios = CORE_SCENARIOS
@@ -97,7 +98,38 @@ def main():
         print(f"\nResults saved to: {args.output}")
         print(f"Campaign hash: {campaign_hash(result)}")
 
+    if args.persist:
+        import asyncio
+        asyncio.run(_persist_campaign(result))
+        print("Campaign persisted to DB.")
+
     return 0 if result.overall_pass else 1
+
+
+async def _persist_campaign(result):
+    from app.storage.database import get_db, init_db
+
+    await init_db()
+    db = await get_db()
+    try:
+        await db.execute(
+            """INSERT OR REPLACE INTO simulation_runs
+               (study_id, scenario_id, mode, n_iterations, n_participants, base_seed,
+                status, started_at, completed_at)
+               VALUES (?, 'campaign', 'research', ?, 0, 0, 'completed',
+                       datetime('now'), datetime('now'))""",
+            (result.campaign_id, result.total_replicates),
+        )
+        campaign_json = json.dumps(result.to_dict(), default=str)
+        await db.execute(
+            """INSERT OR REPLACE INTO simulation_summaries
+               (run_id, summary_json)
+               VALUES ((SELECT id FROM simulation_runs WHERE study_id = ?), ?)""",
+            (result.campaign_id, campaign_json),
+        )
+        await db.commit()
+    finally:
+        await db.close()
 
 
 if __name__ == "__main__":
