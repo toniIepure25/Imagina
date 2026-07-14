@@ -43,6 +43,92 @@ def _generate_study_data(n_participants: int, scenario, seed: int) -> list[dict]
     return data
 
 
+class TestContrastRecovery:
+    """Verify GEE coefficient equals adjusted adaptive mean − adjusted yoked mean."""
+
+    @staticmethod
+    def _make_known_means_data(
+        adaptive_mean: float,
+        fixed_mean: float,
+        yoked_mean: float,
+        n_per_condition: int = 100,
+        noise_sd: float = 0.001,
+        seed: int = 42,
+    ) -> list[dict]:
+        import random as _rng
+        r = _rng.Random(seed)
+        data: list[dict] = []
+        means = {"adaptive": adaptive_mean, "fixed": fixed_mean, "yoked": yoked_mean}
+        sequences = [
+            ["adaptive", "fixed", "yoked"],
+            ["fixed", "yoked", "adaptive"],
+            ["yoked", "adaptive", "fixed"],
+        ]
+        n_participants = n_per_condition
+        for i in range(n_participants):
+            pid = f"p{i:03d}"
+            seq_idx = i % len(sequences)
+            seq = sequences[seq_idx]
+            for si, cond in enumerate(seq):
+                for ti in range(3):
+                    data.append({
+                        "participant_id": pid,
+                        "condition": cond,
+                        "composite_error": means[cond] + r.gauss(0, noise_sd),
+                        "period": si,
+                        "sequence": seq_idx,
+                        "baseline_precision": 0.5,
+                        "task_family": "feature_reconstruction",
+                        "carryover_indicator": seq[si - 1] if si > 0 else "none",
+                    })
+        return data
+
+    def test_known_means_without_nuisance(self):
+        data = self._make_known_means_data(0.10, 0.20, 0.40)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_primary_analysis(data)
+        assert result.inference_valid
+        assert abs(result.effect_estimate - (-0.30)) < 0.02, (
+            f"adaptive_ind coeff {result.effect_estimate} != expected -0.30"
+        )
+
+    def test_known_means_fixed_vs_yoked(self):
+        data = self._make_known_means_data(0.10, 0.20, 0.40)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            import pandas as pd
+            from statsmodels.genmod.cov_struct import Exchangeable
+            from statsmodels.genmod.families import Gaussian
+            from statsmodels.genmod.generalized_estimating_equations import GEE
+            from app.research.statistics.confirmatory import _prepare_df, GEE_FORMULA
+            df = _prepare_df(data)
+            model = GEE.from_formula(GEE_FORMULA, groups=df["participant_id"],
+                                     data=df, family=Gaussian(), cov_struct=Exchangeable())
+            res = model.fit(maxiter=100, cov_type="bias_reduced")
+            fixed_coeff = float(res.params["fixed_ind"])
+        assert abs(fixed_coeff - (-0.20)) < 0.02, (
+            f"fixed_ind coeff {fixed_coeff} != expected -0.20"
+        )
+
+    def test_rank_deficiency_invalidates(self):
+        data = self._make_known_means_data(0.10, 0.20, 0.40, n_per_condition=6)
+        for row in data:
+            row["baseline_precision"] = row["composite_error"] * 2
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_primary_analysis(data)
+        if result.rank_deficient:
+            assert not result.inference_valid
+
+    def test_estimand_id_matches_oracle(self):
+        data = self._make_known_means_data(0.10, 0.20, 0.40)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = run_primary_analysis(data)
+        assert result.estimand_id == "ate_adaptive_vs_yoked"
+
+
 class TestDesignMatrix:
     def test_build_from_trial_data(self):
         data = _generate_study_data(6, SCENARIO_STRICT_NULL, 42)
@@ -76,7 +162,7 @@ class TestGEEPrimaryEstimator:
             result = run_primary_analysis(data)
         assert result.n_clusters >= 12
         assert result.cluster_size_min > 0
-        assert result.covariance_type == "robust_sandwich"
+        assert result.covariance_type == "bias_reduced_sandwich"
 
     def test_null_no_significant_effect(self):
         data = _generate_study_data(24, SCENARIO_STRICT_NULL, 42)

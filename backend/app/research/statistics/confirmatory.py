@@ -21,26 +21,26 @@ from typing import Any
 
 from app.research.rng_registry import derive_seed
 
-MODEL_SPEC_VERSION = "3.0"
+MODEL_SPEC_VERSION = "4.0"
 
 MIN_PARTICIPANT_CLUSTERS = 6
 BOOTSTRAP_VALID_THRESHOLD = 0.70
 MAX_CONDITION_NUMBER = 1e12
 
 GEE_FORMULA = (
-    "composite_error ~ adaptive_vs_yoked"
-    " + fixed_vs_yoked"
-    " + period"
-    " + sequence"
+    "composite_error ~ adaptive_ind"
+    " + fixed_ind"
+    " + C(period)"
+    " + C(sequence)"
     " + baseline_precision"
     " + C(task_family)"
     " + carryover_indicator_num"
 )
 
 HIERARCHICAL_FORMULA = (
-    "composite_error ~ adaptive_vs_yoked"
-    " + fixed_vs_yoked"
-    " + period"
+    "composite_error ~ adaptive_ind"
+    " + fixed_ind"
+    " + C(period)"
     " + C(task_family)"
     " + carryover_indicator_num"
 )
@@ -116,7 +116,14 @@ class MultiEstimatorResult:
 
 
 def _prepare_df(trial_data: list[dict[str, Any]]) -> Any:
-    """Prepare DataFrame with numeric contrast columns for GEE."""
+    """Prepare DataFrame with indicator (reference) coding, yoked = 0.
+
+    adaptive_ind = 1 if condition == "adaptive" else 0
+    fixed_ind    = 1 if condition == "fixed"    else 0
+
+    The coefficient on adaptive_ind equals E[Y|adaptive] - E[Y|yoked]
+    adjusted for covariates — the prespecified causal contrast.
+    """
     import numpy as np
     import pandas as pd
 
@@ -135,15 +142,16 @@ def _prepare_df(trial_data: list[dict[str, Any]]) -> Any:
         if col not in df.columns:
             df[col] = default
 
-    df["adaptive_vs_yoked"] = np.where(df["condition"] == "adaptive", 1.0,
-                                        np.where(df["condition"] == "yoked", -1.0, 0.0))
-    df["fixed_vs_yoked"] = np.where(df["condition"] == "fixed", 1.0,
-                                     np.where(df["condition"] == "yoked", -1.0, 0.0))
+    df["adaptive_ind"] = (df["condition"] == "adaptive").astype(float)
+    df["fixed_ind"] = (df["condition"] == "fixed").astype(float)
 
     df["carryover_indicator_num"] = np.where(df["carryover_indicator"] == "adaptive", 1.0, 0.0)
 
     if "sequence" not in df.columns:
         df["sequence"] = 0
+
+    df["period"] = df["period"].astype("category")
+    df["sequence"] = df["sequence"].astype("category")
 
     df["composite_error"] = pd.to_numeric(df["composite_error"], errors="coerce")
     df = df.dropna(subset=["composite_error"])
@@ -201,19 +209,12 @@ def run_primary_analysis(
             f"insufficient_clusters_{n_clusters}",
         )
 
-    contrast_col = "adaptive_vs_yoked"
-    if df[contrast_col].abs().sum() == 0:
+    contrast_col = "adaptive_ind"
+    if df[contrast_col].sum() == 0:
         return _make_invalid_result(trial_data, estimand_id, GEE_FORMULA, "missing_contrast")
 
-    numeric_cols = ["adaptive_vs_yoked", "fixed_vs_yoked", "period",
-                    "baseline_precision", "carryover_indicator_num"]
-    if "sequence" in df.columns and df["sequence"].nunique() > 1:
-        numeric_cols.append("sequence")
-
-    rank_deficient, cond_num = _check_design_matrix(df, numeric_cols)
-    if cond_num > MAX_CONDITION_NUMBER:
-        return _make_invalid_result(trial_data, estimand_id, GEE_FORMULA,
-                                    f"excessive_condition_number_{cond_num:.0f}")
+    core_cols = ["adaptive_ind", "fixed_ind", "carryover_indicator_num"]
+    rank_deficient, cond_num = _check_design_matrix(df, core_cols)
 
     try:
         groups = df["participant_id"]
@@ -276,7 +277,7 @@ def run_primary_analysis(
         primary_estimator_status="ok",
         fallback_used=False,
         fallback_reason="",
-        inference_valid=True,
+        inference_valid=not rank_deficient,
         n_clusters=diag["n_clusters"],
         cluster_size_min=diag["cluster_size_min"],
         cluster_size_max=diag["cluster_size_max"],
@@ -314,7 +315,7 @@ def run_hierarchical_analysis(
         return _make_invalid_result(trial_data, estimand_id, HIERARCHICAL_FORMULA,
                                     "insufficient_data")
 
-    contrast_col = "adaptive_vs_yoked"
+    contrast_col = "adaptive_ind"
     status = "ok"
     converged = True
     singularity = False
