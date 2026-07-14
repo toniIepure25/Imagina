@@ -566,4 +566,80 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-14 — PR Gate R0*
+## ADR-031: Objective Imagery Reconstruction Error as Primary Endpoint
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Previous primary outcome was self-reported vividness (subjective, Likert scale). This does not distinguish genuine imagery improvement from demand characteristics, expectancy, or response bias.
+
+**Decision:** The primary endpoint is a standardized multi-feature objective imagery reconstruction error (composite of orientation, hue, spatial frequency, position, and size errors). Subjective vividness is retained as a secondary construct only.
+
+**Consequences:**
+- The system can detect genuine imagery improvement vs. subjective-only change.
+- Falsification tests can verify that the system correctly handles subjective-only scenarios.
+- No vividness, confidence, or effort measure is labeled as objective.
+
+---
+
+## ADR-032: Separate Objective and Subjective Constructs
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Previous design treated vividness as the primary measure, conflating objective and subjective outcomes.
+
+**Decision:** Six constructs are explicitly separated: imagery precision (objective), imagery control (objective), imagery stability (objective), metacognitive calibration (objective), subjective vividness (subjective secondary), perceptual/motor control (negative control).
+
+**Consequences:**
+- Endpoint registry enforces objective/subjective classification.
+- Analysis reports clearly label which results are confirmatory vs. exploratory.
+- Subjective-objective dissociation is a testable hypothesis.
+
+---
+
+## ADR-033: Simulation-Based Power Analysis
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Previous power analysis used formula-based approximation (F-test) which cannot account for the complexity of the within-subjects crossover design with hierarchical data.
+
+**Decision:** Power analysis uses full Monte Carlo simulation: generate complete studies with the cognitive agent model, run the exact confirmatory analysis, and record operating characteristics across multiple scenarios.
+
+**Consequences:**
+- Power estimates account for actual model complexity, missingness, and design features.
+- Type-I error is directly validated under strict null scenarios.
+- Monte Carlo SE is reported; power values are not presented as exact.
+- Multiple adversarial scenarios (practice-only, subjective-only, carryover) are tested.
+
+---
+
+## ADR-034: Williams Sequences for Counterbalancing
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Initial simulation used fixed condition ordering, creating systematic confounding between condition and session index.
+
+**Decision:** Use balanced Williams sequences (6 orders for 3 conditions) to counterbalance conditions across participants. Each condition appears equally in each period.
+
+**Consequences:**
+- Eliminates systematic condition-period confounding.
+- Type-I error under null is controlled.
+- Carryover effects can be estimated.
+
+---
+
+## ADR-035: LeakageGuard for Adaptation/Evaluation Separation
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Adaptive feedback policies could potentially access confirmatory endpoint values from the same trial, creating circular reasoning where the outcome being evaluated is influenced by the evaluation itself.
+
+**Decision:** `LeakageGuard` class automatically detects and blocks reserved fields (composite_endpoint_score, component_errors, etc.) from being passed to the adaptive policy. Automated tests verify leakage prevention.
+
+**Consequences:**
+- Objective evaluation outcomes are structurally separated from online adaptation signals.
+- Leakage attempts are detected and can be reported.
+- The separation is testable and falsifiable.
+
+---
+
+*Last updated: 2026-07-14 — Scientific Measurement Gate C0*

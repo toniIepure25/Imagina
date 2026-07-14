@@ -1,15 +1,16 @@
 # IMAGINA Preregistration Template
 
-> **Status:** INCOMPLETE DRAFT — not ready for submission.
+> **Status:** SYNTHETIC PROTOCOL FROZEN — preregistration-ready for synthetic validation.
 > **Target registry:** OSF Preregistrations or AsPredicted.
 >
 > **Critical disclaimers:**
-> - Primary outcome measure is NOT finalized.
-> - No objective behavioral endpoint has been implemented.
-> - Sample size is PROVISIONAL (based on estimated effect sizes, not empirical data).
-> - No data collection is authorized.
-> - Analysis code is specification only, not confirmatory.
-> - Block randomization described below has been replaced by a balanced Williams crossover allocator.
+> - Primary outcome: objective imagery reconstruction error (composite, frozen).
+> - Objective behavioral task battery implemented (4 task families, Gate C0).
+> - Sample size estimated via simulation-based power analysis (Monte Carlo).
+> - No human data collection is authorized.
+> - Confirmatory analysis is executable on synthetic data (statsmodels MixedLM).
+> - Counterbalancing uses balanced Williams crossover sequences.
+> - All validation is synthetic-only; no human construct validity is established.
 
 ---
 
@@ -24,22 +25,38 @@ Closed-Loop Adaptive Visual Feedback for Mental Imagery Training: A Within-Subje
 ### Research Questions
 
 **Primary:**
-Does closed-loop adaptive visual feedback produce measurable improvements in voluntary visual mental-imagery vividness beyond practice effects, fixed feedback, and non-contingent feedback?
+Does adaptive feedback improve objective visual-imagery precision and control beyond fixed feedback, yoked feedback, practice effects, expectancy effects, fatigue, and period/order effects?
 
 **Secondary:**
-1. Do proxy metrics (IQI, PID) show convergent validity with self-reported vividness?
-2. Does baseline imagery ability (VVIQ-2) moderate the training effect?
-3. What is the relationship between perceived contingency and actual feedback contingency?
+1. Does adaptive feedback improve imagery control (manipulation accuracy)?
+2. Does adaptive feedback improve imagery stability (delayed reconstruction)?
+3. Is there a dissociation between objective and subjective improvement?
+4. Do negative controls (perceptual matching) remain stable?
 
 ### Hypotheses
 
-**H1 (Primary):** Participants in the adaptive condition will show greater improvement in self-reported vividness across sessions compared to the fixed-feedback and yoked-feedback conditions.
+**H1 (Primary):** Adaptive feedback produces lower standardized objective imagery reconstruction error than yoked feedback (E[Y(adaptive) - Y(yoked)] < 0).
 
-**H2:** The adaptive-vs-yoked contrast will be larger than the adaptive-vs-fixed contrast, indicating that contingency (not mere feedback presence) drives improvement.
+**H2 (Key Secondary):** Adaptive vs. fixed contrast is present but smaller than adaptive vs. yoked, indicating contingency drives improvement.
 
-**H3 (Exploratory):** IQI and PID will show moderate correlation with self-reported vividness (|r| > 0.3), supporting convergent validity.
+**H3 (Key Secondary):** Imagery manipulation accuracy improves more under adaptive than yoked.
 
-**H4 (Exploratory):** Participants with lower baseline VVIQ-2 scores will show larger improvements than those with higher scores.
+**H4 (Exploratory):** Subjective vividness improvement may occur without corresponding objective improvement.
+
+**H5 (Negative Control):** Perceptual matching error does not show condition-specific improvement.
+
+### Falsification Criteria
+
+The scientific hypothesis is considered unsupported when:
+- Adaptive vs. yoked objective effect is absent
+- Only subjective outcomes improve
+- Effect is explained by perceptual negative control
+- Effect disappears under carryover sensitivity
+- Type-I error is inflated
+- Endpoint reliability is inadequate
+- Model convergence is unacceptable
+- Effect is driven by a small number of participants
+- Result exists only in exploratory endpoints
 
 ---
 
@@ -87,61 +104,71 @@ Data collection continues until the target N is reached or the study period ends
 Feedback condition (adaptive, fixed, yoked) — within subjects.
 
 ### Primary Dependent Variable
-Self-reported trial-level vividness (1-7 Likert scale).
+Standardized multi-feature objective imagery reconstruction error (composite). Range 0–1, lower is better.
 
-### Secondary Dependent Variables
-- VVIQ-2 change score (pre/post)
-- Perceived contingency rating (1-7 Likert)
-- Response time for imagery formation
-- Post-session fatigue and discomfort ratings
+### Key Secondary Dependent Variables
+- Feature-specific reconstruction errors (orientation, hue, spatial frequency, position, size)
+- Imagery manipulation accuracy
+- Delayed stability degradation
+- Metacognitive calibration (confidence-resolution slope)
 
-### Exploratory Variables (not outcomes)
-- IQI (Imagery Quality Index) — experimental proxy, 0-1
-- PID (Perception-Imagination Distance) — experimental proxy, 0-1
-- Behavioral consistency — 0-1
-- Safety events count
+### Subjective Secondary Variables (not primary outcomes)
+- Self-reported trial-level vividness (1-7 Likert)
+- Self-reported effort (1-7 Likert)
+
+### Negative Control Variables
+- Perceptual matching error (target visible)
+- Simple motor response latency
 
 ### Covariates
-- Pre-study VVIQ-2 score (baseline imagery ability)
-- Session order (counterbalancing check)
+- Baseline imagery precision (calibration)
+- Period (counterbalancing position)
+- Session index (within-condition progression)
+- Task family
 
 ---
 
 ## Analysis Plan
 
 ### Primary Analysis
-Linear Mixed-Effects Model (LMM):
+Trial-level hierarchical linear mixed-effects model (Python statsmodels MixedLM):
 
 ```
-vividness ~ condition * session + (1 + session | participant_id)
+objective_error ~ condition + period + session_index + baseline_precision + task_family
+                + (1 | participant)
 ```
 
-With pre-study VVIQ-2 as covariate and session order as a nuisance variable.
+### Primary Contrast
+Adaptive vs. Yoked (one test, negative effect = adaptive better).
 
-### Planned Contrasts
-1. Adaptive vs. Fixed (tests contingency beyond practice)
-2. Adaptive vs. Yoked (tests contingency beyond non-contingent feedback)
-3. Fixed vs. Yoked (tests feedback presence vs. sham)
+### Key Secondary Contrasts
+Holm-Bonferroni corrected:
+1. Adaptive vs. Fixed
+2. Fixed vs. Yoked
 
-Correction: Holm-Bonferroni for 3 contrasts.
-
-### Effect Size
-Cohen's d computed from LMM contrast estimates.
+### Sensitivity Analyses
+1. Model without carryover indicator
+2. Model with carryover indicator
+3. Complete-case only (exclude incomplete participants)
+4. Negative-control outcome analysis (perceptual matching)
+5. Subjective-only analysis (labeled secondary)
 
 ### Missing Data
 Full Information Maximum Likelihood (FIML) within the LMM framework.
+Complete-case sensitivity analysis as robustness check.
 
-### Assumption Checks
-- Residual normality (Q-Q plot)
-- Homoscedasticity (residual vs. fitted)
-- Random effects normality
+### Calibration
+3-down/1-up transformed staircase, condition-independent, frozen before experimental sessions.
 
-### Exploratory Analyses
-1. Convergent validity of IQI/PID with vividness (Pearson correlation)
-2. VVIQ-2 moderation (condition x VVIQ-2 interaction)
-3. Perceived contingency by condition (blinding check)
-4. Incremental validity (hierarchical model comparison)
-5. Group-aware analysis (median split by VVIQ-2, exploratory only)
+### Counterbalancing
+Balanced Williams crossover sequences (6 orders for 3 conditions).
+
+### Stopping Rule
+Data collection continues until target N (simulation-derived) is reached.
+
+### Sample Size
+Determined by simulation-based power analysis (Monte Carlo, not formula).
+See `docs/science/simulation_report.md`.
 
 ---
 

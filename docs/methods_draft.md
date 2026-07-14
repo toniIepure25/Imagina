@@ -1,15 +1,16 @@
 # IMAGINA Methods Section — Draft
 
-> **Status:** INCOMPLETE SKELETON — not ready for submission or review.
+> **Status:** DRAFT — synthetic validation complete, not ready for submission.
 > **Not for distribution.** This is a working draft to guide implementation.
 >
 > **Critical disclaimers:**
-> - The imagery task described is self-report only; no objective behavioral endpoint exists.
-> - The LMM analysis is a specification string, not executable confirmatory code.
+> - The primary outcome is now objective imagery reconstruction error (Gate C0).
+> - A confirmatory hierarchical analysis is executable on synthetic data (statsmodels MixedLM).
 > - Biosignal acquisition foundations exist (ring buffer, marker sync) but real EEG collection is not implemented.
-> - No synthetic end-to-end experiment has been executed.
+> - Full synthetic end-to-end experiments have been executed with falsification testing.
 > - No human data collection is authorized.
-> - Randomization uses a balanced Williams crossover design (6 sequences), not simple Latin square.
+> - Randomization uses a balanced Williams crossover design (6 sequences).
+> - All results are synthetic-only; no human construct validity is established.
 
 ---
 
@@ -74,18 +75,25 @@ The safety monitor automatically checked for estimated fatigue (threshold: 0.80)
 ## Data Analysis
 
 ### Primary Analysis
-A linear mixed-effects model (LMM) was fitted using [R lme4 / Python statsmodels]:
+
+**Primary endpoint:** Standardized multi-feature objective imagery reconstruction error (composite of orientation, hue, spatial frequency, position, and size errors). Lower is better. See `docs/science/objective_measurement_spec.md`.
+
+**Primary estimand:** Within-participant ATE of adaptive vs. yoked on objective reconstruction error.
+
+A trial-level hierarchical linear mixed-effects model was fitted using Python statsmodels MixedLM:
 
 ```
-vividness ~ condition * session + pre_vviq2 + session_order + (1 + session | participant_id)
+objective_error ~ condition + period + session_index + baseline_precision + task_family
+                + (1 | participant)
 ```
 
-Planned contrasts (Holm-Bonferroni corrected):
+**Primary contrast:** Adaptive vs. Yoked (one test).
+
+**Key secondary contrasts** (Holm-Bonferroni corrected):
 1. Adaptive vs. Fixed
-2. Adaptive vs. Yoked
-3. Fixed vs. Yoked
+2. Fixed vs. Yoked
 
-Effect sizes: Cohen's d from contrast estimates.
+Subjective vividness is analyzed as a secondary endpoint only.
 
 ### Blinding Check
 Perceived contingency ratings were compared across conditions to assess blinding success.

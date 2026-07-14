@@ -272,4 +272,34 @@
 
 ---
 
-*Last updated: 2026-07-13 — Merge Gate B.1*
+## RISK-028: Synthetic Cognitive Agent Model Validity
+
+**Risk:** The cognitive agent model generates synthetic responses using mathematical distributions and assumed correlations between constructs. These assumptions may not reflect actual human cognitive architecture.
+**Impact:** High — simulation-based power and design recommendations are only as valid as the generative model.
+**Mitigation:** Model parameters are transparent and versioned. Multiple adversarial scenarios test robustness. All results are labeled synthetic-only. Human pilot data is required to validate model assumptions.
+**Owner:** TBD
+**Status:** Active — by design. No human validation performed.
+
+---
+
+## RISK-029: Psychometric Properties Not Established
+
+**Risk:** The objective task battery (feature reconstruction, manipulation, delayed imagery, perceptual control) has no established human psychometric properties (reliability, validity, sensitivity).
+**Impact:** High — human response distributions may differ from synthetic model assumptions.
+**Mitigation:** Calibration procedure adapts difficulty. Split-half and test-retest reliability are estimated in simulation. Human pilot testing is planned before full study.
+**Owner:** TBD
+**Status:** Active — synthetic validation only.
+
+---
+
+## RISK-030: Type-I Error Control Under Monte Carlo Uncertainty
+
+**Risk:** With small simulation iteration counts (fast mode: 20 iterations), Monte Carlo SE is large and Type-I error estimates have wide confidence intervals. CI checks use relaxed thresholds to avoid false failures.
+**Impact:** Medium — actual Type-I error control can only be established with larger iteration counts (research mode).
+**Mitigation:** CI uses fast mode with relaxed bounds. Research mode (1000+ iterations) is available for thorough validation. Monte Carlo SE is always reported alongside point estimates.
+**Owner:** TBD
+**Status:** Accepted — monitoring needed in research mode.
+
+---
+
+*Last updated: 2026-07-14 — Scientific Measurement Gate C0*

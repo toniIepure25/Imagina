@@ -38,13 +38,31 @@ Status: **Not started**
 - Synthetic export with complete provenance metadata.
 - Deterministic replay from seed and manifest.
 
-### Phase C — Objective Behavioral Validation (future work)
+### Gate C0 — Scientific Measurement and Causal Validation (completed)
+
+Status: **Complete (synthetic validation)**
+
+- Objective imagery reconstruction error as primary endpoint (frozen, versioned).
+- Four-family psychophysics task battery (reconstruction, manipulation, delayed, perceptual control).
+- Psychometric calibration (3-down/1-up staircase, condition-independent).
+- Hierarchical cognitive agent model for scientific simulation.
+- Causal estimands and identification assumptions formalized.
+- Confirmatory hierarchical analysis executable (statsmodels MixedLM).
+- Simulation-based power/Type-I error validation across 9+ scenarios.
+- Measurement reliability and construct-validity diagnostics.
+- Objective tasks integrated into persistent runtime with leakage prevention.
+- Falsification test suite (null, subjective-only, practice-only, carryover, leakage).
+- Scientific workbench UI (measurement, simulation, analysis pages).
+- Preregistration-ready synthetic protocol frozen.
+- **All validation is synthetic-only. No human construct validity established.**
+
+### Phase C.1 — Objective Behavioral Validation (future work)
 
 Status: **Not started**
 
-- Implement an objective behavioral endpoint (e.g., binocular rivalry, psychophysics).
-- Validate imagery self-report against objective measures.
-- Separate scientific review for behavioral task design.
+- Validate psychophysics task battery with human participants.
+- Establish human psychometric properties (reliability, validity).
+- Pilot test with N=3-5 before full study.
 
 ### Phase D — Real Biosignal Integration (future work)
 

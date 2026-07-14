@@ -2369,6 +2369,78 @@ branch: research/scientific-platform
 
 ---
 
+## 2026-07-14 — Scientific Measurement Gate C0
+
+### Task
+Implement Scientific Measurement Gate C0: Objective Imagery Precision, Causal Estimands and Simulation-Based Validation.
+
+### Goal
+Transform IMAGINA from a synthetic experiment-execution platform into a scientifically testable Cognitive Science research system with objective measurement, causal inference, and simulation-based validation.
+
+### Branch
+`research/scientific-measurement-c0`
+
+### Commits
+1. `fix(science): establish reproducible numerical test environment` — science dependency group, test taxonomy
+2. `feat(measurement): add objective imagery endpoint registry` — 15 endpoints, primary/secondary/control
+3. `feat(psychophysics): implement objective imagery precision battery` — 4 task families, scoring
+4. `feat(psychophysics): add frozen calibration and staircase procedures` — 3-down/1-up staircase
+5. `feat(simulation): add hierarchical cognitive agent model` — 14 latent constructs, 9+ scenarios
+6. `feat(causal): formalize estimands and identification assumptions` — primary/secondary estimands
+7. `feat(statistics): implement confirmatory hierarchical endpoint analysis` — MixedLM, multiplicity, sensitivity
+8. `feat(simulation): add operating-characteristic validation` — Monte Carlo power/Type-I error
+9. `feat(validity): add reliability and construct-validity diagnostics` — split-half, test-retest, convergent
+10. `feat(runtime): integrate objective measurement sessions` — LeakageGuard, manifest fields
+11. `feat(research-ui): add measurement and simulation workbench` — 3 pages
+12. `test(science): add causal and measurement falsification suite` — 12 falsification tests
+13. `docs(science): freeze synthetic measurement protocol and analysis specification` — 5 science docs
+14. `ci(science): enforce objective measurement and simulation checks` — CI jobs
+
+### Files Changed
+- `backend/pyproject.toml` — science dependency group
+- `backend/app/research/objective_endpoints.py` — endpoint registry
+- `backend/app/research/psychophysics/` — task battery (6 modules)
+- `backend/app/research/cognitive_agent.py` — agent model
+- `backend/app/research/estimands.py` — causal estimands
+- `backend/app/research/statistics/` — analysis package (5 modules)
+- `backend/app/research/design_simulation.py` — power simulation
+- `backend/app/research/measurement_validity.py` — validity diagnostics
+- `backend/app/research/objective_runtime.py` — runtime integration
+- `backend/app/tests/test_objective_endpoints.py` — endpoint tests
+- `backend/app/tests/test_psychophysics.py` — task battery tests
+- `backend/app/tests/test_calibration.py` — calibration tests
+- `backend/app/tests/test_cognitive_agent.py` — agent model tests
+- `backend/app/tests/test_estimands.py` — estimand tests
+- `backend/app/tests/test_statistics.py` — statistics tests
+- `backend/app/tests/test_design_simulation.py` — simulation tests
+- `backend/app/tests/test_measurement_validity.py` — validity tests
+- `backend/app/tests/test_objective_runtime.py` — runtime tests
+- `backend/app/tests/test_falsification.py` — falsification tests
+- `frontend/app/research/measurement/page.tsx` — measurement workbench
+- `frontend/app/research/design-simulation/page.tsx` — simulation workbench
+- `frontend/app/research/analysis/page.tsx` — analysis workbench
+- `docs/science/` — 5 science documentation files
+- `docs/methods_draft.md` — updated primary endpoint
+- `docs/preregistration.md` — frozen synthetic protocol
+- `docs/reproducibility.md` — updated analysis pipeline
+- `docs/roadmap.md` — Gate C0 completed
+
+### Decisions Made
+- ADR-031: Objective imagery reconstruction error as primary endpoint
+- ADR-032: Separate objective/subjective constructs
+- ADR-033: Simulation-based power analysis
+- ADR-034: Williams sequences for counterbalancing
+- ADR-035: LeakageGuard for adaptation/evaluation separation
+
+### Status
+```
+gate: C0
+status: IN_PROGRESS
+branch: research/scientific-measurement-c0
+```
+
+---
+
 ## Template
 
 Use this template for future entries:

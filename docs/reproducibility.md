@@ -56,9 +56,19 @@ See `docs/preregistration.md` for the study preregistration template. Complete b
 
 ### Analysis Pipeline
 
-The LMM analysis is a **specification string only** (R lme4 formula format) in `app/research/analysis_pipeline.py:lmm_specification()`. It is not an executable fitted analysis. The synthetic dataset can be used for schema validation but does not contain condition effects suitable for confirmatory analysis.
+The confirmatory hierarchical analysis is **executable** on synthetic data using `backend/app/research/statistics/confirmatory.py` (Python statsmodels MixedLM). The primary model formula is:
 
-**Status:** scaffold/specification only. Executable confirmatory analysis requires: finalized primary outcome, objective behavioral endpoint, and real participant data.
+```
+objective_error ~ condition + period + session_index + baseline_precision + task_family + (1 | participant)
+```
+
+The analysis pipeline includes:
+- Design matrix construction (`statistics/design_matrix.py`)
+- Primary confirmatory model with fallback (`statistics/confirmatory.py`)
+- Holm-Bonferroni multiplicity correction (`statistics/multiplicity.py`)
+- Sensitivity analyses (`statistics/sensitivity.py`)
+
+**Status:** Executable on synthetic data. Human data analysis requires: ethics approval, human data collection, and validated psychometric properties.
 
 ### Environment Reproducibility
 
