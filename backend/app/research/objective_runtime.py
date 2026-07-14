@@ -198,7 +198,11 @@ def execute_objective_session(
     seed: int,
     prev_condition: str | None = None,
 ) -> ObjectiveSessionResult:
-    """Execute an objective task block through the persistent runtime."""
+    """Execute an objective task block through the persistent runtime.
+
+    Each trial is checked for leakage BEFORE finalizing. If an
+    OutcomeLeakageError is raised, no trial result is recorded.
+    """
     result = ObjectiveSessionResult(
         session_id=session_id,
         participant_id=participant_id,
@@ -238,8 +242,6 @@ def execute_objective_session(
         comp_errors = resp.get("component_errors", {})
         composite = resp.get("composite_error", 0.0)
 
-        leakage_guard.finalize_trial(trial_id)
-
         policy_context = {"condition": condition, "period": period, "session_id": session_id}
         violations = leakage_guard.check_policy_input(policy_context)
         audit = LeakageAuditRecord(
@@ -249,12 +251,15 @@ def execute_objective_session(
             violations=violations,
             passed=len(violations) == 0,
         )
-        result.leakage_audit.append(audit)
 
         if violations:
+            result.leakage_audit.append(audit)
             raise OutcomeLeakageError(
                 f"Objective outcomes leaked into policy context: {violations}"
             )
+
+        leakage_guard.finalize_trial(trial_id)
+        result.leakage_audit.append(audit)
 
         trial_result = ObjectiveTrialResult(
             trial_id=trial_id,
@@ -270,6 +275,158 @@ def execute_objective_session(
             endpoint_registry_hash=reg_hash,
         )
         result.trials.append(trial_result)
+
+    content = json.dumps(
+        [t.to_dict() for t in result.trials],
+        sort_keys=True, separators=(",", ":"), default=str,
+    )
+    result.content_hash = hashlib.sha256(content.encode()).hexdigest()
+    result.manifest_hash = compute_objective_manifest_hash(manifest_objective_fields())
+
+    return result
+
+
+async def execute_objective_session_persistent(
+    db,
+    session_id: str,
+    participant_id: str,
+    condition: str,
+    period: int,
+    trial_specs: list[dict[str, Any]],
+    response_provider: Any,
+    leakage_guard: LeakageGuard,
+    seed: int,
+    prev_condition: str | None = None,
+) -> ObjectiveSessionResult:
+    """Execute objective tasks with transactional DB persistence.
+
+    Each trial is persisted atomically: spec, response, scores, audit,
+    and transition in one transaction. On leakage, the transaction
+    rolls back leaving no rows.
+    """
+    reg_hash = registry_hash()
+    result = ObjectiveSessionResult(
+        session_id=session_id,
+        participant_id=participant_id,
+        condition=condition,
+        period=period,
+    )
+
+    block_cursor = await db.execute(
+        """INSERT INTO objective_task_blocks
+           (study_id, session_id, participant_id, period, condition,
+            task_family, block_index, schedule_hash)
+           VALUES (?, ?, ?, ?, ?, 'mixed', 0, ?)""",
+        (session_id, session_id, participant_id, period, condition,
+         hashlib.sha256(json.dumps(trial_specs, sort_keys=True).encode()).hexdigest()[:16]),
+    )
+    block_id = block_cursor.lastrowid
+    await db.commit()
+
+    for spec in trial_specs:
+        trial_id = f"{session_id}-t{spec['trial_index']}-{spec['task_family']}"
+        target = StimulusSpec(
+            orientation_deg=spec.get("target_orientation", 45),
+            hue_deg=spec.get("target_hue", 120),
+            spatial_frequency_cpd=spec.get("target_sf", 3.0),
+            position_x=spec.get("target_pos_x", 500),
+            position_y=spec.get("target_pos_y", 400),
+            size=spec.get("target_size", 50),
+        )
+
+        trial_seed = derive_seed(seed, "simulation",
+                                  participant_id=participant_id,
+                                  session_index=period,
+                                  trial_index=spec["trial_index"])
+
+        resp = response_provider.generate_response(
+            target=target, expected=target, condition=condition,
+            session_index=period, trial_index=spec["trial_index"],
+            is_perceptual_control=spec.get("is_perceptual_control", False),
+            seed=trial_seed, delay_s=spec.get("delay_s", 0.0),
+            prev_condition=prev_condition,
+        )
+
+        comp_errors = resp.get("component_errors", {})
+        composite = resp.get("composite_error", 0.0)
+
+        policy_context = {"condition": condition, "period": period, "session_id": session_id}
+        violations = leakage_guard.check_policy_input(policy_context)
+        audit = LeakageAuditRecord(
+            trial_id=trial_id,
+            policy_input_fields=list(policy_context.keys()),
+            forbidden_fields_checked=list(leakage_guard._reserved_fields),
+            violations=violations,
+            passed=len(violations) == 0,
+        )
+
+        if violations:
+            await db.rollback()
+            result.leakage_audit.append(audit)
+            raise OutcomeLeakageError(
+                f"Leakage detected — transaction rolled back: {violations}"
+            )
+
+        spec_cursor = await db.execute(
+            """INSERT INTO objective_trial_specs
+               (block_id, trial_index, task_family, target_orientation,
+                target_hue, target_sf, target_pos_x, target_pos_y,
+                target_size, delay_s, is_perceptual_control)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (block_id, spec["trial_index"], spec["task_family"],
+             target.orientation_deg, target.hue_deg, target.spatial_frequency_cpd,
+             target.position_x, target.position_y, target.size,
+             spec.get("delay_s", 0.0), int(spec.get("is_perceptual_control", False))),
+        )
+        trial_spec_id = spec_cursor.lastrowid
+
+        r = resp.get("response", {})
+        await db.execute(
+            """INSERT INTO objective_trial_responses
+               (trial_spec_id, response_orientation, response_hue,
+                response_sf, response_pos_x, response_pos_y,
+                response_size, response_latency_ms, confidence,
+                vividness, effort)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (trial_spec_id,
+             r.get("orientation_deg", 0), r.get("hue_deg", 0),
+             r.get("spatial_frequency_cpd", 0), r.get("position_x", 0),
+             r.get("position_y", 0), r.get("size", 0),
+             resp.get("latency_ms", 0), resp.get("confidence", 0),
+             resp.get("vividness", 0), resp.get("effort", 0)),
+        )
+
+        await db.execute(
+            """INSERT INTO objective_trial_scores
+               (trial_spec_id, scoring_version, endpoint_registry_hash,
+                orientation_error, hue_error, sf_error, position_error,
+                size_error, composite_error)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (trial_spec_id, SCORING_VERSION, reg_hash,
+             comp_errors.get("orientation", 0), comp_errors.get("hue", 0),
+             comp_errors.get("spatial_frequency", 0), comp_errors.get("position", 0),
+             comp_errors.get("size", 0), composite),
+        )
+
+        leakage_guard.finalize_trial(trial_id)
+        result.leakage_audit.append(audit)
+
+        trial_result = ObjectiveTrialResult(
+            trial_id=trial_id,
+            task_family=spec["task_family"],
+            target=target.to_dict(),
+            response=r,
+            component_errors=comp_errors,
+            composite_error=composite,
+            confidence=resp.get("confidence", 0),
+            vividness=resp.get("vividness", 0),
+            effort=resp.get("effort", 0),
+            latency_ms=resp.get("latency_ms", 0),
+            endpoint_registry_hash=reg_hash,
+        )
+        result.trials.append(trial_result)
+
+    await db.commit()
 
     content = json.dumps(
         [t.to_dict() for t in result.trials],
