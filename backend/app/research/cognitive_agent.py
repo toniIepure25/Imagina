@@ -28,7 +28,7 @@ from app.research.objective_endpoints import (
 )
 from app.research.psychophysics.common import ResponseSpec, StimulusSpec
 
-MODEL_VERSION = "2.0"
+MODEL_VERSION = "3.0"
 
 
 @dataclass
@@ -83,6 +83,7 @@ class AgentScenario:
     fixed_practice_effect: float = 0.0
     yoked_practice_effect: float = 0.0
     placebo_effect: float = 0.0
+    objective_expectancy_effect: float = 0.0
     expectancy_vividness_effect: float = 0.0
     period_effect_strength: float = 0.0
     carryover_strength: float = 0.0
@@ -195,7 +196,7 @@ def generate_population(
         vivid_bias = rng.gauss(0.0, 0.4)
         learn = max(0.0, rng.gauss(0.05, 0.03))
         fatigue = max(0.0, rng.gauss(0.03, 0.02))
-        expectancy = max(0.0, rng.gauss(scenario.placebo_effect, 0.02))
+        expectancy = _clamp01(rng.gauss(0.5, 0.15))
         treatment = rng.gauss(1.0, 0.2)
         period = rng.gauss(0.0, scenario.period_effect_strength)
         carryover = rng.gauss(0.0, scenario.carryover_strength * 0.1)
@@ -269,7 +270,8 @@ def generate_trial_response(
             effective -= agent.fatigue_susceptibility * trial_index * 0.01
 
         effective += agent.period_effect * session_index * scenario.period_effect_strength
-        effective += agent.expectancy_response * (0.5 if condition == "adaptive" else 0.0)
+        if condition == "adaptive" and scenario.objective_expectancy_effect != 0.0:
+            effective += agent.expectancy_response * scenario.objective_expectancy_effect
 
         if prev_condition == "adaptive" and condition != "adaptive":
             effective += agent.carryover_effect * scenario.carryover_strength
