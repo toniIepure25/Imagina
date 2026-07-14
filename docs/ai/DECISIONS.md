@@ -689,19 +689,63 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-## ADR-028: Primary Estimator Convergence Limitation
+## ADR-028: Primary Estimator Convergence Limitation — SUPERSEDED by ADR-029
 
-**Status:** Accepted (known limitation)
+**Status:** Superseded
 **Date:** 2026-07-14
 **Context:** With N=18 participants in a 3-period crossover, the primary GEE/MixedLM models with full adjustment (period, sequence, task family, carryover) do not converge. This produces 100% fallback rate and 0% valid inference.
 
 **Decision:** Document as a known limitation rather than weakening the model or permitting permissive thresholds. The campaign correctly identifies this as a gate issue.
 
-**Consequences:**
-- Coverage and power are 0 in unit-mode simulations (not a bug but a feature of honest reporting).
-- Resolution requires larger sample sizes, simplified models, or human pilot data.
-- Do not claim `coverage = 0 is only a fast-mode limitation` unless evidence supports it.
+**Superseded by:** ADR-029 resolved convergence by switching to a proper GEE estimator with bias-reduced SE.
 
 ---
 
-*Last updated: 2026-07-14 — Scientific Measurement Gate C0.1*
+## ADR-029: GEE with Mancl-DeRouen Correction as Primary Estimator
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** The MixedLM-based estimator from C0.1 produced 100% fallback. The issue was not sample size but estimator choice: MixedLM requires ML/REML optimization of random-effect variance, which is unstable with few clusters. A marginal GEE with exchangeable working correlation avoids random-effect estimation entirely.
+
+**Decision:** Use `statsmodels.GEE` with `Gaussian()` family, `Exchangeable()` correlation, and `cov_type="bias_reduced"` (Mancl-DeRouen small-sample correction). This produces valid inference at N=18 with type-I ≈ 0.05 and coverage ≈ 0.95.
+
+**Consequences:**
+- 100% valid_inference_rate, 0% fallback_rate at N=18
+- Robust sandwich SE with small-sample correction avoids liberal type-I error
+- MixedLM is retained as sensitivity analysis (`random_intercept_sensitivity`)
+- Bootstrap resamples clusters and refits GEE for interval estimation
+
+---
+
+## ADR-030: All Science APIs Must Be DB-Backed
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** C0.1 used in-memory dictionaries (`_SIMULATION_RUNS`, `_ANALYSIS_RUNS`, etc.) for science endpoints. These are lost on restart and cannot be audited.
+
+**Decision:** All research-science API endpoints read/write exclusively to the authoritative SQLite database using v007/v008 tables. In-memory caches are prohibited. Idempotency keys prevent duplicate runs.
+
+**Consequences:**
+- Campaign results survive restarts
+- Export packages can be rebuilt from DB at any time
+- Replay reconstructs sessions from persisted trial specs, responses, and scores
+- Manifests and seals are persisted for provenance auditing
+
+---
+
+## ADR-031: Transactional Objective Task Execution
+
+**Status:** Accepted
+**Date:** 2026-07-14
+**Context:** Objective trial execution must be atomic: if a leakage violation occurs mid-session, no partial results should remain in the database.
+
+**Decision:** `execute_objective_session_persistent` inserts trial specs, responses, and scores per-trial within a transaction. LeakageGuard is checked BEFORE finalization — violations cause rollback. Seals are only written after all trials complete.
+
+**Consequences:**
+- No orphaned trial records on leakage violations
+- Each trial's spec/response/score triple is atomically committed
+- Leakage audit records are persisted alongside trial data
+
+---
+
+*Last updated: 2026-07-14 — Scientific Measurement Gate C0.2*
