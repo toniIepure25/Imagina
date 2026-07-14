@@ -72,6 +72,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_objective_runtime": ["research", "psychophysics"],
     "test_falsification": ["research", "simulation", "science_deps"],
     "test_rng_registry": ["research", "core"],
+    "test_causal_oracle": ["research", "simulation", "science_deps"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
