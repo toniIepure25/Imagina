@@ -1,0 +1,75 @@
+{
+  "campaign_id": "campaign-ce1c56b08fb86e8a",
+  "version": "1.0",
+  "total_replicates": 20,
+  "total_scenarios": 2,
+  "overall_pass": false,
+  "elapsed_s": 13.2,
+  "gate_issues": [
+    "[strict_null] Coverage too low: 0.0000",
+    "[strict_null] Fallback dominates: 1.0000",
+    "[strict_null] Valid inference too low: 0.0000",
+    "[medium_adaptive] Coverage too low: 0.0000",
+    "[medium_adaptive] Fallback dominates: 1.0000",
+    "[medium_adaptive] Valid inference too low: 0.0000"
+  ],
+  "scenario_summaries": {
+    "strict_null": {
+      "scenario_id": "strict_null",
+      "total_replicates": 10,
+      "n_batches": 1,
+      "oracle_effect": -0.000674,
+      "oracle_se": 2.1e-05,
+      "type_i_error": 0.0,
+      "type_i_se": 0.0,
+      "power": 0.0,
+      "power_se": 0.0,
+      "bias": 0.000255,
+      "bias_se": 0.0,
+      "rmse": 0.003919,
+      "coverage": 0.0,
+      "coverage_se": 0.0,
+      "interval_width": 0.0,
+      "convergence_rate": 0.0,
+      "fallback_rate": 1.0,
+      "valid_inference_rate": 0.0,
+      "negative_control_fp_rate": 0.0,
+      "elapsed_s": 12.094305515289307,
+      "calibration_pass": false,
+      "issues": [
+        "Coverage too low: 0.0000",
+        "Fallback dominates: 1.0000",
+        "Valid inference too low: 0.0000"
+      ]
+    },
+    "medium_adaptive": {
+      "scenario_id": "medium_adaptive",
+      "total_replicates": 10,
+      "n_batches": 1,
+      "oracle_effect": -0.041526,
+      "oracle_se": 0.000759,
+      "type_i_error": 0.0,
+      "type_i_se": 0.0,
+      "power": 0.0,
+      "power_se": 0.0,
+      "bias": 0.000684,
+      "bias_se": 0.0,
+      "rmse": 0.00451,
+      "coverage": 0.0,
+      "coverage_se": 0.0,
+      "interval_width": 0.0,
+      "convergence_rate": 0.0,
+      "fallback_rate": 1.0,
+      "valid_inference_rate": 0.0,
+      "negative_control_fp_rate": 0.0,
+      "elapsed_s": 1.1056034564971924,
+      "calibration_pass": false,
+      "issues": [
+        "Coverage too low: 0.0000",
+        "Fallback dominates: 1.0000",
+        "Valid inference too low: 0.0000"
+      ]
+    }
+  },
+  "n_batch_summaries": 0
+}
