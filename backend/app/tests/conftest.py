@@ -78,6 +78,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_sample_size": ["research", "simulation", "science_deps"],
     "test_objective_runtime_integration": ["research", "simulation"],
     "test_objective_provenance": ["research", "simulation"],
+    "test_objective_replay": ["research", "simulation"],
 
     "test_openmiir_semantic_resolver": ["artifact_dependent"],
 
