@@ -27,9 +27,36 @@ from app.research.objective_runtime import (
 )
 from app.research.psychophysics.scoring import SCORING_VERSION
 from app.research.response_provider import SyntheticCognitiveResponseProvider
-from app.research.rng_registry import RNG_VERSION
+from app.research.rng_registry import RNG_VERSION, rng_version_hash
 
 REPLAY_VERSION = "3.0"
+
+# Provider types replay is able to instantiate and verify. A manifest naming
+# any other response_provider_id cannot be replayed and must fail closed.
+_PROVIDER_REGISTRY = {
+    "synthetic_cognitive": SyntheticCognitiveResponseProvider,
+}
+
+# Manifest keys that must be explicitly present as JSON keys (even if their
+# value is legitimately null), distinguishing "field absent" from "field
+# explicitly present with null". Absence of any of these is a structured
+# divergence that stops replay before any further verification is attempted.
+_REQUIRED_MANIFEST_KEYS = (
+    "root_seed",
+    "participant_generation_index",
+    "previous_condition",
+    "scenario_id",
+    "scenario_hash",
+    "response_provider_id",
+    "response_provider_version",
+    "response_provider_config_hash",
+    "rng_version",
+    "rng_version_hash",
+    "scoring_version",
+    "scoring_hash",
+    "schedule_hash",
+    "design_hash",
+)
 
 
 @dataclass
@@ -254,34 +281,30 @@ def _verify_seal_integrity(
 
 
 def _resolve_scenario(manifest: ObjectiveManifest):
-    """Resolve scenario from manifest. Returns (scenario, issues)."""
-    scenario_hash_val = manifest.scenario_hash
-    scenario_id_val = manifest.scenario_id if hasattr(manifest, "scenario_id") else ""
+    """Resolve scenario from manifest. Returns (scenario, issues).
 
-    if scenario_id_val and scenario_id_val in SCENARIOS:
-        candidate = SCENARIOS[scenario_id_val]
-        s_dict = json.dumps(candidate.to_dict(), sort_keys=True, separators=(",", ":"))
-        s_hash = hashlib.sha256(s_dict.encode()).hexdigest()[:16]
-        if not scenario_hash_val or s_hash == scenario_hash_val:
-            return candidate, []
+    Strict resolution only: the scenario_id must be present and registered,
+    and the computed scenario hash must equal the manifest's scenario_hash.
+    cognitive_agent_version is implementation metadata only and is never used
+    to resolve scenario identity.
+    """
+    scenario_id_val = manifest.scenario_id
+    scenario_hash_val = manifest.scenario_hash
+
+    if not scenario_id_val:
+        return None, ["missing scenario_id in manifest"]
+
+    if scenario_id_val not in SCENARIOS:
+        return None, [f"unregistered scenario_id: {scenario_id_val}"]
+
+    candidate = SCENARIOS[scenario_id_val]
+    s_dict = json.dumps(candidate.to_dict(), sort_keys=True, separators=(",", ":"))
+    s_hash = hashlib.sha256(s_dict.encode()).hexdigest()[:16]
+
+    if not scenario_hash_val or s_hash != scenario_hash_val:
         return None, [f"scenario_hash mismatch: manifest={scenario_hash_val}, computed={s_hash}"]
 
-    if scenario_hash_val:
-        for sid, s in SCENARIOS.items():
-            s_dict = json.dumps(s.to_dict(), sort_keys=True, separators=(",", ":"))
-            s_hash = hashlib.sha256(s_dict.encode()).hexdigest()[:16]
-            if s_hash == scenario_hash_val:
-                return s, []
-
-    if not scenario_hash_val and not scenario_id_val:
-        return None, ["missing scenario_hash and scenario_id in manifest"]
-
-    if manifest.cognitive_agent_version:
-        for sid, s in SCENARIOS.items():
-            if sid == manifest.cognitive_agent_version or s.scenario_id == manifest.cognitive_agent_version:
-                return s, []
-
-    return None, [f"unresolvable scenario: hash={scenario_hash_val}, id={scenario_id_val}"]
+    return candidate, []
 
 
 async def replay_from_db(
@@ -322,11 +345,25 @@ async def replay_from_db(
         await _persist_replay_run(db, session_id, result)
         return result
 
-    manifest = ObjectiveManifest()
     manifest_data = json.loads(manifest_row["manifest_json"])
+
+    missing_keys = [k for k in _REQUIRED_MANIFEST_KEYS if k not in manifest_data]
+    if missing_keys:
+        for k in missing_keys:
+            result.divergences.append(ReplayDivergence(k, -1, "present", "absent"))
+        await _persist_replay_run(db, session_id, result)
+        return result
+
+    manifest = ObjectiveManifest()
     for k, v in manifest_data.items():
         if hasattr(manifest, k):
             setattr(manifest, k, v)
+
+    if original.period > 0 and manifest.previous_condition is None:
+        result.divergences.append(ReplayDivergence(
+            "previous_condition", -1, "non_null_required_period_gt_0", "null"))
+        await _persist_replay_run(db, session_id, result)
+        return result
 
     seal = CompletionSeal(
         session_id=seal_row["session_id"],
@@ -388,41 +425,40 @@ async def replay_from_db(
         result.divergences.append(ReplayDivergence(
             "scoring_version", -1, SCORING_VERSION, manifest.scoring_version))
 
-    rp_id = manifest.response_provider_id
-    rp_version = manifest.response_provider_version
-    rp_config_hash = manifest.response_provider_config_hash
-    result.response_provider_verified = bool(rp_id and rp_version and rp_config_hash)
-    if not result.response_provider_verified:
-        missing = []
-        if not rp_id:
-            missing.append("id")
-        if not rp_version:
-            missing.append("version")
-        if not rp_config_hash:
-            missing.append("config_hash")
-        result.divergences.append(ReplayDivergence(
-            "response_provider", -1, "all_required", f"missing: {','.join(missing)}"))
-
     scenario, scenario_issues = _resolve_scenario(manifest)
     if scenario is None:
         for issue in scenario_issues:
             result.divergences.append(ReplayDivergence("scenario", -1, "resolvable", issue))
         await _persist_replay_run(db, session_id, result)
         return result
-    for issue in scenario_issues:
-        result.divergences.append(ReplayDivergence("scenario", -1, "expected_valid", issue))
 
-    seed = manifest.root_seed if hasattr(manifest, "root_seed") else None
+    seed = manifest.root_seed
     if seed is None:
-        result.divergences.append(ReplayDivergence("root_seed", -1, "required", "missing"))
+        result.divergences.append(ReplayDivergence("root_seed", -1, "required", "null"))
         await _persist_replay_run(db, session_id, result)
         return result
 
-    prev_condition = manifest.previous_condition if hasattr(manifest, "previous_condition") else None
+    prev_condition = manifest.previous_condition
 
-    gen_index = manifest.participant_generation_index if hasattr(manifest, "participant_generation_index") else None
-    if gen_index is None:
-        gen_index = 0
+    rng_ok = (
+        manifest.rng_version == RNG_VERSION
+        and manifest.rng_version_hash == rng_version_hash()
+    )
+    if not rng_ok:
+        result.divergences.append(ReplayDivergence(
+            "rng_version", -1,
+            f"{RNG_VERSION}/{rng_version_hash()}",
+            f"{manifest.rng_version}/{manifest.rng_version_hash}",
+        ))
+        await _persist_replay_run(db, session_id, result)
+        return result
+
+    gen_index = manifest.participant_generation_index
+    if not isinstance(gen_index, int) or isinstance(gen_index, bool) or gen_index < 0:
+        result.divergences.append(ReplayDivergence(
+            "participant_generation_index", -1, "required_nonneg_int", str(gen_index)))
+        await _persist_replay_run(db, session_id, result)
+        return result
 
     pop = generate_population(gen_index + 1, seed=seed, scenario=scenario)
     if not pop or gen_index >= len(pop):
@@ -430,18 +466,39 @@ async def replay_from_db(
         await _persist_replay_run(db, session_id, result)
         return result
 
+    # Resolve the exact participant generated at the manifest's index. Do not
+    # search the population for a matching participant_id — a mismatch here
+    # is a structured divergence, not something to silently paper over.
     agent = pop[gen_index]
-    for a in pop:
-        if a.participant_id == original.participant_id:
-            agent = a
-            break
-
-    rng_version = manifest.rng_version if manifest.rng_version else None
-    if rng_version and rng_version != RNG_VERSION:
+    if agent.participant_id != original.participant_id:
         result.divergences.append(ReplayDivergence(
-            "rng_version", -1, RNG_VERSION, rng_version))
+            "participant_generation_index", -1, original.participant_id, agent.participant_id))
+        await _persist_replay_run(db, session_id, result)
+        return result
 
-    provider = SyntheticCognitiveResponseProvider(agent, scenario)
+    provider_cls = _PROVIDER_REGISTRY.get(manifest.response_provider_id)
+    if provider_cls is None:
+        result.divergences.append(ReplayDivergence(
+            "response_provider", -1, "known_provider_type", manifest.response_provider_id or "missing"))
+        await _persist_replay_run(db, session_id, result)
+        return result
+
+    provider = provider_cls(agent, scenario)
+    provider_config = provider.get_config()
+    result.response_provider_verified = (
+        manifest.response_provider_id == provider_config.provider_type
+        and manifest.response_provider_version == provider_config.version
+        and manifest.response_provider_config_hash == provider_config.config_hash
+    )
+    if not result.response_provider_verified:
+        result.divergences.append(ReplayDivergence(
+            "response_provider", -1,
+            f"id={manifest.response_provider_id},version={manifest.response_provider_version},"
+            f"config_hash={manifest.response_provider_config_hash}",
+            f"id={provider_config.provider_type},version={provider_config.version},"
+            f"config_hash={provider_config.config_hash}",
+        ))
+
     guard = LeakageGuard()
 
     replayed = execute_objective_session(
@@ -499,14 +556,14 @@ async def _persist_replay_run(db, session_id: str, result: ReplayResult) -> None
         """INSERT INTO objective_replay_runs
            (study_id, session_id, exact_match, manifest_verified,
             seal_verified, schedule_verified, scoring_verified,
-            response_provider_verified,
+            response_provider_verified, content_hash_match,
             n_divergences, original_content_hash,
             replayed_content_hash, replay_version)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (session_id, session_id, int(result.exact_match),
          int(result.manifest_verified), int(result.seal_verified),
          int(result.schedule_verified), int(result.scoring_verified),
-         int(result.response_provider_verified),
+         int(result.response_provider_verified), int(result.content_hash_match),
          len(result.divergences), result.original_content_hash,
          result.replayed_content_hash, result.replay_version),
     )

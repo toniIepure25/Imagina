@@ -126,6 +126,24 @@ class TestExportValidation:
         assert not result.valid
         assert any("missing flags" in i for i in result.issues)
 
+    def test_replay_exact_match_with_content_hash_match_false_fails(self):
+        """exact_match=True must require content_hash_match=True too — a
+        persisted row claiming exact_match without a matching content hash
+        must not be treated as successful replay evidence."""
+        pkg = _make_valid_package()
+        pkg.replay_results = [{
+            "exact_match": True,
+            "manifest_verified": True,
+            "seal_verified": True,
+            "schedule_verified": True,
+            "scoring_verified": True,
+            "response_provider_verified": True,
+            "content_hash_match": False,
+        }]
+        result = validate_export_package(pkg)
+        assert not result.valid
+        assert any("missing flags" in i for i in result.issues)
+
     def test_mixed_valid_invalid_inference_fails(self):
         pkg = _make_valid_package()
         pkg.inference_valid = False

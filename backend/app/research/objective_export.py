@@ -180,7 +180,7 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
             summary_data = json.loads(summary["summary_json"])
             package.replicate_summaries.append(summary_data)
             required_campaigns.append(summary_data)
-            if run.get("study_id"):
+            if run["study_id"]:
                 package.campaign_id = run["study_id"]
     package.required_campaign_count = len(required_campaigns)
     valid_campaigns = [c for c in required_campaigns if c.get("campaign_valid")]
@@ -264,6 +264,7 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
             "schedule_verified": bool(rr["schedule_verified"]),
             "scoring_verified": bool(rr["scoring_verified"]),
             "response_provider_verified": bool(rr["response_provider_verified"]),
+            "content_hash_match": bool(rr["content_hash_match"]),
             "n_divergences": rr["n_divergences"],
             "results": [dict(r) for r in rr_results],
         })

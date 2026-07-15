@@ -313,7 +313,7 @@ class TestReplay:
             manifest_db = create_objective_manifest(
                 response_provider_id="synthetic_cognitive",
                 response_provider_version="1.0",
-                response_provider_config_hash="e2e-config",
+                response_provider_config_hash=provider.get_config().config_hash,
                 schedule_hash=sched_hash,
                 scoring_hash="e2e-scoring",
                 design_hash="e2e-design",
@@ -389,7 +389,7 @@ class TestReplay:
         manifest_db = create_objective_manifest(
             response_provider_id="synthetic_cognitive",
             response_provider_version="1.0",
-            response_provider_config_hash="e2e-config",
+            response_provider_config_hash=provider.get_config().config_hash,
             schedule_hash=sched_hash,
             scoring_hash="e2e-scoring",
             design_hash="e2e-design",
