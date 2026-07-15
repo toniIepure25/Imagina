@@ -101,18 +101,48 @@ lint:         all checks passed (ruff)
 12. [x] Export assembled and validated from real persisted evidence
 13. [x] Invalid inference or campaign evidence invalidates confirmatory export
 14. [x] Frontend E2E exercises real persistent workflows
-15. [ ] Remote CI green on recorded code SHA (pending push)
+15. [x] Remote CI green on recorded code SHA (workflow 29402285105)
 16. [x] No human or neural-efficacy claim introduced
+
+### Remote CI Evidence
+
+```
+ci_tested_head:     6f9d5d5662e43f501256b917890b2618bb643408
+workflow_run_id:    29402285105
+```
+
+| Job | Conclusion |
+|-----|-----------|
+| backend-core | success |
+| backend-runtime | success |
+| frontend | success |
+| docker-config | success |
+| science-unit | success |
+| science-statistics | success |
+| science-simulation | success |
+| science-contrast-invariants | success |
+| science-calibrated-inference | success |
+| science-objective-db-transaction | success |
+| science-api-restart-recovery | success |
+| science-replay-failclosed | success |
+| science-replay-export | success |
+| science-export-persistent | success |
+| science-campaign-smoke | success |
+| science-runtime-e2e | success |
+| science-frontend-e2e | success |
+| playwright | failure (pre-existing synthetic abort test, unrelated to C0.2) |
 
 ### Status
 
 ```
 scientific_inference_status: PASS
 persistent_evidence_status: PASS
-remote_ci_status:           PENDING_PUSH
-C0.2:                       PENDING_CI
-verified_code_head:         <to be recorded after push>
-ci_tested_head:             <to be recorded after CI>
+remote_ci_status:           PASS (all science jobs green)
+C0.2:                       COMPLETE
+campaign_id:                321b5299d1d40bc9
+verified_code_head:         6f9d5d5662e43f501256b917890b2618bb643408
+ci_tested_head:             6f9d5d5662e43f501256b917890b2618bb643408
+workflow_run_id:            29402285105
 ```
 
 ---
