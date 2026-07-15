@@ -80,7 +80,8 @@ test.describe("Science Persistent E2E: Full Workflow", () => {
     const res = await request.get(`${SCIENCE_API}/oracles/strict_null`);
     expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(body.scenario_id).toBe("strict_null");
+    expect(body.contrasts).toBeTruthy();
+    expect(Object.keys(body.contrasts).length).toBeGreaterThan(0);
   });
 
   test("7. science page loads", async ({ page }) => {
