@@ -291,14 +291,38 @@ class TestReplay:
             s_dict = json.dumps(
                 SCENARIO_MEDIUM_ADAPTIVE.to_dict(), sort_keys=True, separators=(",", ":"))
             s_hash = hashlib.sha256(s_dict.encode()).hexdigest()[:16]
+
+            norm_specs = []
+            for ts in trial_specs:
+                norm_specs.append({
+                    "trial_index": ts["trial_index"],
+                    "task_family": ts["task_family"],
+                    "target_orientation": float(ts["target_orientation"]),
+                    "target_hue": float(ts["target_hue"]),
+                    "target_sf": float(ts["target_sf"]),
+                    "target_pos_x": float(ts["target_pos_x"]),
+                    "target_pos_y": float(ts["target_pos_y"]),
+                    "target_size": float(ts["target_size"]),
+                    "delay_s": float(ts.get("delay_s", 0)),
+                    "is_perceptual_control": bool(ts.get("is_perceptual_control", False)),
+                })
+            sched_hash = hashlib.sha256(
+                json.dumps(norm_specs, sort_keys=True).encode()
+            ).hexdigest()[:16]
+
             manifest_db = create_objective_manifest(
                 response_provider_id="synthetic_cognitive",
                 response_provider_version="1.0",
-                schedule_hash="e2e-schedule",
+                response_provider_config_hash="e2e-config",
+                schedule_hash=sched_hash,
                 scoring_hash="e2e-scoring",
                 design_hash="e2e-design",
                 scenario_hash=s_hash,
                 cognitive_agent_version="medium_adaptive",
+                root_seed=replay_seed,
+                previous_condition=None,
+                participant_generation_index=0,
+                scenario_id="medium_adaptive",
             )
             seal_db = create_completion_seal(persistent_result, manifest_db)
             await persist_manifest_and_seal(db, session_id, manifest_db, seal_db)
@@ -345,14 +369,35 @@ class TestReplay:
         s_dict = json.dumps(
             SCENARIO_MEDIUM_ADAPTIVE.to_dict(), sort_keys=True, separators=(",", ":"))
         s_hash = hashlib.sha256(s_dict.encode()).hexdigest()[:16]
+        norm_specs = []
+        for ts in trial_specs:
+            norm_specs.append({
+                "trial_index": ts["trial_index"],
+                "task_family": ts["task_family"],
+                "target_orientation": float(ts["target_orientation"]),
+                "target_hue": float(ts["target_hue"]),
+                "target_sf": float(ts["target_sf"]),
+                "target_pos_x": float(ts["target_pos_x"]),
+                "target_pos_y": float(ts["target_pos_y"]),
+                "target_size": float(ts["target_size"]),
+                "delay_s": float(ts.get("delay_s", 0)),
+                "is_perceptual_control": bool(ts.get("is_perceptual_control", False)),
+            })
+        sched_hash = hashlib.sha256(
+            json.dumps(norm_specs, sort_keys=True).encode()
+        ).hexdigest()[:16]
         manifest_db = create_objective_manifest(
             response_provider_id="synthetic_cognitive",
             response_provider_version="1.0",
-            schedule_hash="e2e-schedule",
+            response_provider_config_hash="e2e-config",
+            schedule_hash=sched_hash,
             scoring_hash="e2e-scoring",
             design_hash="e2e-design",
             scenario_hash=s_hash,
             cognitive_agent_version="medium_adaptive",
+            root_seed=replay_seed,
+            participant_generation_index=0,
+            scenario_id="medium_adaptive",
         )
         seal_db = create_completion_seal(persistent_result, manifest_db)
         await persist_manifest_and_seal(db, session_id, manifest_db, seal_db)

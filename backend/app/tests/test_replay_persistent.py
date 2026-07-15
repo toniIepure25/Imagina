@@ -50,6 +50,24 @@ async def _persist_session(db, session_id="replay-test-s1"):
     provider = SyntheticCognitiveResponseProvider(pop[0], SCENARIO_MEDIUM_ADAPTIVE)
     guard = LeakageGuard()
 
+    normalized_specs = []
+    for s in TRIAL_SPECS:
+        normalized_specs.append({
+            "trial_index": s["trial_index"],
+            "task_family": s["task_family"],
+            "target_orientation": float(s["target_orientation"]),
+            "target_hue": float(s["target_hue"]),
+            "target_sf": float(s["target_sf"]),
+            "target_pos_x": float(s["target_pos_x"]),
+            "target_pos_y": float(s["target_pos_y"]),
+            "target_size": float(s["target_size"]),
+            "delay_s": float(s.get("delay_s", 0)),
+            "is_perceptual_control": bool(s.get("is_perceptual_control", False)),
+        })
+    schedule_hash = _hl.sha256(
+        json.dumps(normalized_specs, sort_keys=True).encode()
+    ).hexdigest()[:16]
+
     result = await execute_objective_session_persistent(
         db, session_id, pop[0].participant_id, "adaptive", 0,
         TRIAL_SPECS, provider, guard, 42,
@@ -60,11 +78,16 @@ async def _persist_session(db, session_id="replay-test-s1"):
     manifest = create_objective_manifest(
         response_provider_id="synthetic_cognitive",
         response_provider_version="1.0",
-        schedule_hash="test_schedule",
+        response_provider_config_hash="test_config_hash",
+        schedule_hash=schedule_hash,
         scoring_hash="test_scoring",
         design_hash="test_design",
         scenario_hash=s_hash,
         cognitive_agent_version="medium_adaptive",
+        root_seed=42,
+        previous_condition=None,
+        participant_generation_index=0,
+        scenario_id="medium_adaptive",
     )
     seal = create_completion_seal(result, manifest)
     await persist_manifest_and_seal(db, session_id, manifest, seal)
@@ -319,6 +342,168 @@ async def test_response_provider_mismatch_fails(tmp_path):
         await db.commit()
 
         replay = await replay_from_db(db, "rp-mismatch")
+        assert not replay.exact_match
+        assert not replay.response_provider_verified
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_missing_root_seed_fails(tmp_path):
+    db = await _make_db(tmp_path)
+    try:
+        result, manifest, seal = await _persist_session(db, "no-seed")
+        manifest_row = await (await db.execute(
+            "SELECT id, manifest_json FROM objective_manifests WHERE study_id = 'no-seed'"
+        )).fetchone()
+        mdata = json.loads(manifest_row["manifest_json"])
+        mdata.pop("root_seed", None)
+        await db.execute(
+            "UPDATE objective_manifests SET manifest_json = ? WHERE id = ?",
+            (json.dumps(mdata, sort_keys=True, separators=(",", ":")), manifest_row["id"]),
+        )
+        await db.commit()
+
+        replay = await replay_from_db(db, "no-seed")
+        assert not replay.exact_match
+        assert any(d.field == "root_seed" for d in replay.divergences)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_wrong_root_seed_fails(tmp_path):
+    db = await _make_db(tmp_path)
+    try:
+        result, manifest, seal = await _persist_session(db, "wrong-seed")
+        manifest_row = await (await db.execute(
+            "SELECT id, manifest_json FROM objective_manifests WHERE study_id = 'wrong-seed'"
+        )).fetchone()
+        mdata = json.loads(manifest_row["manifest_json"])
+        mdata["root_seed"] = 99999
+        await db.execute(
+            "UPDATE objective_manifests SET manifest_json = ? WHERE id = ?",
+            (json.dumps(mdata, sort_keys=True, separators=(",", ":")), manifest_row["id"]),
+        )
+        await db.commit()
+
+        replay = await replay_from_db(db, "wrong-seed")
+        assert not replay.exact_match
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_unresolved_scenario_fails(tmp_path):
+    db = await _make_db(tmp_path)
+    try:
+        result, manifest, seal = await _persist_session(db, "bad-scenario")
+        manifest_row = await (await db.execute(
+            "SELECT id, manifest_json FROM objective_manifests WHERE study_id = 'bad-scenario'"
+        )).fetchone()
+        mdata = json.loads(manifest_row["manifest_json"])
+        mdata["scenario_hash"] = "nonexistent_hash"
+        mdata["scenario_id"] = "nonexistent_id"
+        mdata["cognitive_agent_version"] = "nonexistent"
+        await db.execute(
+            "UPDATE objective_manifests SET manifest_json = ? WHERE id = ?",
+            (json.dumps(mdata, sort_keys=True, separators=(",", ":")), manifest_row["id"]),
+        )
+        await db.commit()
+
+        replay = await replay_from_db(db, "bad-scenario")
+        assert not replay.exact_match
+        assert any(d.field == "scenario" for d in replay.divergences)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_scenario_hash_mismatch_fails(tmp_path):
+    db = await _make_db(tmp_path)
+    try:
+        result, manifest, seal = await _persist_session(db, "hash-scenario")
+        manifest_row = await (await db.execute(
+            "SELECT id, manifest_json FROM objective_manifests WHERE study_id = 'hash-scenario'"
+        )).fetchone()
+        mdata = json.loads(manifest_row["manifest_json"])
+        mdata["scenario_hash"] = "wrong_hash_value"
+        mdata["scenario_id"] = "medium_adaptive"
+        await db.execute(
+            "UPDATE objective_manifests SET manifest_json = ? WHERE id = ?",
+            (json.dumps(mdata, sort_keys=True, separators=(",", ":")), manifest_row["id"]),
+        )
+        await db.commit()
+
+        replay = await replay_from_db(db, "hash-scenario")
+        assert not replay.exact_match
+        assert any("scenario_hash mismatch" in str(d.replayed) for d in replay.divergences)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_rng_version_mismatch_diverges(tmp_path):
+    db = await _make_db(tmp_path)
+    try:
+        result, manifest, seal = await _persist_session(db, "rng-mismatch")
+        manifest_row = await (await db.execute(
+            "SELECT id, manifest_json FROM objective_manifests WHERE study_id = 'rng-mismatch'"
+        )).fetchone()
+        mdata = json.loads(manifest_row["manifest_json"])
+        mdata["rng_version"] = "0.0.0-fake"
+        await db.execute(
+            "UPDATE objective_manifests SET manifest_json = ? WHERE id = ?",
+            (json.dumps(mdata, sort_keys=True, separators=(",", ":")), manifest_row["id"]),
+        )
+        await db.commit()
+
+        replay = await replay_from_db(db, "rng-mismatch")
+        assert any(d.field == "rng_version" for d in replay.divergences)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_schedule_db_manifest_mismatch_fails(tmp_path):
+    db = await _make_db(tmp_path)
+    try:
+        result, manifest, seal = await _persist_session(db, "sched-mismatch")
+        manifest_row = await (await db.execute(
+            "SELECT id, manifest_json FROM objective_manifests WHERE study_id = 'sched-mismatch'"
+        )).fetchone()
+        mdata = json.loads(manifest_row["manifest_json"])
+        mdata["schedule_hash"] = "different_schedule_hash"
+        await db.execute(
+            "UPDATE objective_manifests SET manifest_json = ? WHERE id = ?",
+            (json.dumps(mdata, sort_keys=True, separators=(",", ":")), manifest_row["id"]),
+        )
+        await db.commit()
+
+        replay = await replay_from_db(db, "sched-mismatch")
+        assert not replay.exact_match
+        assert not replay.schedule_verified
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_provider_config_mismatch_fails(tmp_path):
+    db = await _make_db(tmp_path)
+    try:
+        result, manifest, seal = await _persist_session(db, "config-mismatch")
+        manifest_row = await (await db.execute(
+            "SELECT id, manifest_json FROM objective_manifests WHERE study_id = 'config-mismatch'"
+        )).fetchone()
+        mdata = json.loads(manifest_row["manifest_json"])
+        mdata["response_provider_config_hash"] = ""
+        await db.execute(
+            "UPDATE objective_manifests SET manifest_json = ? WHERE id = ?",
+            (json.dumps(mdata, sort_keys=True, separators=(",", ":")), manifest_row["id"]),
+        )
+        await db.commit()
+
+        replay = await replay_from_db(db, "config-mismatch")
         assert not replay.exact_match
         assert not replay.response_provider_verified
     finally:

@@ -27,6 +27,10 @@ def _make_valid_package():
             "exact_match": True,
             "manifest_verified": True,
             "seal_verified": True,
+            "schedule_verified": True,
+            "scoring_verified": True,
+            "response_provider_verified": True,
+            "content_hash_match": True,
         }],
         manifest_evidence=[manifest_data],
         leakage_audits=[{"audit": True}],
@@ -40,6 +44,10 @@ def _make_valid_package():
         ],
         inference_valid=True,
         campaign_valid=True,
+        required_inference_count=1,
+        valid_inference_count=1,
+        required_campaign_count=1,
+        valid_campaign_count=1,
     )
 
 
@@ -98,6 +106,42 @@ class TestExportValidation:
     def test_failed_campaign_fails(self):
         pkg = _make_valid_package()
         pkg.campaign_valid = False
+        result = validate_export_package(pkg)
+        assert not result.valid
+        assert any("campaign" in i for i in result.issues)
+
+
+    def test_replay_missing_verification_flag_fails(self):
+        pkg = _make_valid_package()
+        pkg.replay_results = [{
+            "exact_match": True,
+            "manifest_verified": True,
+            "seal_verified": True,
+            "schedule_verified": True,
+            "scoring_verified": True,
+            "response_provider_verified": False,
+            "content_hash_match": True,
+        }]
+        result = validate_export_package(pkg)
+        assert not result.valid
+        assert any("missing flags" in i for i in result.issues)
+
+    def test_mixed_valid_invalid_inference_fails(self):
+        pkg = _make_valid_package()
+        pkg.inference_valid = False
+        pkg.required_inference_count = 2
+        pkg.valid_inference_count = 1
+        pkg.invalid_inference_ids = ["id-2"]
+        result = validate_export_package(pkg)
+        assert not result.valid
+        assert any("inference_valid" in i for i in result.issues)
+
+    def test_mixed_pass_fail_campaign_fails(self):
+        pkg = _make_valid_package()
+        pkg.campaign_valid = False
+        pkg.required_campaign_count = 2
+        pkg.valid_campaign_count = 1
+        pkg.failed_campaign_ids = ["scenario-2"]
         result = validate_export_package(pkg)
         assert not result.valid
         assert any("campaign" in i for i in result.issues)

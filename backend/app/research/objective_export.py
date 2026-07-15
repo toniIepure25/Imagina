@@ -49,6 +49,12 @@ class ExportPackage:
     campaign_valid: bool = False
     inference_valid: bool = False
     estimand_ids: list[str] = field(default_factory=list)
+    invalid_inference_ids: list[str] = field(default_factory=list)
+    failed_campaign_ids: list[str] = field(default_factory=list)
+    required_inference_count: int = 0
+    valid_inference_count: int = 0
+    required_campaign_count: int = 0
+    valid_campaign_count: int = 0
     version: str = EXPORT_VERSION
 
     def to_dict(self) -> dict[str, Any]:
@@ -165,6 +171,7 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
         "SELECT * FROM simulation_runs WHERE study_id = ? AND status = 'completed'",
         (study_id,),
     )).fetchall()
+    required_campaigns: list[dict] = []
     for run in sim_runs:
         summary = await (await db.execute(
             "SELECT summary_json FROM simulation_summaries WHERE run_id = ?", (run["id"],),
@@ -172,10 +179,18 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
         if summary:
             summary_data = json.loads(summary["summary_json"])
             package.replicate_summaries.append(summary_data)
-            if summary_data.get("campaign_valid") is not None:
-                package.campaign_valid = summary_data["campaign_valid"]
+            required_campaigns.append(summary_data)
             if run.get("study_id"):
                 package.campaign_id = run["study_id"]
+    package.required_campaign_count = len(required_campaigns)
+    valid_campaigns = [c for c in required_campaigns if c.get("campaign_valid")]
+    failed_campaigns = [c for c in required_campaigns if not c.get("campaign_valid")]
+    package.valid_campaign_count = len(valid_campaigns)
+    package.failed_campaign_ids = [c.get("scenario_id", "unknown") for c in failed_campaigns]
+    package.campaign_valid = (
+        bool(required_campaigns)
+        and all(c.get("campaign_valid") for c in required_campaigns)
+    )
 
     oracles = await (await db.execute(
         "SELECT * FROM oracle_estimands WHERE scenario_id = ?",
@@ -200,6 +215,7 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
         "JOIN analysis_specifications asp ON ar.spec_id = asp.id WHERE asp.study_id = ?",
         (study_id,),
     )).fetchall()
+    required_confirmatory: list[dict] = []
     for run in a_runs:
         results = await (await db.execute(
             "SELECT * FROM analysis_results WHERE run_id = ?", (run["id"],),
@@ -207,8 +223,17 @@ async def build_export_from_db(db, study_id: str) -> ExportPackage:
         for r in results:
             result_data = json.loads(r["result_json"]) if r["result_json"] else dict(r)
             package.analysis_results.append(result_data)
-            if r["inference_valid"]:
-                package.inference_valid = True
+            required_confirmatory.append({"id": str(r["id"]), "inference_valid": bool(r["inference_valid"])})
+
+    package.required_inference_count = len(required_confirmatory)
+    valid_inferences = [r for r in required_confirmatory if r["inference_valid"]]
+    invalid_inferences = [r for r in required_confirmatory if not r["inference_valid"]]
+    package.valid_inference_count = len(valid_inferences)
+    package.invalid_inference_ids = [r["id"] for r in invalid_inferences]
+    package.inference_valid = (
+        bool(required_confirmatory)
+        and all(r["inference_valid"] for r in required_confirmatory)
+    )
 
     manifests = await (await db.execute(
         "SELECT * FROM objective_manifests WHERE study_id = ?", (study_id,),
@@ -350,11 +375,19 @@ def validate_export_package(package: ExportPackage) -> ValidationResult:
         issues.append("cannot verify manifest/seal hash agreement — missing evidence")
 
     checks += 1
+    _replay_flags = (
+        "exact_match", "manifest_verified", "seal_verified",
+        "schedule_verified", "scoring_verified",
+        "response_provider_verified", "content_hash_match",
+    )
     has_successful_replay = False
     for rr in package.replay_results:
         if rr.get("exact_match"):
-            if not rr.get("manifest_verified") or not rr.get("seal_verified"):
-                issues.append("replay marked exact_match but verification flags are false")
+            missing_flags = [f for f in _replay_flags if not rr.get(f)]
+            if missing_flags:
+                issues.append(
+                    f"replay marked exact_match but missing flags: {','.join(missing_flags)}"
+                )
                 break
             has_successful_replay = True
     if has_successful_replay:

@@ -54,6 +54,10 @@ class ObjectiveManifest:
     rng_version_hash: str = ""
     objective_runtime_version: str = OBJECTIVE_RUNTIME_VERSION
     provenance_version: str = PROVENANCE_VERSION
+    root_seed: int | None = None
+    previous_condition: str | None = None
+    participant_generation_index: int | None = None
+    scenario_id: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
@@ -92,6 +96,10 @@ def create_objective_manifest(
     scoring_hash: str = "",
     design_id: str = "",
     design_hash: str = "",
+    root_seed: int | None = None,
+    previous_condition: str | None = None,
+    participant_generation_index: int | None = None,
+    scenario_id: str = "",
 ) -> ObjectiveManifest:
     return ObjectiveManifest(
         endpoint_registry_hash=registry_hash(),
@@ -113,6 +121,10 @@ def create_objective_manifest(
         design_id=design_id,
         design_hash=design_hash,
         rng_version_hash=rng_version_hash(),
+        root_seed=root_seed,
+        previous_condition=previous_condition,
+        participant_generation_index=participant_generation_index,
+        scenario_id=scenario_id,
     )
 
 
