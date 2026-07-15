@@ -14,6 +14,13 @@ async def get_db() -> aiosqlite.Connection:
     row = await cursor.fetchone()
     if not row or row[0] != 1:
         raise RuntimeError("SQLite foreign_keys PRAGMA could not be enabled")
+    # The science worker and the API process both write to simulation_runs
+    # concurrently (cooperative abort races the worker's own checkpoint and
+    # completion writes). WAL lets readers and writers proceed without
+    # blocking each other; busy_timeout makes a genuinely contended write
+    # retry instead of failing immediately with "database is locked".
+    await db.execute("PRAGMA journal_mode = WAL")
+    await db.execute("PRAGMA busy_timeout = 5000")
     return db
 
 

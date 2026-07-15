@@ -169,22 +169,56 @@ async def get_simulation(run_id: int):
         await db.close()
 
 
+_TERMINAL_STATUSES = ("completed", "failed", "aborted")
+_INACTIVE_STATUSES = ("queued", "checkpointed")
+_ACTIVE_STATUSES = ("claimed", "running")
+
+
 @router.post("/simulations/{run_id}/abort", status_code=200)
 async def abort_simulation(run_id: int):
+    """Request cooperative abort of a simulation run.
+
+    Queued/checkpointed runs have no worker actively computing them, so they
+    are transitioned straight to 'aborted'. Claimed/running runs are only
+    flagged via abort_requested — the owning worker transitions them to
+    'aborted' once it reaches a safe checkpoint. Terminal runs are returned
+    unmodified. Re-reads and retries the guarded UPDATE if the run's status
+    changes concurrently between the read and the write.
+    """
     db = await get_db()
     try:
-        row = await (await db.execute(
-            "SELECT status FROM simulation_runs WHERE id = ?", (run_id,),
-        )).fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Simulation not found")
-        if row["status"] in ("completed", "aborted"):
-            return {"id": run_id, "status": row["status"], "message": "already terminal"}
-        await db.execute(
-            "UPDATE simulation_runs SET status = 'aborted' WHERE id = ?", (run_id,),
-        )
-        await db.commit()
-        return {"id": run_id, "status": "aborted"}
+        while True:
+            row = await (await db.execute(
+                "SELECT status FROM simulation_runs WHERE id = ?", (run_id,),
+            )).fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail="Simulation not found")
+            status = row["status"]
+
+            if status in _TERMINAL_STATUSES:
+                return {"id": run_id, "status": status}
+
+            if status in _INACTIVE_STATUSES:
+                cursor = await db.execute(
+                    "UPDATE simulation_runs SET abort_requested = 1, status = 'aborted'"
+                    " WHERE id = ? AND status IN ('queued', 'checkpointed')",
+                    (run_id,),
+                )
+                if cursor.rowcount == 0:
+                    continue
+                await db.commit()
+                return {"id": run_id, "status": "aborted"}
+
+            # claimed or running: flag only, preserve state for the owning worker.
+            cursor = await db.execute(
+                "UPDATE simulation_runs SET abort_requested = 1"
+                " WHERE id = ? AND status IN ('claimed', 'running')",
+                (run_id,),
+            )
+            if cursor.rowcount == 0:
+                continue
+            await db.commit()
+            return {"id": run_id, "status": "abort_requested"}
     finally:
         await db.close()
 

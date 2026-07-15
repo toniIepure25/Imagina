@@ -545,6 +545,154 @@ async def test_queued_abort_becomes_aborted(tmp_path):
         await db.close()
 
 
+class _AbortAfterFirstBatch(ScienceWorker):
+    """Injects a concurrent abort request right after the first batch's
+    _check_abort call returns cleanly, simulating abort arriving while the
+    batch is being computed (i.e. between batch completion and the checkpoint
+    persistence that follows it)."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._checks = 0
+
+    async def _check_abort(self, db, run_id):
+        self._checks += 1
+        await super()._check_abort(db, run_id)
+        if self._checks == 1:
+            await db.execute(
+                "UPDATE simulation_runs SET abort_requested = 1 WHERE id = ?", (run_id,),
+            )
+            await db.commit()
+
+
+@pytest.mark.asyncio
+async def test_batch_completion_not_discarded_by_concurrent_abort(tmp_path):
+    """A fully completed batch's checkpoint must be persisted even when abort
+    arrives during that batch's computation, not just between batches."""
+    db, db_path = await _make_db(tmp_path)
+    try:
+        n_iters = CHECKPOINT_EVERY * 2
+        run_id = await _insert_run(db, "test-abort-race", n_iterations=n_iters)
+
+        worker = _AbortAfterFirstBatch(lambda: _factory(db_path), worker_id="w-race")
+        claimed = await worker.claim_next(db)
+        assert claimed is not None
+
+        result = await worker.execute_run(claimed, db)
+        assert result["status"] == "aborted"
+
+        row = await (await db.execute(
+            "SELECT status FROM simulation_runs WHERE id = ?", (run_id,),
+        )).fetchone()
+        assert row["status"] == "aborted"
+
+        cp = await (await db.execute(
+            "SELECT * FROM simulation_checkpoints WHERE run_id = ?", (run_id,),
+        )).fetchone()
+        assert cp is not None
+        assert cp["checkpoint_iteration"] == CHECKPOINT_EVERY, (
+            "the first fully completed batch must not be discarded"
+        )
+
+        summary = await (await db.execute(
+            "SELECT * FROM simulation_summaries WHERE run_id = ?", (run_id,),
+        )).fetchone()
+        assert summary is None
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_finalization_guard_prevents_completion_after_late_abort(tmp_path):
+    """If abort_requested flips to 1 after the run loop finishes but before the
+    guarded completion UPDATE commits, the run must end up aborted, never
+    completed, and no summary may be inserted."""
+    db, db_path = await _make_db(tmp_path)
+    try:
+        run_id = await _insert_run(db, "test-late-abort", n_iterations=15)
+        worker = ScienceWorker(lambda: _factory(db_path), worker_id="w-late-abort")
+        claimed = await worker.claim_next(db)
+        assert claimed is not None
+
+        row = await (await db.execute(
+            "SELECT * FROM simulation_runs WHERE id = ?", (run_id,),
+        )).fetchone()
+        await db.execute(
+            "UPDATE simulation_runs SET status = 'running' WHERE id = ?", (run_id,),
+        )
+        await db.commit()
+
+        # Simulate the run loop finishing computation just as an abort request
+        # lands, immediately before the guarded finalization UPDATE.
+        await db.execute(
+            "UPDATE simulation_runs SET abort_requested = 1 WHERE id = ?", (run_id,),
+        )
+        await db.commit()
+
+        from app.research.design_simulation import SimulationAccumulator
+        fake_acc = SimulationAccumulator(
+            oracle_truth=0.0, scenario_id="strict_null", scenario_version="1.0",
+        )
+        fake_result = fake_acc.finalize(15, row["n_participants"], mode="unit")
+
+        with pytest.raises(Exception):
+            await worker._finalize_completion(db, run_id, fake_result)
+
+        final_row = await (await db.execute(
+            "SELECT status FROM simulation_runs WHERE id = ?", (run_id,),
+        )).fetchone()
+        assert final_row["status"] != "completed"
+
+        summary = await (await db.execute(
+            "SELECT * FROM simulation_summaries WHERE run_id = ?", (run_id,),
+        )).fetchone()
+        assert summary is None
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_finalization_guard_stops_on_lost_lease(tmp_path):
+    """If the lease is stolen before the guarded completion UPDATE, the
+    original worker must stop with lost_lease and never write a summary."""
+    db, db_path = await _make_db(tmp_path)
+    try:
+        run_id = await _insert_run(db, "test-finalize-lost-lease", n_iterations=15)
+        worker = ScienceWorker(lambda: _factory(db_path), worker_id="w-victim")
+        claimed = await worker.claim_next(db)
+        assert claimed is not None
+
+        row = await (await db.execute(
+            "SELECT * FROM simulation_runs WHERE id = ?", (run_id,),
+        )).fetchone()
+        await db.execute(
+            "UPDATE simulation_runs SET status = 'running', lease_owner = 'new-owner'"
+            " WHERE id = ?", (run_id,),
+        )
+        await db.commit()
+
+        from app.research.design_simulation import SimulationAccumulator
+        fake_acc = SimulationAccumulator(
+            oracle_truth=0.0, scenario_id="strict_null", scenario_version="1.0",
+        )
+        fake_result = fake_acc.finalize(15, row["n_participants"], mode="unit")
+
+        with pytest.raises(Exception):
+            await worker._finalize_completion(db, run_id, fake_result)
+
+        final_row = await (await db.execute(
+            "SELECT status FROM simulation_runs WHERE id = ?", (run_id,),
+        )).fetchone()
+        assert final_row["status"] != "completed"
+
+        summary = await (await db.execute(
+            "SELECT * FROM simulation_summaries WHERE run_id = ?", (run_id,),
+        )).fetchone()
+        assert summary is None
+    finally:
+        await db.close()
+
+
 class TestSimulationAccumulator:
     def test_merge_is_additive(self):
         a = SimulationAccumulator(valid_count=5, invalid_count=1, rejections=2,

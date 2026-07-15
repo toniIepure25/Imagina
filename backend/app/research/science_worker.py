@@ -159,35 +159,12 @@ class ScienceWorker:
                     base_seed, mode,
                 )
 
-                await self._check_abort(db, run_id)
-                await self._verify_lease(db, run_id)
-
-                result_json = json.dumps(result.to_dict(), default=str)
-                cursor = await db.execute(
-                    "UPDATE simulation_runs SET status = 'completed', completed_at = ?"
-                    " WHERE id = ? AND lease_owner = ?",
-                    (_utcnow(), run_id, self.worker_id),
-                )
-                if cursor.rowcount == 0:
-                    raise _LeaseLost()
-                await db.execute(
-                    """INSERT OR REPLACE INTO simulation_summaries
-                       (run_id, power, type_i_error, coverage, bias, rmse,
-                        convergence_rate, fallback_rate, valid_inference_rate,
-                        nc_fp_rate, oracle_effect, oracle_se, summary_json)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (run_id, result.power, result.type_i_error, result.coverage,
-                     result.bias, result.rmse, result.convergence_rate,
-                     result.fallback_rate, result.valid_inference_rate,
-                     result.negative_control_fp_rate, result.oracle_effect,
-                     result.oracle_se, result_json),
-                )
-                await db.commit()
-                return {"id": run_id, "status": "completed", "result": result.to_dict()}
+                return await self._finalize_completion(db, run_id, result)
 
             except _AbortRequested:
                 await db.execute(
-                    "UPDATE simulation_runs SET status = 'aborted' WHERE id = ? AND lease_owner = ?",
+                    "UPDATE simulation_runs SET status = 'aborted'"
+                    " WHERE id = ? AND lease_owner = ? AND status != 'aborted'",
                     (run_id, self.worker_id),
                 )
                 await db.commit()
@@ -260,8 +237,11 @@ class ScienceWorker:
             current_iter += batch_count
             last_seed = base_seed + (current_iter - 1) * FROZEN_STRIDE
 
-            await self._check_abort(db, run_id)
+            # Persist this batch's evidence BEFORE checking abort. A fully
+            # completed batch must never be discarded because abort arrived
+            # between batch completion and checkpoint persistence.
             await self._persist_checkpoint(db, run_id, current_iter, acc, last_seed)
+            await self._check_abort(db, run_id)
 
         return acc.finalize(n_iterations, n_participants, mode=mode)
 
@@ -298,6 +278,48 @@ class ScienceWorker:
         )
         await db.commit()
 
+    async def _finalize_completion(self, db, run_id: int, result) -> dict:
+        """Atomically transition a run to completed and persist its summary.
+
+        The guarded UPDATE requires the run to still be 'running', owned by
+        this worker, and not abort-requested — all in one WHERE clause — so
+        completion and abort can never race each other. If the guard fails,
+        re-read the row to decide whether the run was aborted (transition it)
+        or the lease was lost (stop). A completed summary is only inserted
+        after the guarded UPDATE succeeds, in the same transaction.
+        """
+        cursor = await db.execute(
+            """UPDATE simulation_runs
+               SET status = 'completed', completed_at = ?
+               WHERE id = ? AND lease_owner = ? AND abort_requested = 0 AND status = 'running'""",
+            (_utcnow(), run_id, self.worker_id),
+        )
+        if cursor.rowcount != 1:
+            row = await (await db.execute(
+                "SELECT status, lease_owner, abort_requested FROM simulation_runs WHERE id = ?",
+                (run_id,),
+            )).fetchone()
+            await db.rollback()
+            if row is not None and row["lease_owner"] == self.worker_id and row["abort_requested"]:
+                raise _AbortRequested()
+            raise _LeaseRoot()
+
+        result_json = json.dumps(result.to_dict(), default=str)
+        await db.execute(
+            """INSERT OR REPLACE INTO simulation_summaries
+               (run_id, power, type_i_error, coverage, bias, rmse,
+                convergence_rate, fallback_rate, valid_inference_rate,
+                nc_fp_rate, oracle_effect, oracle_se, summary_json)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (run_id, result.power, result.type_i_error, result.coverage,
+             result.bias, result.rmse, result.convergence_rate,
+             result.fallback_rate, result.valid_inference_rate,
+             result.negative_control_fp_rate, result.oracle_effect,
+             result.oracle_se, result_json),
+        )
+        await db.commit()
+        return {"id": run_id, "status": "completed", "result": result.to_dict()}
+
     async def _check_abort(self, db, run_id: int) -> None:
         row = await (await db.execute(
             "SELECT abort_requested FROM simulation_runs WHERE id = ?",
@@ -305,14 +327,6 @@ class ScienceWorker:
         )).fetchone()
         if row and row["abort_requested"]:
             raise _AbortRequested()
-
-    async def _verify_lease(self, db, run_id: int) -> None:
-        row = await (await db.execute(
-            "SELECT lease_owner FROM simulation_runs WHERE id = ?",
-            (run_id,),
-        )).fetchone()
-        if not row or row["lease_owner"] != self.worker_id:
-            raise _LeaseRoot()
 
     async def run_loop(self, max_iterations: int | None = None) -> int:
         """Poll for work and execute. Returns count of runs completed."""
