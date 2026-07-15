@@ -2,10 +2,12 @@
 
 Atomic claim via compare-and-set, lease-based ownership, heartbeat,
 cooperative abort, and checkpoint/resume with deterministic seeds.
+Real batch execution via run_simulation_batch with persisted accumulators.
 """
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import logging
 import uuid
@@ -54,7 +56,7 @@ class ScienceWorker:
             expires = (datetime.now(timezone.utc) + timedelta(seconds=LEASE_DURATION_S)).strftime("%Y-%m-%d %H:%M:%S")
 
             row = await (await db.execute(
-                """SELECT id, status, lease_owner, lease_expires_at, worker_attempt
+                """SELECT id, status, lease_owner, lease_expires_at, worker_attempt, abort_requested
                    FROM simulation_runs
                    WHERE status IN ('queued', 'checkpointed')
                       OR (status IN ('claimed', 'running') AND lease_expires_at < ?)
@@ -68,6 +70,15 @@ class ScienceWorker:
 
             run_id = row["id"]
             prev_attempt = row["worker_attempt"] or 0
+
+            if row["abort_requested"]:
+                await db.execute(
+                    "UPDATE simulation_runs SET status = 'aborted'"
+                    " WHERE id = ? AND status IN ('queued', 'checkpointed')",
+                    (run_id,),
+                )
+                await db.commit()
+                return None
 
             cursor = await db.execute(
                 """UPDATE simulation_runs
@@ -106,12 +117,22 @@ class ScienceWorker:
             )).fetchone()
 
             if not row:
-                raise RuntimeError(f"Run {run_id} not owned by {self.worker_id}")
+                return {"id": run_id, "status": "failed", "error": "lost_lease"}
 
-            await db.execute(
-                "UPDATE simulation_runs SET status = 'running', heartbeat_at = ? WHERE id = ?",
-                (_utcnow(), run_id),
+            if row["abort_requested"]:
+                await db.execute(
+                    "UPDATE simulation_runs SET status = 'aborted' WHERE id = ? AND lease_owner = ?",
+                    (run_id, self.worker_id),
+                )
+                await db.commit()
+                return {"id": run_id, "status": "aborted"}
+
+            cursor = await db.execute(
+                "UPDATE simulation_runs SET status = 'running', heartbeat_at = ? WHERE id = ? AND lease_owner = ?",
+                (_utcnow(), run_id, self.worker_id),
             )
+            if cursor.rowcount == 0:
+                return {"id": run_id, "status": "failed", "error": "lost_lease"}
             await db.commit()
 
             self._current_run_id = run_id
@@ -120,15 +141,14 @@ class ScienceWorker:
             n_iterations = row["n_iterations"]
             n_participants = row["n_participants"]
             base_seed = row["base_seed"]
-            checkpoint_iter = row["checkpoint_iteration"] or 0
 
             from app.research.cognitive_agent import SCENARIOS
 
             scenario = SCENARIOS.get(scenario_id)
             if not scenario:
                 await db.execute(
-                    "UPDATE simulation_runs SET status = 'failed', error_message = ? WHERE id = ?",
-                    (f"Unknown scenario: {scenario_id}", run_id),
+                    "UPDATE simulation_runs SET status = 'failed', error_message = ? WHERE id = ? AND lease_owner = ?",
+                    (f"Unknown scenario: {scenario_id}", run_id, self.worker_id),
                 )
                 await db.commit()
                 return {"id": run_id, "status": "failed"}
@@ -136,14 +156,20 @@ class ScienceWorker:
             try:
                 result = await self._run_with_checkpoints(
                     db, run_id, scenario, n_iterations, n_participants,
-                    base_seed, mode, checkpoint_iter,
+                    base_seed, mode,
                 )
 
+                await self._check_abort(db, run_id)
+                await self._verify_lease(db, run_id)
+
                 result_json = json.dumps(result.to_dict(), default=str)
-                await db.execute(
-                    "UPDATE simulation_runs SET status = 'completed', completed_at = ? WHERE id = ?",
-                    (_utcnow(), run_id),
+                cursor = await db.execute(
+                    "UPDATE simulation_runs SET status = 'completed', completed_at = ?"
+                    " WHERE id = ? AND lease_owner = ?",
+                    (_utcnow(), run_id, self.worker_id),
                 )
+                if cursor.rowcount == 0:
+                    raise _LeaseLost()
                 await db.execute(
                     """INSERT OR REPLACE INTO simulation_summaries
                        (run_id, power, type_i_error, coverage, bias, rmse,
@@ -161,15 +187,17 @@ class ScienceWorker:
 
             except _AbortRequested:
                 await db.execute(
-                    "UPDATE simulation_runs SET status = 'aborted' WHERE id = ?",
-                    (run_id,),
+                    "UPDATE simulation_runs SET status = 'aborted' WHERE id = ? AND lease_owner = ?",
+                    (run_id, self.worker_id),
                 )
                 await db.commit()
                 return {"id": run_id, "status": "aborted"}
+            except _LeaseLost:
+                return {"id": run_id, "status": "failed", "error": "lost_lease"}
             except Exception as e:
                 await db.execute(
-                    "UPDATE simulation_runs SET status = 'failed', error_message = ? WHERE id = ?",
-                    (str(e), run_id),
+                    "UPDATE simulation_runs SET status = 'failed', error_message = ? WHERE id = ? AND lease_owner = ?",
+                    (str(e), run_id, self.worker_id),
                 )
                 await db.commit()
                 return {"id": run_id, "status": "failed", "error": str(e)}
@@ -180,40 +208,95 @@ class ScienceWorker:
                 await db.close()
 
     async def _run_with_checkpoints(self, db, run_id, scenario, n_iterations,
-                                     n_participants, base_seed, mode, start_iter):
-        from app.research.design_simulation import run_simulation
+                                     n_participants, base_seed, mode):
+        from app.research.causal_oracle import compute_oracle_effect
+        from app.research.design_simulation import (
+            FROZEN_STRIDE,
+            SimulationAccumulator,
+            run_simulation_batch,
+        )
 
-        if start_iter > 0:
-            effective_iterations = n_iterations - start_iter
-        else:
-            effective_iterations = n_iterations
+        oracle = compute_oracle_effect(scenario, n_agents=100, seed=base_seed + 999999)
+        oracle_truth = oracle.effect
 
-        for batch_start in range(0, effective_iterations, CHECKPOINT_EVERY):
+        start_iter = 0
+        acc = SimulationAccumulator(
+            oracle_truth=oracle_truth,
+            oracle_se=oracle.effect_se,
+            scenario_id=scenario.scenario_id,
+            scenario_version=scenario.version,
+        )
+
+        checkpoint = await (await db.execute(
+            "SELECT * FROM simulation_checkpoints WHERE run_id = ?", (run_id,),
+        )).fetchone()
+        if checkpoint:
+            acc = SimulationAccumulator.from_dict(json.loads(checkpoint["accumulator_json"]))
+            start_iter = checkpoint["checkpoint_iteration"]
+
+        remaining = n_iterations - start_iter
+        if remaining <= 0:
+            return acc.finalize(n_iterations, n_participants, mode=mode)
+
+        batch_size = min(CHECKPOINT_EVERY, remaining)
+        current_iter = start_iter
+
+        while current_iter < n_iterations:
             await self._check_abort(db, run_id)
 
-            batch_size = min(CHECKPOINT_EVERY, effective_iterations - batch_start)
+            batch_count = min(batch_size, n_iterations - current_iter)
 
-            await db.execute(
-                """UPDATE simulation_runs
-                   SET heartbeat_at = ?,
-                       lease_expires_at = ?,
-                       checkpoint_iteration = ?
-                   WHERE id = ?""",
-                (_utcnow(),
-                 (datetime.now(timezone.utc) + timedelta(seconds=LEASE_DURATION_S)).strftime("%Y-%m-%d %H:%M:%S"),
-                 start_iter + batch_start + batch_size,
-                 run_id),
+            evidence = run_simulation_batch(
+                scenario,
+                replicate_start=current_iter,
+                replicate_count=batch_count,
+                n_participants=n_participants,
+                base_seed=base_seed,
+                mode=mode,
+                oracle_truth=oracle_truth,
             )
-            await db.commit()
 
-        result = run_simulation(
-            scenario,
-            n_iterations=n_iterations,
-            n_participants=n_participants,
-            base_seed=base_seed,
-            mode=mode,
+            acc = acc.merge(evidence.accumulator)
+            current_iter += batch_count
+            last_seed = base_seed + (current_iter - 1) * FROZEN_STRIDE
+
+            await self._check_abort(db, run_id)
+            await self._persist_checkpoint(db, run_id, current_iter, acc, last_seed)
+
+        return acc.finalize(n_iterations, n_participants, mode=mode)
+
+    async def _persist_checkpoint(self, db, run_id: int, iteration: int,
+                                   acc, last_seed: int) -> None:
+        acc_json = json.dumps(acc.to_dict(), sort_keys=True, separators=(",", ":"), default=str)
+        acc_hash = hashlib.sha256(acc_json.encode()).hexdigest()
+        now = _utcnow()
+        expires = (datetime.now(timezone.utc) + timedelta(seconds=LEASE_DURATION_S)).strftime("%Y-%m-%d %H:%M:%S")
+
+        cursor = await db.execute(
+            """UPDATE simulation_runs
+               SET heartbeat_at = ?,
+                   lease_expires_at = ?,
+                   checkpoint_iteration = ?
+               WHERE id = ? AND lease_owner = ?""",
+            (now, expires, iteration, run_id, self.worker_id),
         )
-        return result
+        if cursor.rowcount == 0:
+            raise _LeaseRoot()
+
+        await db.execute(
+            """INSERT INTO simulation_checkpoints
+               (run_id, checkpoint_iteration, accumulator_json, accumulator_hash,
+                last_completed_seed, checkpoint_version, updated_at)
+               VALUES (?, ?, ?, ?, ?, '1.0', ?)
+               ON CONFLICT(run_id)
+               DO UPDATE SET checkpoint_iteration = excluded.checkpoint_iteration,
+                             accumulator_json = excluded.accumulator_json,
+                             accumulator_hash = excluded.accumulator_hash,
+                             last_completed_seed = excluded.last_completed_seed,
+                             updated_at = excluded.updated_at""",
+            (run_id, iteration, acc_json, acc_hash, last_seed, now),
+        )
+        await db.commit()
 
     async def _check_abort(self, db, run_id: int) -> None:
         row = await (await db.execute(
@@ -222,6 +305,14 @@ class ScienceWorker:
         )).fetchone()
         if row and row["abort_requested"]:
             raise _AbortRequested()
+
+    async def _verify_lease(self, db, run_id: int) -> None:
+        row = await (await db.execute(
+            "SELECT lease_owner FROM simulation_runs WHERE id = ?",
+            (run_id,),
+        )).fetchone()
+        if not row or row["lease_owner"] != self.worker_id:
+            raise _LeaseRoot()
 
     async def run_loop(self, max_iterations: int | None = None) -> int:
         """Poll for work and execute. Returns count of runs completed."""
@@ -258,6 +349,13 @@ class ScienceWorker:
 
 class _AbortRequested(Exception):
     pass
+
+
+class _LeaseRoot(Exception):
+    pass
+
+
+_LeaseLost = _LeaseRoot
 
 
 async def main():

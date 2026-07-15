@@ -33,6 +33,7 @@ _MIGRATION_MODULES = [
     "app.storage.migrations.v008_provenance_persistence",
     "app.storage.migrations.v009_objective_audit_tables",
     "app.storage.migrations.v010_science_worker",
+    "app.storage.migrations.v011_simulation_checkpoints",
 ]
 
 _VERSION_TABLE = """

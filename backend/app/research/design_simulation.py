@@ -10,7 +10,7 @@ import hashlib
 import json
 import math
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from app.research.causal_oracle import DEFAULT_TARGETS, compute_oracle_effect
@@ -89,6 +89,229 @@ class SimulationResult:
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
+
+
+FROZEN_STRIDE = 1000
+
+
+@dataclass
+class SimulationAccumulator:
+    valid_count: int = 0
+    invalid_count: int = 0
+    rejections: int = 0
+    nc_rejections: int = 0
+    nc_analyses: int = 0
+    converged_count: int = 0
+    fallback_count: int = 0
+    estimate_sum: float = 0.0
+    estimate_sum_sq: float = 0.0
+    squared_error_sum: float = 0.0
+    ci_covers_count: int = 0
+    ci_width_sum: float = 0.0
+    seeds: list[int] = field(default_factory=list)
+    oracle_truth: float = 0.0
+    oracle_se: float = 0.0
+    scenario_id: str = ""
+    scenario_version: str = ""
+
+    def merge(self, other: SimulationAccumulator) -> SimulationAccumulator:
+        return SimulationAccumulator(
+            valid_count=self.valid_count + other.valid_count,
+            invalid_count=self.invalid_count + other.invalid_count,
+            rejections=self.rejections + other.rejections,
+            nc_rejections=self.nc_rejections + other.nc_rejections,
+            nc_analyses=self.nc_analyses + other.nc_analyses,
+            converged_count=self.converged_count + other.converged_count,
+            fallback_count=self.fallback_count + other.fallback_count,
+            estimate_sum=self.estimate_sum + other.estimate_sum,
+            estimate_sum_sq=self.estimate_sum_sq + other.estimate_sum_sq,
+            squared_error_sum=self.squared_error_sum + other.squared_error_sum,
+            ci_covers_count=self.ci_covers_count + other.ci_covers_count,
+            ci_width_sum=self.ci_width_sum + other.ci_width_sum,
+            seeds=self.seeds + other.seeds,
+            oracle_truth=self.oracle_truth,
+            oracle_se=self.oracle_se,
+            scenario_id=self.scenario_id,
+            scenario_version=self.scenario_version,
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {k: v for k, v in self.__dict__.items()}
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SimulationAccumulator:
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+    def hash(self) -> str:
+        data = json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"), default=str)
+        return hashlib.sha256(data.encode()).hexdigest()
+
+    def finalize(
+        self,
+        n_iterations: int,
+        n_participants: int = 18,
+        sessions_per_participant: int = 3,
+        trials_per_task: int = 5,
+        alpha: float = 0.05,
+        mode: str = "unit",
+    ) -> SimulationResult:
+        n = n_iterations
+        vc = self.valid_count
+        n_invalid = n - vc
+        valid_rate = vc / n if n > 0 else 0.0
+        fallback_rate_val = self.fallback_count / n if n > 0 else 0.0
+        convergence_rate_val = self.converged_count / n if n > 0 else 0.0
+
+        is_null = self.oracle_truth == 0.0
+
+        invalid_reasons: list[str] = []
+        if vc == 0:
+            invalid_reasons.append("zero_valid_replicates")
+        if valid_rate < MIN_VALID_INFERENCE_RATE:
+            invalid_reasons.append(f"valid_rate_{valid_rate:.2f}_below_{MIN_VALID_INFERENCE_RATE}")
+
+        campaign_valid = len(invalid_reasons) == 0
+
+        if vc == 0:
+            return SimulationResult(
+                scenario_id=self.scenario_id, n_iterations=n,
+                n_participants=n_participants,
+                sessions_per_participant=sessions_per_participant,
+                trials_per_task=trials_per_task,
+                power=None, power_se=None, type_i_error=None, type_i_se=None,
+                mean_estimate=None, bias=None, bias_se=None, rmse=None,
+                coverage=None, coverage_se=None, interval_width=None,
+                convergence_rate=convergence_rate_val,
+                fallback_rate=fallback_rate_val,
+                valid_inference_rate=0.0,
+                negative_control_fp_rate=None,
+                oracle_effect=round(self.oracle_truth, 6),
+                oracle_se=round(self.oracle_se, 6),
+                seed_set=self.seeds, scenario_version=self.scenario_version,
+                campaign_valid=False, invalid_reason="; ".join(invalid_reasons),
+                n_valid_replicates=0, n_invalid_replicates=n_invalid,
+                mode=mode,
+            )
+
+        rejection_rate = self.rejections / vc
+        mean_est = self.estimate_sum / vc
+        bias_val = mean_est - self.oracle_truth
+        rmse_val = math.sqrt(self.squared_error_sum / vc)
+        coverage_val = self.ci_covers_count / vc if vc > 0 else 0.0
+        avg_width = self.ci_width_sum / vc if vc > 0 else 0.0
+
+        power_val = rejection_rate if not is_null else None
+        type_i_val = rejection_rate if is_null else None
+        rate_se = math.sqrt(rejection_rate * (1 - rejection_rate) / vc) if vc > 1 else 0.0
+        cov_se = math.sqrt(coverage_val * (1 - coverage_val) / vc) if vc > 1 else 0.0
+
+        bias_se_val = 0.0
+        if vc > 1:
+            est_var = (self.estimate_sum_sq - self.estimate_sum ** 2 / vc) / (vc - 1)
+            est_var = max(0.0, est_var)
+            bias_se_val = math.sqrt(est_var / vc)
+
+        nc_fp = self.nc_rejections / self.nc_analyses if self.nc_analyses > 0 else None
+
+        return SimulationResult(
+            scenario_id=self.scenario_id, n_iterations=n,
+            n_participants=n_participants,
+            sessions_per_participant=sessions_per_participant,
+            trials_per_task=trials_per_task,
+            power=round(power_val, 4) if power_val is not None else None,
+            power_se=round(rate_se, 4) if not is_null else None,
+            type_i_error=round(type_i_val, 4) if type_i_val is not None else None,
+            type_i_se=round(rate_se, 4) if is_null else None,
+            mean_estimate=round(mean_est, 6),
+            bias=round(bias_val, 6), bias_se=round(bias_se_val, 6),
+            rmse=round(rmse_val, 6),
+            coverage=round(coverage_val, 4), coverage_se=round(cov_se, 4),
+            interval_width=round(avg_width, 6),
+            convergence_rate=round(convergence_rate_val, 4),
+            fallback_rate=round(fallback_rate_val, 4),
+            valid_inference_rate=round(valid_rate, 4),
+            negative_control_fp_rate=round(nc_fp, 4) if nc_fp is not None else None,
+            oracle_effect=round(self.oracle_truth, 6),
+            oracle_se=round(self.oracle_se, 6),
+            seed_set=self.seeds, scenario_version=self.scenario_version,
+            campaign_valid=campaign_valid,
+            invalid_reason="; ".join(invalid_reasons) if invalid_reasons else "",
+            n_valid_replicates=vc,
+            n_invalid_replicates=n_invalid,
+            mode=mode,
+        )
+
+
+@dataclass
+class BatchSimulationEvidence:
+    accumulator: SimulationAccumulator
+    replicate_start: int
+    replicate_count: int
+
+
+def run_simulation_batch(
+    scenario: AgentScenario,
+    replicate_start: int,
+    replicate_count: int,
+    n_participants: int = 18,
+    base_seed: int = 42,
+    mode: str = "unit",
+    oracle_truth: float = 0.0,
+    alpha: float = 0.05,
+    sessions_per_participant: int = 3,
+    trials_per_task: int = 5,
+    abort_callback: Any = None,
+) -> BatchSimulationEvidence:
+    acc = SimulationAccumulator(
+        oracle_truth=oracle_truth,
+        scenario_id=scenario.scenario_id,
+        scenario_version=scenario.version,
+    )
+
+    for r in range(replicate_start, replicate_start + replicate_count):
+        if abort_callback is not None:
+            abort_callback()
+
+        sim_seed = base_seed + r * FROZEN_STRIDE
+        acc.seeds.append(sim_seed)
+
+        imagery_data, nc_data = _generate_study_data(
+            scenario, n_participants, sessions_per_participant, trials_per_task, sim_seed,
+        )
+
+        result = run_primary_analysis(imagery_data, alpha=alpha)
+
+        if result.converged and not result.is_fallback:
+            acc.converged_count += 1
+        if result.is_fallback:
+            acc.fallback_count += 1
+
+        if result.inference_valid:
+            acc.valid_count += 1
+            est = result.effect_estimate
+            acc.estimate_sum += est
+            acc.estimate_sum_sq += est * est
+            acc.squared_error_sum += (est - oracle_truth) ** 2
+            if result.p_value <= alpha:
+                acc.rejections += 1
+            covered = result.ci_lower <= oracle_truth <= result.ci_upper
+            if covered:
+                acc.ci_covers_count += 1
+            acc.ci_width_sum += result.ci_upper - result.ci_lower
+        else:
+            acc.invalid_count += 1
+
+        if nc_data:
+            nc_result = run_primary_analysis(nc_data, alpha=alpha)
+            acc.nc_analyses += 1
+            if nc_result.inference_valid and nc_result.p_value <= alpha:
+                acc.nc_rejections += 1
+
+    return BatchSimulationEvidence(
+        accumulator=acc,
+        replicate_start=replicate_start,
+        replicate_count=replicate_count,
+    )
 
 
 @dataclass
