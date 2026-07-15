@@ -2,6 +2,190 @@
 
 ---
 
+## 2026-07-15 — Scientific Gate C0.2: Abort Contract, Replay Identity and Export Closure (final correction)
+
+### Task
+Narrowly scoped final correction to C0.2: the prior closure ("Worker, Replay
+Provenance and CI Truth Closure", below) declared COMPLETE without three
+things it should have had — an abort endpoint that actually enforced
+cooperative abort against a running worker (it force-set `status='aborted'`
+unconditionally instead), a replay path that still silently substituted a
+different participant when the manifest's generation index didn't match,
+and a `content_hash_match` column that was computed but never persisted or
+exported. This closure fixes all three and proves them with CI, without
+touching cognitive-agent effects, the causal oracle, the GEE specification,
+endpoint scoring, the simulation seed formula, or the accepted 10,000-
+replicate campaign artifact.
+
+### Starting State
+
+```
+task_stated_starting_head:  e1ff5a54bc02abb1274c0a416d898f6c76e0faaf
+actual_starting_head:       ce5a81a76eca120e833db420505df4b3f914db4d
+branch:                     research/scientific-measurement-c02
+```
+The task's stated starting HEAD was one commit behind the branch's actual
+HEAD at the time this work began (`ce5a81a76eca120e833db420505df4b3f914db4d`,
+the prior "docs(science): record C0.2 worker/provenance CI evidence and mark
+COMPLETE" commit). The actual HEAD is recorded here per instruction to
+verify rather than assume the stated value.
+
+### Closure Commits (3 total)
+
+1. **fix(science-api): enforce cooperative abort through persisted worker
+   contract** (`774ce78`)
+   - `POST /simulations/{id}/abort` is now status-aware: queued/checkpointed
+     runs transition straight to `aborted` (no worker owns them);
+     claimed/running runs only get `abort_requested=1`, preserving state
+     until the owning worker reaches a safe checkpoint; terminal runs are
+     returned unmodified with no mutation
+   - Worker finalization is a single atomically guarded UPDATE requiring
+     `lease_owner`, `abort_requested=0`, and `status='running'` before
+     writing `completed`/`completed_at`, with the summary insert in the same
+     transaction; on guard failure it re-reads to decide `aborted` vs
+     `lost_lease` and never inserts a completed summary
+   - A completed batch's checkpoint is now persisted *before* the abort
+     check that follows it, so a fully computed batch is never discarded
+     because abort arrived between batch completion and checkpoint
+     persistence
+   - Added WAL journaling and `busy_timeout` to the shared SQLite connection
+     factory — the worker and API process write to `simulation_runs`
+     concurrently by design, and this was previously unhandled
+   - API integration tests against the real HTTP handler and a real
+     claimed/running worker: nonzero batch executed, abort mid-run,
+     checkpoint reached, terminal aborted, no completed summary, guarded
+     UPDATE rejects late finalization; plus queued abort, checkpointed
+     abort, abort after completed, repeated idempotent abort, abort after
+     lease transfer
+
+2. **fix(provenance): require exact participant history provider identity
+   and replay hash evidence** (`15d0ab0`)
+   - 14 replay-critical manifest keys must now be explicitly present as
+     JSON keys (absence produces a structured divergence and stops replay);
+     `previous_condition` may be null only at period 0, an absent key is
+     invalid at every period
+   - Removed the `gen_index = 0` fallback; a missing or invalid
+     participant-generation index stops replay. Replay resolves the exact
+     participant at that index and requires its `participant_id` to equal
+     the persisted session's — no longer searches the population to
+     substitute a different matching participant
+   - Scenario resolution is strict (`scenario_id` present, registered, hash
+     match) and never falls back through `cognitive_agent_version`
+   - Response-provider verification instantiates the exact provider named
+     by the manifest and requires id/version/config_hash to all match;
+     unknown provider types fail replay closed
+   - RNG verification now checks both `rng_version` and `rng_version_hash`,
+     stopping replay on either mismatch
+   - Added v012 migration persisting `content_hash_match` on
+     `objective_replay_runs`; the export builder now sources it from that
+     column instead of trusting `exact_match`
+   - Fixed a latent bug in `build_export_from_db()` (`aiosqlite.Row` has no
+     `.get()`) that crashed the function whenever a completed campaign run
+     was present — this path had zero prior test coverage
+   - Added a real DB-built export integration test (migrated DB, session,
+     manifest, seal, successful replay, confirmatory analysis, campaign
+     evidence, `build_export_from_db()`, `validate_export_package()`) plus
+     9 corruption variants, replacing the hand-constructed package as the
+     only successful-path evidence
+
+3. **ci(science): prove API abort and DB-built export closure** (`c7c4b86`)
+   - Added `science-api-cooperative-abort` (real API handler + real worker)
+   - Added `science-replay-export-db-integration` (DB-built export +
+     validator + corruption variants)
+   - Fixed the pre-existing Playwright abort race in
+     `synthetic-smoke.spec.ts` (synthetic runtime, not the science worker):
+     workload was small enough that the run could complete before the fixed
+     2s client-side wait elapsed. The test now polls for an observed
+     `running` state before sending abort and uses a workload large enough
+     (60 sessions, 12000 windows) to guarantee a real active interval
+
+### Local Test Evidence
+
+```
+core_and_research_sweep:  734 passed, 338 deselected, 0 failed
+commit_1+2_consolidated:  154 passed, 0 failed
+  (test_science_worker, test_science_api_abort, test_replay_persistent,
+   test_replay_export_db_integration, test_objective_export,
+   test_objective_provenance, test_objective_replay,
+   test_e2e_scientific_study, test_migration_runner, test_run_service,
+   test_abort)
+lint: ruff — all checks passed (modified and new files)
+```
+
+### Remote CI Evidence
+
+```
+verified_code_head:                          c7c4b86dcab8014e1f93dac1ec9240c4cf6f9bb0
+ci_tested_head:                               c7c4b86dcab8014e1f93dac1ec9240c4cf6f9bb0
+workflow_run_id:                             29435166799
+overall_workflow_conclusion:                 success
+science_api_cooperative_abort_conclusion:     success
+science_replay_export_db_integration_conclusion: success
+playwright_conclusion:                       success
+campaign_id:                                 321b5299d1d40bc9
+campaign_artifact_hash:                      (unchanged — no scientific code changes; campaign not rerun)
+```
+
+| Job | Conclusion |
+|-----|-----------|
+| docker-config | success |
+| frontend | success |
+| backend-core | success |
+| backend-runtime | success |
+| science-statistics | success |
+| science-worker-resume-abort | success |
+| science-api-restart-recovery | success |
+| science-unit | success |
+| science-simulation | success |
+| science-campaign-smoke | success |
+| science-replay-export | success |
+| science-replay-failclosed | success |
+| science-export-persistent | success |
+| science-contrast-invariants | success |
+| **science-api-cooperative-abort** | **success (new)** |
+| science-runtime-e2e | success |
+| science-provenance-no-fallback | success |
+| **science-replay-export-db-integration** | **success (new)** |
+| science-objective-db-transaction | success |
+| science-calibrated-inference | success |
+| science-frontend-e2e | success |
+| **playwright** | **success (previously failing — race fixed, not exempted)** |
+| backend-legacy-validation | skipped (workflow_dispatch only) |
+| docker-smoke | skipped (workflow_dispatch/PR only) |
+
+Unlike the prior two closure attempts, Playwright is genuinely green here —
+the abort race was fixed rather than documented as a pre-existing exception.
+
+### Definition of Done Checklist
+
+1. [x] Abort endpoint sets and respects `abort_requested`, status-aware by run state
+2. [x] A running worker cannot overwrite abort with completed (atomic guarded UPDATE, proven under real concurrency)
+3. [x] A fully completed batch is never discarded by a concurrent abort (persist-before-check ordering, regression test)
+4. [x] No replay-critical fallback remains (participant index, scenario resolution, response provider, RNG)
+5. [x] Manifest field-presence semantics distinguish absent from explicit null
+6. [x] `content_hash_match` is persisted (v012 migration) and sourced from the persisted column in export
+7. [x] A real DB-built export (not hand-constructed) passes `validate_export_package`
+8. [x] `science-api-cooperative-abort` CI job green
+9. [x] `science-replay-export-db-integration` CI job green
+10. [x] Playwright green (race fixed, not exempted)
+11. [x] Accepted 10,000-replicate campaign artifact unchanged and not rerun
+12. [x] No cognitive-agent, causal-oracle, GEE, scoring, or seed-formula changes
+
+### Status
+
+```
+scientific_inference_status: PASS (unchanged — no scientific code touched)
+persistent_evidence_status:  PASS
+remote_ci_status:            PASS (all required jobs green, including Playwright)
+C0.2:                        COMPLETE
+campaign_id:                 321b5299d1d40bc9
+verified_code_head:          c7c4b86dcab8014e1f93dac1ec9240c4cf6f9bb0
+ci_tested_head:               c7c4b86dcab8014e1f93dac1ec9240c4cf6f9bb0
+workflow_run_id:              29435166799
+```
+
+---
+
 ## 2026-07-15 — Scientific Gate C0.2: Worker, Replay Provenance and CI Truth Closure
 
 ### Task
