@@ -810,4 +810,49 @@ This is honest role-oriented information separation, not authenticated access co
 
 ---
 
-*Last updated: 2026-07-15 — Scientific Gate C0.2 Final Persistent Evidence Closure*
+## ADR-036: Incremental Simulation with Sufficient-Statistics Accumulator
+
+**Status:** Accepted
+**Date:** 2026-07-15
+**Context:** The science worker updated checkpoint_iteration without executing actual replicates. Resume ran full n_iterations regardless of checkpoint position.
+
+**Decision:** Introduce `SimulationAccumulator` with sufficient statistics (valid/invalid counts, rejection counts, estimate sums/squared sums, coverage counts, width sums). `run_simulation_batch()` executes deterministic replicate ranges with absolute seed `base_seed + r * FROZEN_STRIDE`. Accumulator is serialized to JSON and persisted in `simulation_checkpoints` table after every batch. Resume loads persisted accumulator and continues from the checkpoint iteration.
+
+**Consequences:**
+- Worker executes real replicates in every batch
+- Checkpoint includes actual evidence (not just iteration counter)
+- Resume provably skips completed replicates
+- Slight floating-point difference between uninterrupted and resumed runs due to float associativity across batch boundaries (within 1e-5 tolerance)
+
+---
+
+## ADR-037: Replay Inputs Resolved Exclusively from Sealed Manifest
+
+**Status:** Accepted
+**Date:** 2026-07-15
+**Context:** replay_from_db used hardcoded `seed = 42`, `prev_condition = None`, and scenario fallback `next(iter(SCENARIOS.values()))` — violating fail-closed provenance.
+
+**Decision:** Add `root_seed`, `previous_condition`, `participant_generation_index`, `scenario_id` to ObjectiveManifest. Replay resolves all inputs from manifest; missing values produce structured divergences and prevent exact_match. `response_provider_verified` requires ID, version, AND config hash. `schedule_verified` requires three-way hash match (DB, manifest, recomputed).
+
+**Consequences:**
+- No replay-critical value inferred from defaults
+- All existing replay tests updated to supply new manifest fields
+- Strict three-way schedule verification prevents hash drift
+
+---
+
+## ADR-038: All-Valid Export Semantics
+
+**Status:** Accepted
+**Date:** 2026-07-15
+**Context:** Export validation used "any valid result" semantics for inference and campaigns — one valid result could mask failures.
+
+**Decision:** `package.inference_valid = bool(required) and all(r.inference_valid for r in required)`. `package.campaign_valid = bool(required) and all(c.campaign_valid for c in required)`. Persist `invalid_inference_ids`, `failed_campaign_ids`, and counts. Export replay validation requires all 7 verification flags.
+
+**Consequences:**
+- One invalid inference or failed campaign invalidates the entire package
+- Explicit tracking of which results failed and why
+
+---
+
+*Last updated: 2026-07-15 — Scientific Gate C0.2 Worker, Replay Provenance and CI Truth Closure*

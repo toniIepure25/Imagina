@@ -2,6 +2,81 @@
 
 ---
 
+## 2026-07-15 — Scientific Gate C0.2: Worker, Replay Provenance and CI Truth Closure
+
+### Task
+Final C0.2 corrective patch: implement real resumable/abortable simulation
+execution with persisted accumulators, remove all replay fallbacks, enforce
+all-valid export semantics, and prove via CI.
+
+### Starting State
+
+```
+actual_starting_head: 9454fc4b302479aba17f951ef438b3dee64dfd75
+branch:               research/scientific-measurement-c02
+prior_ci_tested_head: 6f9d5d5662e43f501256b917890b2618bb643408
+```
+
+### Closure Commits (3 total)
+
+1. **fix(science-worker): persist incremental simulation checkpoints and cooperative abort**
+   - Added `SimulationAccumulator` and `BatchSimulationEvidence` dataclasses for sufficient-statistics based batch aggregation
+   - `run_simulation_batch()` executes deterministic replicate ranges with seeds `base_seed + r * FROZEN_STRIDE`
+   - Worker `_run_with_checkpoints` does real batch execution (not checkpoint-only loops)
+   - v011 migration adds `simulation_checkpoints` table for accumulator persistence
+   - True resume: loads persisted accumulator, skips completed replicates, combines new evidence
+   - Cooperative abort: checks before/after every batch, before finalization; never writes completed summary after abort
+   - Lease correctness: all checkpoint writes use `WHERE id = ? AND lease_owner = ?`; lost lease → stop writing
+   - 19 tests: partial execution persists, resume skips completed, resumed=uninterrupted, mid-run abort, abort after checkpoint, no completed summary on abort, lease lost → cannot finalize, no overlapping ranges, expired worker recovery
+
+2. **fix(provenance): resolve replay inputs exactly and require all evidence valid**
+   - Added `root_seed`, `previous_condition`, `participant_generation_index`, `scenario_id` to ObjectiveManifest
+   - Removed hardcoded `seed = 42`, `prev_condition = None`, scenario fallback `next(iter(SCENARIOS.values()))`
+   - Replay fails closed with structured divergence when any required value is missing or unresolvable
+   - `response_provider_verified = true` requires ID, version, AND config hash
+   - `schedule_verified = true` requires DB hash, manifest hash, AND recomputed hash all match
+   - Export validity: all-valid semantics for inference and campaigns; persists invalid_inference_ids, failed_campaign_ids, counts
+   - Export validation requires all 7 replay verification flags for exact_match
+   - 19 replay tests + 14 export tests: missing/wrong seed, unresolved scenario, hash mismatches, mixed valid/invalid evidence
+
+3. **ci(science): prove resumable worker sealed replay and full workflow closure**
+   - Added `science-worker-resume-abort` CI job (resume, abort, checkpoint, lease, expired recovery tests)
+   - Added `science-provenance-no-fallback` CI job (no defaults, no fallbacks, all-valid export aggregation)
+   - Playwright failure analysis: `synthetic-smoke.spec.ts:228 › abort during active run proves final state` — pre-existing synthetic runtime race condition, unrelated to C0.2 science changes
+
+### Local Test Evidence
+
+```
+tests_passed: 115 (all C0.2-relevant science tests)
+tests_total:  115
+failures:     0
+lint:         all checks passed (ruff, modified files)
+```
+
+### Playwright Failure Documentation
+
+- Test name: `Negative E2E Tests › abort during active run proves final state`
+- File: `frontend/e2e/synthetic-smoke.spec.ts:228`
+- Cause: synthetic runtime abort race condition (run may complete before abort arrives after 2s delay)
+- Prior failing workflow: 29402285105 (same SHA as prior C0.2 closure, proving it predates this patch)
+- Scope: synthetic runtime, not science worker — does not exercise C0.2 abort behavior
+- Science E2E job (`science-frontend-e2e`) passed in same workflow
+
+### Status
+
+```
+scientific_inference_status: PASS
+persistent_evidence_status: PASS
+remote_ci_status:           PENDING_PUSH
+C0.2:                       PENDING_CI
+verified_code_head:         <to be recorded after push>
+ci_tested_head:             <to be recorded after CI>
+workflow_run_id:            <to be recorded after CI>
+campaign_id:                321b5299d1d40bc9
+```
+
+---
+
 ## 2026-07-15 — Scientific Gate C0.2: Final Persistent Evidence Closure
 
 ### Task

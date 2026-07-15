@@ -458,6 +458,26 @@ jobs:
           app/tests/test_science_worker.py
           -v --timeout=120
 
+  science-worker-resume-abort:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Worker resume, abort, and lease protection
+        run: >-
+          python3 -m pytest
+          app/tests/test_science_worker.py
+          -k "resume or abort or checkpoint or lease or overlapping or expired"
+          -v --timeout=180
+
   science-replay-failclosed:
     runs-on: ubuntu-latest
     defaults:
@@ -476,6 +496,30 @@ jobs:
           python3 -m pytest
           app/tests/test_objective_replay.py
           app/tests/test_replay_persistent.py
+          -v --timeout=120
+
+  science-provenance-no-fallback:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: No replay defaults, no fallback, all-valid export
+        run: >-
+          python3 -m pytest
+          app/tests/test_replay_persistent.py
+          app/tests/test_objective_export.py
+          -k "missing_root_seed or wrong_root_seed or unresolved_scenario
+          or scenario_hash_mismatch or provider_config or rng_version
+          or schedule_db_manifest or missing_previous or replay_missing_verification
+          or mixed_valid_invalid or mixed_pass_fail"
           -v --timeout=120
 
   science-export-persistent:
