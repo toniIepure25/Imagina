@@ -232,20 +232,44 @@ test.describe("Negative E2E Tests", () => {
     const studyId = `e2e-abort-001`;
     const key = `e2e-abort-key-001`;
 
+    // Large enough workload (20 participants x 3 sessions x 20 trials x 10
+    // windows = 60 sessions, 12000 windows) that the run has a real,
+    // observable "running" interval — a small workload can complete before
+    // a fixed client-side wait elapses, racing the abort against completion.
     const createRes = await request.post(`${API}/studies`, {
       headers: { "Idempotency-Key": key },
       data: {
         study_id: studyId,
-        participant_count: 6,
+        participant_count: 20,
         seed: 7,
-        trials_per_session: 5,
-        windows_per_trial: 3,
+        trials_per_session: 20,
+        windows_per_trial: 10,
       },
     });
     expect(createRes.status()).toBe(202);
     const { run_id } = await createRes.json();
 
-    await page.waitForTimeout(2000);
+    // Wait until the run is observably active before sending abort, rather
+    // than a fixed sleep that can fire before or after the run's actual
+    // active window.
+    let observedRunning = false;
+    for (let i = 0; i < 50; i++) {
+      const pollRes = await request.get(`${API}/runs/${run_id}`);
+      const body = await pollRes.json();
+      if (body.status === "running") {
+        observedRunning = true;
+        break;
+      }
+      if (
+        ["completed", "completed_with_failures", "failed", "aborted"].includes(
+          body.status
+        )
+      ) {
+        break;
+      }
+      await page.waitForTimeout(100);
+    }
+    expect(observedRunning).toBe(true);
 
     const abortRes = await request.post(`${API}/runs/${run_id}/abort`);
     expect(abortRes.status()).toBe(200);

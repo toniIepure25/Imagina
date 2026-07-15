@@ -478,6 +478,25 @@ jobs:
           -k "resume or abort or checkpoint or lease or overlapping or expired"
           -v --timeout=180
 
+  science-api-cooperative-abort:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: API-driven cooperative abort through the real worker contract
+        run: >-
+          python3 -m pytest
+          app/tests/test_science_api_abort.py
+          -v --timeout=180
+
   science-replay-failclosed:
     runs-on: ubuntu-latest
     defaults:
@@ -520,6 +539,25 @@ jobs:
           or scenario_hash_mismatch or provider_config or rng_version
           or schedule_db_manifest or missing_previous or replay_missing_verification
           or mixed_valid_invalid or mixed_pass_fail"
+          -v --timeout=120
+
+  science-replay-export-db-integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: DB-built export validated end to end, with corruption variants
+        run: >-
+          python3 -m pytest
+          app/tests/test_replay_export_db_integration.py
           -v --timeout=120
 
   science-export-persistent:
