@@ -8,7 +8,6 @@ import math
 import warnings
 
 from app.research.cognitive_agent import (
-    SCENARIO_CARRYOVER,
     SCENARIO_MEDIUM_ADAPTIVE,
     SCENARIO_PRACTICE_ONLY,
     SCENARIO_SMALL_ADAPTIVE,
@@ -17,7 +16,6 @@ from app.research.cognitive_agent import (
 )
 from app.research.design_simulation import (
     DesignRecommendation,
-    SimulationResult,
     generate_design_recommendation,
     run_scenario_grid,
     run_simulation,

@@ -8,15 +8,13 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from app.research.objective_endpoints import REGISTRY_VERSION, registry_hash
 from app.research.objective_runtime import (
     OBJECTIVE_RUNTIME_VERSION,
     ObjectiveSessionResult,
-    compute_objective_manifest_hash,
-    manifest_objective_fields,
 )
 from app.research.psychophysics.calibration import CALIBRATION_VERSION
 from app.research.psychophysics.common import BATTERY_VERSION

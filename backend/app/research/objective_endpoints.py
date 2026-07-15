@@ -577,6 +577,10 @@ def get_subjective_endpoints() -> list[ObjectiveEndpointDefinition]:
     return [ep for ep in _ENDPOINTS.values() if not ep.is_objective]
 
 
+def get_registry() -> dict[str, "ObjectiveEndpointDefinition"]:
+    return dict(_ENDPOINTS)
+
+
 def registry_hash() -> str:
     """Compute a deterministic hash of the entire endpoint registry."""
     data = {eid: ep.to_dict() for eid, ep in sorted(_ENDPOINTS.items())}

@@ -10,7 +10,6 @@ from app.research.cognitive_agent import (
 from app.research.design_simulation import WILLIAMS_SEQUENCES
 from app.research.psychophysics.common import StimulusSpec
 from app.research.statistics.confirmatory import (
-    AnalysisResult,
     run_bootstrap_ci,
     run_full_analysis,
     run_hierarchical_analysis,
@@ -97,11 +96,11 @@ class TestContrastRecovery:
         data = self._make_known_means_data(0.10, 0.20, 0.40)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            import pandas as pd
             from statsmodels.genmod.cov_struct import Exchangeable
             from statsmodels.genmod.families import Gaussian
             from statsmodels.genmod.generalized_estimating_equations import GEE
-            from app.research.statistics.confirmatory import _prepare_df, GEE_FORMULA
+
+            from app.research.statistics.confirmatory import GEE_FORMULA, _prepare_df
             df = _prepare_df(data)
             model = GEE.from_formula(GEE_FORMULA, groups=df["participant_id"],
                                      data=df, family=Gaussian(), cov_struct=Exchangeable())

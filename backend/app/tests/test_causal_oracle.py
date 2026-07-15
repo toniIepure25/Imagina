@@ -1,5 +1,5 @@
 """Tests for observed-scale causal oracle."""
-from app.research.causal_oracle import compute_oracle_effect, compute_full_oracle, oracle_spec_hash
+from app.research.causal_oracle import compute_full_oracle, compute_oracle_effect, oracle_spec_hash
 from app.research.cognitive_agent import (
     SCENARIO_MEDIUM_ADAPTIVE,
     SCENARIO_PERCEPTUAL_ONLY,

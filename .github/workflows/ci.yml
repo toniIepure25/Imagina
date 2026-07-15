@@ -512,18 +512,18 @@ jobs:
           cache-dependency-path: backend/pyproject.toml
       - run: pip install -e ".[dev,science]"
       - name: Campaign smoke (strict_null + medium_adaptive, 50 replicates)
-        run: >-
+        run: |
           python3 -c "
-          from app.research.simulation_campaign import run_full_campaign, CORE_SCENARIOS;
-          scenarios = {k: CORE_SCENARIOS[k] for k in ['strict_null', 'medium_adaptive']};
-          r = run_full_campaign(50, 50, 18, 42, scenarios);
-          assert r.overall_pass, f'Campaign failed: {r.gate_issues}';
-          sn = r.scenario_summaries['strict_null'];
-          assert sn.type_i_error is not None and sn.type_i_error < 0.15;
-          assert sn.coverage is not None and sn.coverage > 0.85;
-          ma = r.scenario_summaries['medium_adaptive'];
-          assert ma.coverage is not None and ma.coverage > 0.85;
-          assert ma.power is not None and ma.power > 0.80;
+          from app.research.simulation_campaign import run_full_campaign, CORE_SCENARIOS
+          scenarios = {k: CORE_SCENARIOS[k] for k in ['strict_null', 'medium_adaptive']}
+          r = run_full_campaign(50, 50, 18, 42, scenarios)
+          assert r.overall_pass, f'Campaign failed: {r.gate_issues}'
+          sn = r.scenario_summaries['strict_null']
+          assert sn.type_i_error is not None and sn.type_i_error < 0.15
+          assert sn.coverage is not None and sn.coverage > 0.85
+          ma = r.scenario_summaries['medium_adaptive']
+          assert ma.coverage is not None and ma.coverage > 0.85
+          assert ma.power is not None and ma.power > 0.80
           print('Campaign smoke OK')
           "
 

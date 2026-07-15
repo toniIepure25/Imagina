@@ -322,9 +322,9 @@ async def get_analysis(run_id: int):
 
 @router.get("/endpoint-registry")
 async def get_endpoint_registry():
-    from app.research.objective_endpoints import ENDPOINT_REGISTRY, registry_hash
+    from app.research.objective_endpoints import get_registry, registry_hash
     return {
-        "endpoints": {k: v.to_dict() for k, v in ENDPOINT_REGISTRY.items()},
+        "endpoints": {k: v.to_dict() for k, v in get_registry().items()},
         "hash": registry_hash(),
     }
 

@@ -5,9 +5,9 @@ Each test verifies that the causal mechanism behaves as documented.
 Under strict null, adaptive/fixed/yoked potential outcomes must be
 EXACTLY equal (same RNG stream, same code path except condition label).
 """
-import math
 import random
 
+from app.research.causal_oracle import compute_oracle_effect
 from app.research.cognitive_agent import (
     SCENARIO_CARRYOVER,
     SCENARIO_DROPOUT,
@@ -18,12 +18,10 @@ from app.research.cognitive_agent import (
     SCENARIO_SMALL_ADAPTIVE,
     SCENARIO_STRICT_NULL,
     SCENARIO_SUBJECTIVE_ONLY,
-    AgentScenario,
     generate_population,
     generate_trial_response,
     should_dropout,
 )
-from app.research.causal_oracle import compute_oracle_effect
 from app.research.design_simulation import _generate_study_data
 from app.research.psychophysics.common import StimulusSpec
 from app.research.rng_registry import derive_seed

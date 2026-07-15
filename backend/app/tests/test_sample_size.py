@@ -1,5 +1,5 @@
 """Tests for sample-size grid search and Pareto analysis."""
-from app.research.sample_size import search_design_grid, sample_size_hash
+from app.research.sample_size import sample_size_hash, search_design_grid
 
 
 class TestGridSearch:

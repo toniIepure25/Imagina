@@ -161,7 +161,6 @@ def _prepare_df(trial_data: list[dict[str, Any]]) -> Any:
 
 
 def _cluster_diagnostics(df: Any) -> dict[str, Any]:
-    import numpy as np
     cluster_sizes = df.groupby("participant_id").size()
     return {
         "n_clusters": int(cluster_sizes.shape[0]),
@@ -191,7 +190,6 @@ def run_primary_analysis(
     """Run Estimator A: statsmodels GEE with Gaussian identity family."""
     try:
         import numpy as np
-        import pandas as pd
         from statsmodels.genmod.cov_struct import Exchangeable
         from statsmodels.genmod.families import Gaussian
         from statsmodels.genmod.generalized_estimating_equations import GEE
@@ -304,7 +302,6 @@ def run_hierarchical_analysis(
     """
     try:
         import numpy as np
-        import pandas as pd
         import statsmodels.formula.api as smf
     except ImportError:
         return _make_invalid_result(trial_data, estimand_id, HIERARCHICAL_FORMULA,

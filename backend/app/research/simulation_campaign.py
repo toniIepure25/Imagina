@@ -29,7 +29,7 @@ from app.research.cognitive_agent import (
     SCENARIO_WEAK_RELIABILITY,
     AgentScenario,
 )
-from app.research.design_simulation import SimulationResult, run_simulation
+from app.research.design_simulation import run_simulation
 
 CAMPAIGN_VERSION = "3.0"
 

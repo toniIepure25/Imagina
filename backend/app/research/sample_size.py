@@ -17,7 +17,6 @@ from app.research.cognitive_agent import (
     SCENARIO_MEDIUM_ADAPTIVE,
     SCENARIO_SMALL_ADAPTIVE,
     SCENARIO_STRICT_NULL,
-    AgentScenario,
 )
 from app.research.design_simulation import run_simulation
 
