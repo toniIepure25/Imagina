@@ -1,0 +1,36 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "pending-commit",
+  "estimand_id": "H1_neural_reliability_exploratory",
+  "created_at": "2026-07-16",
+  "confirmatory_or_exploratory": "exploratory",
+  "note": "Single-participant (sub-01) proof that the reliability pipeline runs correctly end-to-end against real downloaded, preprocessed data. Not a population-level reliability claim -- that requires all 20 participants, deferred to a controlled research workflow outside this session per the task's own CI/full-run distinction. An earlier version of session_reliability() grouped by 'condition' (perception/imagery, only 2 values), which gives a Pearson correlation that is trivially +-1 for any data with exactly 2 points; fixed to group by (condition, stimulus_id) instead (54 possible groups), which is what produced the non-trivial values below.",
+  "participants": ["sub-01"],
+  "split_half_reliability": {
+    "band_power__posterior__alpha": 0.9607240334265763,
+    "band_power__frontal__beta": 0.9921041022409193,
+    "spectral_entropy__central": 0.9428742867812704
+  },
+  "session_reliability_condition_stimulus_grouped": {
+    "band_power__posterior__alpha": 0.6003270453826235,
+    "band_power__frontal__beta": 0.01864820268831653,
+    "spectral_entropy__central": -0.018408590623862846
+  },
+  "negative_controls": {
+    "precue_vs_postcue_effect_size": {
+      "band_power__posterior__alpha": 0.2943718764797594,
+      "erp_amplitude__posterior": 0.20307650614699432,
+      "band_power__frontal__beta": 0.00729916299015595,
+      "interpretation": "Posterior alpha and posterior ERP amplitude show a real post-cue vs pre-cue effect, consistent with stimulus-locked visual processing concentrated in occipital/posterior channels; frontal beta shows essentially none, as expected for a channel/band pair with no obvious visual-evoked relationship."
+    },
+    "signal_quality_vs_target_correlation": {
+      "spectral_entropy__central_vs_vividness": 0.021955072073855397,
+      "interpretation": "Near zero: a pure signal-quality proxy does not spuriously predict the vividness behavioral target for this participant, reducing (not eliminating) concern that a later H2 result could be driven by signal-quality confounds rather than content-relevant neural information."
+    }
+  },
+  "preprocessing_qc_summary": {
+    "session_1": {"n_trials_total": 384, "n_trials_retained": 176, "retained_fraction": 0.4583333333333333},
+    "note": "See results/c1_preprocessing_qc.json for the full QC report, including the block_order_confound_flag=true finding that must be accounted for before any confirmatory H2/H3 claim."
+  }
+}
