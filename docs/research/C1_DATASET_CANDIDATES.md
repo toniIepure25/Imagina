@@ -110,9 +110,41 @@ of scope per the task's explicit restriction.
 
 ## Residual risks carried into C1_PROTOCOL.md
 
-1. ds005815's trigger-code table has not yet been decoded from raw data.
+1. ~~ds005815's trigger-code table has not yet been decoded from raw data.~~
+   **Resolved in Commit 2.** The real `sub-01/ses-1` task recording (114MB,
+   BrainVision format) was downloaded and read with MNE, confirming 30 real
+   channels at 1000Hz (30949466-sample / 951.466s duration — independently
+   contradicting the `eeg.json` sidecar's `RecordingDuration: 122.48`, which
+   is now confirmed copy-pasted from a resting-state run, a genuine metadata
+   authoring bug, not a hypothesis). The 27 distinct trigger codes (21-47)
+   observed in `events.tsv`, with exact per-code occurrence counts ({21:12,
+   22:12, 23:24, 24-35:8 each, 36-47:4 each}), were cross-checked against the
+   dataset authors' own analysis code
+   (`python/Event-Related Potential (ERP) Analysis/config.py` in
+   [CECNL/YOTO_You_Only_Think_Once](https://github.com/CECNL/YOTO_You_Only_Think_Once),
+   commit `5789a37`) — an authoritative primary source, not inference. See
+   `backend/app/research/neural/trigger_codebook.py` for the full transcribed
+   table. The same repository's `python/Behavioral Analysis/
+   Trigger_Vividness_Data.csv` provides genuine per-trial vividness ratings
+   (1-5, zero missing, for 26 enrolled participants — 20 of whom have public
+   EEG on OpenNeuro) whose per-(subject, session, trigger-code) occurrence
+   *counts* match the public BIDS release exactly, though the *within-code
+   instance order* does not match the raw chronological event stream
+   byte-for-byte — see the alignment-assumption caveat documented in
+   `backend/app/research/neural/adapters/yoto.py`. That repository carries no
+   detected LICENSE file, so the CSV is downloaded for provenance-tracked
+   analysis only (pinned to the commit SHA above) and is never committed to
+   this repository or redistributed; the underlying behavioral data
+   ultimately traces back to the CC0-licensed OpenNeuro dataset itself.
 2. Block/stimulus-category confound in ds005815 requires empirical QC, not
    just the authors' description, before confirmatory use (Commit 3).
 3. ds005815 has no dedicated EOG channels — the ocular-only negative control
    (falsification test 5) will use frontal EEG channels as a documented proxy,
    a weaker control than true EOG.
+4. **New, from Commit 2:** the vividness behavioral target's within-trigger-
+   code instance alignment (see item 1) is a documented assumption, not a
+   certainty. Commit 3 QC should attempt an independent cross-check (e.g. via
+   the finer-grained `derivatives/*/task_event.mat` marker stream) before
+   this is relied upon for the H2 primary estimand; if it cannot be
+   corroborated, H2 falls back to a code-conservative aggregate target per
+   `C1_PROTOCOL.md` Section 10.
