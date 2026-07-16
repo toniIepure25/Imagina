@@ -1,0 +1,27 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "pending-commit",
+  "estimand_id": "H2_incremental_validity_smoke_not_confirmatory",
+  "created_at": "2026-07-16",
+  "confirmatory_or_exploratory": "exploratory",
+  "note": "A 3-participant (sub-01, sub-02, sub-05) smoke demonstration that the classical-feature baseline models (RidgeFeatureModel, OrdinalFeatureModel) run end to end against real preprocessed data with a genuine participant-grouped held-out-subject split. This is NOT the Commit 7 confirmatory nested-validation run (that requires the full participant set, LOSO over all usable participants, and the frozen primary estimand). Reported here specifically because the result is informative and was not adjusted to look better: cross-subject generalization from 2 training participants to 1 held-out participant underperformed a naive per-training-set mean baseline, and one participant (sub-05) had severe artifact rejection.",
+  "participants": ["sub-01", "sub-02", "sub-05"],
+  "per_participant_perception_trials_retained": {
+    "sub-01": 87,
+    "sub-02": 80,
+    "sub-05": 17
+  },
+  "flag": "sub-05 retained only 17/192 perception trials (91% rejected) at the standard 150uV threshold -- substantially worse than sub-01/sub-02. Per-participant signal-quality heterogeneity is real and must be tracked as part of Commit 7's usable-participant-count accounting, not averaged away.",
+  "dataset_completeness_gap": "sub-07's task-run raw .eeg file returned HTTP 404 from the OpenNeuro S3 mirror during download -- only its .vhdr/.json/events sidecars exist, the actual signal file is absent from the public release. download.py correctly failed closed (no corrupt/empty file was created) rather than silently substituting a fixture. This subject cannot be used at all and reduces the effective usable participant count below 20; Commit 7 must verify this for every subject before computing the fixed-sample sensitivity analysis, not assume all 20 are usable.",
+  "held_out_subject_generalization": {
+    "held_out": "sub-05",
+    "trained_on": ["sub-01", "sub-02"],
+    "n_train": 167,
+    "n_test": 17,
+    "ridge_mae": 1.772006457693512,
+    "naive_mean_baseline_mae": 1.4906657273687918,
+    "ordinal_log_score": 1.8612598140923893,
+    "interpretation": "The ridge model performed WORSE than a naive training-mean baseline on the held-out participant -- reported honestly, not hidden. With only 2 training participants and one held-out participant with severe artifact rejection, this is not evidence of a null H2 result; it demonstrates exactly why Commit 7 requires the full usable participant set and LOSO (not a 2-vs-1 smoke split) before any confirmatory claim."
+  }
+}

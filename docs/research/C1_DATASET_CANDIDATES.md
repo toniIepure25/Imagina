@@ -148,3 +148,15 @@ of scope per the task's explicit restriction.
    this is relied upon for the H2 primary estimand; if it cannot be
    corroborated, H2 falls back to a code-conservative aggregate target per
    `C1_PROTOCOL.md` Section 10.
+5. **New, from Commit 5:** `sub-07`'s task-run raw `.eeg` file returns
+   HTTP 404 from the OpenNeuro S3 mirror — only its `.vhdr`/`.json`/events
+   sidecars are present; the actual signal file is absent from the public
+   release. This subject cannot be used at all. The effective usable
+   participant count is therefore below the nominal 20 and must be verified
+   per-subject (not assumed) before Commit 7's fixed-sample sensitivity
+   analysis. Per-participant artifact-rejection severity also varies more
+   than expected: a 3-subject smoke test (`results/c1_encoder_smoke.json`)
+   found `sub-05` retained only 17/192 perception trials (91% rejected) at
+   the standard 150uV threshold, versus 87/192 and 80/192 for `sub-01` and
+   `sub-02`. Commit 7 must track and report this heterogeneity explicitly,
+   not average it away.
