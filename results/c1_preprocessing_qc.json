@@ -1,0 +1,58 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "pending-commit",
+  "preprocessing_hash": "1c0921f6b673a832ef4b7f8154c60170b68f732ffe437b3de4973805080fdd03",
+  "created_at": "2026-07-16",
+  "confirmatory_or_exploratory": "exploratory",
+  "participants_processed": [
+    "sub-01"
+  ],
+  "per_participant": [
+    {
+      "dataset_id": "ds005815",
+      "participant_id": "sub-01",
+      "session_id": "1",
+      "n_trials_total": 384,
+      "n_trials_retained": 176,
+      "retained_fraction": 0.4583333333333333,
+      "bad_channels": [],
+      "artifact_fraction_by_condition": {
+        "perception": 0.546875,
+        "imagery": 0.5364583333333334
+      },
+      "class_balance": {
+        "mix_visual_auditory_face_male_speech_o": 3,
+        "mix_visual_auditory_face_male_music_C": 4,
+        "visual_square": 24,
+        "visual_face_female": 10,
+        "mix_visual_auditory_face_female_speech_i": 4,
+        "mix_visual_auditory_square_speech_a": 6,
+        "mix_visual_auditory_face_male_music_D": 4,
+        "mix_visual_auditory_square_music_E": 8,
+        "auditory_speech_o": 7,
+        "mix_visual_auditory_square_speech_i": 5,
+        "mix_visual_auditory_square_speech_o": 8,
+        "auditory_music_C": 8,
+        "mix_visual_auditory_face_female_speech_o": 4,
+        "auditory_music_D": 8,
+        "auditory_speech_a": 8,
+        "mix_visual_auditory_square_music_C": 8,
+        "visual_face_male": 12,
+        "mix_visual_auditory_face_male_speech_a": 4,
+        "auditory_speech_i": 6,
+        "auditory_music_E": 8,
+        "mix_visual_auditory_face_female_music_C": 3,
+        "mix_visual_auditory_square_music_D": 6,
+        "mix_visual_auditory_face_male_speech_i": 4,
+        "mix_visual_auditory_face_female_music_E": 4,
+        "mix_visual_auditory_face_female_music_D": 4,
+        "mix_visual_auditory_face_female_speech_a": 2,
+        "mix_visual_auditory_face_male_music_E": 4
+      },
+      "temporal_drift_corr": -0.10386811506569735,
+      "block_order_confound_flag": true,
+      "notes": []
+    }
+  ]
+}
