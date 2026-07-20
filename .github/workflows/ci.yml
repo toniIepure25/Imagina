@@ -694,3 +694,179 @@ jobs:
         run: |
           echo "::notice::Legacy/artifact validation job completed."
           echo "::notice::Preflight: ${{ steps.preflight.outputs.status }}"
+
+  # --- Scientific Gate C1 (neural-behavioral alignment) ---
+  # All jobs below run against tiny synthetic/deterministic fixtures
+  # generated in-test (pybv-written BrainVision files, small numpy arrays)
+  # -- never the real ds005815 dataset, which is not downloaded in CI.
+  # Full-dataset confirmatory analysis is a separate controlled research
+  # workflow (see C1_ANALYSIS_SPEC.md and run_c1_confirmatory.py), whose
+  # real output is committed as the results/c1_*.json artifacts rather
+  # than reproduced live in CI.
+
+  c1-dataset-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Dataset descriptor, manifest, and provenance dataclass contract
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_registry.py
+          app/tests/test_neural_yoto_adapter.py
+          -v --timeout=120
+
+  c1-download-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Download/checksum logic against mocked HTTP (no real network)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_download.py
+          -v --timeout=60
+
+  c1-preprocessing-determinism:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Fold-safe preprocessing and QC determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_preprocessing.py
+          -v --timeout=120
+
+  c1-split-leakage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Participant-grouped split, LOSO fold membership, no-leakage checks
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_models.py
+          app/tests/test_neural_nested_validation.py::TestLOSONestedValidation
+          app/tests/test_neural_falsification.py::TestFalsification8NoLeakage
+          -v --timeout=180
+
+  c1-neural-reliability:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Classical feature extraction and split-half/session reliability
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_features.py
+          -v --timeout=120
+
+  c1-negative-controls:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: All ten required falsification tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_falsification.py
+          -v --timeout=300
+
+  c1-nested-validation-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: LOSO nested validation, sensitivity/power analysis, alignment smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_nested_validation.py
+          app/tests/test_neural_sensitivity.py
+          app/tests/test_neural_alignment.py
+          -v --timeout=180
+
+  c1-replay-export:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Replay/export round-trip determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_replay_export.py
+          -v --timeout=180
+      - name: Model checkpoint-hash determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_models.py -k "Deterministic"
+          -v --timeout=120
+      - name: Preprocessing output-hash determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_preprocessing.py -k "output_hash_is_deterministic"
+          -v --timeout=60

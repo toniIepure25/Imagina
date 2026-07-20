@@ -1,0 +1,44 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "42dd687199e9ea2ffdd195a8ce622f1a7a40ef34",
+  "created_at": "2026-07-20T00:00:00+00:00",
+  "confirmatory_or_exploratory": "confirmatory",
+  "gate": "C1_NEURAL_BEHAVIORAL_ALIGNMENT",
+  "decision_rule_applied": "scientific_null_valid_and_sufficiently_sensitive",
+  "C1_NEURAL_FOUNDATION": "PASS",
+  "C1_INCREMENTAL_BEHAVIORAL_VALIDITY": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+  "C1_PERCEPTION_IMAGERY_TRANSFER": "EXPLORATORY_ONLY_NOT_CONFIRMATORY",
+  "C1": "COMPLETE_WITH_NULL_RESULT",
+  "reasoning": {
+    "C1_NEURAL_FOUNDATION": "PASS because: (1) provenance-locked ingestion, fold-safe preprocessing, and classical feature extraction ran end to end against real downloaded ds005815 data for 18/20 nominal participant-sessions with deterministic, hash-verified output (results/c1_preprocessing_qc.json, results/c1_data_availability.json); (2) all required falsification/negative-control checks that could structurally fail (leakage, hyperparameter-blindness, participant-ID-only, label-shuffle nullity) passed against real data (results/c1_negative_controls.json); (3) checkpoint-hash and full-pipeline replay determinism are verified by dedicated tests (test_neural_replay_export.py, test_neural_models.py). The pipeline itself is sound and reproducible, independent of the substantive H2 finding below.",
+    "C1_INCREMENTAL_BEHAVIORAL_VALIDITY": "NULL_SUPPORTED_WITHIN_SENSITIVITY because the confirmatory primary estimand (H2, 16 usable participants, LOSO nested validation, results/c1_incremental_validity.json) found a statistically significant NEGATIVE Delta_OOS (mean=-0.0238, 95% CI [-0.0514,-0.0039], exact sign-flip p=0.0250) -- behavior-plus-neural underperforms behavior-only, not a null-but-underpowered non-result. The fixed-sample sensitivity analysis (results/c1_sensitivity.json) confirms the design was adequately powered to detect the prespecified minimum effect of interest (0.05): estimated power = 0.9665, above the 0.80 adequacy threshold. Per C1_ANALYSIS_SPEC.md Section 9, a null/negative result may only be reported as 'supported within sensitivity' (rather than merely inconclusive) when that power condition holds, which it does here.",
+    "C1_PERCEPTION_IMAGERY_TRANSFER": "H3/H4 were never elevated to confirmatory status in this project: results/c1_alignment.json is an explicitly-labeled 2-participant (sub-01, sub-02) machinery demonstration, not a population-level transfer claim. The frozen gate decision rules (C1_ANALYSIS_SPEC.md Section 11) only assign this field a PASS value on the full-pass branch, which does not apply here (H2 is null, not passing). No transfer claim is made in either direction.",
+    "C1": "COMPLETE_WITH_NULL_RESULT because the scientific-null branch conditions are all met: PRIMARY_PAIRED_DATASET was FOUND (ds005815, ruling out PARTIAL_DATA_BLOCK); the confirmatory H2 result is a valid, adequately-powered, statistically significant negative effect (ruling out an inconclusive/underpowered non-result); and no negative control or falsification test exposed leakage or an unreliable pipeline (ruling out FAILED_BY_RELIABILITY)."
+  },
+  "honest_limitations": [
+    "16/20 nominal participants usable after QC; sub-05 and sub-10/sub-14 excluded for genuine data-quality reasons (too few trials survived artifact rejection; MNE PCA/ICA degeneracy), sub-07 excluded because its session-1 raw file is not present on the public S3 mirror (404). None of these exclusions were outcome-dependent -- all were determined by preprocessing QC before the primary analysis was run.",
+    "Negative control 10 (behavior-plus-random-noise) is closer to zero (-0.0023) than the real classical-feature result (-0.0238): the real neural features underperform random noise, not merely fail to help. This is consistent with the negative primary finding and is flagged honestly as suggestive of overfitting or collinearity within the classical feature set (many correlated band-power/entropy features across three frozen channel groups, fit with L2-only regularization) rather than 'conclusive absence of any neural signal under any feature representation.' A held-out result with, e.g., a lower-dimensional or PCA-reduced feature set might behave differently; that is future work, not part of this confirmatory decision.",
+    "Falsification tests 2 (temporal shift), 4 (channel permutation), 5 (ocular-only), and 7 (signal-quality-only) were not run against real data this session because they require additional feature-extraction passes (temporally-shifted windows, permuted channel labels, restricted channel subsets) not yet built into the real-data runner (run_c1_confirmatory.py). They remain deferred, not skipped-and-forgotten -- documented explicitly in results/c1_negative_controls.json's not_run_this_session field.",
+    "H1 (neural reliability) and H3/H4 (perception-imagery transfer) were only ever run as small-sample (1-2 participant) machinery demonstrations, explicitly labeled exploratory, and are not part of this gate decision's confirmatory evidence base beyond proving the relevant code paths execute correctly against real data.",
+    "The checksum manifest for backend/data/external/neural/ds005815 is incomplete for files downloaded/recovered mid-session; newly recovered files are marked not_in_manifest rather than falsely marked checksum-valid (results/c1_data_availability.json)."
+  ],
+  "claim_boundaries_upheld": [
+    "No thought-reading, real-time BCI, or clinical efficacy claim is made anywhere in this gate's artifacts or documentation.",
+    "No missing paired behavioral target was silently replaced with a stimulus label.",
+    "No perception-only image retrieval result (results/c1_alignment.json) is described as 'neural-behavioral alignment' -- it is labeled a perception-imagery transfer machinery demonstration only.",
+    "Image generation and closed-loop neurofeedback were not started in C1, per the task's explicit stop condition."
+  ],
+  "supporting_artifacts": [
+    "results/c1_dataset_candidates.json",
+    "results/c1_data_availability.json",
+    "results/c1_preprocessing_qc.json",
+    "results/c1_split_manifest.json",
+    "results/c1_reliability.json",
+    "results/c1_encoder_smoke.json",
+    "results/c1_alignment.json",
+    "results/c1_incremental_validity.json",
+    "results/c1_negative_controls.json",
+    "results/c1_sensitivity.json"
+  ]
+}

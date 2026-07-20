@@ -48,7 +48,7 @@ DEFAULT_OUT_DIR = os.path.abspath(os.path.join(
 ))
 
 
-def _download_file(url: str, dest: str) -> DatasetChecksumEntry:
+def _download_file(url: str, dest: str, out_dir: str) -> DatasetChecksumEntry:
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     if not os.path.exists(dest):
         resp = requests.get(url, stream=True, timeout=120)
@@ -57,7 +57,7 @@ def _download_file(url: str, dest: str) -> DatasetChecksumEntry:
             for chunk in resp.iter_content(chunk_size=1024 * 1024):
                 f.write(chunk)
     return DatasetChecksumEntry(
-        relative_path=os.path.relpath(dest, DEFAULT_OUT_DIR),
+        relative_path=os.path.relpath(dest, out_dir),
         sha256=sha256_file(dest),
         size_bytes=os.path.getsize(dest),
         downloaded_at=datetime.now(timezone.utc).isoformat(),
@@ -76,13 +76,13 @@ def download_recording(
         filename = f"{stem}{suffix}"
         url = f"{S3_BASE}/{DATASET_ID}/{rel_dir}/{filename}"
         dest = os.path.join(out_dir, rel_dir, filename)
-        entries.append(_download_file(url, dest))
+        entries.append(_download_file(url, dest, out_dir))
     return entries
 
 
 def download_ancillary_vividness_csv(out_dir: str = DEFAULT_OUT_DIR) -> DatasetChecksumEntry:
     dest = os.path.join(out_dir, "ancillary", "Trigger_Vividness_Data.csv")
-    return _download_file(VIVIDNESS_CSV_URL, dest)
+    return _download_file(VIVIDNESS_CSV_URL, dest, out_dir)
 
 
 def main() -> None:

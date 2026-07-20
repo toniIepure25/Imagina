@@ -3354,6 +3354,50 @@ python -m ruff check app/research/neural/ app/tests/test_neural*.py scripts/*.py
 
 ---
 
+## 2026-07-20 — Scientific Gate C1 Commit 8 (CI jobs + gate decision)
+
+### Task
+Final C1 commit: add the eight required CI jobs against tiny deterministic fixtures, and issue the C1 gate decision from the real Commit 7 result.
+
+### Files Changed
+- `backend/app/tests/test_neural_download.py` — new, mocked-HTTP tests for `download.py`'s URL construction, idempotent skip-if-present, and checksum-manifest writing (no real network access).
+- `backend/app/tests/test_neural_replay_export.py` — new, verifies (a) identical synthetic input produces bit-identical `OuterFoldResult`/`PrimaryEstimandResult` including checkpoint hash (replay determinism), (b) a perturbed input produces a *different* result (the check can actually fail), and (c) result objects round-trip through `json.dumps`/`json.loads` with the fields `C1_ANALYSIS_SPEC.md` Section 10 requires (export).
+- `backend/app/research/neural/download.py` — fixed a real bug found while writing the download tests: `_download_file` computed each file's `relative_path` against the hardcoded `DEFAULT_OUT_DIR` instead of the actual `out_dir` argument passed by the caller, which raises (or silently miscomputes) whenever `download_recording`/`download_ancillary_vividness_csv`/`main --out` is given a custom output directory — exactly what `scripts/c1_download_missing.py` does. Fixed by threading `out_dir` through to `_download_file`.
+- `.github/workflows/ci.yml` — added the eight required jobs (`c1-dataset-contract`, `c1-download-smoke`, `c1-preprocessing-determinism`, `c1-split-leakage`, `c1-neural-reliability`, `c1-negative-controls`, `c1-nested-validation-smoke`, `c1-replay-export`), each installing the `neural` extras group and running a specific subset of the 11 `test_neural_*.py` files/classes against synthetic fixtures only (never the real ds005815 download).
+- `results/c1_final_decision.json`, `docs/research/C1_FINAL_DECISION.md` — the gate decision.
+
+### Decision
+```
+C1_NEURAL_FOUNDATION              = PASS
+C1_INCREMENTAL_BEHAVIORAL_VALIDITY = NULL_SUPPORTED_WITHIN_SENSITIVITY
+C1_PERCEPTION_IMAGERY_TRANSFER     = EXPLORATORY_ONLY_NOT_CONFIRMATORY
+C1                                  = COMPLETE_WITH_NULL_RESULT
+```
+Rationale is in `docs/research/C1_FINAL_DECISION.md` in full; summary: the
+confirmatory H2 primary estimand (16-participant LOSO) is a statistically
+significant NEGATIVE Delta_OOS, the sensitivity analysis confirms the design
+was adequately powered (0.9665 power at the 0.05 minimum effect of interest),
+and no negative control exposed leakage or an unreliable pipeline — the three
+conditions the frozen decision rules (`C1_ANALYSIS_SPEC.md` Section 11)
+require for the scientific-null branch, as opposed to `PARTIAL_DATA_BLOCK`
+or `FAILED_BY_RELIABILITY`.
+
+### Tests Run
+```
+python -m pytest app/tests/test_neural_download.py -v --timeout=60          # 5 passed
+python -m pytest app/tests/test_neural_replay_export.py -v --timeout=180    # 6 passed
+python -m pytest app/tests/ -k "neural" -q --timeout=180                    # full suite, no regressions
+python -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"  # YAML valid, 8 c1-* jobs present
+python -m ruff check app/research/neural/ app/tests/test_neural*.py         # All checks passed
+```
+
+### Stop condition
+Per the task's explicit instruction, work stops here after issuing the C1
+gate decision. No C1.1, C2, image-generation, or closed-loop-neurofeedback
+work follows from this commit.
+
+---
+
 ## OpenCode Config Schema (Updated 2026-05-07)
 
 Config migrated to current best-guess schema:
