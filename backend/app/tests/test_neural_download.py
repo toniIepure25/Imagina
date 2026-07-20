@@ -14,7 +14,11 @@ import hashlib
 import json
 from unittest.mock import Mock, patch
 
-from app.research.neural.download import (
+import pytest
+
+pytest.importorskip("requests")
+
+from app.research.neural.download import (  # noqa: E402
     DATASET_ID,
     DATASET_VERSION,
     RUN_SUFFIXES,
