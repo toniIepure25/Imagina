@@ -1,0 +1,340 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "880a41f8f3f72cc71077d6a074bd81bbc5dcfc92",
+  "estimand_id": "H2_incremental_validity_ordinal_log_score",
+  "created_at": "2026-07-20T10:56:54.494020+00:00",
+  "confirmatory_or_exploratory": "confirmatory",
+  "usable_participants": [
+    "sub-01",
+    "sub-02",
+    "sub-08",
+    "sub-09",
+    "sub-11",
+    "sub-12",
+    "sub-13",
+    "sub-16",
+    "sub-18",
+    "sub-19",
+    "sub-21",
+    "sub-22",
+    "sub-23",
+    "sub-24",
+    "sub-25",
+    "sub-26"
+  ],
+  "n_usable_participants": 16,
+  "excluded_subjects": {
+    "sub-05": "too few trials survived preprocessing/artifact rejection",
+    "sub-07": "exception during processing: [Errno 2] No such file or directory: 'D:\\\\ComputaCenter\\\\Imagina\\\\backend\\\\data\\\\external\\\\neural\\\\ds005815\\\\sub-07\\\\ses-1\\\\eeg\\\\sub-07_ses-1_task-task_eeg.vhdr'",
+    "sub-10": "exception during processing: One PCA component captures most of the explained variance (99.87284045196536%), your threshold results in 1 component. You should select a higher value.",
+    "sub-14": "exception during processing: One PCA component captures most of the explained variance (99.78488049706267%), your threshold results in 1 component. You should select a higher value."
+  },
+  "per_subject_qc": {
+    "sub-01": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 184,
+      "n_with_behavioral_target": 184,
+      "n_precue_matched": 177,
+      "retained_fraction": 0.9583333333333334
+    },
+    "sub-02": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 69,
+      "n_with_behavioral_target": 69,
+      "n_precue_matched": 59,
+      "retained_fraction": 0.359375
+    },
+    "sub-05": {
+      "excluded_reason": "too few trials survived preprocessing/artifact rejection",
+      "n_kept": 4,
+      "n_manifest_trials": 192
+    },
+    "sub-08": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 182,
+      "n_with_behavioral_target": 182,
+      "n_precue_matched": 182,
+      "retained_fraction": 0.9479166666666666
+    },
+    "sub-09": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 172,
+      "n_with_behavioral_target": 172,
+      "n_precue_matched": 172,
+      "retained_fraction": 0.8958333333333334
+    },
+    "sub-11": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 178,
+      "n_with_behavioral_target": 178,
+      "n_precue_matched": 170,
+      "retained_fraction": 0.9270833333333334
+    },
+    "sub-12": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 165,
+      "n_with_behavioral_target": 165,
+      "n_precue_matched": 150,
+      "retained_fraction": 0.859375
+    },
+    "sub-13": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 191,
+      "n_with_behavioral_target": 191,
+      "n_precue_matched": 191,
+      "retained_fraction": 0.9947916666666666
+    },
+    "sub-16": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 169,
+      "n_with_behavioral_target": 169,
+      "n_precue_matched": 158,
+      "retained_fraction": 0.8802083333333334
+    },
+    "sub-18": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 173,
+      "n_with_behavioral_target": 173,
+      "n_precue_matched": 161,
+      "retained_fraction": 0.9010416666666666
+    },
+    "sub-19": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 179,
+      "n_with_behavioral_target": 179,
+      "n_precue_matched": 178,
+      "retained_fraction": 0.9322916666666666
+    },
+    "sub-21": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 168,
+      "n_with_behavioral_target": 168,
+      "n_precue_matched": 160,
+      "retained_fraction": 0.875
+    },
+    "sub-22": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 89,
+      "n_with_behavioral_target": 89,
+      "n_precue_matched": 57,
+      "retained_fraction": 0.4635416666666667
+    },
+    "sub-23": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 190,
+      "n_with_behavioral_target": 190,
+      "n_precue_matched": 190,
+      "retained_fraction": 0.9895833333333334
+    },
+    "sub-24": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 188,
+      "n_with_behavioral_target": 188,
+      "n_precue_matched": 183,
+      "retained_fraction": 0.9791666666666666
+    },
+    "sub-25": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 178,
+      "n_with_behavioral_target": 178,
+      "n_precue_matched": 169,
+      "retained_fraction": 0.9270833333333334
+    },
+    "sub-26": {
+      "n_manifest_trials": 192,
+      "n_kept_after_preprocessing": 116,
+      "n_with_behavioral_target": 116,
+      "n_precue_matched": 95,
+      "retained_fraction": 0.6041666666666666
+    }
+  },
+  "primary_estimand": {
+    "n_participants": 16,
+    "mean_delta_oos": -0.02380540592555283,
+    "std_delta_oos": 0.04931500749872951,
+    "ci_low": -0.05139514194598251,
+    "ci_high": -0.0038971886714449498,
+    "exact_sign_flip_p_value": 0.024993896484375,
+    "per_participant_deltas": {
+      "sub-01": -0.09561819378244474,
+      "sub-02": -0.1881867239883226,
+      "sub-08": -0.01963494977078095,
+      "sub-09": -0.002392910842973217,
+      "sub-11": 0.013583767269685021,
+      "sub-12": -0.006314948077193461,
+      "sub-13": 0.010946738750644447,
+      "sub-16": 0.00382335932413147,
+      "sub-18": -0.025855714766333415,
+      "sub-19": -0.030853099275986784,
+      "sub-21": -0.029416504186174697,
+      "sub-22": 0.00642638667430484,
+      "sub-23": -0.004058758009578778,
+      "sub-24": 0.00032244954853011265,
+      "sub-25": -0.0026699309869340215,
+      "sub-26": -0.010987462689418526
+    }
+  },
+  "per_fold": [
+    {
+      "held_out_participant": "sub-01",
+      "n_train": 2407,
+      "n_test": 184,
+      "behavior_only_log_score": 0.46312399852504604,
+      "behavior_plus_neural_log_score": 0.5587421923074908,
+      "delta_oos": -0.09561819378244474,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "c66bd4827b53c26b80d1fc765e0adbcfe90617a566699d3e4a9e78be423b040e"
+    },
+    {
+      "held_out_participant": "sub-02",
+      "n_train": 2522,
+      "n_test": 69,
+      "behavior_only_log_score": 2.529055993457882,
+      "behavior_plus_neural_log_score": 2.7172427174462044,
+      "delta_oos": -0.1881867239883226,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "529648c0ddc1a602766463eba1daff4578c6f8dbd93782883a3d0e5f6dfc327b"
+    },
+    {
+      "held_out_participant": "sub-08",
+      "n_train": 2409,
+      "n_test": 182,
+      "behavior_only_log_score": 0.6173916706851161,
+      "behavior_plus_neural_log_score": 0.6370266204558971,
+      "delta_oos": -0.01963494977078095,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "6528ce9894eb58335750f7c46db8e0b6bd66795785a618d888f070c2b1f76f0b"
+    },
+    {
+      "held_out_participant": "sub-09",
+      "n_train": 2419,
+      "n_test": 172,
+      "behavior_only_log_score": 0.435287943313048,
+      "behavior_plus_neural_log_score": 0.4376808541560212,
+      "delta_oos": -0.002392910842973217,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "0a1ad2806c670b8b249edea4b4998fccf875a6c12641245cee84a6908043a2c9"
+    },
+    {
+      "held_out_participant": "sub-11",
+      "n_train": 2413,
+      "n_test": 178,
+      "behavior_only_log_score": 0.6167060802501739,
+      "behavior_plus_neural_log_score": 0.6031223129804889,
+      "delta_oos": 0.013583767269685021,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "e91642ade53b6cd2cba773a074cfb1cd60476438a869fba7c3a280f52b02a697"
+    },
+    {
+      "held_out_participant": "sub-12",
+      "n_train": 2426,
+      "n_test": 165,
+      "behavior_only_log_score": 0.7367049785742514,
+      "behavior_plus_neural_log_score": 0.7430199266514449,
+      "delta_oos": -0.006314948077193461,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "3c99e3b30a4de48b1ea7dece3c1e51647c2acb56b541b37671e65d68f854fa4e"
+    },
+    {
+      "held_out_participant": "sub-13",
+      "n_train": 2400,
+      "n_test": 191,
+      "behavior_only_log_score": 0.9674117334691482,
+      "behavior_plus_neural_log_score": 0.9564649947185038,
+      "delta_oos": 0.010946738750644447,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "0a20e0904a9af8e7ed516a403b36395d66648007b99271d6e3e03f4582f6ecdd"
+    },
+    {
+      "held_out_participant": "sub-16",
+      "n_train": 2422,
+      "n_test": 169,
+      "behavior_only_log_score": 1.897276239509266,
+      "behavior_plus_neural_log_score": 1.8934528801851345,
+      "delta_oos": 0.00382335932413147,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "05164ec0e1689f3fe932031dbead13ceb28468b9778bee1bb90c15ccc77f234b"
+    },
+    {
+      "held_out_participant": "sub-18",
+      "n_train": 2418,
+      "n_test": 173,
+      "behavior_only_log_score": 0.8794281142648002,
+      "behavior_plus_neural_log_score": 0.9052838290311336,
+      "delta_oos": -0.025855714766333415,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "62e5e4c5f1eca462064ed4840618ad06f6c2452f856ebfe0a2ad16392b3167c3"
+    },
+    {
+      "held_out_participant": "sub-19",
+      "n_train": 2412,
+      "n_test": 179,
+      "behavior_only_log_score": 1.695529218587566,
+      "behavior_plus_neural_log_score": 1.7263823178635527,
+      "delta_oos": -0.030853099275986784,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "ebbaac81ebe1c12fc7ae99d48e7479362d324874d52f71dd3d88391bd8f0bd4e"
+    },
+    {
+      "held_out_participant": "sub-21",
+      "n_train": 2423,
+      "n_test": 168,
+      "behavior_only_log_score": 1.4826829163469466,
+      "behavior_plus_neural_log_score": 1.5120994205331213,
+      "delta_oos": -0.029416504186174697,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "c9faab3cab4ce1e9b12b7a5ee42f0d3f333eb0f825b8c44e3924bb73a1df5426"
+    },
+    {
+      "held_out_participant": "sub-22",
+      "n_train": 2502,
+      "n_test": 89,
+      "behavior_only_log_score": 1.2993981164270276,
+      "behavior_plus_neural_log_score": 1.2929717297527228,
+      "delta_oos": 0.00642638667430484,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "c0f6c432252c8e0840853cd86e1b713b94aae9c8ce2f2476b9ed202efdb91f05"
+    },
+    {
+      "held_out_participant": "sub-23",
+      "n_train": 2401,
+      "n_test": 190,
+      "behavior_only_log_score": 1.7155295819293581,
+      "behavior_plus_neural_log_score": 1.719588339938937,
+      "delta_oos": -0.004058758009578778,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "4fa8e61c3aa36c23ce743ee0330641389a535a14f3f385f4265df1d29600c890"
+    },
+    {
+      "held_out_participant": "sub-24",
+      "n_train": 2403,
+      "n_test": 188,
+      "behavior_only_log_score": 1.1676192936655732,
+      "behavior_plus_neural_log_score": 1.167296844117043,
+      "delta_oos": 0.00032244954853011265,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "2198fecd7c36950f587aeb836589963c6804384338cfe8e1e5fe688bc50c8e11"
+    },
+    {
+      "held_out_participant": "sub-25",
+      "n_train": 2413,
+      "n_test": 178,
+      "behavior_only_log_score": 1.0713939017157346,
+      "behavior_plus_neural_log_score": 1.0740638327026686,
+      "delta_oos": -0.0026699309869340215,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "5b8d06266cf5e45c2f564ad8ad50777c395ea81c48a66a487fc2c031e96fad29"
+    },
+    {
+      "held_out_participant": "sub-26",
+      "n_train": 2475,
+      "n_test": 116,
+      "behavior_only_log_score": 0.72453432780492,
+      "behavior_plus_neural_log_score": 0.7355217904943385,
+      "delta_oos": -0.010987462689418526,
+      "chosen_l2": 0.1,
+      "behavior_plus_neural_checkpoint_hash": "dcc8b16dc84ce004e43e84c948f7b9b9a576cddd00b297572a9305529a7afc2f"
+    }
+  ]
+}

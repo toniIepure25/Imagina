@@ -1,0 +1,56 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "880a41f8f3f72cc71077d6a074bd81bbc5dcfc92",
+  "created_at": "2026-07-20T10:56:54.494020+00:00",
+  "confirmatory_or_exploratory": "confirmatory",
+  "n_participants": 16,
+  "test_1_precue_vs_postcue": {
+    "test_id": "1_precue_vs_postcue",
+    "description": "Pre-cue EEG must not match post-cue predictive performance.",
+    "real_mean_delta_oos": -0.02380540592555283,
+    "corrupted_mean_delta_oos": -0.0005946909696577102,
+    "passed": true
+  },
+  "test_3_label_shuffle_within_blocks": {
+    "test_id": "3_label_shuffle_within_blocks",
+    "description": "Trial labels shuffled within participant must remove the effect.",
+    "real_mean_delta_oos": -0.02380540592555283,
+    "corrupted_mean_delta_oos": -0.024488260551392714,
+    "passed": true
+  },
+  "test_6_participant_id_only": {
+    "test_id": "6_participant_id_only",
+    "description": "Participant-ID-only features must not explain cross-subject performance.",
+    "real_mean_delta_oos": -0.02380540592555283,
+    "corrupted_mean_delta_oos": -0.011585745360585372,
+    "passed": true
+  },
+  "test_8_no_duplicate_stimulus_leakage": {
+    "test_id": "8_no_duplicate_stimulus_leakage",
+    "description": "No (participant, session, trial) triple may appear in both train and test of any fold.",
+    "real_mean_delta_oos": 0.0,
+    "corrupted_mean_delta_oos": 0.0,
+    "passed": true
+  },
+  "test_9_hyperparameter_selection_blind_to_outer_test": {
+    "test_id": "9_hyperparameter_selection_blind_to_outer_test",
+    "description": "Corrupting only the outer-test targets must leave the selected hyperparameter and trained model checkpoint hash unchanged (both come from train_records only), while the reported test score must change (since it is computed against the corrupted test targets).",
+    "real_mean_delta_oos": -0.09561819378244474,
+    "corrupted_mean_delta_oos": 0.18553656123268203,
+    "passed": true
+  },
+  "test_10_behavior_plus_random_noise": {
+    "test_id": "10_behavior_plus_random_noise",
+    "description": "Behavior-plus-random-noise must not reproduce behavior-plus-neural gains.",
+    "real_mean_delta_oos": -0.02380540592555283,
+    "corrupted_mean_delta_oos": -0.0022801097505079117,
+    "passed": true
+  },
+  "not_run_this_session": {
+    "test_2_temporal_shift": "requires a temporally-shifted feature extraction pass, deferred",
+    "test_4_random_channel_permutation": "requires a channel-permuted feature extraction pass, deferred",
+    "test_5_ocular_only_control": "requires an ocular-only feature extraction pass, deferred",
+    "test_7_signal_quality_only": "requires a quality-only feature extraction pass, deferred"
+  }
+}

@@ -1,0 +1,451 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "880a41f8f3f72cc71077d6a074bd81bbc5dcfc92",
+  "created_at": "2026-07-20T10:56:54.494020+00:00",
+  "outer_cv": "leave_one_usable_participant_out",
+  "inner_cv": "participant_grouped_k_fold_within_outer_train",
+  "n_trials": 2591,
+  "usable_participants": [
+    "sub-01",
+    "sub-02",
+    "sub-08",
+    "sub-09",
+    "sub-11",
+    "sub-12",
+    "sub-13",
+    "sub-16",
+    "sub-18",
+    "sub-19",
+    "sub-21",
+    "sub-22",
+    "sub-23",
+    "sub-24",
+    "sub-25",
+    "sub-26"
+  ],
+  "excluded_subjects": {
+    "sub-05": "too few trials survived preprocessing/artifact rejection",
+    "sub-07": "exception during processing: [Errno 2] No such file or directory: 'D:\\\\ComputaCenter\\\\Imagina\\\\backend\\\\data\\\\external\\\\neural\\\\ds005815\\\\sub-07\\\\ses-1\\\\eeg\\\\sub-07_ses-1_task-task_eeg.vhdr'",
+    "sub-10": "exception during processing: One PCA component captures most of the explained variance (99.87284045196536%), your threshold results in 1 component. You should select a higher value.",
+    "sub-14": "exception during processing: One PCA component captures most of the explained variance (99.78488049706267%), your threshold results in 1 component. You should select a higher value."
+  },
+  "folds": [
+    {
+      "held_out_participant": "sub-01",
+      "train_participants": [
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-01"
+      ],
+      "n_train_trials": 2407,
+      "n_test_trials": 184,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-02",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-02"
+      ],
+      "n_train_trials": 2522,
+      "n_test_trials": 69,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-08",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-08"
+      ],
+      "n_train_trials": 2409,
+      "n_test_trials": 182,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-09",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-09"
+      ],
+      "n_train_trials": 2419,
+      "n_test_trials": 172,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-11",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-11"
+      ],
+      "n_train_trials": 2413,
+      "n_test_trials": 178,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-12",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-12"
+      ],
+      "n_train_trials": 2426,
+      "n_test_trials": 165,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-13",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-13"
+      ],
+      "n_train_trials": 2400,
+      "n_test_trials": 191,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-16",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-16"
+      ],
+      "n_train_trials": 2422,
+      "n_test_trials": 169,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-18",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-18"
+      ],
+      "n_train_trials": 2418,
+      "n_test_trials": 173,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-19",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-19"
+      ],
+      "n_train_trials": 2412,
+      "n_test_trials": 179,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-21",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-21"
+      ],
+      "n_train_trials": 2423,
+      "n_test_trials": 168,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-22",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-22"
+      ],
+      "n_train_trials": 2502,
+      "n_test_trials": 89,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-23",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-23"
+      ],
+      "n_train_trials": 2401,
+      "n_test_trials": 190,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-24",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-24"
+      ],
+      "n_train_trials": 2403,
+      "n_test_trials": 188,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-25",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-25"
+      ],
+      "n_train_trials": 2413,
+      "n_test_trials": 178,
+      "chosen_l2": 0.1
+    },
+    {
+      "held_out_participant": "sub-26",
+      "train_participants": [
+        "sub-01",
+        "sub-02",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-22",
+        "sub-23",
+        "sub-24",
+        "sub-25"
+      ],
+      "test_participants": [
+        "sub-26"
+      ],
+      "n_train_trials": 2475,
+      "n_test_trials": 116,
+      "chosen_l2": 0.1
+    }
+  ]
+}

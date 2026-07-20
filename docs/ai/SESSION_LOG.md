@@ -3249,6 +3249,111 @@ Use this template for future entries:
 
 ---
 
+## 2026-07-16 - Scientific Gate C1 Commit 7 Recovery
+
+### Task
+Continue C1 on `research/neural-behavioral-alignment-c1` without discarding untracked prior-session work.
+
+### Goal
+Recover workspace state, verify in-progress Commit 7 nested validation/falsification code, restore missing YOTO data where possible, and persist a real data-availability matrix.
+
+### Files Inspected
+- `docs/research/C1_PROTOCOL.md`
+- `docs/research/C1_ANALYSIS_SPEC.md`
+- `docs/research/C1_DATASET_CANDIDATES.md`
+- `results/c1_dataset_candidates.json`
+- `results/c1_preprocessing_qc.json`
+- `results/c1_reliability.json`
+- `results/c1_encoder_smoke.json`
+- `results/c1_alignment.json`
+- `backend/app/research/neural/nested_validation.py`
+- `backend/app/research/neural/falsification.py`
+- `backend/app/tests/test_neural_nested_validation.py`
+- `backend/app/tests/test_neural_falsification.py`
+
+### Files Changed
+- `scripts/c1_download_missing.py` - Added idempotent ds005815 task-file completion downloader that records remote missing files instead of aborting the whole campaign.
+- `scripts/c1_build_availability.py` - Added adapter-ingestion availability matrix builder for all nominal public participant/sessions.
+- `results/c1_data_availability.json` - Persisted current availability matrix.
+
+### Decisions Made
+- Used `backend/data/external/neural/ds005815` as the recovered local data root because `data/external/neural` was missing while backend-local data held the actual downloaded EEG files.
+- Treated checksum validity conservatively: only files covered by the existing checksum manifest are marked checksum-valid; most newly downloaded/recovered files are marked `not_in_manifest` pending a regenerated checksum ledger.
+- Did not interpret exploratory smoke/alignment results as confirmatory H2/H3 evidence.
+
+### Tests Run
+```
+python -m pytest app/tests/test_neural_registry.py app/tests/test_neural_yoto_adapter.py app/tests/test_neural_preprocessing.py app/tests/test_neural_features.py app/tests/test_neural_models.py app/tests/test_neural_alignment.py app/tests/test_neural_nested_validation.py app/tests/test_neural_falsification.py -v -p no:cacheprovider --basetemp=D:\ComputaCenter\Imagina\.codex-tmp\pytest
+# 112 passed, 5 warnings
+
+python -m ruff check scripts/c1_download_missing.py scripts/c1_build_availability.py backend/app/research/neural/nested_validation.py backend/app/research/neural/falsification.py backend/app/tests/test_neural_nested_validation.py backend/app/tests/test_neural_falsification.py
+# All checks passed
+```
+
+### Result
+- Branch: `research/neural-behavioral-alignment-c1`
+- HEAD: `880a41f8f3f72cc71077d6a074bd81bbc5dcfc92`
+- Initial tracked diff/staged diff: none
+- Recovered untracked Commit 7 files were present and tested green.
+- Exact sign-flip implementation uses `abs((signed_deltas).mean())`, not the invalid per-element absolute statistic.
+- Hyperparameter leakage falsification isolates one outer fold and corrupts only that fold's test targets; selected hyperparameter and checkpoint hash remain unchanged while the test score changes.
+- Remote HEAD probe confirmed public task EEG availability for 20 nominal participants/sessions pattern; `sub-07` remains unavailable.
+- Local ds005815 task EEG now has 34 ingestible participant-sessions.
+- `results/c1_data_availability.json` summary: 40 nominal participant-sessions, 34 raw EEG present, 34 adapter-ingested, 1 checksum-valid under the old manifest.
+
+### Remaining Risks
+- Full frozen preprocessing QC has not been run across all 34 recordings.
+- Full nested LOSO incremental-validity analysis, sensitivity analysis, negative controls on real data, expanded alignment, and final C1 decision remain pending.
+- The checksum ledger is incomplete after interrupted long downloads; regenerate a full manifest before treating newly downloaded files as checksum-valid.
+- The downloader default in `backend/app/research/neural/download.py` still points to a backend-local data tree, while the handoff expected top-level `data/external/neural`.
+
+### Follow-up Tasks
+- Regenerate a complete checksum manifest for `backend/data/external/neural/ds005815`.
+- Run frozen preprocessing QC over every ingested participant-session and update `results/c1_preprocessing_qc.json`.
+- Build the real feature table and run Commit 7 LOSO nested validation, sensitivity, and all ten real-data falsification tests.
+- Complete Commit 8 CI evidence and issue `results/c1_final_decision.json`.
+
+---
+
+## 2026-07-20 — Scientific Gate C1 Commit 7 Finalization
+
+### Task
+Finish Commit 7 (`research(c1): estimate incremental neural validity under strict nested validation`) on `research/neural-behavioral-alignment-c1`, continuing from the prior recovery session's real 16-participant LOSO result.
+
+### Goal
+Fix a sensitivity-analysis performance blocker, produce a real `results/c1_sensitivity.json`, remove superseded prototype scripts so the committed pipeline has one authoritative source of truth, and regenerate all Commit 7 result artifacts consistently from that single pipeline.
+
+### Problem Found
+`sensitivity.py`'s `estimate_power_at_effect` called `exact_sign_flip_test` (full `itertools.product` enumeration, `2**16 = 65536` terms per call) inside a simulation loop of hundreds-to-thousands of replications per effect size — computationally infeasible, causing `test_neural_sensitivity.py` to hit the 120s pytest timeout and blocking the real `run_sensitivity_analysis(n_participants=16, ...)` computation from ever completing.
+
+### Files Changed
+- `backend/app/research/neural/nested_validation.py` — extracted the existing `n>20` Monte Carlo fallback out of `exact_sign_flip_test` into a standalone `sampled_sign_flip_p_value()`; `exact_sign_flip_test` now calls it for `n>20` instead of duplicating the logic.
+- `backend/app/research/neural/sensitivity.py` — `estimate_power_at_effect` now calls `sampled_sign_flip_p_value` (2000 samples/replication, seeded per replication) instead of the exact enumeration test. A power simulation is itself already a Monte Carlo estimate, so an exact per-replication p-value adds no precision that matters at this scale while being ~1000x slower.
+- `backend/app/research/neural/run_c1_confirmatory.py` — added split-manifest writing (`results/c1_split_manifest.json`) using the real fold results already computed by the LOSO run, so all four Commit 7 result artifacts come from one script invocation instead of a stale, separately-generated file.
+- Deleted `scripts/c1_run_incremental_validity.py` and `scripts/c1_run_sensitivity_and_controls.py` — earlier-iteration prototypes superseded by `run_c1_confirmatory.py`; the latter had drifted to the point of referencing a `primary_endpoint` key that no longer exists in the current result schema (`primary_estimand`) and would crash if run. Deleted the orphaned `results/c1_feature_records.json` cache they produced, unreferenced by anything else.
+- `backend/app/tests/test_neural_sensitivity.py`, `backend/app/tests/test_neural_nested_validation.py` — added `TestSampledSignFlipPValue` regression coverage for the new helper (matches `exact_sign_flip_test` within tolerance for small n, correctly detects strong/null effects, handles the empty-input edge case).
+- `results/c1_sensitivity.json` — new, real. `results/c1_incremental_validity.json`, `results/c1_negative_controls.json`, `results/c1_split_manifest.json`, `results/c1_preprocessing_qc.json` — regenerated from a single `run_c1_confirmatory` invocation against the real downloaded ds005815 data for full internal consistency.
+
+### Result (real data, not synthetic)
+- 16/20 nominal participants usable (sub-05, sub-07, sub-10, sub-14 excluded — data-quality/availability reasons, unchanged from the prior session).
+- Primary estimand: `mean_delta_oos = -0.0238`, 95% CI `[-0.0514, -0.0039]`, exact sign-flip `p = 0.0250` — a statistically significant but **negative** effect (behavior+neural underperforms behavior-only).
+- Sensitivity analysis: power at the pre-registered minimum effect of interest (0.05) is **0.9665**, well above the 0.80 adequacy threshold — the design was adequately powered, so the negative result is not attributable to underpowering.
+- Negative controls: all 6 runnable falsification tests (1, 3, 6, 8, 9, 10) pass; tests 2, 4, 5, 7 remain deferred (require feature-extraction passes not yet built). Honest anomaly: test 10 (behavior+neural vs behavior+random-noise) shows real classical features performing *worse* than random noise (`-0.0238` vs `-0.0023`), consistent with the negative primary result and suggestive of overfitting/collinearity in the classical feature set rather than "no signal" — flagged as a limitation, not explained away.
+
+### Tests Run
+```
+python -m pytest app/tests/ -k "neural" -q --timeout=180
+# 125 passed
+python -m ruff check app/research/neural/ app/tests/test_neural*.py scripts/*.py
+# All checks passed
+```
+
+### Decisions Made
+- Kept `scripts/c1_build_availability.py`, `scripts/c1_download_missing.py`, `scripts/c1_run_preprocessing_qc.py` — genuinely used, standalone diagnostic/download tools whose outputs (`c1_data_availability.json`, the real `c1_preprocessing_qc.json`) are real Commit 7 deliverables, not superseded by anything.
+- Did not soften or reinterpret the negative Delta_OOS finding to look more favorable; the sensitivity analysis exists specifically so a null/negative result can be reported honestly rather than dismissed as low power.
+
+---
+
 ## OpenCode Config Schema (Updated 2026-05-07)
 
 Config migrated to current best-guess schema:

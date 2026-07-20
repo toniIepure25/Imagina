@@ -1,0 +1,27 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "880a41f8f3f72cc71077d6a074bd81bbc5dcfc92",
+  "estimand_id": "H2_incremental_validity_ordinal_log_score",
+  "created_at": "2026-07-20T10:29:51.482318+00:00",
+  "confirmatory_or_exploratory": "confirmatory",
+  "note": "Fixed-sample simulation-based sensitivity analysis (C1_ANALYSIS_SPEC.md Section 9), run against the observed post-QC usable participant count (16) and the observed behavior-only outer-fold Delta_OOS standard deviation from results/c1_incremental_validity.json (0.04931500749872951). Estimates power to detect a range of true subject-level mean Delta_OOS effects under the same paired sign-flip inference procedure used for the primary confirmatory result. Per-replication p-values use the Monte Carlo sign-flip approximation (sampled_sign_flip_p_value, 2000 samples/replication) rather than exact enumeration: at n_simulations=2000 outer replications, exact enumeration per replication (2**16 = 65536 terms) is computationally infeasible and adds no precision that matters at this scale, since the outer power simulation is itself already a Monte Carlo estimate. The primary confirmatory result itself (results/c1_incremental_validity.json) continues to use the exact enumeration test (exact_sign_flip_test), which is only ever called once, not in a simulation loop.",
+  "n_participants": 16,
+  "observed_std_delta_oos": 0.04931500749872951,
+  "alpha": 0.05,
+  "n_simulations": 2000,
+  "power_curve": {
+    "0.000": 0.0475,
+    "0.010": 0.115,
+    "0.020": 0.323,
+    "0.030": 0.631,
+    "0.040": 0.8645,
+    "0.050": 0.9665,
+    "0.060": 0.995,
+    "0.080": 1.0,
+    "0.100": 1.0
+  },
+  "minimum_effect_of_interest": 0.05,
+  "power_at_minimum_effect_of_interest": 0.9665,
+  "adequately_powered": true
+}
