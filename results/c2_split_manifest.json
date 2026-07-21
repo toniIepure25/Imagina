@@ -1,0 +1,363 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "bbeced04f18461eef0c4eb03783d27d7557c5c72",
+  "created_at": "2026-07-21T12:54:47.366441+00:00",
+  "outer_cv": "leave_one_subject_out",
+  "inner_cv": "participant_grouped_k_fold_within_outer_train",
+  "session_grouping": "single-session (ses-1) analysis; a participant's trials never split by session across folds",
+  "block_grouping": "block_index retained as covariate only, never a split criterion",
+  "included_participants": [
+    "sub-01",
+    "sub-08",
+    "sub-09",
+    "sub-11",
+    "sub-12",
+    "sub-13",
+    "sub-16",
+    "sub-18",
+    "sub-19",
+    "sub-21",
+    "sub-23",
+    "sub-24",
+    "sub-25",
+    "sub-26"
+  ],
+  "excluded_subjects": {
+    "sub-02": "below minimum trial floor (6/class) for imagery classes: ['visual_face_male', 'visual_face_female']",
+    "sub-05": "below minimum trial floor (6/class) for imagery classes: ['visual_square', 'visual_face_male', 'visual_face_female']",
+    "sub-07": "exception during processing: [Errno 2] No such file or directory: 'D:\\\\ComputaCenter\\\\Imagina\\\\backend\\\\data\\\\external\\\\neural\\\\ds005815\\\\sub-07\\\\ses-1\\\\eeg\\\\sub-07_ses-1_task-task_eeg.vhdr'",
+    "sub-10": "exception during processing: One PCA component captures most of the explained variance (99.87284045196536%), your threshold results in 1 component. You should select a higher value.",
+    "sub-14": "exception during processing: One PCA component captures most of the explained variance (99.78488049706267%), your threshold results in 1 component. You should select a higher value.",
+    "sub-22": "below minimum trial floor (6/class) for imagery classes: ['visual_face_male', 'visual_face_female']"
+  },
+  "trial_counts": {
+    "perception": 641,
+    "imagery": 603,
+    "imagery_common_window": 631
+  },
+  "folds": [
+    {
+      "held_out_participant": "sub-01",
+      "train_participants": [
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-01"
+      ],
+      "n_perception_test_trials": 48,
+      "n_imagery_test_trials": 46
+    },
+    {
+      "held_out_participant": "sub-08",
+      "train_participants": [
+        "sub-01",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-08"
+      ],
+      "n_perception_test_trials": 48,
+      "n_imagery_test_trials": 47
+    },
+    {
+      "held_out_participant": "sub-09",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-09"
+      ],
+      "n_perception_test_trials": 48,
+      "n_imagery_test_trials": 41
+    },
+    {
+      "held_out_participant": "sub-11",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-11"
+      ],
+      "n_perception_test_trials": 47,
+      "n_imagery_test_trials": 44
+    },
+    {
+      "held_out_participant": "sub-12",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-12"
+      ],
+      "n_perception_test_trials": 44,
+      "n_imagery_test_trials": 39
+    },
+    {
+      "held_out_participant": "sub-13",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-13"
+      ],
+      "n_perception_test_trials": 48,
+      "n_imagery_test_trials": 48
+    },
+    {
+      "held_out_participant": "sub-16",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-16"
+      ],
+      "n_perception_test_trials": 43,
+      "n_imagery_test_trials": 42
+    },
+    {
+      "held_out_participant": "sub-18",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-18"
+      ],
+      "n_perception_test_trials": 46,
+      "n_imagery_test_trials": 44
+    },
+    {
+      "held_out_participant": "sub-19",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-19"
+      ],
+      "n_perception_test_trials": 45,
+      "n_imagery_test_trials": 46
+    },
+    {
+      "held_out_participant": "sub-21",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-23",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-21"
+      ],
+      "n_perception_test_trials": 43,
+      "n_imagery_test_trials": 40
+    },
+    {
+      "held_out_participant": "sub-23",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-24",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-23"
+      ],
+      "n_perception_test_trials": 47,
+      "n_imagery_test_trials": 48
+    },
+    {
+      "held_out_participant": "sub-24",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-25",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-24"
+      ],
+      "n_perception_test_trials": 48,
+      "n_imagery_test_trials": 46
+    },
+    {
+      "held_out_participant": "sub-25",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-26"
+      ],
+      "test_participants": [
+        "sub-25"
+      ],
+      "n_perception_test_trials": 46,
+      "n_imagery_test_trials": 43
+    },
+    {
+      "held_out_participant": "sub-26",
+      "train_participants": [
+        "sub-01",
+        "sub-08",
+        "sub-09",
+        "sub-11",
+        "sub-12",
+        "sub-13",
+        "sub-16",
+        "sub-18",
+        "sub-19",
+        "sub-21",
+        "sub-23",
+        "sub-24",
+        "sub-25"
+      ],
+      "test_participants": [
+        "sub-26"
+      ],
+      "n_perception_test_trials": 40,
+      "n_imagery_test_trials": 29
+    }
+  ]
+}

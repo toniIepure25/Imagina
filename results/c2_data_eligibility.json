@@ -1,0 +1,633 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "bbeced04f18461eef0c4eb03783d27d7557c5c72",
+  "created_at": "2026-07-21T12:54:47.366441+00:00",
+  "confirmatory_or_exploratory": "confirmatory",
+  "estimand_id": "C2_DATA_ELIGIBILITY",
+  "minimum_trials_per_class": 6,
+  "common_window_duration_s": 2.0,
+  "included_participants": [
+    "sub-01",
+    "sub-08",
+    "sub-09",
+    "sub-11",
+    "sub-12",
+    "sub-13",
+    "sub-16",
+    "sub-18",
+    "sub-19",
+    "sub-21",
+    "sub-23",
+    "sub-24",
+    "sub-25",
+    "sub-26"
+  ],
+  "n_included_participants": 14,
+  "excluded_subjects": {
+    "sub-02": "below minimum trial floor (6/class) for imagery classes: ['visual_face_male', 'visual_face_female']",
+    "sub-05": "below minimum trial floor (6/class) for imagery classes: ['visual_square', 'visual_face_male', 'visual_face_female']",
+    "sub-07": "exception during processing: [Errno 2] No such file or directory: 'D:\\\\ComputaCenter\\\\Imagina\\\\backend\\\\data\\\\external\\\\neural\\\\ds005815\\\\sub-07\\\\ses-1\\\\eeg\\\\sub-07_ses-1_task-task_eeg.vhdr'",
+    "sub-10": "exception during processing: One PCA component captures most of the explained variance (99.87284045196536%), your threshold results in 1 component. You should select a higher value.",
+    "sub-14": "exception during processing: One PCA component captures most of the explained variance (99.78488049706267%), your threshold results in 1 component. You should select a higher value.",
+    "sub-22": "below minimum trial floor (6/class) for imagery classes: ['visual_face_male', 'visual_face_female']"
+  },
+  "per_subject_qc": {
+    "sub-01": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_female": 12,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 46,
+        "retained_fraction": 0.9583333333333334,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_female": 11,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 47,
+        "retained_fraction": 0.9791666666666666,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_female": 11,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-02": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 18,
+        "retained_fraction": 0.375,
+        "class_balance": {
+          "visual_square": 9,
+          "visual_face_female": 6,
+          "visual_face_male": 3
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 21,
+        "retained_fraction": 0.4375,
+        "class_balance": {
+          "visual_face_male": 4,
+          "visual_square": 12,
+          "visual_face_female": 5
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 23,
+        "retained_fraction": 0.4791666666666667,
+        "class_balance": {
+          "visual_face_male": 5,
+          "visual_square": 12,
+          "visual_face_female": 6
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-05": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 6,
+        "retained_fraction": 0.125,
+        "class_balance": {
+          "visual_face_female": 2,
+          "visual_face_male": 2,
+          "visual_square": 2
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 2,
+        "retained_fraction": 0.041666666666666664,
+        "class_balance": {
+          "visual_face_male": 2
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 3,
+        "retained_fraction": 0.0625,
+        "class_balance": {
+          "visual_face_male": 3
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-08": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 47,
+        "retained_fraction": 0.9791666666666666,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-09": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 41,
+        "retained_fraction": 0.8541666666666666,
+        "class_balance": {
+          "visual_face_female": 11,
+          "visual_square": 21,
+          "visual_face_male": 9
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 45,
+        "retained_fraction": 0.9375,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 22,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-11": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 47,
+        "retained_fraction": 0.9791666666666666,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 23,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 44,
+        "retained_fraction": 0.9166666666666666,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 21,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 45,
+        "retained_fraction": 0.9375,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 22,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-12": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 44,
+        "retained_fraction": 0.9166666666666666,
+        "class_balance": {
+          "visual_face_male": 11,
+          "visual_face_female": 11,
+          "visual_square": 22
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 39,
+        "retained_fraction": 0.8125,
+        "class_balance": {
+          "visual_square": 21,
+          "visual_face_male": 9,
+          "visual_face_female": 9
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 42,
+        "retained_fraction": 0.875,
+        "class_balance": {
+          "visual_face_male": 11,
+          "visual_square": 22,
+          "visual_face_female": 9
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-13": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_female": 12,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_female": 12,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_female": 12,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-16": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 43,
+        "retained_fraction": 0.8958333333333334,
+        "class_balance": {
+          "visual_face_male": 10,
+          "visual_square": 23,
+          "visual_face_female": 10
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 42,
+        "retained_fraction": 0.875,
+        "class_balance": {
+          "visual_face_male": 12,
+          "visual_square": 19,
+          "visual_face_female": 11
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 44,
+        "retained_fraction": 0.9166666666666666,
+        "class_balance": {
+          "visual_face_male": 12,
+          "visual_square": 21,
+          "visual_face_female": 11
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-18": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 46,
+        "retained_fraction": 0.9583333333333334,
+        "class_balance": {
+          "visual_square": 22,
+          "visual_face_male": 12,
+          "visual_face_female": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 44,
+        "retained_fraction": 0.9166666666666666,
+        "class_balance": {
+          "visual_square": 22,
+          "visual_face_male": 10,
+          "visual_face_female": 12
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 46,
+        "retained_fraction": 0.9583333333333334,
+        "class_balance": {
+          "visual_square": 23,
+          "visual_face_male": 11,
+          "visual_face_female": 12
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-19": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 45,
+        "retained_fraction": 0.9375,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 23,
+          "visual_face_male": 10
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 46,
+        "retained_fraction": 0.9583333333333334,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 23,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 46,
+        "retained_fraction": 0.9583333333333334,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 23,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-21": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 43,
+        "retained_fraction": 0.8958333333333334,
+        "class_balance": {
+          "visual_square": 20,
+          "visual_face_female": 12,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 40,
+        "retained_fraction": 0.8333333333333334,
+        "class_balance": {
+          "visual_square": 20,
+          "visual_face_female": 10,
+          "visual_face_male": 10
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 43,
+        "retained_fraction": 0.8958333333333334,
+        "class_balance": {
+          "visual_square": 20,
+          "visual_face_female": 11,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-22": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 31,
+        "retained_fraction": 0.6458333333333334,
+        "class_balance": {
+          "visual_square": 15,
+          "visual_face_male": 8,
+          "visual_face_female": 8
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 16,
+        "retained_fraction": 0.3333333333333333,
+        "class_balance": {
+          "visual_square": 7,
+          "visual_face_male": 5,
+          "visual_face_female": 4
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 27,
+        "retained_fraction": 0.5625,
+        "class_balance": {
+          "visual_square": 15,
+          "visual_face_male": 5,
+          "visual_face_female": 7
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-23": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 47,
+        "retained_fraction": 0.9791666666666666,
+        "class_balance": {
+          "visual_square": 23,
+          "visual_face_male": 12,
+          "visual_face_female": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_male": 12,
+          "visual_face_female": 12
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_square": 24,
+          "visual_face_male": 12,
+          "visual_face_female": 12
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-24": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 48,
+        "retained_fraction": 1.0,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 12
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 46,
+        "retained_fraction": 0.9583333333333334,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 10
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 47,
+        "retained_fraction": 0.9791666666666666,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-25": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 46,
+        "retained_fraction": 0.9583333333333334,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 10
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 43,
+        "retained_fraction": 0.8958333333333334,
+        "class_balance": {
+          "visual_face_female": 10,
+          "visual_square": 23,
+          "visual_face_male": 10
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 47,
+        "retained_fraction": 0.9791666666666666,
+        "class_balance": {
+          "visual_face_female": 12,
+          "visual_square": 24,
+          "visual_face_male": 11
+        },
+        "channels_used": 30
+      }
+    },
+    "sub-26": {
+      "perception": {
+        "n_manifest": 48,
+        "n_kept": 40,
+        "retained_fraction": 0.8333333333333334,
+        "class_balance": {
+          "visual_square": 19,
+          "visual_face_female": 12,
+          "visual_face_male": 9
+        },
+        "channels_used": 30
+      },
+      "imagery": {
+        "n_manifest": 48,
+        "n_kept": 29,
+        "retained_fraction": 0.6041666666666666,
+        "class_balance": {
+          "visual_square": 17,
+          "visual_face_female": 6,
+          "visual_face_male": 6
+        },
+        "channels_used": 30
+      },
+      "imagery_common_window": {
+        "n_manifest": 48,
+        "n_kept": 35,
+        "retained_fraction": 0.7291666666666666,
+        "class_balance": {
+          "visual_square": 18,
+          "visual_face_female": 9,
+          "visual_face_male": 8
+        },
+        "channels_used": 30
+      }
+    }
+  },
+  "trial_counts": {
+    "perception": 641,
+    "imagery": 603,
+    "imagery_common_window": 631
+  }
+}
