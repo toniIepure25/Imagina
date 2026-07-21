@@ -820,6 +820,11 @@ jobs:
           python3 -m pytest
           app/tests/test_neural_falsification.py
           -v --timeout=300
+      - name: Real-data falsification-closure variant builders (deterministic fixtures)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_variants.py
+          -v --timeout=120
 
   c1-nested-validation-smoke:
     runs-on: ubuntu-latest
