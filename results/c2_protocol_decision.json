@@ -1,0 +1,80 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "defd964381a2abf424105e558b0f24f5fc7e4c13",
+  "created_at": "2026-07-21T12:30:00+00:00",
+  "confirmatory_or_exploratory": "protocol_lock",
+  "estimand_id": "C2_PROTOCOL_LOCK",
+  "gate": "C2_NEURAL_CONTENT_STATE_DISENTANGLEMENT",
+  "source_branch": "research/neural-behavioral-alignment-c1",
+  "source_commit": "defd964381a2abf424105e558b0f24f5fc7e4c13",
+  "note": "Frozen protocol decision for Scientific Gate C2, locked before any confirmatory model training. Companion documents: docs/research/C2_PROTOCOL.md, docs/research/C2_ANALYSIS_SPEC.md, docs/research/C2_DATASET_ROLE_MATRIX.md.",
+  "relationship_to_c1": "C2 does not attempt to rescue or reinterpret C1's frozen negative result (C1 = COMPLETE_WITH_NULL_RESULT_MECHANISM_UNRESOLVED). C2 asks a structurally different question -- whether EEG encodes stimulus content/state in reproducible representations at all -- independent of incremental behavioral validity.",
+  "primary_content_target": {
+    "classes": ["visual_square", "visual_face_male", "visual_face_female"],
+    "n_classes": 3,
+    "primary_metric": "class_weighted_multiclass_log_loss",
+    "secondary_metrics": ["balanced_accuracy", "macro_f1"],
+    "class_weighting_rationale": "fixed 2:1:1 manifest-level ratio (square:face_male:face_female), confirmed by real audit below, is a property of the experimental design, not sampling noise"
+  },
+  "real_class_count_audit": {
+    "audit_performed_before_freezing_inclusion_rule": true,
+    "audit_scope": "perception-phase manifest trial counts, all 16 C1-usable participants, session 1",
+    "participants_audited": [
+      "sub-01", "sub-02", "sub-08", "sub-09", "sub-11", "sub-12", "sub-13", "sub-16",
+      "sub-18", "sub-19", "sub-21", "sub-22", "sub-23", "sub-24", "sub-25", "sub-26"
+    ],
+    "overall_counts": {"visual_square": 384, "visual_face_male": 192, "visual_face_female": 192},
+    "per_participant_counts": {
+      "sub-01": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-02": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-08": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-09": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-11": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-12": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-13": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-16": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-18": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-19": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-21": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-22": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-23": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-24": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-25": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12},
+      "sub-26": {"visual_square": 24, "visual_face_male": 12, "visual_face_female": 12}
+    },
+    "finding": "Manifest-level class distribution is IDENTICAL across all 16 participants (24/12/12), a perfectly balanced-by-design 2:1:1 ratio. No participant lacks any class at the manifest level. Post-preprocessing/artifact-rejection counts will differ slightly and are audited separately in results/c2_data_eligibility.json (Commit 2)."
+  },
+  "primary_state_target": {
+    "classes": ["perception", "imagery"],
+    "primary_metric": "binary_log_loss",
+    "secondary_metrics": ["balanced_accuracy", "roc_auc"],
+    "common_analysis_window_s": [0.0, 2.0],
+    "window_rationale": "First 2.0s of both phases (perception's full window; imagery's first 2.0s of its 4.0s window) so epoch length cannot trivially reveal the state."
+  },
+  "outer_cv": "leave_one_subject_out",
+  "inner_cv": "participant_grouped_k_fold_within_outer_train",
+  "channel_set": "EXPECTED_YOTO_CHANNELS (30 channels, reused from C1)",
+  "minimum_effect_of_interest": "TBD_per_metric_set_in_commit_7_sensitivity_analysis",
+  "multiplicity_procedure": "Holm-Bonferroni across confirmatory secondary family {H2, H3}; H1 never corrected; H4/H5 exploratory, never assigned confirmatory p-values",
+  "model_hierarchy": [
+    "chance_majority_baseline", "order_only", "block_session_only", "signal_quality_only",
+    "regularized_linear_decoder", "classical_feature_decoder",
+    "eegnet_content_encoder", "compact_tcn_encoder", "compact_contrastive_content_state_encoder"
+  ],
+  "gate_decision_rules": {
+    "full_pass": {"C2_NEURAL_CONTENT": "PASS", "C2_PERCEPTION_IMAGERY_TRANSFER": "PASS", "C2_STATE_SEPARATION": "PASS", "C2_SUBJECT_INVARIANCE": "PASS", "C2": "COMPLETE"},
+    "partial_representational_pass": {"C2_NEURAL_CONTENT": "PASS", "C2_PERCEPTION_IMAGERY_TRANSFER": "NULL_OR_INCONCLUSIVE", "C2": "COMPLETE_PARTIAL_REPRESENTATION"},
+    "subject_specific_only": {"C2_NEURAL_CONTENT": "WITHIN_SUBJECT_ONLY", "C2_SUBJECT_INVARIANCE": "FAIL", "C2": "COMPLETE_SUBJECT_SPECIFIC"},
+    "valid_null": {"C2_NEURAL_CONTENT": "NULL_SUPPORTED_WITHIN_SENSITIVITY", "C2_PERCEPTION_IMAGERY_TRANSFER": "NULL_SUPPORTED_WITHIN_SENSITIVITY", "C2": "COMPLETE_WITH_NULL_RESULT"},
+    "failure": {"C2": "FAILED_BY_CONFOUNDING_OR_LEAKAGE"}
+  },
+  "dataset_roles": {
+    "ds005815": "primary_paired_confirmatory",
+    "ds004306": "exploratory_replication_if_available_deferred_to_commit_7",
+    "THINGS-EEG2": "optional_pretraining_deferred_to_commit_4",
+    "OpenMIIR": "auxiliary_auditory_control_only",
+    "EEG-ImageNet": "excluded_not_used"
+  },
+  "no_confirmatory_training_performed_this_commit": true
+}
