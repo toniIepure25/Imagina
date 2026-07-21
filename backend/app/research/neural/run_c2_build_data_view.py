@@ -22,6 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import mne
+import numpy as np
 
 from app.research.neural.adapters.yoto import YotoAdapter
 from app.research.neural.c2_data import (
@@ -31,6 +32,7 @@ from app.research.neural.c2_data import (
     make_matched_record,
     select_visual_content_trials,
 )
+from app.research.neural.features import extract_classical_features
 from app.research.neural.hashing import sha256_file
 from app.research.neural.preprocessing import PreprocessingConfig, preprocess_recording
 from app.research.neural.run_c1_confirmatory import DATA_ROOT, discover_subjects
@@ -102,11 +104,16 @@ def build_views_for_subject(sub: str, session: str = "1") -> tuple[dict[str, lis
         for i, t in enumerate(kept):
             epoch = epochs_by_cond[cond_name][i]
             trial_idx = _trial_index(t.trial_id)
+            fv = extract_classical_features(
+                epoch, 250.0, channels, trial_id=t.trial_id, condition=state_key, stimulus_id=t.stimulus_id,
+            )
+            classical_features = np.array(list(fv.features.values()))
             record = make_matched_record(
                 epoch, 250.0, config.reject_peak_to_peak_v, n_missing_channels,
                 neighboring_trial_rejection_rate(trial_idx, all_indices, kept_indices),
                 retained_fraction, sub, session, t.trial_id, t.stimulus_id, state_key,
                 trial_idx // TRIALS_PER_BLOCK, trial_idx, manifest.output_hash,
+                neural_features=classical_features,
             )
             views[state_key].append(record)
 

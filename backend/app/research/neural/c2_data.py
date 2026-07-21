@@ -97,6 +97,7 @@ def make_matched_record(
     n_missing_channels: int, neighboring_trial_rejection_rate: float, recording_retained_fraction: float,
     participant_id: str, session_id: str, trial_id: str, stimulus_category: str, state: str,
     block_index: int, trial_order: int, source_manifest_hash: str,
+    neural_features: np.ndarray | None = None,
 ) -> MatchedTrialRecord:
     quality_features = extract_quality_only_features(
         epoch, sfreq, rejection_threshold_v, n_missing_channels,
@@ -107,6 +108,7 @@ def make_matched_record(
         stimulus_category=stimulus_category, state=state, block_index=block_index,
         trial_order=trial_order, epoch_hash=_epoch_hash(epoch),
         signal_quality_features=quality_features, source_manifest_hash=source_manifest_hash,
+        neural_features=neural_features,
     )
 
 
