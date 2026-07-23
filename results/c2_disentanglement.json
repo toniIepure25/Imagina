@@ -1,0 +1,536 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "6f87f5cce45c4a6d0d68fcfaba4f57417e84b729",
+  "created_at": "2026-07-23T17:07:25.382228+00:00",
+  "confirmatory_or_exploratory": "exploratory",
+  "estimand_id": "C2_H5_DISENTANGLEMENT",
+  "included_participants": [
+    "sub-01",
+    "sub-08",
+    "sub-09",
+    "sub-11",
+    "sub-12",
+    "sub-13",
+    "sub-16",
+    "sub-18",
+    "sub-19",
+    "sub-21",
+    "sub-22",
+    "sub-23",
+    "sub-24",
+    "sub-25",
+    "sub-26"
+  ],
+  "excluded_subjects": {
+    "sub-02": "unusable perception/imagery epochs (too few trials or missing floor classes)",
+    "sub-05": "unusable perception/imagery epochs (too few trials or missing floor classes)",
+    "sub-07": "exception during processing: [Errno 2] No such file or directory: 'D:\\\\ComputaCenter\\\\Imagina\\\\backend\\\\data\\\\external\\\\neural\\\\ds005815\\\\sub-07\\\\ses-1\\\\eeg\\\\sub-07_ses-1_task-task_eeg.vhdr'",
+    "sub-10": "exception during processing: One PCA component captures most of the explained variance (99.87284045196536%), your threshold results in 1 component. You should select a higher value.",
+    "sub-14": "exception during processing: One PCA component captures most of the explained variance (99.78488049706267%), your threshold results in 1 component. You should select a higher value."
+  },
+  "n_channels": 30,
+  "n_samples": 500,
+  "results_by_architecture": {
+    "eegnet": {
+      "content_category": {
+        "target_name": "content_category",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 3,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 1.001329797671651,
+        "std_metric": 0.22785881915063783,
+        "balanced_accuracy_mean": 0.6787486048241097,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 1.4549935156935425,
+            "balanced_accuracy": 0.5781051452693244,
+            "macro_f1": 0.5833391714539256
+          },
+          {
+            "class_weighted_log_loss": 0.8596189172779611,
+            "balanced_accuracy": 0.6952768624410415,
+            "macro_f1": 0.6941319624722505
+          },
+          {
+            "class_weighted_log_loss": 0.8744243608644946,
+            "balanced_accuracy": 0.7094742736533782,
+            "macro_f1": 0.7198997413354342
+          },
+          {
+            "class_weighted_log_loss": 0.8933270067567222,
+            "balanced_accuracy": 0.7210471705642908,
+            "macro_f1": 0.7223985890652558
+          },
+          {
+            "class_weighted_log_loss": 0.924285187765536,
+            "balanced_accuracy": 0.6898395721925135,
+            "macro_f1": 0.6924369747899158
+          }
+        ],
+        "note": "Within-sample check; the confirmatory cross-subject claim is Commits 3-5's LOSO result."
+      },
+      "cognitive_state": {
+        "target_name": "cognitive_state",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 2,
+        "n_folds": 5,
+        "metric_name": "binary_log_loss",
+        "mean_metric": 0.9190615561724199,
+        "std_metric": 0.07995107747546547,
+        "balanced_accuracy_mean": 0.5203379950429057,
+        "per_fold": [
+          {
+            "binary_log_loss": 1.0137254948287606,
+            "balanced_accuracy": 0.5021885521885522,
+            "roc_auc": 0.49074074074074076
+          },
+          {
+            "binary_log_loss": 0.805499827850475,
+            "balanced_accuracy": 0.5237373737373737,
+            "roc_auc": 0.5431537598204265
+          },
+          {
+            "binary_log_loss": 1.0061425371062946,
+            "balanced_accuracy": 0.5264020805065581,
+            "roc_auc": 0.5016395296246042
+          },
+          {
+            "binary_log_loss": 0.8750761367104587,
+            "balanced_accuracy": 0.524381907257605,
+            "roc_auc": 0.5248946109148912
+          },
+          {
+            "binary_log_loss": 0.8948637843661104,
+            "balanced_accuracy": 0.5249800615244389,
+            "roc_auc": 0.5336675401617865
+          }
+        ],
+        "note": ""
+      },
+      "participant_identity": {
+        "target_name": "participant_identity",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 15,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 4.623325740906004,
+        "std_metric": 0.2667446920023205,
+        "balanced_accuracy_mean": 0.18453439153439152,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 4.193896715651044,
+            "balanced_accuracy": 0.20378306878306873,
+            "macro_f1": 0.20213226340511772
+          },
+          {
+            "class_weighted_log_loss": 4.967790639301032,
+            "balanced_accuracy": 0.1475925925925926,
+            "macro_f1": 0.1528530390654499
+          },
+          {
+            "class_weighted_log_loss": 4.821644620393188,
+            "balanced_accuracy": 0.21018518518518517,
+            "macro_f1": 0.21500121690726076
+          },
+          {
+            "class_weighted_log_loss": 4.507727775378178,
+            "balanced_accuracy": 0.21111111111111114,
+            "macro_f1": 0.2109090909090909
+          },
+          {
+            "class_weighted_log_loss": 4.625568953806579,
+            "balanced_accuracy": 0.15,
+            "macro_f1": 0.1359465735552692
+          }
+        ],
+        "note": ""
+      },
+      "session_identity": {
+        "target_name": "session_identity",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 1,
+        "n_folds": 0,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": NaN,
+        "std_metric": NaN,
+        "balanced_accuracy_mean": NaN,
+        "per_fold": [],
+        "note": "Only session 1 was used for every included participant in this pipeline -- session identity has zero variance and is not meaningfully testable here, reported honestly rather than faked."
+      },
+      "signal_quality_bin": {
+        "target_name": "signal_quality_bin",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 3,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 3.136327789310598,
+        "std_metric": 0.7198121642713574,
+        "balanced_accuracy_mean": 0.4569023569023569,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 2.663471290171942,
+            "balanced_accuracy": 0.48148148148148145,
+            "macro_f1": 0.4816825875649405
+          },
+          {
+            "class_weighted_log_loss": 3.574971689000051,
+            "balanced_accuracy": 0.4444444444444445,
+            "macro_f1": 0.446505283434486
+          },
+          {
+            "class_weighted_log_loss": 2.009364257485428,
+            "balanced_accuracy": 0.49629629629629624,
+            "macro_f1": 0.4963438558944176
+          },
+          {
+            "class_weighted_log_loss": 4.056352309728441,
+            "balanced_accuracy": 0.3925925925925926,
+            "macro_f1": 0.38694900122754156
+          },
+          {
+            "class_weighted_log_loss": 3.377479400167127,
+            "balanced_accuracy": 0.4696969696969697,
+            "macro_f1": 0.4642534987362574
+          }
+        ],
+        "note": ""
+      }
+    },
+    "tcn": {
+      "content_category": {
+        "target_name": "content_category",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 3,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 1.1550421947666127,
+        "std_metric": 0.005803060103115889,
+        "balanced_accuracy_mean": 0.33134328358208953,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 1.148936302113158,
+            "balanced_accuracy": 0.3333333333333333,
+            "macro_f1": 0.2222222222222222
+          },
+          {
+            "class_weighted_log_loss": 1.1636946899890577,
+            "balanced_accuracy": 0.3333333333333333,
+            "macro_f1": 0.22112211221122113
+          },
+          {
+            "class_weighted_log_loss": 1.1586260614306405,
+            "balanced_accuracy": 0.3283582089552239,
+            "macro_f1": 0.2189054726368159
+          },
+          {
+            "class_weighted_log_loss": 1.1554837041782524,
+            "balanced_accuracy": 0.3283582089552239,
+            "macro_f1": 0.22
+          },
+          {
+            "class_weighted_log_loss": 1.148470216121955,
+            "balanced_accuracy": 0.3333333333333333,
+            "macro_f1": 0.2222222222222222
+          }
+        ],
+        "note": "Within-sample check; the confirmatory cross-subject claim is Commits 3-5's LOSO result."
+      },
+      "cognitive_state": {
+        "target_name": "cognitive_state",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 2,
+        "n_folds": 5,
+        "metric_name": "binary_log_loss",
+        "mean_metric": 0.6927241240109796,
+        "std_metric": 0.0018465005460195827,
+        "balanced_accuracy_mean": 0.5219793046487817,
+        "per_fold": [
+          {
+            "binary_log_loss": 0.6952619995140884,
+            "balanced_accuracy": 0.49638047138047137,
+            "roc_auc": 0.4961840628507295
+          },
+          {
+            "binary_log_loss": 0.6940730091169859,
+            "balanced_accuracy": 0.5004208754208754,
+            "roc_auc": 0.5131874298540965
+          },
+          {
+            "binary_log_loss": 0.6900871588386688,
+            "balanced_accuracy": 0.5763229308005428,
+            "roc_auc": 0.5875734961555857
+          },
+          {
+            "binary_log_loss": 0.6928248083337203,
+            "balanced_accuracy": 0.5032471231628118,
+            "roc_auc": 0.5407314572177282
+          },
+          {
+            "binary_log_loss": 0.6913736442514342,
+            "balanced_accuracy": 0.533525122479207,
+            "roc_auc": 0.5156089780107098
+          }
+        ],
+        "note": ""
+      },
+      "participant_identity": {
+        "target_name": "participant_identity",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 15,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 2.7280517296274214,
+        "std_metric": 0.011130903677530174,
+        "balanced_accuracy_mean": 0.0651851851851852,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 2.725775254746079,
+            "balanced_accuracy": 0.05481481481481483,
+            "macro_f1": 0.03587605377079061
+          },
+          {
+            "class_weighted_log_loss": 2.7424345363118583,
+            "balanced_accuracy": 0.04148148148148148,
+            "macro_f1": 0.025155776123518055
+          },
+          {
+            "class_weighted_log_loss": 2.7247370958943824,
+            "balanced_accuracy": 0.07129629629629629,
+            "macro_f1": 0.045968283466126435
+          },
+          {
+            "class_weighted_log_loss": 2.71028045829769,
+            "balanced_accuracy": 0.06666666666666667,
+            "macro_f1": 0.05264579387055243
+          },
+          {
+            "class_weighted_log_loss": 2.7370313028870967,
+            "balanced_accuracy": 0.09166666666666666,
+            "macro_f1": 0.06122533583833893
+          }
+        ],
+        "note": ""
+      },
+      "session_identity": {
+        "target_name": "session_identity",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 1,
+        "n_folds": 0,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": NaN,
+        "std_metric": NaN,
+        "balanced_accuracy_mean": NaN,
+        "per_fold": [],
+        "note": "Only session 1 was used for every included participant in this pipeline -- session identity has zero variance and is not meaningfully testable here, reported honestly rather than faked."
+      },
+      "signal_quality_bin": {
+        "target_name": "signal_quality_bin",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 3,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 1.100510760036595,
+        "std_metric": 0.0019223803735393776,
+        "balanced_accuracy_mean": 0.33047138047138047,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 1.103347006722078,
+            "balanced_accuracy": 0.2888888888888889,
+            "macro_f1": 0.26828808446455504
+          },
+          {
+            "class_weighted_log_loss": 1.0991110215609081,
+            "balanced_accuracy": 0.362962962962963,
+            "macro_f1": 0.3261824941263689
+          },
+          {
+            "class_weighted_log_loss": 1.099745561181669,
+            "balanced_accuracy": 0.3111111111111111,
+            "macro_f1": 0.3070354932423898
+          },
+          {
+            "class_weighted_log_loss": 1.0982176438615734,
+            "balanced_accuracy": 0.3333333333333333,
+            "macro_f1": 0.28486946669394303
+          },
+          {
+            "class_weighted_log_loss": 1.1021325668567463,
+            "balanced_accuracy": 0.35606060606060613,
+            "macro_f1": 0.32915343915343914
+          }
+        ],
+        "note": ""
+      }
+    },
+    "contrastive": {
+      "content_category": {
+        "target_name": "content_category",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 3,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 1.17289198051494,
+        "std_metric": 0.014274662001316139,
+        "balanced_accuracy_mean": 0.32713319068016167,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 1.1879111428181803,
+            "balanced_accuracy": 0.33290689410092394,
+            "macro_f1": 0.2379841770704715
+          },
+          {
+            "class_weighted_log_loss": 1.154736391888431,
+            "balanced_accuracy": 0.3285089703000151,
+            "macro_f1": 0.23562968334541937
+          },
+          {
+            "class_weighted_log_loss": 1.190962425678091,
+            "balanced_accuracy": 0.3279317697228145,
+            "macro_f1": 0.2341259239469231
+          },
+          {
+            "class_weighted_log_loss": 1.1690009880023675,
+            "balanced_accuracy": 0.32338308457711445,
+            "macro_f1": 0.21885521885521886
+          },
+          {
+            "class_weighted_log_loss": 1.1618489541876305,
+            "balanced_accuracy": 0.32293523469994057,
+            "macro_f1": 0.24695399163484266
+          }
+        ],
+        "note": "Within-sample check; the confirmatory cross-subject claim is Commits 3-5's LOSO result."
+      },
+      "cognitive_state": {
+        "target_name": "cognitive_state",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 2,
+        "n_folds": 5,
+        "metric_name": "binary_log_loss",
+        "mean_metric": 0.6889369749177199,
+        "std_metric": 0.004497738927204862,
+        "balanced_accuracy_mean": 0.534166019313564,
+        "per_fold": [
+          {
+            "binary_log_loss": 0.6872419923363964,
+            "balanced_accuracy": 0.5429292929292929,
+            "roc_auc": 0.5618967452300786
+          },
+          {
+            "binary_log_loss": 0.6883798490397671,
+            "balanced_accuracy": 0.5313131313131313,
+            "roc_auc": 0.5394500561167228
+          },
+          {
+            "binary_log_loss": 0.6856487704498127,
+            "balanced_accuracy": 0.5485074626865671,
+            "roc_auc": 0.569708276797829
+          },
+          {
+            "binary_log_loss": 0.6976990050366582,
+            "balanced_accuracy": 0.49783525122479205,
+            "roc_auc": 0.5296798450495613
+          },
+          {
+            "binary_log_loss": 0.6857152577259651,
+            "balanced_accuracy": 0.5502449584140366,
+            "roc_auc": 0.6103452204625727
+          }
+        ],
+        "note": ""
+      },
+      "participant_identity": {
+        "target_name": "participant_identity",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 15,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 2.7872400731458837,
+        "std_metric": 0.02866208435942394,
+        "balanced_accuracy_mean": 0.11592592592592595,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 2.769543221210187,
+            "balanced_accuracy": 0.10388888888888889,
+            "macro_f1": 0.09522195640616693
+          },
+          {
+            "class_weighted_log_loss": 2.774274921698496,
+            "balanced_accuracy": 0.12111111111111111,
+            "macro_f1": 0.10850508624502433
+          },
+          {
+            "class_weighted_log_loss": 2.835450485008269,
+            "balanced_accuracy": 0.15092592592592596,
+            "macro_f1": 0.13611310696165327
+          },
+          {
+            "class_weighted_log_loss": 2.7545066895940473,
+            "balanced_accuracy": 0.10370370370370369,
+            "macro_f1": 0.10233135274311743
+          },
+          {
+            "class_weighted_log_loss": 2.8024250482184203,
+            "balanced_accuracy": 0.1,
+            "macro_f1": 0.09785799168152111
+          }
+        ],
+        "note": ""
+      },
+      "session_identity": {
+        "target_name": "session_identity",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 1,
+        "n_folds": 0,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": NaN,
+        "std_metric": NaN,
+        "balanced_accuracy_mean": NaN,
+        "per_fold": [],
+        "note": "Only session 1 was used for every included participant in this pipeline -- session identity has zero variance and is not meaningfully testable here, reported honestly rather than faked."
+      },
+      "signal_quality_bin": {
+        "target_name": "signal_quality_bin",
+        "validation_scheme": "stratified_5fold_within_sample",
+        "n_classes": 3,
+        "n_folds": 5,
+        "metric_name": "class_weighted_log_loss",
+        "mean_metric": 1.1183737821625175,
+        "std_metric": 0.025134352332823528,
+        "balanced_accuracy_mean": 0.3496632996632996,
+        "per_fold": [
+          {
+            "class_weighted_log_loss": 1.16532995933145,
+            "balanced_accuracy": 0.3111111111111111,
+            "macro_f1": 0.31313131313131315
+          },
+          {
+            "class_weighted_log_loss": 1.0953010657063533,
+            "balanced_accuracy": 0.3925925925925926,
+            "macro_f1": 0.3949106449106449
+          },
+          {
+            "class_weighted_log_loss": 1.104321025276943,
+            "balanced_accuracy": 0.38518518518518513,
+            "macro_f1": 0.38137493804335737
+          },
+          {
+            "class_weighted_log_loss": 1.1228297741229811,
+            "balanced_accuracy": 0.3185185185185185,
+            "macro_f1": 0.31681096681096677
+          },
+          {
+            "class_weighted_log_loss": 1.1040870863748602,
+            "balanced_accuracy": 0.3409090909090909,
+            "macro_f1": 0.3391304347826087
+          }
+        ],
+        "note": ""
+      }
+    }
+  },
+  "run_complete": true,
+  "note": "Separate probe metrics reported per target (content, state, participant identity, session identity, signal-quality bin) -- never combined into one disentanglement score, per the task specification. Content/state probes here use within-sample stratified K-fold (a leakage/recoverability check on the frozen representation), NOT a repeat of Commits 3-5's cross-subject LOSO claim, which remains the confirmatory record for H1/H3."
+}

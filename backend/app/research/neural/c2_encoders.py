@@ -105,6 +105,16 @@ class EEGNetContentEncoder:
             x_t = torch.tensor(x, dtype=torch.float32).unsqueeze(1)
             return torch.nn.functional.softmax(self.net(x_t), dim=-1).numpy()
 
+    def embed(self, x: np.ndarray) -> np.ndarray:
+        """Pre-head (post-conv, flattened) features -- the frozen
+        representation Commit 6's disentanglement probes operate on,
+        distinct from the final content-classification logits/proba."""
+        torch = _require_torch()
+        self.net.eval()
+        with torch.no_grad():
+            x_t = torch.tensor(x, dtype=torch.float32).unsqueeze(1)
+            return self.net._forward_features(x_t).numpy()
+
     def to_spec(self, model_id: str) -> ModelSpec:
         torch = _require_torch()
         param_count = sum(p.numel() for p in self.net.parameters())
@@ -142,11 +152,13 @@ class CompactTCNContentEncoder:
                 self.pool = torch.nn.AdaptiveAvgPool1d(1)
                 self.head = torch.nn.Linear(hidden, n_classes)
 
-            def forward(self, x):
+            def _forward_features(self, x):
                 x = torch.nn.functional.relu(self.conv1(x))
                 x = torch.nn.functional.relu(self.conv2(x))
-                x = self.pool(x).squeeze(-1)
-                return self.head(x)
+                return self.pool(x).squeeze(-1)
+
+            def forward(self, x):
+                return self.head(self._forward_features(x))
 
         self.net = _Net(n_channels, hidden, n_classes)
         self._train_time_s = 0.0
@@ -173,6 +185,15 @@ class CompactTCNContentEncoder:
         with torch.no_grad():
             x_t = torch.tensor(x, dtype=torch.float32)
             return torch.nn.functional.softmax(self.net(x_t), dim=-1).numpy()
+
+    def embed(self, x: np.ndarray) -> np.ndarray:
+        """Pre-head pooled features -- the frozen representation Commit
+        6's disentanglement probes operate on."""
+        torch = _require_torch()
+        self.net.eval()
+        with torch.no_grad():
+            x_t = torch.tensor(x, dtype=torch.float32)
+            return self.net._forward_features(x_t).numpy()
 
     def to_spec(self, model_id: str) -> ModelSpec:
         torch = _require_torch()
