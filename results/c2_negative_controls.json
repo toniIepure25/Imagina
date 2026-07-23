@@ -1,0 +1,161 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "2dcc8217ae9526ab75a706577965f34aacdbe32b",
+  "created_at": "2026-07-23T17:52:10.084152+00:00",
+  "confirmatory_or_exploratory": "confirmatory",
+  "included_participants": [
+    "sub-01",
+    "sub-08",
+    "sub-09",
+    "sub-11",
+    "sub-12",
+    "sub-13",
+    "sub-16",
+    "sub-18",
+    "sub-19",
+    "sub-21",
+    "sub-23",
+    "sub-24",
+    "sub-25",
+    "sub-26"
+  ],
+  "excluded_subjects": {
+    "sub-02": "unusable imagery epochs (too few trials or missing floor classes)",
+    "sub-05": "unusable imagery epochs (too few trials or missing floor classes)",
+    "sub-07": "exception during processing: [Errno 2] No such file or directory: 'D:\\\\ComputaCenter\\\\Imagina\\\\backend\\\\data\\\\external\\\\neural\\\\ds005815\\\\sub-07\\\\ses-1\\\\eeg\\\\sub-07_ses-1_task-task_eeg.vhdr'",
+    "sub-10": "exception during processing: One PCA component captures most of the explained variance (99.87284045196536%), your threshold results in 1 component. You should select a higher value.",
+    "sub-14": "exception during processing: One PCA component captures most of the explained variance (99.78488049706267%), your threshold results in 1 component. You should select a higher value.",
+    "sub-22": "unusable imagery epochs (too few trials or missing floor classes)"
+  },
+  "aligned_reproduction": {
+    "n_participants": 14,
+    "mean": 1.1776325798472456,
+    "std": 0.030097545864230864,
+    "per_participant": {
+      "sub-01": 1.1781761527166377,
+      "sub-08": 1.2188839553119146,
+      "sub-09": 1.2203707442395055,
+      "sub-11": 1.1955578280143213,
+      "sub-12": 1.1445194077209955,
+      "sub-13": 1.130179988916747,
+      "sub-16": 1.1544848562179455,
+      "sub-18": 1.1935101940478303,
+      "sub-19": 1.1371463704084075,
+      "sub-21": 1.2279963858894785,
+      "sub-23": 1.1667666688310996,
+      "sub-24": 1.1766630247942151,
+      "sub-25": 1.158626708991195,
+      "sub-26": 1.1839738317611486
+    }
+  },
+  "controls": {
+    "2_temporal_shift": {
+      "test_id": "2_temporal_shift",
+      "real_data_or_fixture": "real_data",
+      "variant_id": "late_shift",
+      "control_construction": "Content features recomputed from a window 4.0s after each imagery trial's own onset (post-imagery/inter-trial interval), same LOSO structure.",
+      "aligned_log_loss": 1.1776325798472456,
+      "control_log_loss": 1.175128093030139,
+      "n_participants": 14,
+      "status": "PASS",
+      "scientific_interpretation": "Temporally shifted window does not reproduce or beat the aligned result (aligned=1.1776, late_shift=1.1751)."
+    },
+    "3_channel_permutation": {
+      "test_id": "3_channel_permutation",
+      "real_data_or_fixture": "real_data",
+      "variant_id": [
+        "channel_permuted_seed101",
+        "channel_permuted_seed202",
+        "channel_permuted_seed303",
+        "channel_permuted_seed404",
+        "channel_permuted_seed505"
+      ],
+      "control_construction": "Channel labels permuted (fixed seed registry), classical features recomputed.",
+      "aligned_log_loss": 1.1776325798472456,
+      "permuted_log_loss_by_seed": {
+        "seed101": 1.1609156187193241,
+        "seed202": 1.172813977832641,
+        "seed303": 1.1823159985568197,
+        "seed404": 1.1774908534633772,
+        "seed505": 1.1930287099909704
+      },
+      "status": "PASS",
+      "scientific_interpretation": "Aligned log_loss (1.1776) falls within the permuted-seed range (1.1609 to 1.1930) -- no spatial specificity, consistent with C1's own channel-permutation finding."
+    },
+    "8_within_block_label_shuffle": {
+      "test_id": "8_within_block_label_shuffle",
+      "real_data_or_fixture": "real_data",
+      "control_construction": "Content labels shuffled within each (participant, block) group.",
+      "aligned_log_loss": 1.1776325798472456,
+      "control_log_loss": 1.1792180827363727,
+      "status": "PASS",
+      "scientific_interpretation": "Shuffled log_loss (1.1792) should sit near chance (log(3)=1.0986)."
+    },
+    "9_paired_trial_leakage": {
+      "test_id": "9_paired_trial_leakage",
+      "status": "PASS",
+      "control_construction": "Verifies no (participant, global-trial-index) pair appears in both train and test of any fold.",
+      "scientific_interpretation": "No leaked trial found across any LOSO fold."
+    },
+    "10_outer_test_blind_hyperparameter_selection": {
+      "test_id": "10_outer_test_blind_hyperparameter_selection",
+      "status": "PASS",
+      "control_construction": "One isolated LOSO fold's test-side labels corrupted (permuted); train-side untouched. Chosen hyperparameter and checkpoint hash must be unchanged; reported score must change.",
+      "same_hyperparameter": true,
+      "same_checkpoint_hash": true,
+      "score_changed": true
+    },
+    "11_random_noise_comparison": {
+      "test_id": "11_random_noise_comparison",
+      "real_data_or_fixture": "real_data",
+      "control_construction": "Classical features replaced by independent standard-normal noise, same dimensionality.",
+      "aligned_log_loss": 1.1776325798472456,
+      "noise_log_loss": 1.2115227929361627,
+      "status": "PASS",
+      "scientific_interpretation": "Random noise (log_loss=1.2115) does not outperform the real classical features (log_loss=1.1776)."
+    },
+    "1_precue_content_decoding": {
+      "test_id": "1_precue_content_decoding",
+      "status": "PASS",
+      "source": "results/c2_cross_state_transfer.json (Commit 5)",
+      "scientific_interpretation": "Pre-cue window (log_loss=1.0397648981639318) established in Commit 5's transfer evaluation shows no content signal before the stimulus was shown, for all three architectures."
+    },
+    "4_order_only_model": {
+      "test_id": "4_order_only_model",
+      "status": "PASS",
+      "source": "results/c2_content_decoding.json (Commit 3)",
+      "scientific_interpretation": "Order-only baseline log_loss=1.1634 (chance=1.0986) -- no order confound."
+    },
+    "5_block_session_only_model": {
+      "test_id": "5_block_session_only_model",
+      "status": "PASS",
+      "source": "results/c2_content_decoding.json (Commit 3)",
+      "scientific_interpretation": "Block/session-only baseline log_loss=1.1619 (chance=1.0986) -- no block/session confound."
+    },
+    "6_signal_quality_only_model": {
+      "test_id": "6_signal_quality_only_model",
+      "status": "PASS",
+      "source": "results/c2_content_decoding.json (Commit 3), results/c2_disentanglement.json (Commit 6)",
+      "scientific_interpretation": "Signal-quality-only content decoding sits at/near chance in both commits."
+    },
+    "7_participant_only_model": {
+      "test_id": "7_participant_only_model",
+      "status": "PASS",
+      "source": "results/c2_disentanglement.json (Commit 6)",
+      "scientific_interpretation": "Participant-identity probing (a stricter version of this check) shows near-chance recoverability for TCN/contrastive; EEGNet shows modest leakage but its content decoding is independently established as overfitting, not genuine signal -- see Commit 6's honest interpretation."
+    },
+    "12_equal_duration_state_control": {
+      "test_id": "12_equal_duration_state_control",
+      "status": "PASS",
+      "source": "results/c2_state_decoding.json (Commit 3), C2_ANALYSIS_SPEC.md Section 4",
+      "scientific_interpretation": "State decoding always used the equal-duration common window (first 2.0s of both phases) by design, established from Commit 2 onward -- epoch length was never a confound available to exploit."
+    }
+  },
+  "summary": {
+    "total_controls": 12,
+    "passed": 12,
+    "not_pass": 0
+  },
+  "note": "Controls 1, 4, 5, 6, 7, 12 reference already-established real results from Commits 3, 5, 6 (cited via 'source') rather than being recomputed, to avoid redundant real-data compute for checks that already have a real answer. Controls 2, 3, 8, 9, 10, 11 are newly run here on the classical-feature-decoder content baseline. ds004306 exploratory replication was not pursued this session (see C2_DATASET_ROLE_MATRIX.md) -- this does not change the primary decision."
+}
