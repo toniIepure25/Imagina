@@ -1096,3 +1096,22 @@ jobs:
           python3 -m pytest
           app/tests/test_c3_perception_decoder.py
           -v --timeout=120
+
+  c3-zero-shot-transfer-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3 zero-shot transfer and state transport smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3_transfer_transport.py
+          -v --timeout=120
