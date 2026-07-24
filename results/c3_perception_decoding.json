@@ -1,0 +1,35 @@
+{
+  "status": "SMOKE_TESTS_PASS_AWAITING_REAL_DATA",
+  "commit": "c3-commit3",
+  "description": "Perception decoding foundation — ridge decoder implementation verified on synthetic data",
+  "decoder_config": {
+    "type": "ridge_regression",
+    "target": "openai/clip-vit-large-patch14 (768-d)",
+    "roi_id": "nsdgeneral",
+    "ncsnr_threshold": 0.0,
+    "alpha_candidates": [0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0],
+    "inner_cv_folds": 5,
+    "normalize_targets": true
+  },
+  "synthetic_validation": {
+    "structured_signal_recovery": {
+      "n_images": 200,
+      "n_voxels": 100,
+      "embedding_dim": 16,
+      "mean_cosine_similarity": ">0.9",
+      "status": "PASS"
+    },
+    "retrieval_evaluation": {
+      "perfect_retrieval_mrr": 1.0,
+      "random_retrieval_near_chance": true,
+      "shuffled_null_near_expected": true,
+      "status": "PASS"
+    }
+  },
+  "real_data_status": {
+    "perception_betas_available": false,
+    "reason": "NSD perception betas (16-28 GB/subject) not yet downloaded",
+    "required_for_completion": true
+  },
+  "continuation_criterion": "C3 continues only when perception decoding is above a valid null on real NSD data. Otherwise: C3 = FAILED_BY_PERCEPTION_FOUNDATION"
+}
