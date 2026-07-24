@@ -3657,12 +3657,28 @@ If OpenCode rejects this config or agents, consult https://opencode.ai for the e
   perception/imagery separation, generator-free, voxel permutation
 - 14 tests
 
+### Commit 6 — Reconstruction-Readiness Decision (`0dec6a8`)
+- `results/c3_final_decision.json` — machine-readable gate artifact
+- `docs/research/C3_FINAL_DECISION.md` — human-readable decision document
+- Gate decision: INFRASTRUCTURE_COMPLETE_AWAITING_REAL_DATA
+
+### Final CI Verification
+- **Workflow run:** 30084435767
+- **Overall conclusion:** success
+- **C3 jobs:**
+  - c3-data-contract: success
+  - c3-perception-decoder-smoke: success
+  - c3-zero-shot-transfer-smoke: success
+  - c3-uncertainty-controls: success
+- **All other jobs (C0.2, C1, C2, frontend, Playwright, docker):** success
+- **Skipped (event-gated):** docker-smoke, backend-legacy-validation
+
 ### Current Status
 - **61 total C3 tests, all passing**
-- **4 CI jobs defined:** c3-data-contract, c3-perception-decoder-smoke,
-  c3-zero-shot-transfer-smoke, c3-uncertainty-controls
+- **4 CI jobs defined and verified green**
 - **Blocker:** NSD perception betas not downloaded (80-120 GB needed)
 - **Decision:** INFRASTRUCTURE_COMPLETE_AWAITING_REAL_DATA
+- **Final SHA:** 0dec6a86dbb51bc72b41c0759dbb96910f3d5aa6
 
 ### Scientific Interpretation
 The pipeline is complete and verified on synthetic data. Real-data execution
