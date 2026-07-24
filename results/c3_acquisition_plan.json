@@ -1,0 +1,84 @@
+{
+  "gate": "C3_REALDATA_ACQUISITION",
+  "date": "2026-07-24",
+  "branch": "research/fmri-imagery-transfer-c3-realdata",
+  "stage_1_existing_data": {
+    "status": "VERIFIED",
+    "participant": "subj01",
+    "imagery_betas": {
+      "file": "nsdimagerybetas_fithrf/betas_nsdimagery.hdf5",
+      "sha256": "31485ff0e4cb9e90b6f83f2f550714b1a688993604f5795148a2746df7b42b64",
+      "shape": [720, 83, 104, 81],
+      "dtype": "int16",
+      "size_mb": 1003.7
+    },
+    "roi_nsdgeneral": {
+      "sha256": "verified",
+      "n_roi_voxels": 15724,
+      "shape": [81, 104, 83]
+    },
+    "ncsnr": {
+      "n_positive_voxels": 289477,
+      "mean_positive": 0.1122
+    },
+    "behavioral_tsv_count": 12,
+    "total_imagery_trials": 576
+  },
+  "stage_2_perception_download": {
+    "status": "IN_PROGRESS",
+    "source": "s3://natural-scenes-dataset/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/",
+    "total_sessions": 40,
+    "size_per_session_mb": 1043.7,
+    "total_size_gb": 40.77,
+    "download_rate_mb_per_min": 55,
+    "estimated_completion_hours": 12,
+    "sessions_completed_at_commit": 3,
+    "resume_supported": true,
+    "script": "backend/app/research/fmri/download_perception_betas.py"
+  },
+  "stage_3_stimulus_metadata": {
+    "status": "COMPLETE",
+    "nsd_expdesign_mat": {
+      "sha256": "4cf4901ecf736c525ce534c4466030ec8d13c2fc0c8b31ddf86f17c55faadf89",
+      "masterordering_shape": [30000],
+      "subjectim_shape": [8, 10000]
+    },
+    "clip_embeddings": {
+      "model": "openai/clip-vit-large-patch14",
+      "n_targets": 12,
+      "embedding_dim": 768,
+      "normalization": "L2",
+      "pool_hash": "0f4a98d41187ee7f577d65f71e3e312cfe3da86c837bfa41c6b7e2d959ce759d",
+      "target_images": [
+        "setA/bar_000.0deg_450L_43W.png",
+        "setA/bar_045.0deg_450L_43W.png",
+        "setA/bar_090.0deg_450L_43W.png",
+        "setA/bar_135.0deg_450L_43W.png",
+        "setA/crs_000.0deg_450L_43W.png",
+        "setA/crs_045.0deg_450L_43W.png",
+        "setB/shared0000_nsd00000.png",
+        "setB/shared0385_nsd28752.png",
+        "setB/shared0413_nsd30857.png",
+        "setB/shared0741_nsd53882.png",
+        "setB/shared0842_nsd61178.png",
+        "setB/shared0907_nsd65873.png"
+      ]
+    }
+  },
+  "stage_4_additional_subjects": {
+    "status": "DEFERRED",
+    "reason": "Disk space insufficient for additional perception betas"
+  },
+  "spatial_alignment": {
+    "nifti_shape": [81, 104, 83],
+    "hdf5_spatial_shape": [83, 104, 81],
+    "axis_correspondence": "betas[:, z, y, x] -> NIfTI (x, y, z)",
+    "voxel_size_mm": 1.8,
+    "scale_factor": 300,
+    "status": "VERIFIED_FROM_PRIOR_WORK"
+  },
+  "blocking_status": "PERCEPTION_BETAS_DOWNLOAD_IN_PROGRESS",
+  "next_action": "Wait for download completion, then run perception decoder",
+  "resumable": true,
+  "estimated_remaining_hours": 12
+}

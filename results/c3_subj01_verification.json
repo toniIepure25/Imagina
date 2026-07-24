@@ -1,0 +1,428 @@
+{
+  "participant": "subj01",
+  "verification_date": "2026-07-24",
+  "imagery_betas": {
+    "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\nsdimagerybetas_fithrf\\betas_nsdimagery.hdf5",
+    "sha256": "31485ff0e4cb9e90b6f83f2f550714b1a688993604f5795148a2746df7b42b64",
+    "shape": [
+      720,
+      83,
+      104,
+      81
+    ],
+    "dtype": "int16",
+    "size_mb": 1003.74,
+    "status": "VERIFIED"
+  },
+  "roi_masks": {
+    "nsdgeneral": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\ppdata\\subj01\\func1pt8mm\\roi\\nsdgeneral.nii.gz",
+      "sha256": "c16620878feeaf829aa8f0923de141d91970651bbbf54404972f72019c036306",
+      "shape": [
+        81,
+        104,
+        83
+      ],
+      "n_nonzero": 607812,
+      "unique_labels": [
+        1
+      ],
+      "affine_diag": [
+        1.7999999523162842,
+        1.7999999523162842,
+        1.7999999523162842
+      ],
+      "status": "VERIFIED"
+    },
+    "prf-visualrois": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\ppdata\\subj01\\func1pt8mm\\roi\\prf-visualrois.nii.gz",
+      "sha256": "ebc6af4b7aafff04a15ab1555d5f5fccbdbc3f80ffefee12443f9be568a45a1d",
+      "shape": [
+        81,
+        104,
+        83
+      ],
+      "n_nonzero": 596745,
+      "unique_labels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "affine_diag": [
+        1.7999999523162842,
+        1.7999999523162842,
+        1.7999999523162842
+      ],
+      "status": "VERIFIED"
+    },
+    "streams": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\ppdata\\subj01\\func1pt8mm\\roi\\streams.nii.gz",
+      "sha256": "9a9f6ad1c4af8e412ad137a1e09c5db3305677d5180c8c59df9857047323b9aa",
+      "shape": [
+        81,
+        104,
+        83
+      ],
+      "n_nonzero": 619750,
+      "unique_labels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "affine_diag": [
+        1.7999999523162842,
+        1.7999999523162842,
+        1.7999999523162842
+      ],
+      "status": "VERIFIED"
+    }
+  },
+  "ncsnr": {
+    "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\ncsnr.nii.gz",
+    "sha256": "39217f54a32fcc324b3718301b53affa52e39764339734f991468fe3d988cda9",
+    "shape": [
+      81,
+      104,
+      83
+    ],
+    "n_positive": 289477,
+    "mean_positive": 0.11223810166120529,
+    "max": NaN,
+    "status": "VERIFIED"
+  },
+  "behavioral": {
+    "visA": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_visA.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "visB": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_visB.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "visC": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_visC.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "imgA_1": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_imgA_1.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "imgA_2": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_imgA_2.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "imgB_1": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_imgB_1.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "imgB_2": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_imgB_2.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "imgC_1": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_imgC_1.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "imgC_2": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_imgC_2.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "attA": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_attA.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "attB": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_attB.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    },
+    "attC": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\bdata\\nsdimagery\\nsdimagery_subj01_attC.tsv",
+      "n_trials": 48,
+      "columns": [
+        "SUBJECT",
+        "SESSION",
+        "RUN",
+        "TRIAL",
+        "CONDITION",
+        "CUE",
+        "FRAMEFILE",
+        "IMAGEFILE",
+        "GROUNDTRUTH",
+        "ISCORRECT",
+        "CHANGEMIND",
+        "TOTAL1",
+        "TOTAL2",
+        "BUTTON",
+        "TRIALONSET",
+        "TRIALEND",
+        "IMAGEONSET",
+        "IMAGESERIESENDS",
+        "FINALDECISIONTIME",
+        "RT"
+      ],
+      "status": "VERIFIED"
+    }
+  },
+  "overall_status": "ALL_VERIFIED"
+}

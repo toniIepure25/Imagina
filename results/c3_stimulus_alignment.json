@@ -1,0 +1,119 @@
+{
+  "date": "2026-07-24T20:05:51",
+  "metadata": {
+    "nsd_expdesign.mat": {
+      "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsd\\nsd_expdesign.mat",
+      "size": 261803,
+      "sha256": "4cf4901ecf736c525ce534c4466030ec8d13c2fc0c8b31ddf86f17c55faadf89",
+      "status": "OK"
+    },
+    "nsd_stim_info_merged.pkl": {
+      "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsd\\nsd_stim_info_merged.pkl",
+      "size": 24529771,
+      "sha256": "ffdc70e7fa21f5f91daad0b237932dbc50d9c8c8eebd584fe6d07310b5646a09",
+      "status": "OK"
+    }
+  },
+  "expdesign": {
+    "masterordering_shape": [
+      30000
+    ],
+    "subjectim_shape": [
+      8,
+      10000
+    ],
+    "sharedix_shape": [
+      1000
+    ],
+    "keys": [
+      "basiccnt",
+      "masterordering",
+      "sharedix",
+      "stimpattern",
+      "subjectim"
+    ]
+  },
+  "clip_embeddings": {
+    "status": "OK",
+    "model": "openai/clip-vit-large-patch14",
+    "n_images": 12,
+    "embedding_dim": 768,
+    "normalization": "L2",
+    "pool_hash": "0f4a98d41187ee7f577d65f71e3e312cfe3da86c837bfa41c6b7e2d959ce759d",
+    "embeddings_path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\cache\\imagery_target_clip_embeddings.npy",
+    "images": [
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setA\\bar_000.0deg_450L_43W.png",
+        "filename": "bar_000.0deg_450L_43W.png",
+        "set": "setA",
+        "sha256": "925fea631650a6e1af3e8065634e43e92083c709d20e097854c75e0f4aa80996"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setA\\bar_045.0deg_450L_43W.png",
+        "filename": "bar_045.0deg_450L_43W.png",
+        "set": "setA",
+        "sha256": "69b6f289739a157b53cbb2879a8846112d10c97f9a762a19037fbd40214e8582"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setA\\bar_090.0deg_450L_43W.png",
+        "filename": "bar_090.0deg_450L_43W.png",
+        "set": "setA",
+        "sha256": "ed687dfd41bb1b36fbf272a46cdf3a3665be6c329fd973f7a5d3c928dd5d3b89"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setA\\bar_135.0deg_450L_43W.png",
+        "filename": "bar_135.0deg_450L_43W.png",
+        "set": "setA",
+        "sha256": "c873681177f4c13b0c89febb3052ede10d259bb43554deafd73ea8565384f3f1"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setA\\crs_000.0deg_450L_43W.png",
+        "filename": "crs_000.0deg_450L_43W.png",
+        "set": "setA",
+        "sha256": "5236bd2fb0a6b760a688f3d3575c37b8b8a1e9f799d6469a0494e850e3eda722"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setA\\crs_045.0deg_450L_43W.png",
+        "filename": "crs_045.0deg_450L_43W.png",
+        "set": "setA",
+        "sha256": "cc35edf432f266cc35f7c227c839008f54c18c3c1695031ec16acdc0c69a83d9"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setB\\shared0000_nsd00000.png",
+        "filename": "shared0000_nsd00000.png",
+        "set": "setB",
+        "sha256": "91a95ab576d719658c22f1f976cf0e6ac4f56758ffa63985c83c061a0f266b59"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setB\\shared0385_nsd28752.png",
+        "filename": "shared0385_nsd28752.png",
+        "set": "setB",
+        "sha256": "92b45a4885edbed34653f56dc4c59d411719b7c8039e60b601ae662081289e7c"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setB\\shared0413_nsd30857.png",
+        "filename": "shared0413_nsd30857.png",
+        "set": "setB",
+        "sha256": "af2e39352d4e489868c47d99558d65591466c22588d7f9fa1d01ef9ee7d13b6c"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setB\\shared0741_nsd53882.png",
+        "filename": "shared0741_nsd53882.png",
+        "set": "setB",
+        "sha256": "1f18164100f7f3f4ab751b80733018cbdff0e3ec96c9c15bedad0610c79c8d75"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setB\\shared0842_nsd61178.png",
+        "filename": "shared0842_nsd61178.png",
+        "set": "setB",
+        "sha256": "55381faee10c85c0fda925d974d4f26b57e402e2e2aea0dab97811a708588a6a"
+      },
+      {
+        "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata\\experiments\\nsdimagery\\rawtargetimages\\setB\\shared0907_nsd65873.png",
+        "filename": "shared0907_nsd65873.png",
+        "set": "setB",
+        "sha256": "a652f4ce1bb1838081b7cfa5cc62bc50b46ed7a94526a29d62519846bc4b7b7c"
+      }
+    ]
+  }
+}
