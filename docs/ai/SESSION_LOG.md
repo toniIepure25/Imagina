@@ -3686,3 +3686,37 @@ requires NSD perception betas (16-28 GB per subject). Based on published
 evidence, the most likely outcome is confirmation of the zero-shot null with
 proper statistical inference. The novel contribution opportunity lies in
 low-capacity state transport (H4), which has no published negative.
+
+---
+
+## C3 Real-Data Execution Phase
+
+**Branch:** `research/fmri-imagery-transfer-c3-realdata`
+**Source:** `c36768a741fd36ac09906a28a0c96d60b7b69481`
+**Date:** 2026-07-24
+
+### Commit 1 — Freeze Inference Plan (`1680ea9`)
+- Created `docs/research/C3_REALDATA_EXECUTION_PLAN.md`
+- Created `docs/research/C3_REALDATA_INFERENCE_SPEC.md`
+- Created `results/c3_realdata_preflight.json`
+- Key decision: n=4 sign-flip test impossible (min p=0.0625)
+- Primary inference: within-subject permutation test (100,000 randomizations)
+- Disk constraint: only subj01 full pipeline feasible (40.77 GB perception betas)
+
+### Commit 2 — Acquisition and Certification (`6bccaea`)
+- Verified existing subj01 imagery data (HDF5 hash match, ROI, ncsnr, behavioral)
+- Downloaded NSD experiment design (masterordering, subjectim)
+- Computed and froze CLIP ViT-L/14 embeddings for 12 imagery targets
+  - Pool hash: `0f4a98d41187ee7f577d65f71e3e312cfe3da86c837bfa41c6b7e2d959ce759d`
+- Confirmed nsdgeneral ROI: 15,724 voxels (values {-1, 0, 1}, select == 1 only)
+- Started perception betas download (40 × 1043.7 MB = 40.77 GB)
+  - Download rate: ~55 MB/min
+  - 3/40 sessions complete at commit time
+  - Estimated 12 hours remaining
+- Created resumable download script with .part files, SHA-256 verification
+
+### Current Status
+- **BLOCKED_BY_PERCEPTION_BETAS_DOWNLOAD_IN_PROGRESS**
+- Download is running in background, resumable
+- All infrastructure for Commits 3-8 is ready
+- Immediate next step: wait for download, then run perception decoder
