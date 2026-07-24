@@ -3607,3 +3607,66 @@ Config migrated to current best-guess schema:
 - Agents use `mode: subagent` with `read/glob/grep/list/edit/bash/webfetch/websearch` permission keys
 
 If OpenCode rejects this config or agents, consult https://opencode.ai for the exact current schema. Key uncertainty: whether permission keys use camelCase, whether globstar patterns in bash allow/deny are supported, and whether `mode: subagent` is the correct agent type identifier.
+
+---
+
+## Scientific Gate C3 — fMRI Perception-to-Imagery Transfer (2026-07-24)
+
+### C2 Temporal-Control Correction
+- **Branch:** `research/neural-content-state-c2`
+- **Commit:** `15ce4a8` — docs(c2): correct temporal-control interpretation
+- **Issue:** Late-shift log_loss (1.1751) was numerically better than aligned (1.1776),
+  but text claimed it "does not reproduce or beat" aligned. Corrected to accurately
+  state both are worse than chance reference.
+- **CI:** workflow `30081878576` — success
+
+### C3 Branch Creation
+- **Branch:** `research/fmri-imagery-transfer-c3`
+- **Source SHA:** `15ce4a8952927eecc8425b04066049e7a3203807`
+- **Datasets:** NSD (perception, 7T fMRI) + NSD-Imagery (Kneeland et al. CVPR 2025)
+- **Eligible subjects:** subj01, subj02, subj05, subj07 (4 subjects)
+
+### Commit 1 — Protocol and Data Audit (`50e398c`)
+- Locked protocol: ridge decoder, CLIP target, MRR metric, 12-item pool
+- Data audit: confirmed subj01 imagery betas available (~1GB), perception betas NOT available
+- Novelty audit: honest about published zero-shot null (Kneeland 2025, Spera 2026)
+- Prior expectation: H2 most likely null
+
+### Commit 2 — Provenance-Locked Ingestion (`56cd8f8`)
+- `backend/app/research/fmri/`: registry, manifests, ingestion modules
+- Environment-based paths (NSD_DATA_ROOT, NSD_BETAS_ROOT)
+- 21 CI-safe tests, c3-data-contract CI job
+
+### Commit 3 — Perception Decoding Foundation (`9487c69`)
+- Ridge decoder with inner CV alpha selection
+- Retrieval evaluation (MRR, top-k, median rank)
+- Shuffled null distribution
+- 13 smoke tests verify signal recovery
+
+### Commit 4 — Transfer and Transport (`3aac4e8`)
+- Zero-shot transfer evaluation
+- Participant-level sign-flip permutation (n=4, min p=0.0625)
+- Five transport methods: identity, mean-correction, affine ridge, low-rank, random
+- LOSO transport evaluation
+- 13 tests
+
+### Commit 5 — Uncertainty and Controls (`fa7ffc6`)
+- Repeat variance, distribution distance, ROI disagreement
+- Risk-coverage curve, calibration evaluation
+- 9 negative controls: shuffled pairing, mean target, trial order, leakage audit,
+  perception/imagery separation, generator-free, voxel permutation
+- 14 tests
+
+### Current Status
+- **61 total C3 tests, all passing**
+- **4 CI jobs defined:** c3-data-contract, c3-perception-decoder-smoke,
+  c3-zero-shot-transfer-smoke, c3-uncertainty-controls
+- **Blocker:** NSD perception betas not downloaded (80-120 GB needed)
+- **Decision:** INFRASTRUCTURE_COMPLETE_AWAITING_REAL_DATA
+
+### Scientific Interpretation
+The pipeline is complete and verified on synthetic data. Real-data execution
+requires NSD perception betas (16-28 GB per subject). Based on published
+evidence, the most likely outcome is confirmation of the zero-shot null with
+proper statistical inference. The novel contribution opportunity lies in
+low-capacity state transport (H4), which has no published negative.
