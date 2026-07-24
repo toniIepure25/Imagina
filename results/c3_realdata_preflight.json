@@ -1,0 +1,100 @@
+{
+  "gate": "C3_REALDATA_PREFLIGHT",
+  "date": "2026-07-24",
+  "source_sha": "c36768a741fd36ac09906a28a0c96d60b7b69481",
+  "branch": "research/fmri-imagery-transfer-c3-realdata",
+  "disk_assessment": {
+    "drive": "D:",
+    "free_gb": 67.64,
+    "subj01_perception_betas_gb": 40.77,
+    "subj01_imagery_betas_gb": 0.98,
+    "remaining_after_subj01_perception_gb": 26.83,
+    "per_subject_perception_gb": 40.77,
+    "total_4_subject_perception_gb": 163.08,
+    "feasible_subjects_full_pipeline": 1,
+    "constraint": "DISK_LIMITED_TO_SINGLE_SUBJECT"
+  },
+  "data_availability": {
+    "subj01": {
+      "imagery_betas": true,
+      "imagery_betas_path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\nsdimagerybetas_fithrf\\betas_nsdimagery.hdf5",
+      "imagery_betas_size_mb": 1003.7,
+      "imagery_betas_sha256": "31485ff0e4cb9e90b6f83f2f550714b1a688993604f5795148a2746df7b42b64",
+      "roi_nsdgeneral": true,
+      "roi_visualrois": true,
+      "roi_streams": true,
+      "ncsnr": true,
+      "behavioral_tsv_count": 12,
+      "perception_betas": false,
+      "perception_betas_sessions_needed": 40,
+      "perception_betas_per_session_mb": 1043.7,
+      "perception_betas_total_gb": 40.77
+    },
+    "subj02": {
+      "imagery_betas": false,
+      "perception_betas": false,
+      "roi_masks": false,
+      "ncsnr": false,
+      "behavioral": false
+    },
+    "subj05": {
+      "imagery_betas": false,
+      "perception_betas": false,
+      "roi_masks": false,
+      "ncsnr": false,
+      "behavioral": false
+    },
+    "subj07": {
+      "imagery_betas": false,
+      "perception_betas": false,
+      "roi_masks": false,
+      "ncsnr": false,
+      "behavioral": false
+    }
+  },
+  "s3_access": {
+    "bucket": "natural-scenes-dataset",
+    "protocol": "anonymous HTTPS",
+    "verified_url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session01.hdf5",
+    "head_request_success": true,
+    "credentials_required": false
+  },
+  "inference_plan": {
+    "primary_execution": "single_subject_subj01",
+    "primary_test": "within_subject_permutation",
+    "n_permutations": 100000,
+    "seed": 20260724,
+    "alpha": 0.05,
+    "candidate_pool_size": 12,
+    "chance_mrr": 0.083,
+    "group_test_feasible": false,
+    "group_test_blocked_by": "disk_space_for_additional_subjects"
+  },
+  "frozen_configuration": {
+    "clip_model": "openai/clip-vit-large-patch14",
+    "embedding_dim": 768,
+    "normalization": "L2",
+    "primary_roi": "nsdgeneral",
+    "ncsnr_threshold": 0.0,
+    "decoder": "ridge_regression",
+    "alpha_candidates": [0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0],
+    "inner_cv_folds": 5,
+    "perception_split": "90_10_by_image_identity",
+    "beta_variant": "func1pt8mm/betas_fithrf",
+    "imagery_sets_included": ["A_simple", "B_complex"],
+    "imagery_sets_excluded": ["C_conceptual"],
+    "attention_runs_excluded": true
+  },
+  "prior_validation_from_fmri2images": {
+    "hdf5_schema_validated": true,
+    "spatial_alignment_validated": true,
+    "trial_mapping_validated": true,
+    "axis_correspondence": "betas[:, z, y, x] maps to NIfTI (x, y, z)",
+    "nifti_shape": [81, 104, 83],
+    "hdf5_spatial_shape": [83, 104, 81],
+    "scale_factor": 300,
+    "dtype": "int16"
+  },
+  "decision": "PROCEED_WITH_SUBJ01_PERCEPTION_DOWNLOAD",
+  "next_action": "acquire_and_certify_subj01_perception_betas"
+}
