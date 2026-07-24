@@ -1115,3 +1115,22 @@ jobs:
           python3 -m pytest
           app/tests/test_c3_transfer_transport.py
           -v --timeout=120
+
+  c3-uncertainty-controls:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3 uncertainty calibration and negative controls
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3_uncertainty_controls.py
+          -v --timeout=120
