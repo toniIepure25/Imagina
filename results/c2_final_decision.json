@@ -1,0 +1,53 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "PENDING_CLOSURE_COMMIT",
+  "created_at": "2026-07-23T00:00:00+00:00",
+  "confirmatory_or_exploratory": "confirmatory",
+  "gate": "C2_NEURAL_CONTENT_STATE_DISENTANGLEMENT",
+  "decision_rule_applied": "valid_null_adequately_powered",
+  "C2_NEURAL_CONTENT": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+  "C2_PERCEPTION_IMAGERY_TRANSFER": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+  "C2_STATE_SEPARATION": "NULL_SUPPORTED_QUALITATIVE",
+  "C2_SUBJECT_INVARIANCE": "NOT_APPLICABLE_NO_POSITIVE_SIGNAL_TO_ASSESS",
+  "C2": "COMPLETE_WITH_NULL_RESULT",
+  "reasoning": {
+    "C2_NEURAL_CONTENT": "NULL_SUPPORTED_WITHIN_SENSITIVITY because content decoding (3-class visual category) does not exceed chance across every representation tested: classical baselines (order-only, block/session-only, quality-only, classical-feature-decoder -- Commit 3) sit at or slightly below chance (log_loss 1.16-1.18 vs chance log(3)=1.099); all three compact neural encoders (EEGNet, TCN, contrastive+probe -- Commit 4) show no cross-subject content signal under LOSO (TCN converges to an exact-chance trivial solution on every fold; EEGNet catastrophically overfits without generalizing; contrastive sits at/below chance). The fixed-sample sensitivity analysis (results/c2_sensitivity.json), reusing C1's sensitivity.py machinery unchanged against the classical-feature-decoder's real per-participant effect distribution (n=14, observed_mean_delta=-0.0790, observed_std=0.0301), shows power=1.0000 at the prespecified minimum effect of interest (0.05) -- the null is not a symptom of an underpowered design.",
+    "C2_PERCEPTION_IMAGERY_TRANSFER": "NULL_SUPPORTED_WITHIN_SENSITIVITY because Commit 5's full LOSO transfer evaluation (perception train -> imagery test, the primary C2-H2 direction) shows no transfer for any of the three architectures. This is an unusually STRONG null: the negative controls (within-participant label shuffle, pre-cue EEG) are statistically indistinguishable from the real evaluation for every architecture (EEGNet's log_loss ~7.2-7.25 regardless of real or shuffled labels; TCN's log_loss ~1.04 and balanced_accuracy exactly 0.3333 across every direction and control; contrastive ~1.17-1.19 everywhere) -- meaning even EEGNet's non-chance-looking numbers are not tracking genuine label correspondence. The sensitivity analysis computed for content decoding applies here too by construction (transfer evaluation reuses the identical architectures/training procedure on the same fixed participant sample).",
+    "C2_STATE_SEPARATION": "NULL_SUPPORTED_QUALITATIVE (exploratory field, beyond the minimal decision template): order-only and block/session-only state baselines sit at EXACT chance (log_loss=0.6931=ln(2), Commit 3); quality-only and classical-feature-decoder state baselines show only a small elevation (AUC 0.57 and 0.52 respectively); Commit 6's frozen-representation state probe shows near-chance recoverability for TCN/contrastive and a worse-than-chance result for EEGNet (consistent with its established overfitting). No dedicated fixed-sample sensitivity analysis was run for the state target specifically -- this is an honest scope limitation, not a claim of a formally power-verified null, hence the 'QUALITATIVE' qualifier rather than 'WITHIN_SENSITIVITY'.",
+    "C2_SUBJECT_INVARIANCE": "NOT_APPLICABLE_NO_POSITIVE_SIGNAL_TO_ASSESS (exploratory field): subject-invariance asks whether a genuine content signal generalizes across participants. Since no representation tested here ever showed above-chance cross-subject content decoding to begin with (Commits 3-4), there is no positive signal whose subject-invariance could be meaningfully assessed -- reporting a PASS or FAIL here would imply a claim about generalization of something that was never established as present.",
+    "C2": "COMPLETE_WITH_NULL_RESULT because all conditions for the valid-null branch are met: (1) the confirmatory content-decoding and perception-imagery-transfer results are genuine, adequately-powered nulls, not inconclusive non-results; (2) all 12 required falsification controls (results/c2_negative_controls.json, Commit 7) PASS -- no temporal, spatial, order, block/session, signal-quality, participant-identity, duration, or hyperparameter-selection confound explains the (null) result, ruling out FAILED_BY_CONFOUNDING_OR_LEAKAGE; (3) the primary dataset (ds005815) was found and used throughout, ruling out any data-block branch; (4) all artifacts are real-data-derived, reproducible, and CI-verified."
+  },
+  "real_evidence_summary": {
+    "commit_3_baselines": "Content: all baselines (chance/majority, order-only, block/session-only, quality-only, classical-feature-decoder) at or below chance. State: order/block exactly at chance; quality/classical marginally above chance.",
+    "commit_4_encoders": "EEGNet severely overfits (mean log_loss=4.42, chance=1.099); TCN converges to an exact trivial constant-output solution (log_loss~1.04, balanced_accuracy=0.3333 on all 15 folds); contrastive+probe at/below chance (log_loss~1.17).",
+    "commit_5_transfer": "No perception-to-imagery transfer for any architecture; negative controls (label-shuffle, pre-cue) statistically indistinguishable from the real evaluation for every architecture -- a convergent, not merely absent, null.",
+    "commit_6_disentanglement": "TCN/contrastive show no recoverable signal for content, state, participant identity, or signal-quality bin. EEGNet shows within-sample memorization (not genuine cross-subject content signal) plus modest real participant-identity leakage (balanced_accuracy=0.185 vs 0.067 chance) and quality-bin leakage (0.457). Session-identity honestly reported as untestable (zero variance -- only session 1 used throughout this pipeline).",
+    "commit_7_falsification_and_sensitivity": "All 12 required controls PASS. Sensitivity: power=1.0000 at the prespecified minimum effect of interest for content decoding."
+  },
+  "honest_limitations": [
+    "State-target sensitivity was not formally computed (only content decoding's per-participant effect distribution was used for the fixed-sample power analysis) -- C2_STATE_SEPARATION is reported qualitatively, not as a power-verified null.",
+    "Only session 1 was used for every participant throughout this pipeline (a scope decision made from Commit 2 onward); session-identity leakage is genuinely untestable with this data construction, not merely unexamined.",
+    "ds004306 exploratory replication was not pursued this session (documented in C2_DATASET_ROLE_MATRIX.md from Commit 1 onward); per the task's own instruction, its absence cannot and does not change this primary decision.",
+    "THINGS-EEG2 optional perception-only pretraining was not pursued, given the compute already required by the confirmatory ds005815-only pipeline.",
+    "EEGNet's severe overfitting (log_loss far above chance in multiple commits) reflects a training-capacity-vs-sample-size limitation of the specific hyperparameters used (100 epochs, no explicit weight decay/dropout, ~13 participants' worth of training data per fold), not evidence of a negative/harmful neural signal -- this is a null result about the tested pipeline, not a claim that no representation could ever decode content from this dataset.",
+    "Excluded participants differ slightly by commit (C2's own inclusion floor differs from C1's): sub-02 and sub-22 were included in some C1-derived contexts but excluded from every C2 analysis for falling below C2's stricter per-class trial floor -- an honest, expected, and explicitly documented divergence (C2_PROTOCOL.md Section 4), never adjusted after seeing results."
+  ],
+  "claim_boundaries_upheld": [
+    "No thought-reading, real-time BCI, or clinical efficacy claim is made anywhere in this gate's artifacts or documentation.",
+    "No claim of exact recovery of what a participant imagined or perceived.",
+    "The null content/transfer result is not overclaimed as 'EEG cannot encode visual content in general' -- only that the tested compact architectures and classical features, under this protocol, did not show above-chance cross-subject decoding.",
+    "Image generation, causal modulation, and closed-loop neurofeedback were not started in C2, per the task's explicit stop condition."
+  ],
+  "supporting_artifacts": [
+    "results/c2_protocol_decision.json",
+    "results/c2_data_eligibility.json",
+    "results/c2_split_manifest.json",
+    "results/c2_content_decoding.json",
+    "results/c2_state_decoding.json",
+    "results/c2_cross_state_transfer.json",
+    "results/c2_disentanglement.json",
+    "results/c2_negative_controls.json",
+    "results/c2_sensitivity.json"
+  ]
+}

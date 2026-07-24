@@ -875,3 +875,186 @@ jobs:
           python3 -m pytest
           app/tests/test_neural_preprocessing.py -k "output_hash_is_deterministic"
           -v --timeout=60
+
+  # --- Scientific Gate C2 (neural content-state disentanglement) ---
+  # All jobs below run against tiny synthetic/deterministic fixtures --
+  # never the real ds005815 dataset, which is not downloaded in CI. Full-
+  # dataset confirmatory analysis is a separate controlled research
+  # workflow (see C2_ANALYSIS_SPEC.md and the run_c2_*.py scripts), whose
+  # real output is committed as the results/c2_*.json artifacts.
+
+  c2-data-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Matched-trial-record construction and provenance
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_data.py::TestIsPrimaryContentTrial
+          app/tests/test_neural_c2_data.py::TestSelectVisualContentTrials
+          app/tests/test_neural_c2_data.py::TestMakeMatchedRecord
+          -v --timeout=120
+
+  c2-matched-trial-integrity:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Equal-duration common window and no-paired-trial-split guarantee
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_data.py::TestBuildCommonWindowImageryTrials
+          app/tests/test_neural_c2_data.py::TestVerifyNoPairedTrialSplitAcrossFolds
+          -v --timeout=120
+
+  c2-split-leakage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: LOSO fold membership and within-block shuffle leakage checks
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_nested_validation.py::TestRunLosoNestedValidationClassification
+          app/tests/test_neural_c2_falsification.py
+          -v --timeout=180
+
+  c2-content-baseline:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Content baseline models and nuisance feature constructors
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_models.py
+          -v --timeout=180
+
+  c2-state-duration-control:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Binary state model and equal-duration window construction
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_models.py::TestBinaryFeatureModel
+          app/tests/test_neural_c2_data.py::TestBuildCommonWindowImageryTrials
+          -v --timeout=120
+
+  c2-cross-state-transfer-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Perception/imagery encoder fit-evaluate smoke (matched-length inputs)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_transfer.py
+          -v --timeout=180
+
+  c2-nuisance-probes:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Disentanglement probe machinery (content/state/participant/quality)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_disentanglement.py
+          -v --timeout=120
+
+  c2-negative-controls:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Within-block label shuffle construction
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_falsification.py
+          -v --timeout=120
+
+  c2-replay-export:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: LOSO classification replay determinism and result-export schema
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_replay_export.py
+          -v --timeout=120

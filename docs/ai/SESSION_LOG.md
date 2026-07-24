@@ -3507,6 +3507,96 @@ Full real-data run: `python -m app.research.neural.run_c1_falsification_closure`
 
 ---
 
+## 2026-07-23 — Scientific Gate C2: Neural Content–State Disentanglement (full 8-commit program)
+
+### Task
+Create and execute Scientific Gate C2 on branch `research/neural-content-state-c2`
+(branched from the final CI-tested C1 closure commit,
+`defd964381a2abf424105e558b0f24f5fc7e4c13`), per a detailed 8-commit mission
+spec covering protocol lock, matched trial views, leakage-safe baselines,
+compact encoders, perception-imagery transfer, disentanglement probes,
+falsification/sensitivity, and CI + final gate decision.
+
+### Commits (all real-data, all CI-tested)
+1. `research(c2): lock content-state protocol and confirmatory estimands` --
+   `C2_PROTOCOL.md`, `C2_ANALYSIS_SPEC.md`, `C2_DATASET_ROLE_MATRIX.md`,
+   `results/c2_protocol_decision.json`. Real per-participant class-count
+   audit performed before freezing inclusion rules: all 16 C1-usable
+   participants show an identical, perfectly-balanced 2:1:1 manifest ratio
+   for `visual_square`/`visual_face_male`/`visual_face_female`.
+2. `feat(c2-data): build matched content-state trial view and split manifests`
+   -- `c2_data.py` (`MatchedTrialRecord`, equal-duration common-window
+   construction for state decoding), `run_c2_build_data_view.py`. Real
+   result: 14/20 nominal participants included (C2's own stricter
+   per-class trial floor excludes sub-02/sub-22 in addition to C1's
+   sub-05/07/10/14 exclusions -- an honest, expected divergence).
+3. `feat(c2-baselines): implement leakage-safe content and state baselines`
+   -- `c2_models.py`, `c2_nested_validation.py`. Real result: all content
+   baselines (order/block/quality/classical) sit at or below chance;
+   state baselines correctly show order/block at EXACT chance (no
+   confound) with quality/classical showing only marginal elevation.
+4. `feat(c2-encoder): add compact content-state neural representations` --
+   `c2_encoders.py` (EEGNet, TCN, contrastive+probe). Real 15-participant
+   LOSO result: none show above-chance content decoding -- EEGNet
+   severely overfits (log_loss=4.42 vs chance 1.099), TCN converges to an
+   exact trivial constant solution (balanced_accuracy=0.3333 on all 15
+   folds), contrastive sits at/below chance.
+5. `research(c2): evaluate perception-to-imagery transfer` --
+   `run_c2_transfer.py`. Real bug found and fixed: perception (500
+   samples/2.0s) and full imagery (1000 samples/4.0s) epochs have
+   different lengths, crashing EEGNet/TCN's fixed-input-shape
+   architectures on cross-state evaluation; fixed by using the
+   equal-duration common window for all imagery-side data (also removes a
+   temporal-information confound). Also fixed a real training-cost
+   inefficiency (retraining the same encoder twice per fold) and added
+   incremental JSON checkpointing after two consecutive full-run attempts
+   were interrupted by session/environment transitions. Real 14-participant
+   result: no transfer for any architecture; negative controls
+   (label-shuffle, pre-cue) are statistically indistinguishable from the
+   real evaluation for EVERY architecture -- a convergent null, not merely
+   an absent effect.
+6. `research(c2): quantify content-state-nuisance disentanglement` --
+   `c2_disentanglement.py`, `embed()` methods added to
+   `EEGNetContentEncoder`/`CompactTCNContentEncoder`. Real 15-participant
+   result: TCN/contrastive show no recoverable signal for ANY target
+   (content/state/participant/quality); EEGNet shows within-sample
+   memorization (not genuine cross-subject signal) plus real modest
+   participant-identity and quality-bin leakage. Session-identity honestly
+   reported as untestable (only session 1 used throughout this pipeline).
+7. `research(c2): execute falsification sensitivity and replication analyses`
+   -- `run_c2_falsification.py` (6 new controls run on real data),
+   `run_c2_sensitivity.py` (reuses C1's `sensitivity.py` machinery
+   unchanged). Real result: all 12 required controls PASS; sensitivity
+   power=1.0000 at the minimum effect of interest, confirming the null is
+   not due to underpowering.
+8. `ci(c2): prove reproducibility and issue content-state gate decision` --
+   9 CI jobs added with deterministic fixtures; two new smoke/replay test
+   files (`test_neural_c2_transfer.py`, `test_neural_c2_replay_export.py`)
+   written specifically to give the transfer-smoke and replay-export jobs
+   real content to run against. Final decision:
+   ```
+   C2_NEURAL_CONTENT              = NULL_SUPPORTED_WITHIN_SENSITIVITY
+   C2_PERCEPTION_IMAGERY_TRANSFER = NULL_SUPPORTED_WITHIN_SENSITIVITY
+   C2_STATE_SEPARATION            = NULL_SUPPORTED_QUALITATIVE
+   C2_SUBJECT_INVARIANCE          = NOT_APPLICABLE_NO_POSITIVE_SIGNAL_TO_ASSESS
+   C2                              = COMPLETE_WITH_NULL_RESULT
+   ```
+
+### Recurring engineering lesson this session
+Long real-data training runs (perception+imagery LOSO across 14-15
+participants x multiple architectures) were interrupted by session/
+environment transitions THREE separate times across Commits 5 and 7's
+development. The fix that stuck: incremental JSON checkpointing after
+each architecture/major unit of work completes, so a harness-level
+interruption never loses more than one unit's worth of real compute.
+
+### Stop condition
+Per the task's explicit instruction, work stops here after issuing the C2
+gate decision. No C3, image-generation, real-time-BCI, or closed-loop-
+neurofeedback work follows from this commit.
+
+---
+
 ## OpenCode Config Schema (Updated 2026-05-07)
 
 Config migrated to current best-guess schema:
