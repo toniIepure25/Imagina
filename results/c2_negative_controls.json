@@ -59,7 +59,7 @@
       "control_log_loss": 1.175128093030139,
       "n_participants": 14,
       "status": "PASS",
-      "scientific_interpretation": "Temporally shifted window does not reproduce or beat the aligned result (aligned=1.1776, late_shift=1.1751)."
+      "scientific_interpretation": "Late-shift control (log_loss=1.1751) is marginally better numerically than aligned (log_loss=1.1776), but both remain worse than the three-class chance reference (log(3)~1.0986) and neither provides evidence of content information. No temporal specificity; consistent with C2 null."
     },
     "3_channel_permutation": {
       "test_id": "3_channel_permutation",

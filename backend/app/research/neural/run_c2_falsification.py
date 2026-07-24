@@ -209,8 +209,10 @@ def main() -> None:
             "n_participants": late_agg["n_participants"],
             "status": "PASS" if late_agg["mean"] >= aligned_agg["mean"] - 0.05 else "INCONCLUSIVE",
             "scientific_interpretation": (
-                "Temporally shifted window does not reproduce or beat the aligned result "
-                f"(aligned={aligned_agg['mean']:.4f}, late_shift={late_agg['mean']:.4f})."
+                f"Late-shift control (log_loss={late_agg['mean']:.4f}) is marginally better "
+                f"numerically than aligned (log_loss={aligned_agg['mean']:.4f}), but both remain "
+                "worse than the three-class chance reference (log(3)~1.0986) and neither provides "
+                "evidence of content information. No temporal specificity; consistent with C2 null."
             ),
         }
     else:
