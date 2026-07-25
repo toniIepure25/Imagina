@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-07-25T15:32:01",
+  "drive": "D:\\",
+  "current_free_bytes": 46906552320,
+  "current_free_gb": 43.69,
+  "sessions_complete": 15,
+  "sessions_remaining": 25,
+  "remaining_download_bytes": 27361138200,
+  "remaining_download_gb": 25.48,
+  "largest_single_object_bytes": 1094445528,
+  "roi_cache_bytes": 1887436800,
+  "roi_cache_gb": 1.76,
+  "clip_embeddings_bytes": 31457280,
+  "model_checkpoint_bytes": 209715200,
+  "temporary_headroom_bytes": 2147483648,
+  "total_required_bytes": 31637231128,
+  "total_required_gb": 29.46,
+  "post_completion_free_bytes": 15269321192,
+  "post_completion_free_gb": 14.22,
+  "min_required_post_completion_gb": 10.0,
+  "sufficient": true,
+  "status": "PASS"
+}

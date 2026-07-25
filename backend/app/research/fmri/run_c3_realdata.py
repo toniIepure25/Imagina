@@ -138,14 +138,19 @@ def _check_readiness_gate() -> dict[str, Any]:
     return {"ready": True}
 
 
+def _require_env(var: str) -> str:
+    val = os.environ.get(var)
+    if not val:
+        raise EnvironmentError(f"Required environment variable {var} is not set.")
+    return val
+
+
 def run_inventory(state: PipelineState, force: bool = False) -> StageCheckpoint:
     """Check data availability and produce inventory."""
     _log("inventory", "Checking data availability...")
     ckpt = StageCheckpoint(stage="inventory", started_at=time.strftime("%Y-%m-%dT%H:%M:%S"))
 
-    betas_dir = Path(os.environ.get(
-        "NSD_BETAS_ROOT", r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas"
-    )) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
+    betas_dir = Path(_require_env("NSD_BETAS_ROOT")) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
 
     available = []
     missing = []
@@ -171,9 +176,7 @@ def run_certify_downloads(state: PipelineState, force: bool = False) -> StageChe
     _log("certify-downloads", "Verifying session integrity...")
     ckpt = StageCheckpoint(stage="certify-downloads", started_at=time.strftime("%Y-%m-%dT%H:%M:%S"))
 
-    betas_dir = Path(os.environ.get(
-        "NSD_BETAS_ROOT", r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas"
-    )) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
+    betas_dir = Path(_require_env("NSD_BETAS_ROOT")) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
 
     all_ok = True
     for s in range(1, 41):

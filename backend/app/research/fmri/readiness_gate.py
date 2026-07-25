@@ -67,7 +67,10 @@ def check_stimulus_mapping() -> dict[str, Any]:
 
 def check_clip_embeddings() -> dict[str, Any]:
     """Check CLIP embeddings are available and verified."""
-    cache_dir = Path(os.environ.get("NSD_CACHE_ROOT", r"D:\ComputaCenter\FMRI2images\data\nsd\cache"))
+    cache_root = os.environ.get("NSD_CACHE_ROOT")
+    if not cache_root:
+        return {"check": "clip_embeddings", "pass": False, "reason": "NSD_CACHE_ROOT not set"}
+    cache_dir = Path(cache_root)
     imagery_emb = cache_dir / "imagery_target_clip_embeddings.npy"
     return {
         "check": "clip_embeddings",
@@ -123,9 +126,18 @@ def determine_status(checks: list[dict[str, Any]]) -> str:
 
 def generate_readiness_gate() -> dict[str, Any]:
     """Generate the full readiness gate artifact."""
-    betas_root = Path(os.environ.get(
-        "NSD_BETAS_ROOT", r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas"
-    ))
+    betas_root_env = os.environ.get("NSD_BETAS_ROOT")
+    if not betas_root_env:
+        return {
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "status": "BLOCKED_CONFIGURATION",
+            "error": "NSD_BETAS_ROOT environment variable not set",
+            "all_checks_pass": False,
+            "checks": [],
+            "n_checks_passed": 0,
+            "n_checks_total": 0,
+        }
+    betas_root = Path(betas_root_env)
     betas_dir = betas_root / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
 
     checks = [

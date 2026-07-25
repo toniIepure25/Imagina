@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -159,10 +160,12 @@ def check_roi_compatibility(
 
 
 def main():
-    betas_dir = Path(os.environ.get(
-        "NSD_BETAS_ROOT",
-        r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas"
-    )) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
+    betas_root = os.environ.get("NSD_BETAS_ROOT")
+    if not betas_root:
+        print("ERROR: NSD_BETAS_ROOT environment variable not set.")
+        print("Set it to the NSD betas root directory.")
+        sys.exit(1)
+    betas_dir = Path(betas_root) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
 
     print("=" * 60)
     print("NSD Perception Beta Session Inspector")

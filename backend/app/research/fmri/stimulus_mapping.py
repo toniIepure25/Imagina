@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -196,23 +197,22 @@ def certify_stimulus_mapping(
     return report
 
 
-def main():
-    mat_path = Path(os.environ.get(
-        "NSD_DATA_ROOT",
-        r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata"
-    )) / "experiments" / "nsd" / "nsd_expdesign.mat"
+def _require_env(var: str) -> str:
+    val = os.environ.get(var)
+    if not val:
+        print(f"ERROR: {var} environment variable not set.")
+        sys.exit(1)
+    return val
 
-    clip_path = Path(os.environ.get(
-        "NSD_CACHE_ROOT",
-        r"D:\ComputaCenter\FMRI2images\data\nsd\cache"
-    )) / "imagery_target_clip_embeddings.npy"
+
+def main():
+    mat_path = Path(_require_env("NSD_DATA_ROOT")) / "experiments" / "nsd" / "nsd_expdesign.mat"
+
+    clip_path = Path(_require_env("NSD_CACHE_ROOT")) / "imagery_target_clip_embeddings.npy"
 
     expected_hash = "0f4a98d41187ee7f577d65f71e3e312cfe3da86c837bfa41c6b7e2d959ce759d"
 
-    betas_dir = Path(os.environ.get(
-        "NSD_BETAS_ROOT",
-        r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas"
-    )) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
+    betas_dir = Path(_require_env("NSD_BETAS_ROOT")) / "ppdata" / "subj01" / "func1pt8mm" / "betas_fithrf"
 
     sessions = []
     for s in range(1, 41):

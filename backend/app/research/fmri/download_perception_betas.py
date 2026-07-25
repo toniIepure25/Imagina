@@ -38,7 +38,11 @@ MIN_DISK_HEADROOM_GB = 3.0
 
 
 def get_output_dir() -> Path:
-    root = Path(os.environ.get("NSD_BETAS_ROOT", r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas"))
+    root_env = os.environ.get("NSD_BETAS_ROOT")
+    if not root_env:
+        print("ERROR: NSD_BETAS_ROOT environment variable is not set.")
+        sys.exit(1)
+    root = Path(root_env)
     out = root / "ppdata" / SUBJECT / "func1pt8mm" / "betas_fithrf"
     out.mkdir(parents=True, exist_ok=True)
     return out

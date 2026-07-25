@@ -181,12 +181,23 @@ def verify_embedding_provenance(
     return result
 
 
-def check_stimuli_availability() -> dict[str, Any]:
-    """Check whether NSD stimulus images are locally available."""
-    stimuli_root = Path(os.environ.get(
-        "NSD_STIMULI_ROOT",
-        r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_stimuli\stimuli\nsd"
-    ))
+def check_stimuli_availability(stimuli_root: Path | None = None) -> dict[str, Any]:
+    """Check whether NSD stimulus images are locally available.
+
+    Requires NSD_STIMULI_ROOT environment variable or explicit path.
+    """
+    if stimuli_root is None:
+        env_val = os.environ.get("NSD_STIMULI_ROOT")
+        if not env_val:
+            return {
+                "status": "BLOCKED_STIMULI_ROOT_NOT_CONFIGURED",
+                "error": (
+                    "Environment variable NSD_STIMULI_ROOT is not set. "
+                    "Set it to the directory containing NSD stimulus images "
+                    "(e.g. the path to nsddata_stimuli/stimuli/nsd or the HDF5 container)."
+                ),
+            }
+        stimuli_root = Path(env_val)
 
     result: dict[str, Any] = {
         "stimuli_root": str(stimuli_root),
