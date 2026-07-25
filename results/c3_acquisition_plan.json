@@ -72,10 +72,10 @@
   "spatial_alignment": {
     "nifti_shape": [81, 104, 83],
     "hdf5_spatial_shape": [83, 104, 81],
-    "axis_correspondence": "betas[:, z, y, x] -> NIfTI (x, y, z)",
+    "axis_correspondence": "betas[:, z, y, x] -> NIfTI (x, y, z) — PROVISIONAL, pending real-beta verification",
     "voxel_size_mm": 1.8,
     "scale_factor": 300,
-    "status": "VERIFIED_FROM_PRIOR_WORK"
+    "status": "PROVISIONAL_MAPPING_PENDING_REAL_BETA_ALIGNMENT_CERTIFICATION"
   },
   "blocking_status": "PERCEPTION_BETAS_DOWNLOAD_IN_PROGRESS",
   "next_action": "Wait for download completion, then run perception decoder",

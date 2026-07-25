@@ -66,7 +66,7 @@
     "seed": 20260724,
     "alpha": 0.05,
     "candidate_pool_size": 12,
-    "chance_mrr": 0.083,
+    "chance_mrr": 0.2586,
     "group_test_feasible": false,
     "group_test_blocked_by": "disk_space_for_additional_subjects"
   },
@@ -87,9 +87,11 @@
   },
   "prior_validation_from_fmri2images": {
     "hdf5_schema_validated": true,
-    "spatial_alignment_validated": true,
+    "spatial_alignment_validated": false,
+    "spatial_alignment_status": "PROVISIONAL_MAPPING_PENDING_REAL_BETA_ALIGNMENT_CERTIFICATION",
+    "spatial_alignment_note": "Prior work used same transpose but formal certification requires round-trip tests on real perception betas with ROI overlap verification",
     "trial_mapping_validated": true,
-    "axis_correspondence": "betas[:, z, y, x] maps to NIfTI (x, y, z)",
+    "axis_correspondence": "betas[:, z, y, x] maps to NIfTI (x, y, z) — PROVISIONAL hypothesis",
     "nifti_shape": [81, 104, 83],
     "hdf5_spatial_shape": [83, 104, 81],
     "scale_factor": 300,

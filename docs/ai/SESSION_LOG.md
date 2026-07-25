@@ -3720,3 +3720,86 @@ low-capacity state transport (H4), which has no published negative.
 - Download is running in background, resumable
 - All infrastructure for Commits 3-8 is ready
 - Immediate next step: wait for download, then run perception decoder
+
+### Commit 3 — Harden Acquisition, Alignment, and Readiness (pending)
+
+#### Acquisition Hardening
+- Rewrote `download_perception_betas.py` with:
+  - Atomic `.part` → final rename with proper size validation
+  - Bounded retry with exponential backoff (5 retries, 5s→80s)
+  - Connection/read timeouts (30s/120s)
+  - File-based download lock (duplicate-process protection)
+  - Crash-safe manifest writes (write .tmp then atomic rename)
+  - Oversized partial detection and removal
+  - Remote size validation via HEAD request
+- Created 15 deterministic fixture tests in `test_downloader.py`
+  - Interrupted/resumed downloads, truncated responses, wrong sizes
+  - Lock behavior, manifest atomicity, idempotent skip
+
+#### Spatial Alignment Correction
+- Corrected overstatement: `VERIFIED_FROM_PRIOR_WORK` → `PROVISIONAL_MAPPING_PENDING_REAL_BETA_ALIGNMENT_CERTIFICATION`
+- Prior work used same transpose but formal certification requires round-trip verification on real perception betas
+- Created reusable `spatial_alignment.py` module with:
+  - Fail-closed axis permutation inference (rejects ambiguous shapes)
+  - Round-trip coordinate mapping tests
+  - Asymmetric volume tests (16 tests, all passing)
+- Inferred permutation: NIfTI (81, 104, 83) → Beta (83, 104, 81), perm=(2,1,0)
+
+#### Session Inspection
+- Inspected 10 complete sessions (01-09, 11): all readable, shape [750, 83, 104, 81], dtype int16
+- No NaN/Inf, ~53% nonzero voxels, mean |β| ≈ 506
+- Session 10 failed (timeout), download still in progress
+- Artifact: `results/c3_perception_partial_preflight.json`
+
+#### Stimulus-Mapping Certification: CERTIFIED
+- Verified trial→image mapping via masterordering and subjectim
+- All trials in bounds, image IDs valid (1-73000 range)
+- CLIP pool hash matches frozen reference
+- All embeddings unique under duplicate policy
+- Artifact: `results/c3_stimulus_alignment.json`
+
+#### NSD Image-Identity Split: FROZEN
+- 8,000 train / 1,000 val / 1,000 test (shared1000) images
+- No cross-partition images, all invariants verified
+- Manifest hash: `3ea066638ee94568...`
+- Artifact: `results/c3_split_manifest.json`
+
+#### Memory-Safe Execution
+- Implemented HDF5 streaming with chunked ROI extraction
+- IncrementalStandardizer for running mean/std without full matrix
+- Resource estimate: peak RAM 270 MB, cache 1.8 GB, matrix [30000, 15724]
+- Checkpointable extraction with per-session cache hashes
+
+#### CLIP Provenance Pipeline
+- Full provenance spec: model, weights, preprocessing, normalization
+- Batch embedding generation with deterministic output
+- Stimuli availability check (blocks if NSD images unavailable)
+- Artifact verification with hash matching
+
+#### Joint Randomization: Complete
+- Within-subject permutation test (100,000 randomizations)
+- Group-level sign-flip test with exact enumeration for n≤8
+- Monte Carlo p-value: p = (extreme + 1) / (n + 1)
+- Leave-one-out aggregation
+- 14 tests passing: calibration, known positive, heterogeneous effects, duplicates
+- Chance MRR verified: H_12/12 = 0.2586 (rounds to 0.259 ✓)
+
+#### Real-Data Runner
+- Orchestration entry point: `python -m app.research.fmri.run_c3_realdata`
+- 14 stages with stage-level checkpoints
+- Scientific stages gated by readiness artifact
+- Fail-closed on provenance mismatch
+
+#### Readiness Gate
+- Status: `BLOCKED_ACQUISITION_IN_PROGRESS`
+- 5/7 checks pass (imagery, stimulus, CLIP, split, disk)
+- 2 blocked: perception sessions (11/40), spatial alignment (pending certification)
+- Artifact: `results/c3_realdata_readiness.json`
+
+#### Download Progress at Session End
+- PID 21844: ALIVE
+- 11/40 sessions complete (01-09, 11, 12 downloading)
+- Session 10: failed (timeout), .part at 690 MB
+- Disk free: ~50 GB
+- Download continues as external process
+

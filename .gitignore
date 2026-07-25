@@ -93,3 +93,7 @@ data/backups/
 
 # ---- Generated API docs (optional) ----
 docs/api/generated/
+
+# ---- Volatile acquisition state (never commit) ----
+results/.acquisition_checkpoint.json
+results/.download_lock

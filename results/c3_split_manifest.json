@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-07-25T14:21:06",
+  "n_train_images": 8000,
+  "n_val_images": 1000,
+  "n_test_images": 1000,
+  "trial_split_counts": {
+    "train": 24000,
+    "val": 3000,
+    "test": 3000,
+    "excluded": 0
+  },
+  "manifest_hash": "3ea066638ee94568275f119fb0cd737821932e4aa2ee78f31854e765028a3b78",
+  "invariants": {
+    "no_repeated_image_crosses_folds": true,
+    "shared1000_handling": "explicit_test_set",
+    "val_disjoint_from_test": true,
+    "imagery_targets_excluded": false
+  },
+  "integrity_verified": true,
+  "seed": 42,
+  "shared1000_as_test": true
+}
