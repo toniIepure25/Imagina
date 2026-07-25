@@ -1,0 +1,205 @@
+{
+  "subject": "subj01",
+  "sessions": {
+    "session01": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session01.hdf5",
+      "size": 1094445528,
+      "status": "already_present"
+    },
+    "session02": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session02.hdf5",
+      "size": 1094445528,
+      "status": "already_present"
+    },
+    "session03": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session03.hdf5",
+      "size": 1094445528,
+      "status": "already_present"
+    },
+    "session04": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session04.hdf5",
+      "size": 1094445528,
+      "status": "already_present"
+    },
+    "session05": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session05.hdf5",
+      "size": 1094445528,
+      "sha256": "ceb1d89b3d9850ebd6577b057a879bd6f8e49f626649e0439edc585aa610f1b5",
+      "status": "downloaded_verified"
+    },
+    "session06": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session06.hdf5",
+      "size": 1094445528,
+      "sha256": "3864debcec0af9553f99ed917d165f8e692c4f7e24f65572979de2b90c2e31ee",
+      "status": "downloaded_verified"
+    },
+    "session07": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session07.hdf5",
+      "size": 1094445528,
+      "sha256": "3a865965163209f6d0d0b1669e0be7d0cb395a74a9f921a8bd77a35ce211ae05",
+      "status": "downloaded_verified"
+    },
+    "session08": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session08.hdf5",
+      "size": 1094445528,
+      "sha256": "71492c1e75f49ba3532f2a2d985744d50099af3b074f3bad4a98f648c9dc5342",
+      "status": "downloaded_verified"
+    },
+    "session09": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session09.hdf5",
+      "size": 1094445528,
+      "sha256": "a9d5295d39bd3efbea888c85e15c9cd187516c6a0aeab0f24bee546e11976982",
+      "status": "downloaded_verified"
+    },
+    "session10": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session10.hdf5"
+    },
+    "session11": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session11.hdf5",
+      "size": 1094445528,
+      "sha256": "c4acb8bc61aed57fedc803f3485971030aba046a4636361ba0bc15eb69d1af96",
+      "status": "downloaded_verified"
+    },
+    "session12": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session12.hdf5",
+      "size": 1094445528,
+      "sha256": "2e945853022b4ab2708fdbe93b7f94535e25ec5de13f52029e28630cf351d798",
+      "status": "downloaded_verified"
+    },
+    "session13": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session13.hdf5",
+      "size": 1094445528,
+      "sha256": "2781c4c39280203cfe3bfeeb2af6e1e05183514ed89518cd9af39197e437a7e5",
+      "status": "downloaded_verified"
+    },
+    "session14": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session14.hdf5",
+      "size": 1094445528,
+      "sha256": "64870c9bbfde2ad03644ce592a448397161db57dc5c27e82dcc1f5c60bbf0945",
+      "status": "downloaded_verified"
+    },
+    "session15": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session15.hdf5",
+      "size": 1094445528,
+      "sha256": "91b6d575b93f72fc2dbb564a92de305249a26e017965cc5e4a9bcc3bb0c59203",
+      "status": "downloaded_verified"
+    },
+    "session16": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session16.hdf5",
+      "size": 1094445528,
+      "sha256": "07fdcf7fc38034f7e6065541724fed60797c6acc362c47a9d9abc0f5a650dc9e",
+      "status": "downloaded_verified"
+    },
+    "session17": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session17.hdf5",
+      "size": 1094445528,
+      "sha256": "8930bfae791d9e55844d13a33074177ba13fe6379ff5325fdf41c4e2183e720b",
+      "status": "downloaded_verified"
+    },
+    "session18": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session18.hdf5",
+      "size": 1094445528,
+      "sha256": "477ff5831d730a86fe3f06b9216b0a04774567be03c4c5dee9175babc9a990ca",
+      "status": "downloaded_verified"
+    },
+    "session19": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session19.hdf5",
+      "size": 1094445528,
+      "sha256": "b6818bf27207687169cf6ddb42929daa2958e860f3c813546f504680e45cbcc2",
+      "status": "downloaded_verified"
+    },
+    "session20": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session20.hdf5",
+      "size": 1094445528,
+      "sha256": "28ae91ed88ea95c9e4669454f3efb45c6107e6bd58024ae98e37e81744bff0f9",
+      "status": "downloaded_verified"
+    },
+    "session21": {
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session21.hdf5",
+      "size": 1094445528,
+      "sha256": "1f4c191c1484cf70f694646bc2f2cc63531adc2cf4ce781ebca8826a93c03460",
+      "status": "downloaded_verified"
+    },
+    "session22": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session22.hdf5"
+    },
+    "session23": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session23.hdf5"
+    },
+    "session24": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session24.hdf5"
+    },
+    "session25": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session25.hdf5"
+    },
+    "session26": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session26.hdf5"
+    },
+    "session27": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session27.hdf5"
+    },
+    "session28": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session28.hdf5"
+    },
+    "session29": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session29.hdf5"
+    },
+    "session30": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session30.hdf5"
+    },
+    "session31": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session31.hdf5"
+    },
+    "session32": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session32.hdf5"
+    },
+    "session33": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session33.hdf5"
+    },
+    "session34": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session34.hdf5"
+    },
+    "session35": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session35.hdf5"
+    },
+    "session36": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session36.hdf5"
+    },
+    "session37": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session37.hdf5"
+    },
+    "session38": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session38.hdf5"
+    },
+    "session39": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session39.hdf5"
+    },
+    "session40": {
+      "status": "FAILED",
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session40.hdf5"
+    }
+  },
+  "started_at": "2026-07-25T12:07:30",
+  "completed_at": "2026-07-25T16:10:15",
+  "total_downloaded": 20,
+  "total_failed": 20
+}

@@ -1,69 +1,46 @@
 {
-  "timestamp": "2026-07-25T14:21:06",
+  "timestamp": "2026-07-25T17:53:52",
   "status": "BLOCKED_ACQUISITION_IN_PROGRESS",
-  "all_checks_pass": false,
-  "checks": [
-    {
-      "check": "perception_sessions",
+  "checks": {
+    "perception_sessions": {
       "pass": false,
-      "available": 11,
-      "required": 40,
-      "missing": [
-        10,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21,
-        22,
-        23,
-        24,
-        25,
-        26,
-        27,
-        28,
-        29,
-        30,
-        31
-      ]
+      "count": 23,
+      "required": 40
     },
-    {
-      "check": "imagery_data",
+    "spatial_alignment": {
       "pass": true,
-      "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\nsdimagerybetas_fithrf\\betas_nsdimagery.hdf5"
+      "status": "SPATIAL_ALIGNMENT_CERTIFIED_REAL_DATA"
     },
-    {
-      "check": "spatial_alignment",
-      "pass": false,
-      "status": "PENDING_REAL_CERTIFICATION"
-    },
-    {
-      "check": "stimulus_mapping",
+    "stimulus_mapping": {
       "pass": true,
       "status": "CERTIFIED"
     },
-    {
-      "check": "clip_embeddings",
+    "split_manifest": {
       "pass": true,
-      "imagery_targets": true,
-      "path": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\cache\\imagery_target_clip_embeddings.npy"
+      "status": "FROZEN_VERIFIED"
     },
-    {
-      "check": "split_manifest",
+    "storage_preflight": {
       "pass": true,
-      "manifest_hash": "3ea066638ee94568275f119fb0cd737821932e4aa2ee78f31854e765028a3b78"
+      "status": "PASS"
     },
-    {
-      "check": "disk_space",
-      "pass": true,
-      "free_gb": 48.7,
-      "required_gb": 5.0
+    "stimuli_available": {
+      "pass": false,
+      "count": 432,
+      "required": 10000
+    },
+    "clip_embeddings": {
+      "pass": false,
+      "status": "PENDING_STIMULI_DOWNLOAD"
     }
+  },
+  "n_checks_passed": 4,
+  "n_checks_total": 7,
+  "all_checks_pass": false,
+  "blockers": [
+    "perception_sessions",
+    "stimuli_available",
+    "clip_embeddings"
   ],
-  "n_checks_passed": 5,
-  "n_checks_total": 7
+  "beta_download_progress": "23/40",
+  "stimuli_download_progress": "432/10000"
 }
