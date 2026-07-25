@@ -2,6 +2,87 @@
 
 ---
 
+## 2026-07-25 — Scientific Gate C3 Real-Data: Spatial Certification, Storage Budget, Pilot Infrastructure
+
+### Task
+Continue C3 real-data execution: repair configuration risks, certify spatial alignment on real data, verify frozen split, establish perception-foundation pilot infrastructure, and continue acquisition toward 40/40 sessions.
+
+### Starting State
+- HEAD: 9aa7b4e (research/fmri-imagery-transfer-c3-realdata)
+- Download PID 21844: alive (15/40 sessions complete)
+- Spatial alignment: PROVISIONAL
+- Stimulus mapping: CERTIFIED
+- Split: FROZEN (8000/1000/1000)
+
+### Completed Work
+
+#### Commit A: fix(c3-rd): remove local path fallback and enforce storage budget (2fa27b7)
+- Removed ALL hardcoded machine-specific paths from 6 research modules
+- clip_provenance.py: requires NSD_STIMULI_ROOT, fails with BLOCKED_STIMULI_ROOT_NOT_CONFIGURED
+- readiness_gate.py, run_c3_realdata.py, inspect_sessions.py, download_perception_betas.py, stimulus_mapping.py: all require env vars
+- Added storage_budget.py: conservative capacity gate (>=10 GB post-completion)
+- Storage preflight: 43.69 GB free, 29.46 GB required, 14.22 GB projected (PASS)
+- 18 new tests: env enforcement, storage calculation, no-hardcoded-path scan across 11 modules
+
+#### Commit B: research(c3-rd): certify real spatial stimulus and embedding alignment (996bb4d)
+- **Spatial alignment CERTIFIED on real data:**
+  - Verified perm=(2,1,0) on 5 real sessions (01,05,09,14,20)
+  - Round-trip coordinate conversion confirmed
+  - Vectorized vs point extraction match: True
+  - All 5 wrong permutations rejected (produce different values)
+  - Cross-session consistency within tolerance
+  - nsdgeneral: 15724 positive voxels
+  - Mapping hash: 96f7fc0e5fab3266ca76861dff5f29b6
+- **Frozen split verified:**
+  - 8000/1000/1000 train/val/test (24000/3000/3000 trials)
+  - Test set == Shared1000 (exactly 1000 images confirmed)
+  - No overlap, all repeated presentations in same split
+  - Hash: 3ea066638ee94568
+- **Stimulus availability assessed:**
+  - NSD stimuli HDF5 is 36.84 GB (exceeds disk budget)
+  - COCO reconstruction pipeline built (download_stimuli.py)
+  - 10,000 images from COCO + NSD crop boxes (~1.4 GB)
+  - Download started in background
+
+#### Commit D: research(c3-rd): establish subj01 perception foundation pilot (0593a16)
+- perception_pilot.py: complete ridge decoder with alpha selection
+- MRR, top-1, top-5, median rank, mean cosine metrics
+- Within-subject permutation test (10,000 randomizations)
+- 4 control conditions: shuffled pairing, mean target, random voxels, voxel permutation
+- Prerequisite checker validates all certifications before pilot execution
+- Readiness gate updated: BLOCKED_ACQUISITION_IN_PROGRESS
+
+#### Session 10 Recovery
+- Stale partial at 690 MB (66.1% of expected 1044 MB)
+- Remote size confirmed: 1,094,445,528 bytes, Range supported
+- Downloader resumed and completed session 10 successfully
+- No quarantine needed (valid partial, successfully completed)
+
+### Current Status at Session End
+- **Beta sessions:** 23/40 complete (session 24 actively downloading at ~60%)
+- **Stimuli:** 454/10000 downloaded from COCO
+- **Disk free:** 37.09 GB
+- **Downloader PID:** 9260 (alive, actively downloading)
+- **Stimuli PID:** 12316 (alive, actively downloading)
+- **All 63 research tests pass**
+- **Readiness:** BLOCKED_ACQUISITION_IN_PROGRESS
+
+### Remaining for Next Session
+1. Wait for 40/40 beta sessions to complete (~5-6 hours remaining)
+2. Wait for 10000/10000 stimuli to download (~3 hours remaining)
+3. Generate CLIP embeddings for 10,000 perception images
+4. Run the perception-foundation pilot
+5. Commit C: certify complete subj01 perception acquisition
+6. Commit E: verify real-data contracts and update staged readiness
+7. Final status: READY_FOR_REMAINING_PARTICIPANT_ACQUISITION or blocker
+
+### Decisions
+- Used COCO image reconstruction instead of downloading 37 GB nsd_stimuli.hdf5
+- Session 10 was a valid partial (not corrupted), resumed without quarantine
+- Spatial certification used 500 voxels per session for speed with chunk layout (750,1,1,1)
+
+---
+
 ## 2026-07-15 — Scientific Gate C0.2: Abort Contract, Replay Identity and Export Closure (final correction)
 
 ### Task
