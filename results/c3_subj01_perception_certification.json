@@ -1,0 +1,1014 @@
+{
+  "timestamp": "2026-07-26T06:07:55",
+  "subject": "subj01",
+  "sessions": {
+    "session01": {
+      "session": 1,
+      "file": "betas_session01.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        458,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session02": {
+      "session": 2,
+      "file": "betas_session02.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -631,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session03": {
+      "session": 3,
+      "file": "betas_session03.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -976,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session04": {
+      "session": 4,
+      "file": "betas_session04.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        111,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session05": {
+      "session": 5,
+      "file": "betas_session05.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        786,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session06": {
+      "session": 6,
+      "file": "betas_session06.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        834,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session07": {
+      "session": 7,
+      "file": "betas_session07.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        596,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session08": {
+      "session": 8,
+      "file": "betas_session08.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -859,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session09": {
+      "session": 9,
+      "file": "betas_session09.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -474,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session10": {
+      "session": 10,
+      "file": "betas_session10.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -862,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session11": {
+      "session": 11,
+      "file": "betas_session11.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        1660,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session12": {
+      "session": 12,
+      "file": "betas_session12.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        48,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session13": {
+      "session": 13,
+      "file": "betas_session13.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        296,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session14": {
+      "session": 14,
+      "file": "betas_session14.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -831,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session15": {
+      "session": 15,
+      "file": "betas_session15.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        1015,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session16": {
+      "session": 16,
+      "file": "betas_session16.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -88,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session17": {
+      "session": 17,
+      "file": "betas_session17.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -1030,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session18": {
+      "session": 18,
+      "file": "betas_session18.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -160,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session19": {
+      "session": 19,
+      "file": "betas_session19.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        162,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session20": {
+      "session": 20,
+      "file": "betas_session20.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        1292,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session21": {
+      "session": 21,
+      "file": "betas_session21.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        602,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session22": {
+      "session": 22,
+      "file": "betas_session22.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        589,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session23": {
+      "session": 23,
+      "file": "betas_session23.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -470,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session24": {
+      "session": 24,
+      "file": "betas_session24.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        492,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session25": {
+      "session": 25,
+      "file": "betas_session25.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -1296,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session26": {
+      "session": 26,
+      "file": "betas_session26.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -71,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session27": {
+      "session": 27,
+      "file": "betas_session27.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        159,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session28": {
+      "session": 28,
+      "file": "betas_session28.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        652,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session29": {
+      "session": 29,
+      "file": "betas_session29.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        1158,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session30": {
+      "session": 30,
+      "file": "betas_session30.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -1031,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session31": {
+      "session": 31,
+      "file": "betas_session31.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -1024,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session32": {
+      "session": 32,
+      "file": "betas_session32.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        902,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session33": {
+      "session": 33,
+      "file": "betas_session33.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        255,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session34": {
+      "session": 34,
+      "file": "betas_session34.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -1352,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session35": {
+      "session": 35,
+      "file": "betas_session35.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -1434,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session36": {
+      "session": 36,
+      "file": "betas_session36.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -549,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session37": {
+      "session": 37,
+      "file": "betas_session37.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -1365,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session38": {
+      "session": 38,
+      "file": "betas_session38.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        433,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session39": {
+      "session": 39,
+      "file": "betas_session39.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        165,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    },
+    "session40": {
+      "session": 40,
+      "file": "betas_session40.hdf5",
+      "size": 1094445528,
+      "size_ok": true,
+      "hdf5_opens": true,
+      "has_betas_key": true,
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "shape_ok": true,
+      "dtype": "int16",
+      "dtype_ok": true,
+      "readable": true,
+      "sample_values": [
+        0,
+        -277,
+        0
+      ],
+      "all_finite": true,
+      "status": "CERTIFIED"
+    }
+  },
+  "aggregate": {
+    "total_sessions": 40,
+    "certified_sessions": 40,
+    "total_bytes": 43777821120,
+    "total_trials": 30000,
+    "all_certified": true
+  },
+  "certification_status": "SUBJ01_PERCEPTION_ACQUISITION_CERTIFIED"
+}
