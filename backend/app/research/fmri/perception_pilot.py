@@ -54,11 +54,17 @@ def build_trial_assignments(
     split: dict[str, set[int]],
     subject_idx: int = 0,
 ) -> dict[str, list[int]]:
-    """Map each trial to its split based on image identity."""
+    """Map each trial to its split based on image identity.
+
+    Note: split IDs and subjectim values use the same convention (1-based NSD IDs).
+    The masterordering is 1-based image slot index.
+    """
     assignments: dict[str, list[int]] = {"train": [], "val": [], "test": []}
+    trial_to_image: list[int] = []
     for trial in range(len(masterordering)):
         slot = int(masterordering[trial]) - 1
         img_id = int(subjectim[subject_idx, slot])
+        trial_to_image.append(img_id)
         if img_id in split["train"]:
             assignments["train"].append(trial)
         elif img_id in split["val"]:
@@ -92,12 +98,24 @@ def average_repeated_trials(
 
 
 def fit_ridge(X_train: NDArray, Y_train: NDArray, alpha: float) -> NDArray:
-    """Fit ridge regression: W = (X^T X + alpha*I)^-1 X^T Y."""
-    n_voxels = X_train.shape[1]
-    XtX = X_train.T @ X_train
-    XtX += alpha * np.eye(n_voxels)
-    XtY = X_train.T @ Y_train
-    W = np.linalg.solve(XtX, XtY)
+    """Fit ridge regression using the efficient formulation.
+
+    When n_samples < n_features (8000 < 15724), uses dual form:
+        W = X^T (X X^T + alpha*I)^{-1} Y
+    Otherwise uses primal form:
+        W = (X^T X + alpha*I)^{-1} X^T Y
+    """
+    n_samples, n_features = X_train.shape
+    if n_samples < n_features:
+        K = X_train @ X_train.T  # (n, n)
+        K += alpha * np.eye(n_samples, dtype=K.dtype)
+        beta = np.linalg.solve(K, Y_train)
+        W = X_train.T @ beta
+    else:
+        XtX = X_train.T @ X_train
+        XtX += alpha * np.eye(n_features, dtype=XtX.dtype)
+        XtY = X_train.T @ Y_train
+        W = np.linalg.solve(XtX, XtY)
     return W
 
 
@@ -128,10 +146,14 @@ def select_alpha(
 
 def compute_metrics(
     predictions: NDArray,
-    targets: NDArray,
+    targets: NDArray | None,
     all_targets: NDArray,
 ) -> dict[str, float]:
-    """Compute perception pilot metrics."""
+    """Compute perception pilot metrics.
+
+    If targets is None, assumes prediction i corresponds to all_targets[i].
+    If targets is an array, targets[i] gives the index into all_targets for prediction i.
+    """
     n = len(predictions)
     pred_norm = predictions / (np.linalg.norm(predictions, axis=1, keepdims=True) + 1e-8)
     tgt_norm = all_targets / (np.linalg.norm(all_targets, axis=1, keepdims=True) + 1e-8)
@@ -140,10 +162,9 @@ def compute_metrics(
     cosine_sims = []
     for i in range(n):
         sims = pred_norm[i] @ tgt_norm.T
-        rank = int((sims >= sims[targets[i] if isinstance(targets, NDArray) else i]).sum())
+        true_idx = i if targets is None else int(targets[i])
+        rank = int((sims >= sims[true_idx]).sum())
         ranks.append(rank)
-
-        true_idx = i if not isinstance(targets, NDArray) else int(targets[i])
         cosine_sims.append(float(pred_norm[i] @ tgt_norm[true_idx]))
 
     ranks_arr = np.array(ranks)
@@ -269,4 +290,36 @@ def check_pilot_prerequisites(results_dir: Path) -> dict[str, bool]:
             data = json.load(f)
         checks["storage_pass"] = data.get("status") == "PASS"
 
+    checks["betas_certified"] = False
+    betas = results_dir / "c3_subj01_perception_certification.json"
+    if betas.exists():
+        with open(betas) as f:
+            data = json.load(f)
+        checks["betas_certified"] = (
+            data.get("certification_status") == "SUBJ01_PERCEPTION_ACQUISITION_CERTIFIED"
+        )
+
+    checks["stimulus_certified"] = False
+    stim = results_dir / "c3_stimulus_reconstruction.json"
+    if stim.exists():
+        with open(stim) as f:
+            data = json.load(f)
+        checks["stimulus_certified"] = "EQUIVALENT" in data.get("status", "")
+
     return checks
+
+
+def compute_chance_mrr(n_candidates: int) -> float:
+    """Compute chance MRR = H_N / N where H_N is the N-th harmonic number."""
+    harmonic = sum(1.0 / k for k in range(1, n_candidates + 1))
+    return harmonic / n_candidates
+
+
+def build_clip_index_map(split_image_ids: list[int], all_sorted_ids: list[int]) -> NDArray:
+    """Map split image IDs to CLIP embedding array row indices.
+
+    CLIP embeddings are stored in sorted NSD ID order.
+    This returns the row index in the CLIP array for each split image.
+    """
+    id_to_row = {img_id: row for row, img_id in enumerate(all_sorted_ids)}
+    return np.array([id_to_row[img_id] for img_id in split_image_ids])

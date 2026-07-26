@@ -28,16 +28,22 @@ def get_coco_url(coco_id: int, coco_split: str) -> str:
 def apply_nsd_crop(img: Image.Image, crop_box: tuple) -> Image.Image:
     """Apply NSD crop box to a COCO image.
 
-    crop_box format: (top_frac, left_frac, bottom_frac, right_frac)
-    representing the fraction to remove from each side.
+    crop_box format: (top_frac, bottom_frac, left_frac, right_frac)
+    representing the fraction of the original dimension to remove from each side.
+    The result is forced square using min(W, H) as the side length.
     """
     w, h = img.size
-    top = int(float(crop_box[0]) * h)
-    left = int(float(crop_box[1]) * w)
-    bottom = int(float(crop_box[2]) * h)
-    right = int(float(crop_box[3]) * w)
-
-    cropped = img.crop((left, top, w - right, h - bottom))
+    sq = min(w, h)
+    if w > h:
+        x_start = round(float(crop_box[2]) * w)
+        x_start = min(x_start, w - sq)
+        cropped = img.crop((x_start, 0, x_start + sq, h))
+    elif h > w:
+        y_start = round(float(crop_box[0]) * h)
+        y_start = min(y_start, h - sq)
+        cropped = img.crop((0, y_start, w, y_start + sq))
+    else:
+        cropped = img
     return cropped.resize((NSD_PRESENTATION_SIZE, NSD_PRESENTATION_SIZE), Image.LANCZOS)
 
 
