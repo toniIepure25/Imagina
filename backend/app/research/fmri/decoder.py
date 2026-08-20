@@ -166,11 +166,27 @@ def train_ridge_decoder(
 
 
 def _solve_ridge(X: NDArray[np.float64], Y: NDArray[np.float64], alpha: float) -> NDArray[np.float64]:
-    """Solve ridge regression: W = (X^T X + alpha I)^{-1} X^T Y."""
-    n_voxels = X.shape[1]
-    XtX = X.T @ X + alpha * np.eye(n_voxels)
-    XtY = X.T @ Y
-    W = np.linalg.solve(XtX, XtY)
+    """Solve ridge regression, using whichever formulation is mathematically
+    equivalent but computationally practical for the given shape.
+
+    Primal: W = (X^T X + alpha I)^{-1} X^T Y                    — O(n_features^3)
+    Dual:   W = X^T (X X^T + alpha I)^{-1} Y                     — O(n_samples^3)
+
+    These give identical W (up to floating-point error) for any alpha > 0.
+    The dual form is used whenever n_samples < n_features, which is the
+    common case for ROI-level fMRI decoders (~9000 training images vs
+    ~15,000+ voxels) — the primal form would otherwise need to allocate and
+    factor an n_features x n_features matrix that may not fit in memory.
+    """
+    n_samples, n_features = X.shape
+    if n_samples < n_features:
+        K = X @ X.T + alpha * np.eye(n_samples)
+        beta = np.linalg.solve(K, Y)
+        W = X.T @ beta
+    else:
+        XtX = X.T @ X + alpha * np.eye(n_features)
+        XtY = X.T @ Y
+        W = np.linalg.solve(XtX, XtY)
     return W
 
 
