@@ -1,8 +1,8 @@
 # C3 Novelty and Overlap Audit
 
-**Date:** 2026-07-24
-**Branch:** `research/fmri-imagery-transfer-c3`
-**Status:** AUDIT COMPLETE
+**Date:** 2026-07-24 (original); updated 2026-08-21 before H4
+**Branch:** `research/fmri-imagery-transfer-c3-realdata`
+**Status:** AUDIT COMPLETE — UPDATED WITH SPERA ET AL. 2026 METHODOLOGICAL DETAIL
 
 ---
 
@@ -65,15 +65,61 @@ The published evidence strongly predicts:
 - **C3-H1 should pass** (perception decoding is well-established for NSD)
 - **C3-H4 is the only potentially novel positive finding** (state transport)
 
+## 3.4 Updated methodological comparison against Spera et al. 2026 (before H4)
+
+Re-read at abstract/arXiv level before executing C3-H4
+(arXiv:2604.15374, "Seeing the imagined: a latent functional alignment in
+visual imagery decoding from fMRI data"). This is a direct, axis-by-axis
+comparison against what C3-H4 (low-capacity state transport) was originally
+scoped to test, per the governing protocol's explicit requirement not to
+claim novelty where prior work materially overlaps.
+
+| Axis | Spera et al. 2026 | C3-H4 (this work) | Overlap |
+|---|---|---|---|
+| Space being transformed | **Decoder-output / latent space** — maps imagery-evoked activity into the pretrained DynaDiff model's *conditioning* space, backbone frozen | **Decoder-output space** — identity/mean-correction/affine-ridge/low-rank transport applied to the frozen ridge decoder's *predicted CLIP embedding*, not to raw voxels | **HIGH — same space.** C3-H4 cannot claim "decoder-output-space calibration" as a novel idea; Spera's primary method already does this, with a stronger (diffusion-conditioning) target representation. |
+| Voxel-space vs decoder-output-space | Spera explicitly report a **voxel-space ridge alignment baseline** as a comparison point, distinct from their primary latent-space method | C3-H4 does not separately test a voxel-space transform; the frozen perception decoder itself is the only voxel→embedding mapping, fit once on perception data only | C3 does not add a new voxel-space technique either — this axis is fully covered by Spera's baseline already. |
+| Rank / capacity | Not specified at abstract level; full-paper capacity of the latent alignment is unknown to this audit | Explicit ladder: identity (rank 0) → mean correction (rank 0, offset only) → affine ridge (full-rank + bias) → strict low-rank linear (rank ≤ 10) → matched random low-rank (falsification control) | Cannot claim capacity is *lower* than Spera's without the full paper's parameter count; the explicit ladder + random-matched-rank falsification control is a genuine methodological addition regardless. |
+| Supervision | Matched imagery-perception pairs, **augmented with a retrieval strategy** that pulls in additional semantically-related NSD perception trials as pseudo-supervision | Only the true paired imagery data actually collected for the subject; no augmentation, no additional perception trials borrowed in | **Real, defensible difference.** C3-H4 is a strictly more conservative test — no augmentation ingredient that could inflate apparent transfer. |
+| Retrieval augmentation | Yes — core ingredient of their method | No — deliberately excluded per the frozen C3-H4 protocol (perception decoder and its training data must stay untouched by any imagery-informed step) | Real difference, in C3's favor for interpretability, not necessarily for raw performance. |
+| Held-out-target protocol | Not described in the abstract/arXiv-page-level review conducted here; unconfirmed whether their evaluation holds out entire target identities vs. only held-out trials of already-seen targets | Explicit **nested leave-one-target-out**: a target present in transport calibration may never appear in the held-out-target test fold (see `evaluate_transport_loso` in `transport.py`) | Plausible real difference, but not confirmed absent in Spera's full paper — reported as "not evident from abstract-level review," not as a confirmed gap. |
+| Identity baseline | Implied by their "frozen pretrained baseline" comparison | Explicit `identity_transport()` control | Equivalent in spirit. |
+| Random low-rank baseline | Not mentioned | Explicit `random_low_rank_transport()` falsification control (same rank, random weights) | Real addition — a dedicated null-capacity control distinguishing "any linear transform helps" from "this specific fitted transform helps." |
+| Uncertainty analysis | Not mentioned in the abstract or the methodological summary reviewed | Explicit C3-H5 (repeat-variance, distribution-distance, ROI-disagreement uncertainty scores; risk-coverage curves) | Plausible real gap, same caveat as held-out-target above — full paper not reviewed line-by-line. |
+| Primary estimand | High-level semantic reconstruction metrics (their decoder still produces images/captions via DynaDiff) | `Delta_transport` = held-out-target MRR(calibrated) − held-out-target MRR(identity), a pure retrieval statistic with no generative step | Different by construction — C3 never reconstructs images (protocol prohibition), so the estimands are not directly comparable in magnitude, only in direction (does calibration help at all). |
+
+**Honest determination:** C3-H4's core idea — calibrating a frozen decoder's
+*output* to bridge perception→imagery — is **not novel**; Spera et al. 2026
+already do this, with a richer supervision signal (retrieval augmentation)
+and a stronger backbone (DynaDiff vs. ridge regression). C3-H4's remaining,
+actually-defensible contribution is narrower than originally scoped:
+
+1. A **strictly conservative** transport evaluation using only true paired
+   data, no retrieval augmentation — answering "does calibration help
+   *without* borrowing information from other trials," not "can calibration
+   be made to work with enough auxiliary supervision."
+2. An explicit **capacity ladder with a random-matched-rank control**,
+   isolating whether any specific fitted transform beats a same-shaped
+   random one.
+3. (Pending full-paper confirmation) possibly the first **nested
+   held-out-target** evaluation and **calibrated uncertainty** analysis for
+   this exact zero-shot-imagery-transfer setting.
+
+If C3-H4 is executed, its write-up must state this overlap explicitly and
+must not describe decoder-output-space transport itself as a novel idea.
+
 ## 4. Remaining Gaps (What C3 Adds)
 
 ### 4.1 What is NOT covered by prior work:
 
 1. **Low-capacity state transport with proper leakage-safe validation**
-   - Spera et al. used full imagery fitting (matched supervision)
-   - No prior work tests a strictly low-capacity (mean-correction, affine ridge)
-     transport applied AFTER a frozen perception decoder
-   - Key distinction: transport capacity << imagery sample size
+   - **Revised 2026-08-21 (see §3.4):** Spera et al. 2026's primary method
+     already performs decoder-output/latent-space calibration of a frozen
+     perception decoder for imagery — the core idea is NOT novel to C3.
+   - What remains defensible: C3-H4 uses no retrieval augmentation (only
+     true paired imagery data), and adds an explicit random-matched-rank
+     falsification control and nested held-out-target evaluation.
+   - This must be reported as a stricter/narrower conservative test, not as
+     a novel transport concept.
 
 2. **Calibrated uncertainty for perception-to-imagery transfer**
    - No prior work reports calibrated uncertainty metrics

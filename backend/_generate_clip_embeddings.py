@@ -1,4 +1,11 @@
-"""Generate frozen CLIP embeddings for all 10,000 subj01 perception stimuli."""
+"""Generate frozen CLIP embeddings for all 10,000 subj01 perception stimuli.
+
+LOCAL CONVENIENCE SCRIPT (CPU path) — defaults to this developer's
+D:\\ComputaCenter paths (overridable via NSD_CACHE_ROOT/NSD_DATA_ROOT, but not
+required to run). NOT a reusable scientific runner and excluded from
+scientific replay. See _generate_clip_embeddings_gpu.py for the GPU variant
+actually used to produce the certified embeddings.
+"""
 from __future__ import annotations
 
 import hashlib

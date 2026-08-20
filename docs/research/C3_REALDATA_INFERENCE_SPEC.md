@@ -110,11 +110,33 @@ p-value = proportion of null group means >= observed group mean
 - Normalization fit on train only
 - Ridge alpha selected on inner CV within train only
 
-### Imagery Trial Inclusion
-- Set A (simple): 48 imagery trials = 4 stimuli × 12 repeats (6 img runs × 2 within-run per stimulus... need exact verification from behavioral data)
-- Set B (complex): 48 imagery trials
-- Set C (conceptual): EXCLUDED from primary analysis (no imageable ground truth)
-- Attention runs: EXCLUDED
+### Imagery Trial Inclusion (corrected 2026-08-21 — see C3_NOVELTY_AND_OVERLAP.md
+### changelog and results/c3_nsdimagery_row_mapping.json for provenance)
+
+The official NSD-Imagery subj01 protocol is 12 task runs x 48 trials/run =
+576 task trials total (confirmed directly from the 12 official behavioral
+log TSVs, cross-checked against the official A/B/C_pair_list.mat cue
+tables):
+
+- Vision: 3 runs (visA, visB, visC) x 48 = 144 trials
+- Attention: 3 runs (attA, attB, attC) x 48 = 144 trials
+- Imagery: 6 runs (imgA_1, imgA_2, imgB_1, imgB_2, imgC_1, imgC_2) x 48 = 288 trials
+  - Set A (simple): imgA_1 + imgA_2 = 96 trials = 6 stimuli x 16 repeats
+  - Set B (complex): imgB_1 + imgB_2 = 96 trials = 6 stimuli x 16 repeats
+  - Set C (conceptual): imgC_1 + imgC_2 = 96 trials = 6 concepts x 16 repeats,
+    EXCLUDED from primary image-ground-truth analysis (no single fixed
+    ground-truth image target)
+- Attention runs: EXCLUDED from H2 (not an imagery condition)
+
+Total imagery trials available for H2 is **288**, not a larger figure that
+would result from mis-counting only one of each pair's two repeat-runs.
+
+**This section describes the task-trial structure only.** The raw NSD-Imagery
+beta file (`betas_nsdimagery.hdf5`) for subj01 contains 720 rows, not 576 —
+see `results/c3_nsdimagery_row_mapping.json` for the (currently
+`BLOCKED_IMAGERY_ROW_PROVENANCE`) investigation into the extra 144 rows and
+the exact beta-row-to-trial alignment. H2 may not proceed until that mapping
+is authoritatively resolved.
 
 ### Primary ROI
 - `nsdgeneral` (combined visual cortex mask)

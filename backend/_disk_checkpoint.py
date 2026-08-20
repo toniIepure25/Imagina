@@ -1,4 +1,8 @@
-"""Disk-space checkpoint for C3 pilot."""
+"""Disk-space checkpoint for C3 pilot.
+
+LOCAL CONVENIENCE SCRIPT — hardcodes this developer's D:\\ComputaCenter paths.
+NOT a reusable scientific runner and excluded from scientific replay.
+"""
 import json
 import shutil
 import time

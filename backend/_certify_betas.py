@@ -1,4 +1,9 @@
-"""Certify all 40 subj01 perception beta sessions."""
+"""Certify all 40 subj01 perception beta sessions.
+
+LOCAL CONVENIENCE SCRIPT — hardcodes this developer's D:\\ComputaCenter paths.
+NOT a reusable scientific runner and excluded from scientific replay; use
+app/research/fmri/ingestion.py (NSD_DATA_ROOT/NSD_BETAS_ROOT env vars) instead.
+"""
 import h5py
 import json
 import time

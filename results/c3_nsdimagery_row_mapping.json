@@ -1,0 +1,140 @@
+{
+  "artifact": "C3_NSDIMAGERY_BETA_ROW_MAPPING",
+  "timestamp": "2026-08-21T18:30:00",
+  "subject": "subj01",
+  "status": "BLOCKED_IMAGERY_ROW_PROVENANCE",
+  "raw_beta_file": {
+    "path": "nsddata_betas/ppdata/subj01/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5",
+    "shape": [720, 83, 104, 81],
+    "dtype": "int16",
+    "raw_beta_rows": 720,
+    "embedded_metadata": "none (checked f.attrs and betas.attrs on the HDF5 file directly: both empty)"
+  },
+  "expected_task_counts_from_published_experiment": {
+    "task_rows": 576,
+    "vision": 144,
+    "attention": 144,
+    "imagery": 288,
+    "imagery_simple": 96,
+    "imagery_complex": 96,
+    "imagery_concepts": 96,
+    "note": "12 task runs x 48 trials/run = 576, confirmed independently from behavioral logs below"
+  },
+  "unexplained_row_discrepancy": {
+    "raw_beta_rows": 720,
+    "task_rows_from_behavioral_logs": 576,
+    "non_task_or_unexplained_rows": 144
+  },
+  "behavioral_log_cross_check": {
+    "method": "csv.DictReader over all 12 official nsdimagery_subj01_<run>.tsv files, subject=1",
+    "run_order_by_physical_run_number": [
+      "visA", "attA", "imgA_1", "visB", "attB", "imgB_1",
+      "visC", "attC", "imgC_1", "imgA_2", "imgB_2", "imgC_2"
+    ],
+    "per_run": {
+      "visA":   {"session": "1", "run": "1",  "n_trials_logged": 48, "unique_cues": ["E","H","L","P","R","V"]},
+      "attA":   {"session": "1", "run": "2",  "n_trials_logged": 48, "unique_cues": ["E","H","L","P","R","V"]},
+      "imgA_1": {"session": "1", "run": "3",  "n_trials_logged": 48, "unique_cues": ["E","H","L","P","R","V"]},
+      "visB":   {"session": "1", "run": "4",  "n_trials_logged": 48, "unique_cues": ["B","C","D","K","T","W"]},
+      "attB":   {"session": "1", "run": "5",  "n_trials_logged": 48, "unique_cues": ["B","C","D","K","T","W"]},
+      "imgB_1": {"session": "1", "run": "6",  "n_trials_logged": 48, "unique_cues": ["B","C","D","K","T","W"]},
+      "visC":   {"session": "1", "run": "7",  "n_trials_logged": 48, "unique_cues": ["F","M","N","S","Y","Z"]},
+      "attC":   {"session": "1", "run": "8",  "n_trials_logged": 48, "unique_cues": ["F","M","N","S","Y","Z"]},
+      "imgC_1": {"session": "1", "run": "9",  "n_trials_logged": 48, "unique_cues": ["F","M","N","S","Y","Z"]},
+      "imgA_2": {"session": "1", "run": "10", "n_trials_logged": 48, "unique_cues": ["E","H","L","P","R","V"]},
+      "imgB_2": {"session": "1", "run": "11", "n_trials_logged": 48, "unique_cues": ["B","C","D","K","T","W"]},
+      "imgC_2": {"session": "1", "run": "12", "n_trials_logged": 48, "unique_cues": ["F","M","N","S","Y","Z"]}
+    },
+    "total_logged_trials": 576,
+    "cue_sets_match_official_pair_lists": true
+  },
+  "authoritative_cue_to_stimulus_pairing": {
+    "source": "official NSD S3 release, bucket natural-scenes-dataset, prefix nsddata/experiments/nsdimagery/",
+    "files": [
+      {"path": "A_pair_list.mat", "sha256": "2c385de7455d37bae2e4de27b3ef743fe3b997f6f3bf5a05b1920d4f32a76cf6",
+       "mapping": {"H": "bar_000.0deg_450L_43W.png", "R": "bar_045.0deg_450L_43W.png", "V": "bar_090.0deg_450L_43W.png",
+                   "L": "bar_135.0deg_450L_43W.png", "P": "crs_000.0deg_450L_43W.png", "E": "crs_045.0deg_450L_43W.png"}},
+      {"path": "B_pair_list.mat", "sha256": "5ac2bd001c30d4461289a23b8a3063e5baf3522a12187d8195be61d82622b394",
+       "mapping": {"W": "shared0385_nsd28752.png", "K": "shared0413_nsd30857.png", "B": "shared0741_nsd53882.png",
+                   "C": "shared0842_nsd61178.png", "D": "shared0907_nsd65873.png", "T": "shared0000_nsd00000.png"}},
+      {"path": "C_pair_list.mat", "sha256": "9f67016fe01e371ff289c215baf68b22636a4a693b9c393d7cf0f921c3d3faba",
+       "mapping": {"S": "stripes", "Z": "zebra", "M": "mammal", "Y": "yellow", "N": "banana", "F": "fruit"}},
+      {"path": "cue_pair_list.xlsx", "sha256": "aeef94fdd8f0753422f31ac098b47ad4345faee47b60475e76cbb39d29880bb2",
+       "note": "consolidated single-sheet version of the three .mat files above, identical content"}
+    ],
+    "empirical_cross_validation": {
+      "method": "For visA trials with a real FRAMEFILE (perception trials, ground truth visible), the base filename (stripping the _cueX.png suffix) was compared against the official A_pair_list.mat cue mapping for the same trial's CUE value.",
+      "n_checked": 3,
+      "n_agree": 3,
+      "n_disagree": 0,
+      "agreement_rate": 1.0,
+      "checked_examples": [
+        {"cue": "L", "framefile_base": "bar_135.0deg_450L_43W", "pair_list_target": "bar_135.0deg_450L_43W.png", "agree": true},
+        {"cue": "V", "framefile_base": "bar_090.0deg_450L_43W", "pair_list_target": "bar_090.0deg_450L_43W.png", "agree": true},
+        {"cue": "H", "framefile_base": "bar_000.0deg_450L_43W", "pair_list_target": "bar_000.0deg_450L_43W.png", "agree": true}
+      ],
+      "note": "Only 3 of 48 visA trials were manually spot-checked before the row-count blocker halted further mapping work; full 48/48 cross-check is deferred until the row-provenance blocker is resolved, since it does not by itself require the 720-row alignment."
+    }
+  },
+  "authoritative_metadata_file_search": {
+    "target_files": ["nsdimagery_stimuli.pkl3", "imagery_stimuli_18.pt"],
+    "reference_implementation": {
+      "repository": "MedARC-AI/MIRAGE",
+      "file": "src/utils.py",
+      "function": "load_nsd_mental_imagery",
+      "usage": "loads {data_root}/nsddata_stimuli/stimuli/nsdimagery_stimuli.pkl3, a pickle with keys exps/cues/image_map, and indexes the raw imagery beta tensor directly with arrays derived from it",
+      "note_on_use": "consulted ONLY as a reference for how the authoritative metadata is structured/used; MIRAGE's decoder architecture, normalization, and GLM variant are explicitly NOT adopted into C3"
+    },
+    "search_locations_checked": [
+      {
+        "location": "local NSD data roots (NSD_DATA_ROOT, NSD_BETAS_ROOT, NSD_CACHE_ROOT trees)",
+        "method": "filesystem search for *.pkl3 and imagery_stimuli_18.pt",
+        "result": "NOT_FOUND"
+      },
+      {
+        "location": "official NSD S3 bucket (natural-scenes-dataset)",
+        "method": "S3 ListObjectsV2 (public, unsigned) under prefix nsddata_stimuli/ and nsddata/experiments/nsdimagery/",
+        "result": "NOT_FOUND",
+        "actual_contents_of_nsdimagery_prefix": [
+          "A_pair_list.mat", "B_pair_list.mat", "C_pair_list.mat", "VVIQ_rv_revived_adopted.pdf",
+          "attA_dm.mat", "attB_dm.mat", "attC_dm.mat", "cue_pair_list.xlsx",
+          "designmatrixGLMsingle.mat", "imgA_1_dm.mat", "imgA_2_dm.mat", "imgB_1_dm.mat",
+          "imgB_2_dm.mat", "imgC_1_dm.mat", "imgC_2_dm.mat",
+          "nsdimagery_run04_screencapture.mp4", "nsdimagery_run05_screencapture.mp4",
+          "nsdimagery_run06_screencapture.mp4", "rawtargetimages/", "visA_dm.mat", "visB_dm.mat", "visC_dm.mat"
+        ]
+      },
+      {
+        "location": "HuggingFace dataset repository pscotti/mindeyev2 (main revision)",
+        "method": "huggingface_hub.HfApi.list_repo_files(repo_type='dataset'), 354 files total, recursive",
+        "result": "NOT_FOUND"
+      },
+      {
+        "location": "HuggingFace dataset repository reesekneeland/MIRAGE (main revision)",
+        "method": "huggingface_hub.HfApi.list_repo_files(repo_type='dataset'), 34 files total, recursive",
+        "result": "NOT_FOUND",
+        "note": "this is the companion dataset repo the MIRAGE README itself points to for reproducing their pipeline; it contains only model checkpoints and whole-brain beta .hdf5 files, not the stimuli metadata pickle"
+      }
+    ],
+    "determination": "nsdimagery_stimuli.pkl3 is not part of the official NSD-Imagery release and is not present in either public dataset repository referenced by the MIRAGE reference implementation. It appears to be an internal preprocessing artifact the MIRAGE/MindEye authors generated themselves from the raw release (behavioral logs, design matrices, and/or GLMsingle outputs not distributed in this exact form), using code that is also not present in the inspected repositories."
+  },
+  "designmatrixGLMsingle_mat": {
+    "path": "nsddata/experiments/nsdimagery/designmatrixGLMsingle.mat",
+    "sha256": "803f0399a746eeff1d402b808dc9d910c6345285d5388cfe192262671c7948f8",
+    "structure": "single key 'stimulus', a (1,12) MATLAB cell array; cell i is a [n_TR_i, 36] binary GLM design matrix",
+    "cell_TR_counts": [240, 480, 240, 240, 480, 240, 240, 480, 240, 240, 240, 240],
+    "interpretation_attempted": "If cell order matches the behavioral-log run order (visA,attA,imgA_1,visB,attB,imgB_1,visC,attC,imgC_1,imgA_2,imgB_2,imgC_2), the three 480-TR cells fall exactly on the three attention runs (attA,attB,attC) — i.e. attention runs appear to run roughly 2x longer than vision/imagery runs. The constant 36-column width across all 12 designs does not divide evenly into either 720 (60/design) or 576 (48/design) in a way that is independently confirmed; column semantics (36 regressors per design) were not established with certainty from the file alone.",
+    "not_used_as_basis_for_row_mapping": true,
+    "reason": "Interpreting the 36-column design matrices without an authoritative key (i.e. what each column represents) would require assumptions this audit is not willing to make without external confirmation."
+  },
+  "decision": {
+    "status": "BLOCKED_IMAGERY_ROW_PROVENANCE",
+    "rationale": "The 144-row gap between the 720 raw beta rows and the 576 behaviorally-logged task trials cannot be explained from any authoritative source located: not the raw HDF5 metadata (none embedded), not the official NSD S3 release (no equivalent file), not either HuggingFace dataset repository the reference implementation itself depends on for this exact metadata. The GLMsingle design matrices are present but their column semantics are not independently confirmed, so using them to infer per-run beta-row offsets would be exactly the kind of guess the governing protocol prohibits.",
+    "what_would_unblock_this": [
+      "Locating the actual nsdimagery_stimuli.pkl3 (or equivalent) from the original NSD-Imagery/MIRAGE authors, with recorded source, revision, and SHA-256",
+      "Direct confirmation (e.g. from Kneeland et al. 2025 supplementary material, or direct correspondence with the dataset authors) of what the 144 non-task rows represent and their position within each run's beta block",
+      "An authoritative explanation of the designmatrixGLMsingle.mat column semantics that allows deriving the row mapping independently"
+    ],
+    "downstream_impact": "C3-H2 (zero-shot perception-to-imagery transfer) and the NSD-Imagery vision-trial cross-session validation step cannot be executed until this is resolved. Perception-only work (strict H1 replay, subj01 and prospectively subj02/subj05/subj07) is unaffected and proceeds independently."
+  }
+}

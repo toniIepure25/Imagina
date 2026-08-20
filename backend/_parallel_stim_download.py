@@ -1,4 +1,8 @@
-"""Parallel NSD stimulus downloader using corrected v2 crop."""
+"""Parallel NSD stimulus downloader using corrected v2 crop.
+
+LOCAL CONVENIENCE SCRIPT — hardcodes this developer's D:\\ComputaCenter paths.
+NOT a reusable scientific runner and excluded from scientific replay.
+"""
 from __future__ import annotations
 
 import os

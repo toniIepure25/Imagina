@@ -1076,6 +1076,7 @@ jobs:
         run: >-
           python3 -m pytest
           app/tests/test_c3_fmri_data.py
+          app/tests/test_c3_nsdimagery_protocol_counts.py
           -v --timeout=120
 
   c3-perception-decoder-smoke:
@@ -1095,6 +1096,7 @@ jobs:
         run: >-
           python3 -m pytest
           app/tests/test_c3_perception_decoder.py
+          app/tests/test_c3_strict_replay_fixes.py
           -v --timeout=120
 
   c3-zero-shot-transfer-smoke:

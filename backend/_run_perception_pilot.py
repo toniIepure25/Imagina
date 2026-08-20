@@ -1,5 +1,12 @@
 """Execute the complete subj01 perception-foundation pilot.
 
+LOCAL CONVENIENCE SCRIPT — hardcodes this developer's D:\\ComputaCenter paths
+and uses transductive (leaky) normalization. SUPERSEDED for scientific
+purposes by app/research/fmri/run_strict_perception_replay.py, which is
+env-var-configured and leakage-free. This file is preserved for provenance
+of the original (reopened, provisional) SUBJ01_PERCEPTION_FOUNDATION_PASS
+result only, and is excluded from scientific replay.
+
 Requirements before running:
 - 40/40 beta sessions certified
 - Stimulus reconstruction certified

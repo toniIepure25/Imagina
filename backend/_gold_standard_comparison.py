@@ -1,5 +1,8 @@
 """Gold-standard comparison: verify NSD stimulus reconstruction.
 
+LOCAL CONVENIENCE SCRIPT — hardcodes this developer's D:\\ComputaCenter paths.
+NOT a reusable scientific runner and excluded from scientific replay.
+
 Compares reconstructed stimuli (from COCO + cropBox) against the official
 nsd_stimuli.hdf5 accessed via S3 range reads.
 """
