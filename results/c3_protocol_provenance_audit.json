@@ -1,0 +1,33 @@
+{
+  "audit": "C3_SPLIT_PROTOCOL_PROVENANCE",
+  "timestamp": "2026-08-20T18:15:00",
+  "branch": "research/fmri-imagery-transfer-c3-realdata",
+  "method": "git log --oneline --follow / git show --stat / git log --reverse --format='%h %ci %s', no history rewritten",
+  "question": "Was the 8000/1000/1000 split manifest chosen before or after any test-set result existed?",
+  "chronology": [
+    {"order": 1, "sha": "1680ea9", "timestamp": "2026-07-24T18:48:58+03:00", "event": "C3_REALDATA_INFERENCE_SPEC.md frozen; describes ~9000 train / 1000 shared1000 test with inner CV"},
+    {"order": 2, "sha": "6bccaea", "timestamp": "2026-07-24T20:17:49+03:00", "event": "real-data acquisition infrastructure added"},
+    {"order": 3, "sha": "5225b00", "timestamp": "2026-07-24T20:19:07+03:00", "event": "acquisition documented as in-progress/blocked"},
+    {"order": 4, "sha": "9aa7b4e", "timestamp": "2026-07-25T14:27:13+03:00", "event": "split manifest first appears with 8000/1000/1000 counts"},
+    {"order": 5, "sha": "2fa27b7", "timestamp": "2026-07-25T15:33:20+03:00", "event": "storage budget fix, unrelated to split"},
+    {"order": 6, "sha": "996bb4d", "timestamp": "2026-07-25T17:49:24+03:00", "event": "split manifest hash-locked with explicit train/val/test image-ID lists", "manifest_hash": "3ea066638ee94568275f119fb0cd737821932e4aa2ee78f31854e765028a3b78"},
+    {"order": 7, "sha": "0593a16", "timestamp": "2026-07-25T17:55:40+03:00", "event": "perception_pilot.py module added; readiness explicitly states 23/40 beta sessions and 454/10000 stimuli present; no test result of any kind exists at this commit"},
+    {"order": 8, "sha": "2c5be36", "timestamp": "2026-07-25T18:30:18+03:00", "event": "session log update, no results"},
+    {"order": 9, "sha": "6a838f4", "timestamp": "2026-07-26T12:55:14+03:00", "event": "full 40/40 perception beta acquisition certified"},
+    {"order": 10, "sha": "d9d9bc3", "timestamp": "2026-07-26T12:57:01+03:00", "event": "stimulus reconstruction / CLIP target certification"},
+    {"order": 11, "sha": "006f3d2", "timestamp": "2026-08-20T21:47:15+03:00", "event": "FIRST executed perception-decoding result committed (c3_subj01_perception_pilot.json, MRR=0.0827)"}
+  ],
+  "days_between_split_lock_and_first_test_result": 26,
+  "data_complete_at_split_lock_time": false,
+  "any_test_result_before_split_lock": false,
+  "unrelated_prior_result_on_sibling_branch": {
+    "sha": "9487c69",
+    "branch": "research/fmri-imagery-transfer-c3",
+    "note": "synthetic-fixture CI smoke test, not real subj01 data, not part of this split-selection question"
+  },
+  "determination": {
+    "split_provenance": "PROSPECTIVE_AMENDMENT_VERIFIED",
+    "rationale": "8000/1000/1000 split hash-locked 26 days before any test evaluation occurred, at a point when full data acquisition was not yet complete and evaluation was not technically possible. No evidence of outcome-dependent split selection.",
+    "does_not_retroactively_validate": "The leaky-normalization perception result computed under this split (006f3d2) is separately reopened for strict replay; this audit certifies the split protocol only, not the original evaluation's correctness."
+  }
+}

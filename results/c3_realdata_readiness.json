@@ -1,14 +1,23 @@
 {
-  "timestamp": "2026-08-20T20:46:07",
-  "current_status": "READY_FOR_REMAINING_PARTICIPANT_ACQUISITION",
-  "pilot_decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
+  "timestamp": "2026-08-20T21:00:00",
+  "current_status": "PERCEPTION_FOUNDATION_PROVISIONAL_REQUIRES_STRICT_REPLAY",
+  "pilot_decision": "SUBJ01_PERCEPTION_FOUNDATION_PROVISIONAL_POSITIVE",
   "pilot_mrr": 0.0827298543501851,
   "pilot_p_value": 9.999000099990002e-05,
-  "authorized_participants": [
-    "subj02",
-    "subj05",
-    "subj07"
-  ],
+  "provisional_result_reopened": {
+    "reason": "Code audit found the exploratory pilot z-scored fMRI data using mean/std computed over train+val+test combined (transductive normalization leakage) before splitting, and used an ad-hoc alpha grid / target-centering procedure that drifted from the frozen DecoderConfig.",
+    "superseded_artifact": {
+      "path": "results/c3_subj01_perception_pilot.json",
+      "controls_path": "results/c3_subj01_perception_controls.json",
+      "committed_at_sha": "006f3d24914c8fb104f330b06d85ef0c82a2f1e5",
+      "status": "exploratory / superseded-by-strict-replay",
+      "preserved": "unmodified, not deleted or overwritten"
+    },
+    "strict_replay_pending_artifact": "results/c3_subj01_perception_strict_replay.json",
+    "leakage_finding_ref": "docs/ai/SESSION_LOG.md (strict H1 closure entry)"
+  },
+  "authorized_participants": [],
+  "authorized_participants_note": "Population/multi-participant acquisition is withheld until strict H1 replay closes for subj01 (no outcome-dependent continuation decisions).",
   "free_disk_gb": 18.69,
   "scope": "subject-specific (n=1)",
   "population_claim_authorized": false

@@ -3944,3 +3944,70 @@ low-capacity state transport (H4), which has no published negative.
 - Disk free: ~50 GB
 - Download continues as external process
 
+---
+
+## 2026-08-21 — Scientific Gate C3 Real-Data: Strict H1 Closure, Authoritative NSD-Imagery Mapping
+
+### Perception foundation reopened for strict replay
+
+Code audit of `backend/_run_perception_pilot.py` (committed at `006f3d2`) found two protocol
+violations in the `SUBJ01_PERCEPTION_FOUNDATION_PASS` result:
+
+1. **Transductive normalization leakage** — voxel z-scoring (`fmri_all.mean/std(axis=0)`) was
+   computed over all 30,000 trials (train+val+test combined) before the split, so held-out test
+   statistics leaked into training normalization.
+2. **Frozen decoder spec drift** — the ad-hoc runner used alpha grid
+   `[1e0..1e7]` (selected `1e6`) instead of the frozen `DecoderConfig.alpha_candidates =
+   (0.1, 1, 10, 100, 1000, 10000, 100000)`, and did not implement fold-safe target centering.
+
+The result is downgraded to `SUBJ01_PERCEPTION_FOUNDATION_PROVISIONAL_POSITIVE` and
+`results/c3_realdata_readiness.json` status set to
+`PERCEPTION_FOUNDATION_PROVISIONAL_REQUIRES_STRICT_REPLAY`. The original artifacts
+(`results/c3_subj01_perception_pilot.json`, `results/c3_subj01_perception_controls.json`) are
+preserved unmodified and documented as exploratory/superseded, with provenance
+(exact SHA `006f3d2`) recorded in the readiness artifact rather than deleted.
+
+### Fixes applied
+
+- `backend/app/research/fmri/decoder.py::train_ridge_decoder` rewritten to be fold-safe: each
+  inner-CV fold now fits its own voxel mean/std and target mean on the inner-train rows only and
+  applies those exact statistics to the inner-validation rows; after alpha selection, voxel
+  normalization / target centering / the final ridge fit are refit once on the complete outer
+  training set. No inner-validation or outer-test statistic enters fitting at any point.
+  `DecoderConfig`'s defaults already matched the frozen spec
+  (`alpha_candidates=(0.1,1,10,100,1000,10000,100000)`, `inner_cv_folds=5`,
+  `normalize_targets=True`) — the drift was confined to the ad-hoc runner, not the reusable module.
+- Added `decoder.py::two_way_identification` implementing the conventional 2AFC statistic
+  (`sim(pred_i, true_i) > sim(pred_i, true_j)` for all foils `j`, chance = 0.5), distinct from the
+  old ad-hoc pilot's `two_way_id` field (row-argmax AND column-argmax simultaneously — a
+  mutual-nearest-neighbor rate, not 2AFC accuracy). The old field's historical value (`0.001`) is
+  retroactively documented as `mutual_top1_rate`, not identification accuracy.
+- 26 existing tests (`test_c3_perception_decoder.py`, `test_c3_transfer_transport.py`) pass
+  unchanged against the patched decoder.
+
+### ncsnr investigation
+
+The old pilot looked for `ncsnr.nii.gz` under `nsddata/ppdata/subj01/func1pt8mm/roi/` (the ROI
+mask directory) and reported `SKIPPED_NO_NCSNR_FILE`. The file actually exists at
+`nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/ncsnr.nii.gz` (simple path bug, not genuine
+absence) — sha256 `39217f54a32fcc324b3718301b53affa52e39764339734f991468fe3d988cda9`, shape
+`(81,104,83)` float32, containing NaNs outside brain. Combining the frozen policy
+(`nsdgeneral membership AND ncsnr > 0`) gives **15,587** selected voxels (vs. 15,724 for
+nsdgeneral alone — 137 in-ROI voxels have non-positive/NaN ncsnr and are dropped), selection-mask
+sha256 `84e0d08be5d7e68b3ec916c78aad50c216b98825b8246bb3dbeb3e2459fc60db`. The strict replay uses
+15,587 voxels.
+
+### Split protocol provenance audit
+
+`docs/research/C3_PROTOCOL_PROVENANCE_AUDIT.md` / `results/c3_protocol_provenance_audit.json`:
+git history shows the 8000/1000/1000 split manifest was hash-locked at commit `996bb4d`
+(2026-07-25 17:49:24), 26 days before the first (and only) test-set evaluation (`006f3d2`,
+2026-08-20 21:47:15), at a point when full data acquisition was not yet complete (23/40 sessions).
+No test result existed under any split before the lock. Determination:
+`PROSPECTIVE_AMENDMENT_VERIFIED`. Per the governing mission's explicit tie-break rule, the
+**strict-original 9000/1000 configuration** (manifest `train_image_ids ∪ val_image_ids` = 9000
+identities for inner-CV alpha selection, manifest `test_image_ids` = 1000 shared1000 held out
+until decoder freeze) is used as the primary H1 closure, since both configurations agree on the
+same frozen 1000-identity test set and the split-manifest's val/train boundary was never itself
+evaluated as a held-out set — using it only sharpens the inner-CV.
+
