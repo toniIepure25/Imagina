@@ -105,6 +105,7 @@ def _pid_alive(pid: int) -> bool:
 
 
 def _write_manifest_atomic(manifest: dict, manifest_path: Path) -> None:
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = manifest_path.with_suffix(".json.tmp")
     with open(tmp_path, "w") as f:
         json.dump(manifest, f, indent=2)

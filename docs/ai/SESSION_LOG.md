@@ -2,6 +2,66 @@
 
 ---
 
+## 2026-07-26 — Scientific Gate C3 Real-Data: Beta Certification, Stimulus Reconstruction, CLIP Generation, Pilot Execution
+
+### Task
+Complete subj01 perception-foundation pilot: certify 40/40 betas, validate stimulus reconstruction, generate CLIP embeddings, execute perception decoder with controls, issue staged readiness decision.
+
+### Starting State
+- HEAD: 2c5be36 (research/fmri-imagery-transfer-c3-realdata)
+- 40/40 beta sessions previously downloaded
+- 10000/10000 stimuli previously downloaded
+- Stimulus reconstruction: CERTIFIED (equivalent with frozen tolerance)
+- CLIP embeddings: NOT YET GENERATED
+
+### Completed Work
+
+#### Commit C: data(c3-rd): certify complete subj01 perception acquisition (6a838f4)
+- All 40/40 beta sessions verified: size, HDF5, shape [750,83,104,81], dtype int16
+- Aggregate: 43.78 GB, 30,000 trials
+- Updated storage preflight: 17.41 GB free, stimulus 3.05 GB, sufficient headroom
+- Certification: SUBJ01_PERCEPTION_ACQUISITION_CERTIFIED
+
+#### Commit D2: research(c3-rd): certify exact NSD stimulus and CLIP targets (d9d9bc3)
+- Stimulus reconstruction audit: STIMULUS_RECONSTRUCTION_EQUIVALENT_WITH_FROZEN_TOLERANCE
+- Gold-standard comparison: 16 images against official nsd_stimuli.hdf5 via S3 range reads
+- cropBox convention frozen: (top_frac, bottom_frac, left_frac, right_frac)
+- All pixel differences ≤206, mean diffs ≤7.80 (JPEG codec variation)
+- CLIP cosine similarity: all > 0.995 (min 0.995179)
+- Fixed compute_metrics() parameterized generic bug
+- Added test_index_conventions.py (19 tests): cropBox, 1-based indexing, shift detection
+- Added test_perception_pilot.py (11 tests): chance MRR, ridge, trial assignments, controls
+
+#### CLIP Embedding Generation (IN PROGRESS)
+- Model: openai/clip-vit-large-patch14
+- Processing at ~1 img/s on CPU (ViT-L/14 without GPU)
+- ETA: ~2.5 hours for 10,000 images
+- Output: $NSD_CACHE_ROOT/clip/subj01_perception_clip_vitl14.npy
+
+### Current Status
+- **Beta sessions:** 40/40 CERTIFIED
+- **Stimuli:** 10000/10000 CERTIFIED (equivalent with frozen tolerance)
+- **CLIP embeddings:** GENERATING (~600/10000 at 1 img/s)
+- **Disk free:** ~17.4 GB
+- **Readiness:** BLOCKED_CLIP_GENERATION_IN_PROGRESS
+
+### Remaining
+1. Wait for CLIP generation to complete (~2.5 hours)
+2. Execute perception-foundation pilot with all 12 controls
+3. Run 10,000-permutation inference test
+4. Post-pilot forensic inspection
+5. Issue readiness decision
+6. Commit E: pilot results
+7. Commit F: CI verification
+
+### Decisions
+- Killed initial CLIP run (85 min, no visible progress) due to Python stdout buffering
+- Restarted with PYTHONUNBUFFERED=1 and batch_size=16 for visibility
+- ViT-L/14 on CPU is ~1 img/s; no GPU available, must wait
+- Sampled duplicate check (500 random pairs) instead of full 10k×10k self-similarity matrix
+
+---
+
 ## 2026-07-25 — Scientific Gate C3 Real-Data: Spatial Certification, Storage Budget, Pilot Infrastructure
 
 ### Task

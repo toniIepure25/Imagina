@@ -1,46 +1,15 @@
 {
-  "timestamp": "2026-07-25T17:53:52",
-  "status": "BLOCKED_ACQUISITION_IN_PROGRESS",
-  "checks": {
-    "perception_sessions": {
-      "pass": false,
-      "count": 23,
-      "required": 40
-    },
-    "spatial_alignment": {
-      "pass": true,
-      "status": "SPATIAL_ALIGNMENT_CERTIFIED_REAL_DATA"
-    },
-    "stimulus_mapping": {
-      "pass": true,
-      "status": "CERTIFIED"
-    },
-    "split_manifest": {
-      "pass": true,
-      "status": "FROZEN_VERIFIED"
-    },
-    "storage_preflight": {
-      "pass": true,
-      "status": "PASS"
-    },
-    "stimuli_available": {
-      "pass": false,
-      "count": 432,
-      "required": 10000
-    },
-    "clip_embeddings": {
-      "pass": false,
-      "status": "PENDING_STIMULI_DOWNLOAD"
-    }
-  },
-  "n_checks_passed": 4,
-  "n_checks_total": 7,
-  "all_checks_pass": false,
-  "blockers": [
-    "perception_sessions",
-    "stimuli_available",
-    "clip_embeddings"
+  "timestamp": "2026-08-20T20:46:07",
+  "current_status": "READY_FOR_REMAINING_PARTICIPANT_ACQUISITION",
+  "pilot_decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
+  "pilot_mrr": 0.0827298543501851,
+  "pilot_p_value": 9.999000099990002e-05,
+  "authorized_participants": [
+    "subj02",
+    "subj05",
+    "subj07"
   ],
-  "beta_download_progress": "23/40",
-  "stimuli_download_progress": "432/10000"
+  "free_disk_gb": 18.69,
+  "scope": "subject-specific (n=1)",
+  "population_claim_authorized": false
 }

@@ -1,0 +1,179 @@
+{
+  "timestamp": "2026-08-20T20:46:07",
+  "subject": "subj01",
+  "n_controls": 12,
+  "controls": {
+    "01_shuffled_pairing": {
+      "construction": "Permute training fMRI rows while keeping targets fixed",
+      "expected_failure_mode": "Destroys stimulus-response association",
+      "result": {
+        "mrr": 0.0058026381702738486,
+        "top1": 0.0,
+        "top5": 0.003,
+        "median_rank": 526,
+        "mean_cosine": -0.19788675010204315,
+        "two_way_id": 0.0,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Must not exceed main result",
+      "status": "COMPUTED"
+    },
+    "02_mean_target": {
+      "construction": "Predict training mean embedding for all test items",
+      "expected_failure_mode": "No stimulus discrimination",
+      "result": {
+        "mrr": 0.007485470860550345,
+        "top1": 0.001,
+        "top5": 0.005,
+        "median_rank": 500,
+        "mean_cosine": 0.7244736552238464,
+        "two_way_id": 0.0,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Must be near chance",
+      "status": "COMPUTED"
+    },
+    "03_trial_order_only": {
+      "construction": "Predict from trial index alone (linear regression)",
+      "expected_failure_mode": "No neural information used",
+      "result": {
+        "mrr": 0.007453463603648375,
+        "top1": 0.001,
+        "top5": 0.005,
+        "median_rank": 501,
+        "mean_cosine": 0.7244229912757874,
+        "two_way_id": 0.0,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Must be near chance",
+      "status": "COMPUTED"
+    },
+    "04_session_only": {
+      "construction": "Predict from session indicator only",
+      "expected_failure_mode": "Only captures session-level drift",
+      "result": {
+        "mrr": 0.007437800342791478,
+        "top1": 0.001,
+        "top5": 0.006,
+        "median_rank": 500,
+        "mean_cosine": 0.7226982712745667,
+        "two_way_id": 0.0,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Must be near chance",
+      "status": "COMPUTED"
+    },
+    "05_random_voxels": {
+      "construction": "Replace fMRI with random Gaussian noise (same shape)",
+      "expected_failure_mode": "No neural signal",
+      "result": {
+        "mrr": 0.00730227881540442,
+        "top1": 0.001,
+        "top5": 0.004,
+        "median_rank": 515,
+        "mean_cosine": 0.017270950600504875,
+        "two_way_id": 0.0,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Must be at chance",
+      "status": "COMPUTED"
+    },
+    "06_low_ncsnr": {
+      "construction": "Use bottom-ncsnr voxels",
+      "expected_failure_mode": "Low-reliability voxels",
+      "result": "SKIPPED_NO_NCSNR_FILE",
+      "status": "SKIPPED"
+    },
+    "07_voxel_permutation": {
+      "construction": "Permute voxel columns consistently in train and test",
+      "expected_failure_mode": "Should match main result (permutation is invertible)",
+      "result": {
+        "mrr": 0.0827298543501851,
+        "top1": 0.029,
+        "top5": 0.1,
+        "median_rank": 45,
+        "mean_cosine": 0.18130522966384888,
+        "two_way_id": 0.001,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Should be similar to main (validates decoding not order-dependent)",
+      "status": "COMPUTED",
+      "scientific_interpretation": "Voxel identity matters, not column position"
+    },
+    "08_leakage_audit": {
+      "construction": "Check image identity overlap across splits",
+      "expected_failure_mode": "Any overlap invalidates the evaluation",
+      "result": {
+        "train_val_overlap": 0,
+        "train_test_overlap": 0,
+        "val_test_overlap": 0,
+        "leakage_detected": false
+      },
+      "decision_rule": "All overlaps must be zero",
+      "status": "PASS"
+    },
+    "09_identity_audit": {
+      "construction": "Verify all image identities are assigned to exactly one split",
+      "expected_failure_mode": "Missing or duplicate assignments",
+      "result": {
+        "total_assigned": 10000,
+        "expected": 10000,
+        "train_count": 8000,
+        "val_count": 1000,
+        "test_count": 1000,
+        "complete": true
+      },
+      "decision_rule": "Must cover all 10000 identities with no overlap",
+      "status": "PASS"
+    },
+    "10_alpha_test_blind": {
+      "construction": "Alpha was selected using ONLY validation set; test was never seen",
+      "expected_failure_mode": "If test was used, would inflate results",
+      "result": {
+        "alpha_selected_on": "validation_set_only",
+        "test_used_for_selection": false,
+        "alpha_frozen_before_test": true
+      },
+      "decision_rule": "Alpha selection must precede test evaluation",
+      "status": "PASS"
+    },
+    "11_clip_row_permutation": {
+      "construction": "Permute CLIP embedding pool rows (wrong image-to-embedding mapping)",
+      "expected_failure_mode": "Destroys correct target assignment",
+      "result": {
+        "mrr": 0.007586020881913682,
+        "top1": 0.001,
+        "top5": 0.006,
+        "median_rank": 492,
+        "mean_cosine": -0.03436858579516411,
+        "two_way_id": 0.0,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Must collapse to chance",
+      "status": "COMPUTED"
+    },
+    "12_one_index_shift": {
+      "construction": "Shift all CLIP target assignments by +1 (simulates off-by-one indexing error)",
+      "expected_failure_mode": "Wrong fMRI-to-target pairing destroys signal",
+      "result": {
+        "mrr": 0.008624495988187075,
+        "top1": 0.002,
+        "top5": 0.005,
+        "median_rank": 492,
+        "mean_cosine": -0.19252939522266388,
+        "two_way_id": 0.0,
+        "n_test": 1000,
+        "n_pool": 1000
+      },
+      "decision_rule": "Must collapse to near-chance",
+      "status": "COMPUTED"
+    }
+  }
+}
