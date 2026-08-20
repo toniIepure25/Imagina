@@ -65,6 +65,15 @@ select = ["E", "F", "I", "W"]
 "app/core/adaptive/longitudinal_progress_report.py" = ["E501"]
 "app/cli/imagina_v15_execution_loop_test.py" = ["E501"]
 "app/cli/imagina_v16_optimization_test.py" = ["E501"]
+# Local convenience scripts for C3 real-data acquisition, hardcode one
+# developer's paths, and are explicitly excluded from scientific replay
+# (see their module docstrings). Not held to the reusable-runner lint bar.
+"_certify_betas.py" = ["E501", "F841"]
+"_disk_checkpoint.py" = ["E501", "F841"]
+"_generate_clip_embeddings.py" = ["E501", "F841"]
+"_gold_standard_comparison.py" = ["E501", "F841", "E712"]
+"_parallel_stim_download.py" = ["E501", "F841"]
+"_run_perception_pilot.py" = ["E501", "F841"]
 "app/cli/imagina_v17_n_of_1_experiment_test.py" = ["E501"]
 "app/cli/imagina_v18_evidence_dashboard_test.py" = ["E501"]
 "app/core/evidence/imagina_evidence_model.py" = ["E501"]

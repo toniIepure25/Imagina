@@ -4,11 +4,12 @@ LOCAL CONVENIENCE SCRIPT — hardcodes this developer's D:\\ComputaCenter paths.
 NOT a reusable scientific runner and excluded from scientific replay; use
 app/research/fmri/ingestion.py (NSD_DATA_ROOT/NSD_BETAS_ROOT env vars) instead.
 """
-import h5py
 import json
 import time
-import numpy as np
 from pathlib import Path
+
+import h5py
+import numpy as np
 
 betas_dir = Path(r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas\ppdata\subj01\func1pt8mm\betas_fithrf")
 EXPECTED_SHAPE = (750, 83, 104, 81)

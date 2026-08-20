@@ -34,7 +34,10 @@ def sha256_file(path: Path) -> str:
 def verify_imagery_betas():
     import h5py
 
-    beta_path = Path(os.environ["NSD_BETAS_ROOT"]) / "ppdata/subj01/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5"
+    beta_path = (
+        Path(os.environ["NSD_BETAS_ROOT"])
+        / "ppdata/subj01/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5"
+    )
     assert beta_path.exists(), f"Missing: {beta_path}"
     file_hash = sha256_file(beta_path)
     expected_hash = "31485ff0e4cb9e90b6f83f2f550714b1a688993604f5795148a2746df7b42b64"

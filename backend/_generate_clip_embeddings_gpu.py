@@ -56,8 +56,8 @@ def main():
     processor = CLIPProcessor.from_pretrained(model_name)
     model.eval()
 
-    import transformers
     import PIL
+    import transformers
 
     model_config_hash = hashlib.sha256(
         json.dumps(model.config.to_dict(), sort_keys=True, default=str).encode()
@@ -168,7 +168,10 @@ def main():
         "embedding_pool_hash": emb_hash[:32],
         "ordered_image_identity_hash": id_order_hash,
         "stimulus_set_hash": stimulus_set_hash,
-        "stimulus_source": "official NSD release nsd_stimuli.hdf5 (imgBrick dataset), not the locally-reconstructed PNG cache",
+        "stimulus_source": (
+            "official NSD release nsd_stimuli.hdf5 (imgBrick dataset), "
+            "not the locally-reconstructed PNG cache"
+        ),
         "output_path": str(output_path),
         "computation_time_s": round(elapsed, 1),
         "n_images": 10000,

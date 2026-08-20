@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import pickle
 import time
 from pathlib import Path
@@ -20,7 +19,6 @@ import h5py
 import numpy as np
 from PIL import Image
 from scipy.io import loadmat
-
 
 NSD_DATA_ROOT = Path(r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata")
 NSD_CACHE_ROOT = Path(r"D:\ComputaCenter\FMRI2images\data\nsd\cache")
@@ -148,10 +146,11 @@ def main():
     print(f"Available reconstructions: {len(available_ids)}/{len(validation_ids)}")
 
     # For comparison we re-apply crop directly from COCO to avoid stale files
-    import requests
     from io import BytesIO
 
-    print(f"\nOpening remote NSD stimuli HDF5...")
+    import requests
+
+    print("\nOpening remote NSD stimuli HDF5...")
     fs = fsspec.filesystem("http")
     remote_file = fs.open(NSD_S3_URL, "rb")
     hf = h5py.File(remote_file, "r")
@@ -255,7 +254,7 @@ def main():
     out_path = RESULTS_DIR / "c3_stimulus_reconstruction.json"
     with open(out_path, "w") as f:
         json.dump(summary, f, indent=2)
-    print(f"\n=== Summary ===")
+    print("\n=== Summary ===")
     print(f"Status: {status}")
     print(f"Compared: {len(results)}")
     print(f"Pixel identical: {n_identical}/{len(results)}")

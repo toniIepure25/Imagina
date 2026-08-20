@@ -52,8 +52,8 @@ def main():
     processor = CLIPProcessor.from_pretrained(model_name)
     model.eval()
 
-    import transformers
     import PIL
+    import transformers
 
     model_config_hash = hashlib.sha256(
         json.dumps(model.config.to_dict(), sort_keys=True, default=str).encode()

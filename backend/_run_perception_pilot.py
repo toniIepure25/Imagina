@@ -17,7 +17,6 @@ Requirements before running:
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import time
 from pathlib import Path
@@ -27,7 +26,6 @@ import nibabel as nib
 import numpy as np
 from numpy.typing import NDArray
 from scipy.io import loadmat
-
 
 NSD_DATA_ROOT = Path(r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata")
 NSD_BETAS_ROOT = Path(r"D:\ComputaCenter\FMRI2images\data\nsd\nsddata_betas\ppdata\subj01\func1pt8mm\betas_fithrf")

@@ -2,18 +2,18 @@
 from __future__ import annotations
 
 import json
-import numpy as np
-import pytest
 from pathlib import Path
 
+import numpy as np
+import pytest
+
 from app.research.fmri.perception_pilot import (
+    average_repeated_trials,
+    build_clip_index_map,
     build_trial_assignments,
     compute_chance_mrr,
-    build_clip_index_map,
-    fit_ridge,
     compute_metrics,
-    average_repeated_trials,
-    select_alpha,
+    fit_ridge,
 )
 
 
@@ -94,7 +94,6 @@ class TestTrialAssignments:
     """Verify trial-to-split assignment logic."""
 
     def test_no_image_crosses_splits(self):
-        rng = np.random.default_rng(42)
         masterordering = np.arange(1, 11)  # 1-based slots 1..10
         subjectim = np.array([[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]])  # 10 slots
         split = {
