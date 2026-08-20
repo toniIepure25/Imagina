@@ -80,10 +80,21 @@ def train_ridge_decoder(
     Y_train: NDArray[np.float64],
     config: DecoderConfig | None = None,
 ) -> TrainedDecoder:
-    """Train ridge regression decoder with inner CV for alpha selection.
+    """Train ridge regression decoder with fold-safe inner CV for alpha selection.
 
     X_train: [n_images, n_voxels] — mean beta per image
     Y_train: [n_images, embedding_dim] — target CLIP embeddings
+
+    No statistic derived from an inner-validation fold (or from the eventual
+    outer test set, which this function never sees) may enter fitting:
+    - Each inner fold fits its own voxel mean/std and target mean on the
+      inner-train rows only, and applies those same statistics to transform
+      the inner-validation rows.
+    - After alpha selection, voxel normalization, target centering, and the
+      final ridge fit are all refit on the complete outer training set
+      passed in here. The returned voxel_mean/voxel_std/target_mean are
+      exactly the statistics a caller must use to transform any held-out
+      (val/test) data — TrainedDecoder.predict() does this automatically.
     """
     if config is None:
         config = DecoderConfig()
@@ -91,17 +102,6 @@ def train_ridge_decoder(
     rng = np.random.default_rng(config.random_seed)
     n_images, n_voxels = X_train.shape
     embedding_dim = Y_train.shape[1]
-
-    voxel_mean = X_train.mean(axis=0)
-    voxel_std = X_train.std(axis=0)
-    voxel_std = np.clip(voxel_std, 1e-8, None)
-    X_z = (X_train - voxel_mean) / voxel_std
-
-    target_mean = None
-    Y_centered = Y_train
-    if config.normalize_targets:
-        target_mean = Y_train.mean(axis=0)
-        Y_centered = Y_train - target_mean
 
     fold_indices = np.arange(n_images)
     rng.shuffle(fold_indices)
@@ -114,8 +114,20 @@ def train_ridge_decoder(
             val_idx = folds[fold_idx]
             train_idx = np.concatenate([folds[j] for j in range(config.inner_cv_folds) if j != fold_idx])
 
-            X_tr, X_val = X_z[train_idx], X_z[val_idx]
-            Y_tr, Y_val = Y_centered[train_idx], Y_centered[val_idx]
+            X_inner_train, X_inner_val = X_train[train_idx], X_train[val_idx]
+            Y_inner_train, Y_inner_val = Y_train[train_idx], Y_train[val_idx]
+
+            fold_voxel_mean = X_inner_train.mean(axis=0)
+            fold_voxel_std = np.clip(X_inner_train.std(axis=0), 1e-8, None)
+            X_tr = (X_inner_train - fold_voxel_mean) / fold_voxel_std
+            X_val = (X_inner_val - fold_voxel_mean) / fold_voxel_std
+
+            if config.normalize_targets:
+                fold_target_mean = Y_inner_train.mean(axis=0)
+                Y_tr = Y_inner_train - fold_target_mean
+                Y_val = Y_inner_val - fold_target_mean
+            else:
+                Y_tr, Y_val = Y_inner_train, Y_inner_val
 
             W = _solve_ridge(X_tr, Y_tr, alpha)
             preds = X_val @ W
@@ -125,6 +137,17 @@ def train_ridge_decoder(
         cv_scores[alpha] = float(np.mean(fold_scores))
 
     best_alpha = max(cv_scores, key=lambda a: cv_scores[a])
+
+    voxel_mean = X_train.mean(axis=0)
+    voxel_std = np.clip(X_train.std(axis=0), 1e-8, None)
+    X_z = (X_train - voxel_mean) / voxel_std
+
+    target_mean = None
+    Y_centered = Y_train
+    if config.normalize_targets:
+        target_mean = Y_train.mean(axis=0)
+        Y_centered = Y_train - target_mean
+
     W_final = _solve_ridge(X_z, Y_centered, best_alpha)
     bias = np.zeros(embedding_dim)
 
@@ -206,6 +229,51 @@ def evaluate_retrieval(
         "n_candidates": n_candidates,
         "ranks": ranks.tolist(),
         "reciprocal_ranks": reciprocal_ranks.tolist(),
+    }
+
+
+def two_way_identification(
+    predictions: NDArray[np.float64],
+    targets: NDArray[np.float64],
+    seed: int = 42,
+) -> dict[str, Any]:
+    """Conventional two-way (2AFC) identification accuracy.
+
+    For every ordered pair (i, j) with i != j, the trial is scored correct
+    when sim(pred_i, true_i) > sim(pred_i, true_j) — i.e. prediction i is
+    closer to its own true target than to a foil drawn from another trial's
+    true target. This is the standard 2AFC identification statistic used in
+    the encoding/decoding literature; chance is 0.5. It is NOT the same
+    statistic as requiring the true pair to be simultaneously the row-argmax
+    and column-argmax of the similarity matrix (that mutual-nearest-neighbor
+    quantity is reported separately as mutual_top1_rate).
+
+    Ties (sim equal) are broken as incorrect, so the reported accuracy is
+    conservative.
+    """
+    n = predictions.shape[0]
+    pred_norm = predictions / np.clip(np.linalg.norm(predictions, axis=1, keepdims=True), 1e-8, None)
+    tgt_norm = targets / np.clip(np.linalg.norm(targets, axis=1, keepdims=True), 1e-8, None)
+
+    sim_matrix = pred_norm @ tgt_norm.T  # [n, n], sim_matrix[i, j] = sim(pred_i, true_j)
+    own_sim = np.diag(sim_matrix)  # sim(pred_i, true_i)
+
+    n_correct = 0
+    n_pairs = 0
+    for i in range(n):
+        foil_sims = np.delete(sim_matrix[i], i)
+        n_correct += int(np.sum(own_sim[i] > foil_sims))
+        n_pairs += foil_sims.shape[0]
+
+    accuracy = float(n_correct / n_pairs) if n_pairs > 0 else float("nan")
+
+    return {
+        "two_way_identification_accuracy": accuracy,
+        "pair_count": n_pairs,
+        "chance": 0.5,
+        "n_trials": n,
+        "tie_handling": "ties_scored_as_incorrect",
+        "seed": seed,
     }
 
 
