@@ -1077,6 +1077,7 @@ jobs:
           python3 -m pytest
           app/tests/test_c3_fmri_data.py
           app/tests/test_c3_nsdimagery_protocol_counts.py
+          app/tests/test_c3_nsdimagery_row_mapping.py
           -v --timeout=120
 
   c3-perception-decoder-smoke:
