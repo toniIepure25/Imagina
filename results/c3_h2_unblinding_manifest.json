@@ -1,0 +1,30 @@
+{
+  "artifact": "C3_H2_UNBLINDING_MANIFEST",
+  "subject": "subj01",
+  "created_at": "2026-08-22T00:24:49",
+  "row_mapping_hash": "914701f2afc825fde211c2e4970994ea981c2e3c5664f83f1698addc8ee83ccf",
+  "beta_event_manifest_hash": "6d63e4b6c21d93eb0763907fc920b51548844c43f9a540b3df4e7b62ad5b9bd6",
+  "frozen_decoder_hash": "df2dfd8961d7f7385f00ab25fd69e18c33923e6508b9fe16c3b74b015dd4f9f1",
+  "roi_selection_hash": "84e0d08be5d7e68b3ec916c78aad50c216b98825b8246bb3dbeb3e2459fc60db",
+  "normalization_spec": {
+    "voxel_mean_std": "frozen from H1 perception outer-train (no imagery statistic)",
+    "target_mean": "frozen from H1 perception outer-train",
+    "note": "zero-shot: NO imagery/vision-session/condition/run normalization is computed"
+  },
+  "clip_candidate_pool_hash": "e96e2fde706c00e485376fe745974dab1fcbc12f08155a76cdd0487075aefa00",
+  "randomization_spec": {
+    "primary_null": "exact 6! = 720 whole-group target-identity permutation (repeat-preserving)",
+    "secondary_null": "repeat-preserving Monte Carlo permutation",
+    "seed": 20260724,
+    "monte_carlo_permutations": 100000
+  },
+  "primary_subset": "Set B complex imagery (imgB_1 + imgB_2 = 96 trials, 6 targets x 16 repeats)",
+  "secondary_subset": "Set A simple imagery (imgA_1 + imgA_2 = 96 trials), labeled SECONDARY_OOD",
+  "excluded": "Set C conceptual imagery (no ground-truth image); attention runs",
+  "primary_metric": "mean reciprocal rank (MRR) against the frozen 12-item candidate pool",
+  "candidate_pool_size": 12,
+  "code_sha": "11a8d548894508abf1f50448d9760bdf3e97687d",
+  "scope": "SINGLE_SUBJECT_ONLY_NOT_POPULATION_EVIDENCE; outcome does not gate other-participant acquisition",
+  "status": "SEALED_BEFORE_H2_EVALUATION",
+  "self_hash": "456a36125fa72f5b755dcf5db58ed347fff873d8a64f22215388351d2679ead6"
+}
