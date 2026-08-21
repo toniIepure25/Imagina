@@ -1,11 +1,16 @@
 {
-  "timestamp": "2026-08-20T21:00:00",
-  "current_status": "PERCEPTION_FOUNDATION_PROVISIONAL_REQUIRES_STRICT_REPLAY",
-  "pilot_decision": "SUBJ01_PERCEPTION_FOUNDATION_PROVISIONAL_POSITIVE",
-  "pilot_mrr": 0.0827298543501851,
-  "pilot_p_value": 9.999000099990002e-05,
-  "provisional_result_reopened": {
-    "reason": "Code audit found the exploratory pilot z-scored fMRI data using mean/std computed over train+val+test combined (transductive normalization leakage) before splitting, and used an ad-hoc alpha grid / target-centering procedure that drifted from the frozen DecoderConfig.",
+  "timestamp": "2026-08-21T12:31:30",
+  "current_status": "H1_CLOSED_PERCEPTION_FOUNDATION_PASS",
+  "h1_status": "CLOSED",
+  "strict_decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
+  "strict_mrr": 0.07729543188501593,
+  "strict_chance_mrr": 0.007485470860550345,
+  "strict_two_way_identification_accuracy": 0.8455105105105105,
+  "strict_p_value": 9.999000099990002e-05,
+  "strict_replay_artifact": "results/c3_subj01_perception_strict_replay.json",
+  "strict_controls_artifact": "results/c3_subj01_perception_strict_controls.json",
+  "provisional_result_history": {
+    "reason": "The original SUBJ01_PERCEPTION_FOUNDATION_PASS (ad-hoc pilot, MRR=0.0827) used transductive voxel normalization and an ad-hoc alpha grid; reopened for strict leakage-free replay.",
     "superseded_artifact": {
       "path": "results/c3_subj01_perception_pilot.json",
       "controls_path": "results/c3_subj01_perception_controls.json",
@@ -13,12 +18,13 @@
       "status": "exploratory / superseded-by-strict-replay",
       "preserved": "unmodified, not deleted or overwritten"
     },
-    "strict_replay_pending_artifact": "results/c3_subj01_perception_strict_replay.json",
-    "leakage_finding_ref": "docs/ai/SESSION_LOG.md (strict H1 closure entry)"
+    "strict_replay_result": "SUBJ01_PERCEPTION_FOUNDATION_PASS confirmed under leakage-free preprocessing, frozen decoder spec, and the strict-original 9000/1000 split (MRR 0.0773 vs the provisional 0.0827 - a modest, expected decrease once leakage is removed, still ~10.3x chance and p=0.0001)."
   },
+  "imagery_h2_status": "BLOCKED_IMAGERY_ROW_PROVENANCE",
+  "imagery_h2_blocker_artifact": "results/c3_nsdimagery_row_mapping.json",
   "authorized_participants": [],
-  "authorized_participants_note": "Population/multi-participant acquisition is withheld until strict H1 replay closes for subj01 (no outcome-dependent continuation decisions).",
-  "free_disk_gb": 18.69,
+  "authorized_participants_note": "subj02/subj05/subj07 acquisition assessed and found blocked by local storage (39GB free vs 40.77GB/subject required); see results/c3_multiparticipant_acquisition_status.json. Not an outcome-dependent decision.",
+  "free_disk_gb": 39,
   "scope": "subject-specific (n=1)",
   "population_claim_authorized": false
 }

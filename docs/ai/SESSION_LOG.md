@@ -4011,3 +4011,48 @@ until decoder freeze) is used as the primary H1 closure, since both configuratio
 same frozen 1000-identity test set and the split-manifest's val/train boundary was never itself
 evaluated as a held-out set — using it only sharpens the inner-CV.
 
+### H1 CLOSED: strict replay confirms the positive result
+
+`backend/app/research/fmri/run_strict_perception_replay.py` (env-var-configured, no hardcoded
+paths) ran the full strict pipeline against real subj01 data: nsdgeneral+ncsnr voxel selection
+(15,587 voxels), 40-session ROI extraction, fold-safe ridge decoder training on the strict-original
+9000-image outer-train pool (selected alpha 1e5), evaluation on the untouched 1000-image shared1000
+test set, and all 12 real-data falsification controls (0 skipped this time — the ncsnr path fix
+means control 6 now actually runs instead of reporting `SKIPPED_NO_NCSNR_FILE`).
+
+Result: `results/c3_subj01_perception_strict_replay.json`,
+`results/c3_subj01_perception_strict_controls.json`.
+
+- MRR **0.0773** (chance 0.0075) — ~10.3x chance, vs the provisional (leaky) 0.0827; a modest,
+  expected decrease once transductive normalization is removed, not a qualitative change.
+- True two-way identification accuracy **0.8455** (chance 0.5) — the correct 2AFC statistic,
+  replacing the old ad-hoc pilot's `two_way_id=0.001` (which was actually a much stricter
+  mutual-nearest-neighbor rate, now retroactively relabeled `mutual_top1_rate` in documentation).
+- Permutation p-value **0.0001** (10,000 permutations).
+- All 12 controls consistent: destructive controls (shuffled pairing 0.0091, mean target 0.0075,
+  trial-order-only 0.0074, session-only 0.0076, random voxels 0.0065, candidate-row permutation
+  0.0075, target-index-shift 0.0046) collapse to chance or below; the voxel-column-permutation
+  control reproduces the main MRR to full float precision (0.077295...), confirming the decoder is
+  invariant to feature-column reordering (not, as the old wording implied, evidence that "voxel
+  identity matters" — that claim required a different control); low-ncsnr voxels still carry
+  substantial signal (MRR 0.0764, barely below main) rather than collapsing, which is itself an
+  honest and unsurprising finding, not a failure — those voxels are still inside nsdgeneral visual
+  cortex, just noisier.
+- Full provenance chain recorded: code_sha, beta_manifest_hash, roi_hash, ncsnr_hash,
+  voxel_selection_hash, clip_embedding_pool_hash, split_manifest_hash, decoder_config_hash.
+
+**Decision: `SUBJ01_PERCEPTION_FOUNDATION_PASS`, H1 = CLOSED.** `results/c3_realdata_readiness.json`
+updated accordingly. The provisional (leaky) result remains preserved, unmodified, at its original
+commit SHA for provenance.
+
+Engineering notes from this run: `decoder.py::_solve_ridge` was found to always use the primal
+ridge formulation, which tried to allocate an 15587x15587 float64 matrix (1.8GB) and crashed —
+fixed by adding the dual formulation and auto-selecting it when n_samples < n_features (a separate
+commit, since it's a correctness/scalability fix independent of the leakage fix). The full pipeline
+was also memory-tight on this machine (14.9GB RAM) once every control's intermediate arrays are
+considered; added explicit `del`/`gc.collect()` after each control and checkpointing after the
+expensive main fit (`results/.c3_strict_replay_checkpoint.pkl`, auto-removed on successful
+completion) so a session interruption mid-controls — which happened twice during this run, once
+from an out-of-memory crash and once from an unrelated session restart — resumes in seconds instead
+of redoing the ~15-20 minute main decoder fit from scratch.
+
