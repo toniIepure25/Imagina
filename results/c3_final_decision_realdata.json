@@ -1,0 +1,25 @@
+{
+  "gate": "C3_REAL_DATA_FINAL_DECISION",
+  "timestamp": "2026-08-21T13:00:00",
+  "branch": "research/fmri-imagery-transfer-c3-realdata",
+  "C3_PERCEPTION_DECODING": "PASS",
+  "C3_ZERO_SHOT_IMAGERY_TRANSFER": "NOT_ATTEMPTED_BLOCKED_UPSTREAM",
+  "C3_STATE_TRANSPORT": "NOT_ATTEMPTED_BLOCKED_UPSTREAM",
+  "C3_RECONSTRUCTION_READINESS": "BLOCKED",
+  "C3": "INCOMPLETE_BLOCKED_BY_IMAGERY_ROW_PROVENANCE",
+  "rationale": {
+    "perception_decoding": "subj01 strict, leakage-free real-data replay confirms a genuine, well-controlled positive perception-decoding signal (MRR 0.0773 vs chance 0.0075, p=0.0001, true 2AFC accuracy 0.8455, all 12 falsification controls consistent). See results/c3_subj01_perception_strict_replay.json.",
+    "zero_shot_imagery_transfer": "Not attempted. The NSD-Imagery beta file for subj01 has 720 raw rows against 576 behaviorally-logged task trials, and the 144-row discrepancy could not be resolved from any authoritative source located (raw HDF5 metadata, the official NSD S3 release, or either HuggingFace dataset repository the MedARC-AI/MIRAGE reference implementation itself depends on for this exact metadata). Per the governing protocol's explicit instruction, an unexplained row-count gap is not something to guess through. See results/c3_nsdimagery_row_mapping.json, status BLOCKED_IMAGERY_ROW_PROVENANCE.",
+    "nsdimagery_vision_validation": "Not attempted, for the same reason - it requires the identical beta-row-to-trial alignment as H2.",
+    "state_transport": "Not attempted. H4 is only executed when zero-shot H2 is null or weak and needs calibration; since H2 itself could not be run, H4 has no input to act on.",
+    "multi_participant_h1": "subj02/subj05/subj07 acquisition assessed and found blocked by local storage (39GB free vs 40.77GB/subject) before subj01's strict result was known; not an outcome-dependent decision. See results/c3_multiparticipant_acquisition_status.json."
+  },
+  "what_would_unblock_h2": [
+    "Locating the authoritative nsdimagery_stimuli.pkl3 (or equivalent) from the NSD-Imagery/MIRAGE authors directly, with recorded source, revision, and SHA-256",
+    "An authoritative explanation (e.g. from the Kneeland et al. 2025 supplementary material or direct author correspondence) of what the 144 non-task beta rows represent and their position within each run's block",
+    "A confirmed reading of designmatrixGLMsingle.mat's 36-column semantics that independently derives the row mapping without assumption"
+  ],
+  "reconstruction_prohibition_status": "No image reconstruction was performed or attempted at any point. C4 has not begun.",
+  "not_a_final_scientific_verdict_on_imagery": "This decision does not conclude that perception-trained decoders do or do not transfer to mental imagery for this dataset - it concludes only that this session could not honestly determine which raw beta rows correspond to which imagery trials, and therefore could not test the question at all. The prior published literature (Kneeland 2025, Spera 2026) already provides evidence that zero-shot transfer for this exact setup is typically at or near chance; this session neither confirms nor refutes that independently.",
+  "stop_condition": "Per the governing protocol, work stops here. No C4 (reconstruction) is authorized or attempted."
+}
