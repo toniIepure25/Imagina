@@ -1117,6 +1117,7 @@ jobs:
         run: >-
           python3 -m pytest
           app/tests/test_c3_transfer_transport.py
+          app/tests/test_c3_h2_inference.py
           -v --timeout=120
 
   c3-uncertainty-controls:
