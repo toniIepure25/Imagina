@@ -11,7 +11,6 @@ import pickle
 from pathlib import Path
 from typing import Any
 
-import h5py
 import numpy as np
 from numpy.typing import NDArray
 
@@ -36,6 +35,8 @@ def extract_imagery_rows(
     (betas[row]) touches every chunk and is pathologically slow / OOMs. This
     matches the per-voxel access pattern used by the perception extraction.
     """
+    import h5py  # lazy: heavy optional dep, only needed for real-data extraction
+
     n_vox = len(beta_coords)
     row_arr = np.asarray(row_indices)
     out = np.zeros((len(row_indices), n_vox), dtype=np.float32)
