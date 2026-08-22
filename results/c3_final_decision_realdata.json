@@ -1,5 +1,8 @@
 {
   "gate": "C3_REAL_DATA_FINAL_DECISION",
+  "superseded_status": "SUPERSEDED_BY_AUTHORITATIVE_ROW_MAPPING_RESOLUTION",
+  "superseded_by": "results/c3_final_decision_realdata_v2.json",
+  "superseded_note": "This decision (C3 blocked by unresolved imagery row provenance) was correct and honest given the evidence at commit 8a754be. The 720-row provenance was subsequently resolved via the NSD Data Manual v1.6 (see C3_NSDIMAGERY_ROW_MAPPING_AMENDMENT.md), and H2/H4/sensitivity were executed. Preserved unmodified below except for this supersession header.",
   "timestamp": "2026-08-21T13:00:00",
   "branch": "research/fmri-imagery-transfer-c3-realdata",
   "C3_PERCEPTION_DECODING": "PASS",

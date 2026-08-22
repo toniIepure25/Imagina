@@ -1,30 +1,26 @@
 {
-  "timestamp": "2026-08-21T12:31:30",
-  "current_status": "H1_CLOSED_PERCEPTION_FOUNDATION_PASS",
-  "h1_status": "CLOSED",
-  "strict_decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
-  "strict_mrr": 0.07729543188501593,
-  "strict_chance_mrr": 0.007485470860550345,
-  "strict_two_way_identification_accuracy": 0.8455105105105105,
-  "strict_p_value": 9.999000099990002e-05,
-  "strict_replay_artifact": "results/c3_subj01_perception_strict_replay.json",
-  "strict_controls_artifact": "results/c3_subj01_perception_strict_controls.json",
-  "provisional_result_history": {
-    "reason": "The original SUBJ01_PERCEPTION_FOUNDATION_PASS (ad-hoc pilot, MRR=0.0827) used transductive voxel normalization and an ad-hoc alpha grid; reopened for strict leakage-free replay.",
-    "superseded_artifact": {
-      "path": "results/c3_subj01_perception_pilot.json",
-      "controls_path": "results/c3_subj01_perception_controls.json",
-      "committed_at_sha": "006f3d24914c8fb104f330b06d85ef0c82a2f1e5",
-      "status": "exploratory / superseded-by-strict-replay",
-      "preserved": "unmodified, not deleted or overwritten"
-    },
-    "strict_replay_result": "SUBJ01_PERCEPTION_FOUNDATION_PASS confirmed under leakage-free preprocessing, frozen decoder spec, and the strict-original 9000/1000 split (MRR 0.0773 vs the provisional 0.0827 - a modest, expected decrease once leakage is removed, still ~10.3x chance and p=0.0001)."
+  "timestamp": "2026-08-22T00:35:00",
+  "current_status": "C3_COMPLETE_WITH_IMAGERY_TRANSFER_NULL",
+  "scope": "SINGLE_SUBJECT (subj01) — not population evidence",
+  "gate_summary": {
+    "C3_PERCEPTION_DECODING": "PASS",
+    "C3_IMAGERY_ROW_PROVENANCE": "PASS",
+    "C3_ZERO_SHOT_IMAGERY_TRANSFER": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+    "C3_STATE_TRANSPORT": "NULL_OR_INCONCLUSIVE",
+    "C3_RECONSTRUCTION_READINESS": "BLOCKED",
+    "C3": "COMPLETE_WITH_IMAGERY_TRANSFER_NULL"
   },
-  "imagery_h2_status": "BLOCKED_IMAGERY_ROW_PROVENANCE",
-  "imagery_h2_blocker_artifact": "results/c3_nsdimagery_row_mapping.json",
+  "final_decision_artifact": "results/c3_final_decision_realdata_v2.json",
+  "h1_strict_replay": {
+    "decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
+    "mrr": 0.07729543188501593, "chance_mrr": 0.007485470860550345, "p_value": 9.999e-05
+  },
+  "h2_zero_shot": {
+    "decision": "SUBJ01_ZERO_SHOT_IMAGERY_TRANSFER_NULL_DEGENERATE_COLLAPSE",
+    "finding": "frozen decoder collapses to a near-constant single-candidate prediction on the imagery session (cross-session nonstationarity); no genuine transfer"
+  },
+  "reconstruction_readiness": "BLOCKED — no genuine imagery transfer; C4 not begun",
   "authorized_participants": [],
-  "authorized_participants_note": "subj02/subj05/subj07 acquisition assessed and found blocked by local storage (39GB free vs 40.77GB/subject required); see results/c3_multiparticipant_acquisition_status.json. Not an outcome-dependent decision.",
-  "free_disk_gb": 39,
-  "scope": "subject-specific (n=1)",
+  "authorized_participants_note": "subj02/subj05/subj07 remain prospectively eligible; acquisition blocked by local storage, not by the subj01 outcome (see results/c3_multiparticipant_acquisition_status.json).",
   "population_claim_authorized": false
 }

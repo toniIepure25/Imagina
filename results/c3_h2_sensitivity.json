@@ -1,0 +1,80 @@
+{
+  "artifact": "C3_SUBJ01_H2_SENSITIVITY",
+  "timestamp": "2026-08-22T04:46:36",
+  "subject": "subj01",
+  "scope": "SINGLE_SUBJECT",
+  "design": {
+    "n_targets": 6,
+    "repeats": 16,
+    "candidate_pool": 12,
+    "null": "exact 6! target-label",
+    "seed": 20260724,
+    "monte_carlo_datasets": 200
+  },
+  "chance_mrr": 0.25860088985088986,
+  "genuine_transfer_criterion": "exact p<0.05 AND not single-candidate collapse AND 2AFC>0.5",
+  "power_curve": [
+    {
+      "signal_fraction": 0.0,
+      "mean_mrr": 0.2936277413269601,
+      "mrr_improvement_over_chance": 0.035026851476070264,
+      "power_genuine_transfer": 0.055
+    },
+    {
+      "signal_fraction": 0.02,
+      "mean_mrr": 0.30632438785173155,
+      "mrr_improvement_over_chance": 0.04772349800084169,
+      "power_genuine_transfer": 0.125
+    },
+    {
+      "signal_fraction": 0.05,
+      "mean_mrr": 0.32893122444684947,
+      "mrr_improvement_over_chance": 0.07033033459595961,
+      "power_genuine_transfer": 0.31
+    },
+    {
+      "signal_fraction": 0.1,
+      "mean_mrr": 0.3630022471741221,
+      "mrr_improvement_over_chance": 0.10440135732323225,
+      "power_genuine_transfer": 0.7
+    },
+    {
+      "signal_fraction": 0.15,
+      "mean_mrr": 0.39833137551106296,
+      "mrr_improvement_over_chance": 0.1397304856601731,
+      "power_genuine_transfer": 0.92
+    },
+    {
+      "signal_fraction": 0.2,
+      "mean_mrr": 0.43436807622354495,
+      "mrr_improvement_over_chance": 0.1757671863726551,
+      "power_genuine_transfer": 0.99
+    },
+    {
+      "signal_fraction": 0.3,
+      "mean_mrr": 0.5018970640181578,
+      "mrr_improvement_over_chance": 0.24329617416726795,
+      "power_genuine_transfer": 1.0
+    },
+    {
+      "signal_fraction": 0.5,
+      "mean_mrr": 0.6461101754148629,
+      "mrr_improvement_over_chance": 0.38750928556397307,
+      "power_genuine_transfer": 1.0
+    }
+  ],
+  "power_at_mrr_improvement": {
+    "+0.05": 0.14362944725027288,
+    "+0.10": 0.6496190833541796,
+    "+0.15": 0.9399481636657956,
+    "+0.20": 0.9935885053839468
+  },
+  "min_detectable_mrr_improvement_80pct_power": 0.1397304856601731,
+  "observed_zero_shot": {
+    "primary_setB_mrr": 0.2968900312650313,
+    "note": "observed 'significance' was a collapse artifact (see H2 result); true transfer null"
+  },
+  "conclusion": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+  "conclusion_note": "The n=1 design's ability to detect a genuine, non-degenerate transfer effect at the given effect sizes. NULL_SUPPORTED_WITHIN_SENSITIVITY means the design would have detected a real transfer of the documented size with adequate power; the observed zero-shot result is a degenerate collapse with no genuine transfer.",
+  "runtime_seconds": 24.4
+}

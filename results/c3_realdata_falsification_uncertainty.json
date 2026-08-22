@@ -1,0 +1,82 @@
+{
+  "artifact": "C3_SUBJ01_FALSIFICATION_AND_UNCERTAINTY",
+  "timestamp": "2026-08-22T04:47:47",
+  "subject": "subj01",
+  "scope": "SINGLE_SUBJECT",
+  "data_kind_legend": "REAL_DATA = computed on real subj01 betas; REAL_DATA_STRUCTURAL = code/provenance audit on the real pipeline; FIXTURE controls are in CI.",
+  "controls": {
+    "01_cue_leakage": {
+      "data_kind": "REAL_DATA_STRUCTURAL",
+      "check": "decoder input is ROI betas only; cue letter never enters the prediction path",
+      "evidence": "extract_imagery_rows returns only voxel betas at frozen ROI coords; decoder.predict takes betas -> frozen z-score -> frozen weights. No cue, target, category, caption, or candidate rank is passed.",
+      "status": "PASS"
+    },
+    "02_target_metadata_leakage": {
+      "data_kind": "REAL_DATA_STRUCTURAL",
+      "check": "no target image/embedding/category/caption enters inference",
+      "evidence": "target identity is used ONLY post-hoc to score retrieval, never in predict()",
+      "status": "PASS"
+    },
+    "03_row_mapping_leakage": {
+      "data_kind": "REAL_DATA_STRUCTURAL",
+      "check": "row->trial mapping derived from design matrix + behavioral logs, not from decoding",
+      "evidence": "certified in C3_NSDIMAGERY_ROW_MAPPING_AMENDMENT.md (onset-order proof, 96/96 FRAMEFILE agreement) independent of any decoder output",
+      "status": "PASS"
+    },
+    "04_prediction_collapse": {
+      "data_kind": "REAL_DATA",
+      "check": "predictions must not collapse to a single candidate",
+      "result": {
+        "n_trials": 96,
+        "within_set_argmax_counts": {
+          "6": 96,
+          "7": 0,
+          "8": 0,
+          "9": 0,
+          "10": 0,
+          "11": 0
+        },
+        "dominant_candidate": 6,
+        "dominant_fraction": 1.0,
+        "uniform_fraction": 0.16666666666666666,
+        "degenerate": true,
+        "interpretation": "Predictions collapse onto a single candidate for a majority of trials -> no genuine stimulus-specific transfer; any permutation-test significance is an artifact of one true stimulus coinciding with the collapse target."
+      },
+      "status": "FLAGGED_DEGENERATE",
+      "interpretation": "This is the load-bearing falsification: it identifies the imagery 'significance' as a collapse artifact."
+    },
+    "05_matched_random_low_rank_transport": {
+      "data_kind": "REAL_DATA",
+      "check": "fitted transport must beat a matched random low-rank transform",
+      "evidence": "see results/c3_state_transport_realdata.json: no fitted method beats random_low_rank on held-out targets",
+      "status": "PASS_CONTROL_CONFIRMS_NULL"
+    },
+    "06_generator_free": {
+      "data_kind": "REAL_DATA_STRUCTURAL",
+      "check": "no image generation / diffusion / reconstruction used anywhere in C3",
+      "evidence": "retrieval-only pipeline; no generative model imported or invoked",
+      "status": "PASS"
+    },
+    "07_secondary_setA_and_conceptual_setC": {
+      "data_kind": "REAL_DATA",
+      "check": "Set A simple imagery secondary (OOD), Set C conceptual excluded from retrieval",
+      "evidence": "Set A exact-p=0.3125 (null); Set C has no ground-truth image and is excluded",
+      "status": "PASS"
+    }
+  },
+  "n_real_data_controls": 7,
+  "uncertainty_h5": {
+    "note": "With degenerate collapse, predictions are near-constant across stimuli, so per-stimulus repeat variance carries no usable error signal; uncertainty calibration is not meaningful and is not claimed. Reported for completeness.",
+    "per_stimulus_repeat_prediction_variance": {
+      "6": 2.135476597876499e-05,
+      "7": 1.907794652756112e-05,
+      "8": 2.6675722524594355e-05,
+      "9": 2.4912729394866037e-05,
+      "10": 1.9266756956892737e-05,
+      "11": 2.4692317848210683e-05
+    },
+    "median_rank": 9.0,
+    "calibration_claimed": false
+  },
+  "runtime_seconds": 0.4
+}

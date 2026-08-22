@@ -4056,3 +4056,43 @@ completion) so a session interruption mid-controls — which happened twice duri
 from an out-of-memory crash and once from an unrelated session restart — resumes in seconds instead
 of redoing the ~15-20 minute main decoder fit from scratch.
 
+
+---
+
+## 2026-08-22 — C3 Real-Data: NSD-Imagery mapping resolved, sealed H2 executed (imagery null)
+
+### Row provenance resolved
+The 720-vs-576 blocker was resolved via the NSD Data Manual v1.6 (gated, so recorded as
+user-provided and verified empirically, not first-hand): attention trials produce two betas
+(cue + detection epochs), so 3x48 vis + 6x48 img + 3x48x2 att = 720. Corroborated directly from
+designmatrixGLMsingle.mat (vision/imagery runs: 6 active cols x 8 onsets = 48; attention: 12 x 8 =
+96). Within-block ordering (beta row k == behavioral trial k) proven from design onset order ==
+behavioral trial order; vision seen-image target = CONDITION (not CUE), 96/96 FRAMEFILE agreement.
+Candidate pool regenerated on the pod with the identical CLIP pipeline; proven cosine=1.000000
+against the perception embeddings for the 5 shared1000 Set B candidates.
+
+### The critical finding: cross-session prediction collapse
+An initial automated pass reported vision-validation and H2 "PASS" (Set B exact 6! p=0.026 / 0.0014).
+Skeptical diagnosis (triggered by 2AFC BELOW chance) revealed both are artifacts of a degenerate
+single-candidate prediction collapse: the frozen decoder predicts candidate 6 as nearest for 96/96
+Set-B imagery trials, 45/48 seen-Set-B, 48/48 seen-Set-A, regardless of the true stimulus. Mechanism:
+imagery-session betas carry a systematic per-voxel offset (z-scored with frozen perception stats they
+have mean -0.86), so the linear decoder maps them to a near-constant output. The exact 6! test fires
+only because one stimulus (shared0385) coincides with the collapse target. Added
+prediction_collapse_diagnostic and a corrected criterion (exact p<0.05 AND not degenerate AND
+2AFC>0.5); corrected both to NULL. The mapping itself is certified correct independently of decoding,
+so this is a genuine cross-session-nonstationarity transfer failure, not a pipeline bug.
+
+### Final single-subject outcome
+- H1 perception: PASS (MRR 0.0773, p=1e-4, 2AFC 0.846).
+- Zero-shot H2: SUBJ01_ZERO_SHOT_IMAGERY_TRANSFER_NULL_DEGENERATE_COLLAPSE.
+- H4 state transport (held-out-target): NULL (all methods worse than identity; none beats matched
+  random low-rank).
+- Sensitivity: NULL_SUPPORTED_WITHIN_SENSITIVITY (80% power at MRR improvement +0.14; design is
+  well-powered, effect genuinely absent).
+- Falsification: collapse control FLAGGED_DEGENERATE (load-bearing); leakage/generator-free PASS.
+
+C3 = COMPLETE_WITH_IMAGERY_TRANSFER_NULL; RECONSTRUCTION_READINESS = BLOCKED. Consistent with the
+published prior (Kneeland 2025, Spera 2026) that zero-shot imagery transfer is essentially null.
+Single-subject only (n=1, no population claim); subj02/05/07 remain prospectively eligible, blocked
+by local storage. C4 NOT begun.
