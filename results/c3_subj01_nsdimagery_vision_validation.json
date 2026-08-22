@@ -1,13 +1,14 @@
 {
   "artifact": "C3_SUBJ01_NSDIMAGERY_VISION_VALIDATION",
-  "timestamp": "2026-08-22T00:00:25",
+  "timestamp": "2026-08-22T04:32:18",
   "subject": "subj01",
   "purpose": "cross-session technical validation of row mapping + frozen decoder transfer to actually-SEEN NSD-Imagery vision trials; NOT mental imagery, NOT H2",
   "frozen_decoder_weights_hash": "df2dfd8961d7f7385f00ab25fd69e18c33923e6508b9fe16c3b74b015dd4f9f1",
   "candidate_pool_hash": null,
   "chance_mrr_12pool": 0.25860088985088986,
-  "decision_criterion": "PRIMARY naturalistic Set B retrieval significantly above its exact repeat-preserving target-label permutation null (p<0.05). Set A geometric stimuli are extreme OOD; at-chance Set A is expected and does not gate the decision.",
+  "decision_criterion": "PRIMARY naturalistic Set B retrieval significantly above its exact repeat-preserving target-label permutation null (p<0.05) AND predictions not a degenerate single-candidate collapse AND 2AFC>0.5. A permutation-significant exact-p alone is insufficient: cross-session collapse can make one stimulus coincide with the collapse target and fire the test spuriously.",
   "setB_exact_permutation_p": 0.02638888888888889,
+  "setB_degenerate_collapse": true,
   "setA_note": "geometric bars/crosses, extreme OOD for a natural-scene decoder; at-chance expected",
   "runs": {
     "visA": {
@@ -129,6 +130,22 @@
         ]
       },
       "two_way_identification_accuracy": 0.6212121212121212,
+      "prediction_collapse_diagnostic": {
+        "n_trials": 48,
+        "within_set_argmax_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 48,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        },
+        "dominant_candidate": 2,
+        "dominant_fraction": 1.0,
+        "uniform_fraction": 0.16666666666666666,
+        "degenerate": true,
+        "interpretation": "Predictions collapse onto a single candidate for a majority of trials -> no genuine stimulus-specific transfer; any permutation-test significance is an artifact of one true stimulus coinciding with the collapse target."
+      },
       "exact_target_label_permutation": {
         "observed_mrr": 0.2481646825396825,
         "null_mean": 0.2515625,
@@ -257,6 +274,22 @@
         ]
       },
       "two_way_identification_accuracy": 0.5075757575757576,
+      "prediction_collapse_diagnostic": {
+        "n_trials": 48,
+        "within_set_argmax_counts": {
+          "6": 45,
+          "7": 2,
+          "8": 0,
+          "9": 0,
+          "10": 1,
+          "11": 0
+        },
+        "dominant_candidate": 6,
+        "dominant_fraction": 0.9375,
+        "uniform_fraction": 0.16666666666666666,
+        "degenerate": true,
+        "interpretation": "Predictions collapse onto a single candidate for a majority of trials -> no genuine stimulus-specific transfer; any permutation-test significance is an artifact of one true stimulus coinciding with the collapse target."
+      },
       "exact_target_label_permutation": {
         "observed_mrr": 0.3469268578643579,
         "null_mean": 0.2994534882555716,
@@ -267,6 +300,6 @@
       }
     }
   },
-  "status": "VISION_CROSS_SESSION_VALIDATION_PASS",
-  "runtime_seconds": 1.5
+  "status": "BLOCKED_CROSS_SESSION_VISION_VALIDATION_DEGENERATE_COLLAPSE",
+  "runtime_seconds": 1.0
 }

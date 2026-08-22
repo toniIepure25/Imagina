@@ -84,5 +84,49 @@ def two_way_from_predictions(
     return float(n_correct / n_pairs) if n_pairs else float("nan")
 
 
+def prediction_collapse_diagnostic(
+    decoder: TrainedDecoder, betas: NDArray, candidate_pool: NDArray, set_pool_labels: list[int]
+) -> dict[str, Any]:
+    """Detect degenerate single-candidate prediction collapse.
+
+    Cross-session distribution shift can make the frozen linear decoder emit
+    near-constant predictions that land nearest ONE candidate for (almost)
+    every trial, regardless of the true stimulus. The exact target-label
+    permutation test cannot guard against this: if one physical stimulus
+    happens to share the collapse target, its trials all rank #1 and inflate
+    MRR, producing a spuriously "significant" p-value. This diagnostic flags
+    that failure mode so a collapse-driven result is not reported as transfer.
+
+    Returns the fraction of trials whose within-set argmax is the single most
+    common candidate; `degenerate` is True when that fraction exceeds 0.5
+    (chance for 6 candidates is ~0.167, so >0.5 is a gross concentration).
+    """
+    predictions = decoder.predict(betas.astype(np.float64))
+    pred_norm = predictions / np.clip(np.linalg.norm(predictions, axis=1, keepdims=True), 1e-8, None)
+    pool_norm = candidate_pool / np.clip(np.linalg.norm(candidate_pool, axis=1, keepdims=True), 1e-8, None)
+    set_cols = list(set_pool_labels)
+    sims_set = pred_norm @ pool_norm[set_cols].T  # [n_trials, n_set]
+    within_argmax = np.array(set_cols)[sims_set.argmax(axis=1)]
+    counts = {int(c): int((within_argmax == c).sum()) for c in set_cols}
+    n = len(betas)
+    top_candidate = max(counts, key=counts.get)
+    top_fraction = counts[top_candidate] / n
+    return {
+        "n_trials": n,
+        "within_set_argmax_counts": counts,
+        "dominant_candidate": top_candidate,
+        "dominant_fraction": float(top_fraction),
+        "uniform_fraction": 1.0 / len(set_cols),
+        "degenerate": bool(top_fraction > 0.5),
+        "interpretation": (
+            "Predictions collapse onto a single candidate for a majority of trials -> "
+            "no genuine stimulus-specific transfer; any permutation-test significance is an "
+            "artifact of one true stimulus coinciding with the collapse target."
+            if top_fraction > 0.5 else
+            "Predictions are distributed across candidates (no gross single-candidate collapse)."
+        ),
+    }
+
+
 def sha256_of_json(obj: Any) -> str:
     return hashlib.sha256(json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()

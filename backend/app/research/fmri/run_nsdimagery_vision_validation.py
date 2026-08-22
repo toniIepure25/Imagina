@@ -22,6 +22,7 @@ from app.research.fmri.nsdimagery_row_mapping import compute_run_blocks
 from app.research.fmri.nsdimagery_transfer import (
     extract_imagery_rows,
     load_frozen_decoder,
+    prediction_collapse_diagnostic,
     retrieval_with_frozen_decoder,
     two_way_from_predictions,
 )
@@ -98,6 +99,8 @@ def main() -> None:
 
         metrics = retrieval_with_frozen_decoder(decoder, betas, candidate_pool, target_pool_indices)
         twoway = two_way_from_predictions(decoder, betas, candidate_pool, target_pool_indices)
+        set_labels = list(range(6, 12)) if set_letter == "B" else list(range(0, 6))
+        collapse = prediction_collapse_diagnostic(decoder, betas, candidate_pool, set_labels)
         predictions = decoder.predict(betas.astype(np.float64))
         perm = _exact_target_label_null(predictions, candidate_pool, target_pool_indices)
 
@@ -106,10 +109,12 @@ def main() -> None:
             "stimulus_set": set_letter, "label": label, "n_trials": len(row_indices),
             "beta_rows": [block.row_start, block.row_end],
             "metrics": metrics, "two_way_identification_accuracy": twoway,
+            "prediction_collapse_diagnostic": collapse,
             "exact_target_label_permutation": perm,
         }
         print(f"  {run_name}: MRR={metrics['mrr']:.4f} top1={metrics['top1_accuracy']:.4f} "
-              f"2AFC={twoway:.4f} exact_perm_p={perm['exact_p_value']:.5f}", flush=True)
+              f"2AFC={twoway:.4f} exact_perm_p={perm['exact_p_value']:.5f} "
+              f"collapse={collapse['dominant_fraction']:.2f}", flush=True)
 
     # Decision criterion (pre-specifiable, aligned with the mission's directive
     # to emphasize the naturalistic Set B and to use repeat-preserving target-
@@ -122,8 +127,17 @@ def main() -> None:
     # not gate the decision.
     chance12 = sum(1.0 / k for k in range(1, 13)) / 12
     setb_p = results["visB"]["exact_target_label_permutation"]["exact_p_value"]
-    setb_above = setb_p < 0.05
-    status = "VISION_CROSS_SESSION_VALIDATION_PASS" if setb_above else "BLOCKED_CROSS_SESSION_VISION_VALIDATION"
+    setb_collapse = results["visB"]["prediction_collapse_diagnostic"]["degenerate"]
+    setb_2afc = results["visB"]["two_way_identification_accuracy"]
+    # Certify only if Set B is significantly above its permutation null AND the
+    # predictions are not a degenerate single-candidate collapse AND 2AFC>0.5.
+    setb_genuine = (setb_p < 0.05) and (not setb_collapse) and (setb_2afc > 0.5)
+    if setb_genuine:
+        status = "VISION_CROSS_SESSION_VALIDATION_PASS"
+    elif setb_collapse:
+        status = "BLOCKED_CROSS_SESSION_VISION_VALIDATION_DEGENERATE_COLLAPSE"
+    else:
+        status = "BLOCKED_CROSS_SESSION_VISION_VALIDATION"
 
     out = {
         "artifact": "C3_SUBJ01_NSDIMAGERY_VISION_VALIDATION",
@@ -138,10 +152,13 @@ def main() -> None:
         "chance_mrr_12pool": chance12,
         "decision_criterion": (
             "PRIMARY naturalistic Set B retrieval significantly above its exact repeat-preserving "
-            "target-label permutation null (p<0.05). Set A geometric stimuli are extreme OOD; "
-            "at-chance Set A is expected and does not gate the decision."
+            "target-label permutation null (p<0.05) AND predictions not a degenerate "
+            "single-candidate collapse AND 2AFC>0.5. A permutation-significant exact-p alone is "
+            "insufficient: cross-session collapse can make one stimulus coincide with the collapse "
+            "target and fire the test spuriously."
         ),
         "setB_exact_permutation_p": setb_p,
+        "setB_degenerate_collapse": setb_collapse,
         "setA_note": "geometric bars/crosses, extreme OOD for a natural-scene decoder; at-chance expected",
         "runs": results,
         "status": status,

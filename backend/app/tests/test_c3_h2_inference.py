@@ -79,6 +79,40 @@ class TestMonteCarloNull:
         assert res["observed_mrr"] > res["mc_null_mean"]
 
 
+class TestPredictionCollapseDiagnostic:
+    class _StubDecoder:
+        def __init__(self, out):
+            self._out = out
+
+        def predict(self, X):
+            return self._out
+
+    def test_flags_single_candidate_collapse(self):
+        from app.research.fmri.nsdimagery_transfer import prediction_collapse_diagnostic
+        pool = np.eye(12)  # candidate k is the k-th basis vector
+        # 96 predictions all pointing at candidate 6 -> total collapse
+        preds = np.tile(pool[6], (96, 1)) + np.random.default_rng(0).standard_normal((96, 12)) * 1e-3
+        dec = self._StubDecoder(preds)
+        betas = np.zeros((96, 5))
+        res = prediction_collapse_diagnostic(dec, betas, pool, list(range(6, 12)))
+        assert res["degenerate"] is True
+        assert res["dominant_candidate"] == 6
+        assert res["dominant_fraction"] > 0.9
+
+    def test_distributed_predictions_not_degenerate(self):
+        from app.research.fmri.nsdimagery_transfer import prediction_collapse_diagnostic
+        pool = np.eye(12)
+        # predictions spread evenly across the 6 set candidates
+        labels = list(range(6, 12))
+        preds = np.zeros((96, 12))
+        for i in range(96):
+            preds[i] = pool[labels[i % 6]] + np.random.default_rng(i).standard_normal(12) * 1e-3
+        dec = self._StubDecoder(preds)
+        res = prediction_collapse_diagnostic(dec, np.zeros((96, 5)), pool, labels)
+        assert res["degenerate"] is False
+        assert abs(res["dominant_fraction"] - 1 / 6) < 0.05
+
+
 class TestSealFailClosed:
     def test_runner_refuses_without_seal(self, tmp_path, monkeypatch):
         # The H2 runner must raise if the seal file is absent.
