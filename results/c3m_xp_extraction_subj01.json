@@ -1,0 +1,146 @@
+{
+  "artifact": "C3M_PERCEPTION_ROLLING_EXTRACTION",
+  "subject": "subj01",
+  "created_at": "2026-08-23T18:06:12",
+  "beta_version": "betas_fithrf",
+  "n_voxels": 15587,
+  "sessions": {
+    "4": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session04.hdf5",
+      "raw_sha256": "7f45410aedfa11739bed86367ded5d3269d6f9a5a46a6da7a0e22197f170482c",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session04.npy",
+      "seconds": 57.9,
+      "raw_deleted": true
+    },
+    "15": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session15.hdf5",
+      "raw_sha256": "91b6d575b93f72fc2dbb564a92de305249a26e017965cc5e4a9bcc3bb0c59203",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session15.npy",
+      "seconds": 34.9,
+      "raw_deleted": true
+    },
+    "16": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session16.hdf5",
+      "raw_sha256": "07fdcf7fc38034f7e6065541724fed60797c6acc362c47a9d9abc0f5a650dc9e",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session16.npy",
+      "seconds": 40.3,
+      "raw_deleted": true
+    },
+    "20": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session20.hdf5",
+      "raw_sha256": "28ae91ed88ea95c9e4669454f3efb45c6107e6bd58024ae98e37e81744bff0f9",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session20.npy",
+      "seconds": 28.6,
+      "raw_deleted": true
+    },
+    "22": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session22.hdf5",
+      "raw_sha256": "6f27bd82b31130090bda46a8429b814d92b84f4c71ef002df95f02737023d4ff",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session22.npy",
+      "seconds": 27.2,
+      "raw_deleted": true
+    },
+    "26": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session26.hdf5",
+      "raw_sha256": "72ec4169b2d4bd451042fee10c5a936a979e8bce8cb993aac7cf41ce5044110d",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session26.npy",
+      "seconds": 63.8,
+      "raw_deleted": true
+    },
+    "27": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session27.hdf5",
+      "raw_sha256": "ffef5cf352b1e2a609ac942245f2766243d45006fd8cfc7c0e09b5e2d488778c",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session27.npy",
+      "seconds": 65.1,
+      "raw_deleted": true
+    },
+    "29": {
+      "url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_betas/ppdata/subj01/func1pt8mm/betas_fithrf/betas_session29.hdf5",
+      "raw_sha256": "b3e7128e341249cc407aac99306824199af7ced73977881d7087ae99995e45f2",
+      "raw_shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "extracted_shape": [
+        750,
+        15587
+      ],
+      "roi_matrix": "/home/jovyan/work/IMAGINA/c3m/artifacts/xp_fithrf/xp_subj01_session29.npy",
+      "seconds": 35.3,
+      "raw_deleted": true
+    }
+  },
+  "self_hash": "bf6511bfc023e5aefb6d0a3bd48d92cc0e4b917b759fa251f65c342c250f160d"
+}

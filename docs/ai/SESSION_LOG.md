@@ -44,6 +44,40 @@ Runner `run_c3m_vision_gate.py` ran on the pod bit-identical to branch code (all
 sha256 match local); result `code_sha` field records the pod repo checkout (d9d9bc3), actual
 runner = this branch.
 
+### X_p acquisition: FMRI2images shortcut REJECTED, rolling extraction used
+- `results/c3m_xp_certification.json`: the FMRI2images pre-extracted perception features are in the
+  same raw units and reproduce the exact 15587-voxel mapping/selection (all voxels found, ncsnr>0
+  subset = 15587, n_train=9000), voxel_mean corr 0.99984 — but NOT bit-close (median abs diff 5.3
+  on ~283, pervasive ~2% per-voxel difference, reps exactly 3×9000). Signals a different beta
+  version (likely fithrf_GLMdenoise_RR). Since imagery is betas_fithrf, X_p must be fithrf too →
+  shortcut correctly REJECTED to preserve pipeline provenance.
+- `results/c3m_xp_extraction_subj01.json`: rolling extraction of 8 perception sessions
+  (4,15,16,20,22,26,27,29 — the sessions containing the 5 resolvable Set-B target images) from NSD
+  public S3, betas_fithrf, extracted to the decoder's exact 15587-voxel order (per-trial chunk-aware
+  reads at beta_coords), raw deleted after each. 6000 perception trials; per-session raw sha256
+  recorded.
+
+### PRIMARY VISION GATE result — M3 CORAL PASSES all guards on Set B (`results/c3m_vision_gate_m3m4.json`)
+Target-blind Family A, held-out-target LOTO, same seal/metric suite.
+- Set B M3 CORAL (whiten session cov, recolor to perception cov, shrinkage 0.1, top-400 perception
+  PCs): MRR 0.452→**0.805**, 2AFC 0.596→**0.887**, dominant_fraction 0.938→**0.312 (collapse
+  CLEARED)**, candidate_entropy 0.997, top1 0.667, median rank 1.0; exact 6! perm p=0.00139 (the
+  true labeling is the UNIQUE max of all 720 perms); improvement +0.353 beats matched-random 95th
+  pct (+0.073). All frozen guard conditions met on Set B.
+- M4 low-rank moment: MRR 0.559, collapse 0.646 (not cleared) — insufficient alone.
+- Set A (simple bars, OOD): M3 removes collapse (0.312) but no significant restoration (p 0.29) —
+  expected; synthetic bars are OOD for the natural-image perception decoder.
+Mechanistic reading: the collapse is driven by SECOND-MOMENT (covariance) session mismatch, not
+just the mean offset — M1 mean-only left residual collapse (0.646), M3 covariance alignment clears
+it (0.312) and restores near-ceiling held-out VISION decoding of the seen complex images.
+
+CAVEAT before any gate PASS is declared / imagery unblinded: (i) the matched-random control
+(rank-39 session-orthogonal) under-matches M3's rank-400 recolor capacity — a capacity-matched
+control is still required; (ii) CORAL hyperparameters were set a priori, a vision-only sensitivity
+sweep is required to show robustness; (iii) the perception reference used target-containing
+sessions (global covariance, but a target-free reference check is warranted). Imagery remains
+SEALED (no imagery MRR computed).
+
 ---
 
 ## 2026-07-26 — Scientific Gate C3 Real-Data: Beta Certification, Stimulus Reconstruction, CLIP Generation, Pilot Execution
