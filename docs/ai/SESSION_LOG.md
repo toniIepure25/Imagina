@@ -2,6 +2,50 @@
 
 ---
 
+## 2026-08-23 — C3M Real-Data Family-A Vision Gate (partial): session shift confirmed, mean-correction improves but residual collapse persists
+
+### Environment recovery + frozen-input re-certification
+GPU pod IP had changed; recovered access via kubeconfig and located the persistent jupyter PVC
+(pod `orchestraiq-jupyter-5d6c688775-zv6ms`, work at `/home/jovyan/work`). The prior ephemeral
+raw fMRI was gone, but all frozen C3 inputs were re-acquired and certified **bit-identical to C3**:
+- nsdgeneral ROI mask sha256 `c16620878fee…` — MATCHES decoder roi_hash.
+- perception ncsnr sha256 `39217f54…` — MATCHES decoder ncsnr_hash.
+- `betas_nsdimagery.hdf5` re-downloaded from NSD public S3, sha256 `31485ff0…` — MATCHES the
+  C3-recorded hash in `c3_subj01_verification.json` / `c3_realdata_preflight.json`.
+- frozen decoder pkl (uploaded from local) weights_hash `df2dfd89…` — MATCHES analysis spec.
+FMRI2images pre-extracted perception features (30000×15724) for subj01/02/05/07 are also present
+on the PVC (candidate `X_p` source, pending unit certification).
+
+### Result — `results/c3m_vision_gate.json` (Family A, M0–M2; M3–M7 deferred pending X_p)
+SEALED to NSD-Imagery **vision** rows only (visA 0:48, visB 192:240); no imagery row loaded, no
+imagery metric computed. Nested leave-one-target-out, target-blind fitting (held-out target
+excluded from all stats), 200 matched-random capacity controls, exact 6! held-out permutation null.
+
+PRIMARY **Set B** (complex, 6 targets ×8):
+- M0 identity (== strict C3): MRR 0.452, 2AFC 0.596, **dominant_fraction 0.938 = degenerate
+  collapse** (reproduces C3's 45/48-to-one-candidate); MRR only ≈chance because one true target
+  coincides with the collapse candidate.
+- M1 per-voxel mean-correction: MRR 0.554, 2AFC 0.688, collapse 0.646, perm p 0.0028; improvement
+  +0.102 **exceeds** matched-random 95th pct (+0.016) → genuine, not capacity artifact.
+- M2 affine: MRR 0.544, 2AFC 0.662, collapse 0.646, perm p 0.0014; but +0.093 does **not** exceed
+  matched-random 95th pct (+0.119) → within capacity envelope.
+OOD **Set A** (simple bars): M0 total collapse (domfrac 1.0); M1/M2 give small capacity-exceeding
+gains but remain at chance 2AFC and non-significant (p≈0.19).
+
+**Reading:** cross-session shift is real and the mean offset explains much of the collapse
+(C3M-H1 supported); a label-free low-capacity transform (M1) significantly restores Set B vision
+decoding (partial C3M-H2/H3) — BUT the frozen "no collapse" guard (dominant_fraction ≤ 0.5) is
+**not** cleared (0.646). The mean shift is necessary but not sufficient; residual collapse
+implicates covariance/higher-moment structure → motivates M3 CORAL / M4 low-rank and Family B,
+which require the perception reference `X_p` (Phase 2, rolling extraction). No PASS/FAIL vision-gate
+decision is issued on M0–M2 alone. Imagery remains sealed.
+
+Runner `run_c3m_vision_gate.py` ran on the pod bit-identical to branch code (all fmri module
+sha256 match local); result `code_sha` field records the pod repo checkout (d9d9bc3), actual
+runner = this branch.
+
+---
+
 ## 2026-07-26 — Scientific Gate C3 Real-Data: Beta Certification, Stimulus Reconstruction, CLIP Generation, Pilot Execution
 
 ### Task
