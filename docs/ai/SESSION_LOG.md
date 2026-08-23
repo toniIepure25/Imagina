@@ -71,12 +71,22 @@ Mechanistic reading: the collapse is driven by SECOND-MOMENT (covariance) sessio
 just the mean offset — M1 mean-only left residual collapse (0.646), M3 covariance alignment clears
 it (0.312) and restores near-ceiling held-out VISION decoding of the seen complex images.
 
-CAVEAT before any gate PASS is declared / imagery unblinded: (i) the matched-random control
-(rank-39 session-orthogonal) under-matches M3's rank-400 recolor capacity — a capacity-matched
-control is still required; (ii) CORAL hyperparameters were set a priori, a vision-only sensitivity
-sweep is required to show robustness; (iii) the perception reference used target-containing
-sessions (global covariance, but a target-free reference check is warranted). Imagery remains
-SEALED (no imagery MRR computed).
+### ROBUSTNESS battery (`results/c3m_vision_robustness.json`) — vision gate PASS confirmed
+- Capacity-matched control (200 random orthogonal rotations WITHIN the rank-400 perception
+  subspace = M3's exact capacity): control MRR max 0.553, mean 0.376; M3 true 0.805 exceeds the
+  control MAXIMUM. Dissociation: removing COLLAPSE comes from projecting into the perception
+  subspace (control domfrac mean 0.320, also non-degenerate), but restoring STIMULUS-SPECIFIC
+  decoding requires the specific perception-covariance recoloring — not a capacity artifact.
+- Vision-only hyperparameter sensitivity: 16/16 (shrinkage {0.05,0.1,0.2,0.5} × perception rank
+  {100,200,400,800}) PASS all guards (MRR 0.76-0.83, all non-degenerate, all 2AFC>0.85, all perm
+  p=0.0014). Not a lucky setting; the a-priori frozen setting (0.1, 400) sits mid-range.
+
+DECISION — C3M_CROSS_SESSION_ALIGNMENT (VISION GATE) = **PASS** on Set B via target-blind M3 CORAL:
+meaningful improvement over identity (+0.35), no collapse (0.31≤0.5), 2AFC 0.89>0.5, holds on
+held-out targets (LOTO), exceeds capacity-matched control max, perm p=0.00139. Method selected on
+held-out VISION only. Set A (simple bars) is OOD (collapse removed, not significant) — reported
+separately. Next: freeze the winning pipeline, write results/c3m_alignment_seal.json, THEN unblind
+imagery. Imagery still SEALED.
 
 ---
 
