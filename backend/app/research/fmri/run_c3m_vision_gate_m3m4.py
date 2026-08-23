@@ -25,7 +25,9 @@ from app.research.fmri import cross_session_alignment as csa
 from app.research.fmri.decoder import TrainedDecoder  # noqa: F401 (unpickle)
 from app.research.fmri.nsdimagery_transfer import extract_imagery_rows
 from app.research.fmri.run_c3m_vision_gate import (
-    within_set_metrics, _collapse_from_predictions, exact_permutation_null_mrr,
+    _collapse_from_predictions,
+    exact_permutation_null_mrr,
+    within_set_metrics,
 )
 
 SEED = 20260822
@@ -231,7 +233,8 @@ def main():
                    ("OOD Set A", result["set_A_simple_OOD"])):
         print(f"\n=== {sk} ===")
         for m, md in sv["methods"].items():
-            mm = md["metrics"]; mr = md.get("matched_random")
+            mm = md["metrics"]
+            mr = md.get("matched_random")
             line = (f"  {m:20s} MRR={mm['mrr']:.4f} 2AFC={mm['two_afc']:.3f} "
                     f"domfrac={md['collapse']['dominant_fraction']:.3f} "
                     f"effrank={mm['pred_cov_effective_rank']:.2f} "

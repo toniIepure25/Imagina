@@ -271,7 +271,8 @@ def main() -> None:
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "seal": "VISION_ROWS_ONLY_NO_IMAGERY_LOADED",
         "methods_run": ["M0_identity", "M1_mean_correction", "M2_affine"],
-        "methods_deferred_pending_Xp": ["M3_coral", "M4_lowrank_moment", "M5_ridge", "M6_reduced_rank", "M7_procrustes"],
+        "methods_deferred_pending_Xp": ["M3_coral", "M4_lowrank_moment", "M5_ridge",
+                                        "M6_reduced_rank", "M7_procrustes"],
         "seed": SEED,
         "n_matched_random": N_MATCHED_RANDOM,
         "provenance": {

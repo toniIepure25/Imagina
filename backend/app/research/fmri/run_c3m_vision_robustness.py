@@ -34,10 +34,13 @@ from app.research.fmri import cross_session_alignment as csa
 from app.research.fmri.decoder import TrainedDecoder  # noqa: F401
 from app.research.fmri.nsdimagery_transfer import extract_imagery_rows
 from app.research.fmri.run_c3m_vision_gate import (
-    within_set_metrics, _collapse_from_predictions, exact_permutation_null_mrr,
+    _collapse_from_predictions,
+    exact_permutation_null_mrr,
+    within_set_metrics,
 )
 from app.research.fmri.run_c3m_vision_gate_m3m4 import (
-    precompute_perception_coral, build_coral_transform,
+    build_coral_transform,
+    precompute_perception_coral,
 )
 
 SEED = 20260822
@@ -134,8 +137,10 @@ def main():
         preds = loto_m3(XB, tB, decoder, mu_p, Up, sqrt_ep, frozen_shrink, rot_seed=s)
         m = within_set_metrics(preds, pool, cols, tB)
         c = _collapse_from_predictions(preds, pool, cols)
-        cap_mrr.append(m["mrr"]); cap_dom.append(c["dominant_fraction"])
-    cap_mrr = np.asarray(cap_mrr); cap_dom = np.asarray(cap_dom)
+        cap_mrr.append(m["mrr"])
+        cap_dom.append(c["dominant_fraction"])
+    cap_mrr = np.asarray(cap_mrr)
+    cap_dom = np.asarray(cap_dom)
     capacity_control = {
         "n": N_CAP, "control": "random_orthogonal_rotation_within_rank%d_perception_subspace" % frozen_rank,
         "control_mrr_mean": float(cap_mrr.mean()), "control_mrr_95pct": float(np.percentile(cap_mrr, 95)),
@@ -189,10 +194,12 @@ def main():
     print("Capacity control:", json.dumps(capacity_control, indent=1))
     print(f"\nSensitivity: {n_pass}/{len(grid)} settings pass ALL guards")
     for g in grid:
+        ok = (g["mrr"] > 0.408 and not g["degenerate"]
+              and g["two_afc"] > 0.5 and g["perm_p"] < 0.05)
         print(f"  shrink={g['shrinkage']:.2f} rank={g['perception_rank']:4d} "
               f"MRR={g['mrr']:.3f} domfrac={g['dominant_fraction']:.3f} "
               f"2AFC={g['two_afc']:.3f} p={g['perm_p']:.4f} "
-              f"{'PASS' if (g['mrr']>0.408 and not g['degenerate'] and g['two_afc']>0.5 and g['perm_p']<0.05) else 'fail'}")
+              f"{'PASS' if ok else 'fail'}")
 
 
 if __name__ == "__main__":

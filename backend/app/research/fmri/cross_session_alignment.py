@@ -228,8 +228,10 @@ def fit_ridge_map(
         argmin_M || Xv_B M - Xp_B ||^2 + alpha ||M||^2
     and lift back: T(x) = ((x-mv) B) M B^T + mp.  Never forms V x V.
     """
-    Xv = _as2d(X_v_train); Xp = _as2d(X_p_train)
-    mv = Xv.mean(axis=0); mp = Xp.mean(axis=0)
+    Xv = _as2d(X_v_train)
+    Xp = _as2d(X_p_train)
+    mv = Xv.mean(axis=0)
+    mp = Xp.mean(axis=0)
     B = _subspace_basis(np.vstack([Xv - mv, Xp - mp]), rank)   # [V, r]
     A = (Xv - mv) @ B                                          # [n, r]
     T = (Xp - mp) @ B                                          # [n, r]
@@ -249,8 +251,10 @@ def fit_reduced_rank(
     out_rank: int = 6,
 ) -> AlignmentTransform:
     """M6: reduced-rank session map (M5 with the map M truncated to out_rank)."""
-    Xv = _as2d(X_v_train); Xp = _as2d(X_p_train)
-    mv = Xv.mean(axis=0); mp = Xp.mean(axis=0)
+    Xv = _as2d(X_v_train)
+    Xp = _as2d(X_p_train)
+    mv = Xv.mean(axis=0)
+    mp = Xp.mean(axis=0)
     B = _subspace_basis(np.vstack([Xv - mv, Xp - mp]), rank)
     A = (Xv - mv) @ B
     T = (Xp - mp) @ B
@@ -278,8 +282,10 @@ def fit_procrustes(
     Find orthogonal Omega minimizing ||Xv_B Omega - Xp_B|| in the subspace B,
     lift back: T(x) = ((x-mv) B) Omega B^T + mp.
     """
-    Xv = _as2d(X_v_train); Xp = _as2d(X_p_train)
-    mv = Xv.mean(axis=0); mp = Xp.mean(axis=0)
+    Xv = _as2d(X_v_train)
+    Xp = _as2d(X_p_train)
+    mv = Xv.mean(axis=0)
+    mp = Xp.mean(axis=0)
     B = _subspace_basis(np.vstack([Xv - mv, Xp - mp]), rank)
     A = (Xv - mv) @ B
     T = (Xp - mp) @ B
@@ -354,7 +360,8 @@ def candidate_score_entropy(
     pool = candidate_pool / np.clip(np.linalg.norm(candidate_pool, axis=1, keepdims=True), eps, None)
     sims = pred @ pool[set_cols].T                 # [n, k]
     z = sims - sims.max(axis=1, keepdims=True)
-    p = np.exp(z); p /= p.sum(axis=1, keepdims=True)
+    p = np.exp(z)
+    p /= p.sum(axis=1, keepdims=True)
     H = -np.sum(p * np.log(np.clip(p, eps, None)), axis=1)
     return float(np.mean(H) / np.log(len(set_cols)))
 

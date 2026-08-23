@@ -33,10 +33,13 @@ from app.research.fmri import cross_session_alignment as csa
 from app.research.fmri.decoder import TrainedDecoder  # noqa: F401
 from app.research.fmri.nsdimagery_transfer import extract_imagery_rows
 from app.research.fmri.run_c3m_vision_gate import (
-    within_set_metrics, _collapse_from_predictions, exact_permutation_null_mrr,
+    _collapse_from_predictions,
+    exact_permutation_null_mrr,
+    within_set_metrics,
 )
 from app.research.fmri.run_c3m_vision_gate_m3m4 import (
-    precompute_perception_coral, build_coral_transform,
+    build_coral_transform,
+    precompute_perception_coral,
 )
 from app.research.fmri.run_c3m_vision_robustness import build_coral_random_rotation
 
@@ -183,7 +186,7 @@ def main() -> None:
     out["self_hash"] = hashlib.sha256(json.dumps(out, sort_keys=True, default=str).encode()).hexdigest()
     json.dump(out, open(results_dir / "c3m_imagery_transfer.json", "w"), indent=2)
     print(f"Wrote {results_dir}/c3m_imagery_transfer.json\n")
-    print(f"chance MRR(6)=0.408  2AFC chance=0.5\n")
+    print("chance MRR(6)=0.408  2AFC chance=0.5\n")
     for k, v in res.items():
         print(f"  {k:38s} MRR={v['mrr']:.4f} 2AFC={v['two_afc']:.3f} "
               f"domfrac={v['dominant_fraction']:.3f} effrank={v['pred_cov_effective_rank']:.2f} "
