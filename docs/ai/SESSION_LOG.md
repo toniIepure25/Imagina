@@ -88,6 +88,28 @@ held-out VISION only. Set A (simple bars) is OOD (collapse removed, not signific
 separately. Next: freeze the winning pipeline, write results/c3m_alignment_seal.json, THEN unblind
 imagery. Imagery still SEALED.
 
+### ALIGNMENT SEAL + IMAGERY UNBLINDING (fail-closed) — C3M decision B
+- `results/c3m_alignment_seal.json` (self_hash 1332fee6, status SEALED_BEFORE_IMAGERY_UNBLINDING)
+  froze the M3 CORAL pipeline + all input hashes BEFORE any imagery metric; committed first.
+- `results/c3m_imagery_transfer.json`: the frozen vision-calibrated M3 CORAL applied to Set-B
+  IMAGERY betas (96 trials). Seal verified (all hashes matched). Results:
+  M0 strict-C3 MRR 0.428 domfrac 1.000; M1 imagery mean-shift 0.441 domfrac 0.906;
+  **M3 frozen-from-vision MRR 0.476, 2AFC 0.579, domfrac 0.510, effrank 24→11, perm p 0.0222,
+  exceeds matched-random max**; M3 imagery-session-stats (secondary) 0.442 domfrac 0.917.
+  Guard breakdown: mrr>M0 ✓, 2AFC>0.5 ✓, perm p<0.05 ✓, exceeds matched-random 95pct ✓, mrr>M1 ✓,
+  but non-degeneracy (domfrac ≤ 0.5) FAILS at **0.510** → **NULL** by the frozen guard.
+
+### C3M FINAL DECISION — `results/c3m_final_decision.json` (self_hash b872ae52)
+- C3M-H1 (shift explains collapse): **SUPPORTED** — collapse is second-moment (covariance) driven.
+- C3M-H2/H3 (vision restoration): **PASS** (Set B, target-blind M3 CORAL, held-out, robust).
+- C3M-H4 (aligned imagery transfer): **NULL** — the SAME frozen alignment only PARTIALLY transfers
+  to imagery (collapse 1.00→0.51, effrank 24→11, stimulus-specific & capacity-exceeding), but the
+  aligned imagery predictions stay marginally degenerate → no clean transfer. Imagery has a
+  residual STATE-SPECIFIC degradation beyond the cross-session shift.
+- Decision rule **B**: vision PASS + imagery NULL → **C3M = COMPLETE_WITH_STATE_SPECIFIC_IMAGERY_NULL**.
+- No tuning against imagery (frozen guard yields NULL; pipeline NOT adjusted). C4 NOT begun.
+- Single subject (subj01) only; subj02/05/07 infrastructure demonstrated, not yet executed.
+
 ---
 
 ## 2026-07-26 — Scientific Gate C3 Real-Data: Beta Certification, Stimulus Reconstruction, CLIP Generation, Pilot Execution

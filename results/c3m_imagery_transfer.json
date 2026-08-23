@@ -1,0 +1,85 @@
+{
+  "artifact": "C3M_IMAGERY_TRANSFER",
+  "created_at": "2026-08-23T18:53:21",
+  "seal_self_hash": "1332fee66e723b046718938288adbdcf4c19da52f5bb53ff27c24f200a8cf6f3",
+  "seal_status_verified": true,
+  "primary_subset": "Set B imagery (96 trials, 6 targets x 16 reps)",
+  "chance": {
+    "mrr_6cand": 0.408,
+    "two_afc": 0.5
+  },
+  "results": {
+    "M0_identity_strictC3": {
+      "mrr": 0.42777777777777776,
+      "top1": 0.16666666666666666,
+      "two_afc": 0.5541666666666667,
+      "dominant_fraction": 1.0,
+      "degenerate": true,
+      "candidate_entropy": 0.9984723008934736,
+      "pred_cov_effective_rank": 24.00902064088545,
+      "perm_observed_mrr": 0.42777777777777776,
+      "perm_null_mean": 0.4083333333333333,
+      "perm_p_value": 0.008333333333333333,
+      "perm_n": 720
+    },
+    "M1_imagery_mean_shift": {
+      "mrr": 0.440625,
+      "top1": 0.19791666666666666,
+      "two_afc": 0.5416666666666666,
+      "dominant_fraction": 0.90625,
+      "degenerate": true,
+      "candidate_entropy": 0.9990862141797938,
+      "pred_cov_effective_rank": 24.009020640885428,
+      "perm_observed_mrr": 0.440625,
+      "perm_null_mean": 0.4083333333333333,
+      "perm_p_value": 0.011111111111111112,
+      "perm_n": 720
+    },
+    "M3_frozen_from_vision_PRIMARY": {
+      "mrr": 0.4756944444444445,
+      "top1": 0.23958333333333334,
+      "two_afc": 0.5791666666666667,
+      "dominant_fraction": 0.5104166666666666,
+      "degenerate": true,
+      "candidate_entropy": 0.9978374606380148,
+      "pred_cov_effective_rank": 11.06706258743208,
+      "perm_observed_mrr": 0.4756944444444445,
+      "perm_null_mean": 0.4083333333333333,
+      "perm_p_value": 0.022222222222222223,
+      "perm_n": 720
+    },
+    "M3_imagery_session_stats_SECONDARY": {
+      "mrr": 0.4421875,
+      "top1": 0.19791666666666666,
+      "two_afc": 0.54375,
+      "dominant_fraction": 0.9166666666666666,
+      "degenerate": true,
+      "candidate_entropy": 0.9990768297233623,
+      "pred_cov_effective_rank": 10.712626557480675,
+      "perm_observed_mrr": 0.4421875,
+      "perm_null_mean": 0.4083333333333333,
+      "perm_p_value": 0.005555555555555556,
+      "perm_n": 720
+    }
+  },
+  "matched_random_capacity_control": {
+    "n": 200,
+    "control_mrr_mean": 0.40361111111111114,
+    "control_mrr_95pct": 0.4409982638888889,
+    "control_mrr_max": 0.4713541666666667,
+    "m3_exceeds_95pct": true,
+    "m3_exceeds_max": true
+  },
+  "scope": "SINGLE_SUBJECT_subj01_ONLY_NOT_POPULATION_EVIDENCE",
+  "aligned_imagery_gate_pass": false,
+  "decision": "C3M_ALIGNED_IMAGERY_TRANSFER=NULL -> C3M=COMPLETE_WITH_STATE_SPECIFIC_IMAGERY_NULL",
+  "provenance": {
+    "frozen_decoder_weights_hash": "df2dfd8961d7f7385f00ab25fd69e18c33923e6508b9fe16c3b74b015dd4f9f1",
+    "roi_selection_hash": "84e0d08be5d7e68b3ec916c78aad50c216b98825b8246bb3dbeb3e2459fc60db",
+    "imagery_betas_sha256": "31485ff0e4cb9e90b6f83f2f550714b1a688993604f5795148a2746df7b42b64",
+    "candidate_pool_sha256": "e96e2fde706c00e485376fe745974dab1fcbc12f08155a76cdd0487075aefa00",
+    "event_manifest_hash": "6d63e4b6c21d93eb0763907fc920b51548844c43f9a540b3df4e7b62ad5b9bd6",
+    "code_sha": "d9d9bc31156ed945d0a7b1b4b7238d6d9306a3ef"
+  },
+  "self_hash": "52c04af2ea943761203ca267d935f018bfbe7ad6727c685a66ae38ae8433c8bf"
+}
