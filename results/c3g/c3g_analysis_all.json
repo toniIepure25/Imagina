@@ -1,0 +1,836 @@
+{
+  "artifact": "C3G_ANALYSIS",
+  "created_at": "2026-08-26T09:39:12",
+  "seed": 20260826,
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "k_subspace": 10,
+  "spaces": {
+    "nsdgeneral": {
+      "space": "nsdgeneral",
+      "n_voxels": 15587,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.43395401629058983,
+        "I": 0.011208673978278197
+      },
+      "G1_centroid_displacement": 0.8347161942649254,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.9096965987508105,
+        "voxel_std_ratio_median": 0.9216738869536711,
+        "voxel_std_ratio_iqr": [
+          0.7765958255238866,
+          1.0916991784872137
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 13.833162150732019,
+        "I_mean": 16.829329098290255,
+        "diff_mean": 2.996166947558243,
+        "diff_ci95": [
+          -0.08661633566990834,
+          6.392716139884643
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.25274725274725274
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.1353045154209612
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.17877407747860274,
+        "observed_ci95": [
+          0.1651294787655202,
+          0.18955454094835858
+        ],
+        "null_mean": 0.42418569237028775,
+        "null_ci95": [
+          0.38496469439197184,
+          0.46521033470277456
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.834799816154267,
+        "null_mean": 0.8732388930310138,
+        "perm_p": 0.3076923076923077
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.547764829335934
+      },
+      "G8_rdm_correlation": {
+        "observed": 0.21785714285714286,
+        "perm_p": 0.3256743256743257,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": 0.011208673978278197,
+        "achieved_reliability": 0.017050681722593546,
+        "G3_participation_ratio": {
+          "P_mean": 46.80063332380033,
+          "I_mean": 16.76091789172525,
+          "diff_mean": -30.03971543207508,
+          "diff_ci95": [
+            -32.90485033771343,
+            -26.88585708860313
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.015077478946475554,
+          "observed_ci95": [
+            0.01421534485627285,
+            0.01581131971158605
+          ],
+          "null_mean": 0.001571880959039484,
+          "null_ci95": [
+            0.001021615281590506,
+            0.00214062827966864
+          ],
+          "perm_p_reorientation": 1.0,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.17877407747860274,
+        "G6_cka_degP_vs_I": 0.9449005578793236,
+        "G6_cka_P_vs_degP": 0.9273481102392922,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 16.829329098290255,
+        "participation_ratio_degP": 46.80063332380033
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": 2.9292869780072244,
+        "identity_participation_ratio_diff_vs_I": 2.996166947558243,
+        "alpha_gain": 0.9096965987508105
+      }
+    },
+    "V1": {
+      "space": "V1",
+      "n_voxels": 1349,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.6876145532893979,
+        "I": -0.07640920535001527
+      },
+      "G1_centroid_displacement": 1.1192389783170982,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.8191853447408188,
+        "voxel_std_ratio_median": 0.7858143367672792,
+        "voxel_std_ratio_iqr": [
+          0.6519247662658189,
+          0.9376597849221219
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 7.731345783931072,
+        "I_mean": 7.918129040647296,
+        "diff_mean": 0.1867832567162229,
+        "diff_ci95": [
+          -1.7787811529057689,
+          3.0054717620523816
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.932067932067932
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.1057957244635809
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.25289132714780804,
+        "observed_ci95": [
+          0.23172601526560152,
+          0.2739649358437498
+        ],
+        "null_mean": 0.5280080180893597,
+        "null_ci95": [
+          0.4815142702020733,
+          0.5796573663706989
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.5895167805497634,
+        "null_mean": 0.6852994184869887,
+        "perm_p": 0.2547452547452547
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.4106772705155004
+      },
+      "G8_rdm_correlation": {
+        "observed": -0.48214285714285715,
+        "perm_p": 0.932067932067932,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": -0.07640920535001527,
+        "achieved_reliability": -0.014267523605370891,
+        "G3_participation_ratio": {
+          "P_mean": 45.41596252536471,
+          "I_mean": 7.898764810139428,
+          "diff_mean": -37.51719771522528,
+          "diff_ci95": [
+            -39.416173933141266,
+            -34.84064331033309
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.010368220296255615,
+          "observed_ci95": [
+            0.009016726696028429,
+            0.011800214212750562
+          ],
+          "null_mean": 0.007594637870728219,
+          "null_ci95": [
+            0.005647249844410144,
+            0.009748580690716878
+          ],
+          "perm_p_reorientation": 0.996003996003996,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.25289132714780804,
+        "G6_cka_degP_vs_I": 0.8854842040477805,
+        "G6_cka_P_vs_degP": 0.7725304101385069,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 7.918129040647296,
+        "participation_ratio_degP": 45.41596252536471
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": 0.17437545543432117,
+        "identity_participation_ratio_diff_vs_I": 0.1867832567162229,
+        "alpha_gain": 0.8191853447408188
+      }
+    },
+    "V2": {
+      "space": "V2",
+      "n_voxels": 1430,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.5428243197560237,
+        "I": -0.0915713570377649
+      },
+      "G1_centroid_displacement": 0.831293636146325,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.8209652498360026,
+        "voxel_std_ratio_median": 0.8375224411097761,
+        "voxel_std_ratio_iqr": [
+          0.7061957188268,
+          1.01012162626628
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 8.960228825609585,
+        "I_mean": 11.323782358390828,
+        "diff_mean": 2.3635535327812423,
+        "diff_ci95": [
+          0.2265418195057575,
+          4.898908168274326
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.24775224775224775
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.1747961317692962
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.20803422363922683,
+        "observed_ci95": [
+          0.19318732844600447,
+          0.22265726006183498
+        ],
+        "null_mean": 0.4782695022554275,
+        "null_ci95": [
+          0.4349545697825311,
+          0.5217819182996023
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.6624661897658791,
+        "null_mean": 0.7667137155970248,
+        "perm_p": 0.06993006993006994
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.4558850708348432
+      },
+      "G8_rdm_correlation": {
+        "observed": -0.39285714285714285,
+        "perm_p": 0.8511488511488512,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": -0.0915713570377649,
+        "achieved_reliability": 0.039089923649024506,
+        "G3_participation_ratio": {
+          "P_mean": 45.40681984352621,
+          "I_mean": 11.348126621699176,
+          "diff_mean": -34.05869322182702,
+          "diff_ci95": [
+            -36.22389256499354,
+            -31.54495827622545
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.010320151180316787,
+          "observed_ci95": [
+            0.009006435944555524,
+            0.011762318242055526
+          ],
+          "null_mean": 0.007466274219482498,
+          "null_ci95": [
+            0.00569606413670606,
+            0.009516471611040463
+          ],
+          "perm_p_reorientation": 0.9920079920079921,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.20803422363922683,
+        "G6_cka_degP_vs_I": 0.9127105234879307,
+        "G6_cka_P_vs_degP": 0.8485692826697545,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 11.323782358390828,
+        "participation_ratio_degP": 45.40681984352621
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": 2.341230989766065,
+        "identity_participation_ratio_diff_vs_I": 2.3635535327812423,
+        "alpha_gain": 0.8209652498360026
+      }
+    },
+    "V3": {
+      "space": "V3",
+      "n_voxels": 1185,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.4616372194032654,
+        "I": 0.030972903287014793
+      },
+      "G1_centroid_displacement": 0.9432713563649102,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.8100996176874196,
+        "voxel_std_ratio_median": 0.8113223186642845,
+        "voxel_std_ratio_iqr": [
+          0.6934587207110776,
+          0.9394126090758964
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 11.77887575880123,
+        "I_mean": 11.722977250263149,
+        "diff_mean": -0.05589850853807671,
+        "diff_ci95": [
+          -2.610615656899335,
+          3.177803509703404
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.967032967032967
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.12454084496100862
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.2134349654881179,
+        "observed_ci95": [
+          0.19697118492016913,
+          0.2293656253342378
+        ],
+        "null_mean": 0.4346319666504016,
+        "null_ci95": [
+          0.39618997174040943,
+          0.47116727543460946
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.7463334537057332,
+        "null_mean": 0.8232112271793396,
+        "perm_p": 0.08491508491508491
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.3822457917555067
+      },
+      "G8_rdm_correlation": {
+        "observed": -0.2857142857142857,
+        "perm_p": 0.8161838161838162,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": 0.030972903287014793,
+        "achieved_reliability": 0.03895888223170654,
+        "G3_participation_ratio": {
+          "P_mean": 44.582027199592865,
+          "I_mean": 11.696144265801813,
+          "diff_mean": -32.88588293379106,
+          "diff_ci95": [
+            -35.39221665683731,
+            -29.8786951642054
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.04931076169514873,
+          "observed_ci95": [
+            0.0451964843354832,
+            0.053045311146318413
+          ],
+          "null_mean": 0.03347959172020765,
+          "null_ci95": [
+            0.026940022290201423,
+            0.0402965774235327
+          ],
+          "perm_p_reorientation": 1.0,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.2134349654881179,
+        "G6_cka_degP_vs_I": 0.8784884088302048,
+        "G6_cka_P_vs_degP": 0.9467216530483287,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 11.722977250263149,
+        "participation_ratio_degP": 44.582027199592865
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": -0.07960352573261244,
+        "identity_participation_ratio_diff_vs_I": -0.05589850853807671,
+        "alpha_gain": 0.8100996176874196
+      }
+    },
+    "hV4": {
+      "space": "hV4",
+      "n_voxels": 686,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.38382671194493256,
+        "I": 0.0969196066174259
+      },
+      "G1_centroid_displacement": 0.9076188018086283,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.8022325574827501,
+        "voxel_std_ratio_median": 0.8167881068801106,
+        "voxel_std_ratio_iqr": [
+          0.7119112969011525,
+          0.9614497332053012
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 7.72064002186417,
+        "I_mean": 9.691331569680337,
+        "diff_mean": 1.970691547816167,
+        "diff_ci95": [
+          -0.3896342939417328,
+          5.190676646856887
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.2817182817182817
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.1644185650676311
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.24833344355666362,
+        "observed_ci95": [
+          0.22992547078753053,
+          0.265796279290354
+        ],
+        "null_mean": 0.4802925914504376,
+        "null_ci95": [
+          0.4396663690590973,
+          0.5210835114034983
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.7087317554431565,
+        "null_mean": 0.743960081198428,
+        "perm_p": 0.6333666333666333
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.1418828120784181
+      },
+      "G8_rdm_correlation": {
+        "observed": -0.3464285714285714,
+        "perm_p": 0.9000999000999002,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": 0.0969196066174259,
+        "achieved_reliability": 0.10564446997822316,
+        "G3_participation_ratio": {
+          "P_mean": 38.51706919462161,
+          "I_mean": 9.646687207535551,
+          "diff_mean": -28.870381987086056,
+          "diff_ci95": [
+            -31.140457719229232,
+            -25.875129980889447
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.11685211731400276,
+          "observed_ci95": [
+            0.10934585037861443,
+            0.12408176759431168
+          ],
+          "null_mean": 0.09136463075795924,
+          "null_ci95": [
+            0.08078368037262042,
+            0.10245510318976676
+          ],
+          "perm_p_reorientation": 1.0,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.24833344355666362,
+        "G6_cka_degP_vs_I": 0.8318268587334902,
+        "G6_cka_P_vs_degP": 0.9222735492313389,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 9.691331569680337,
+        "participation_ratio_degP": 38.51706919462161
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": 1.9337542676303319,
+        "identity_participation_ratio_diff_vs_I": 1.970691547816167,
+        "alpha_gain": 0.8022325574827501
+      }
+    },
+    "ventral": {
+      "space": "ventral",
+      "n_voxels": 4595,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.2507154677085305,
+        "I": -0.00906596830581829
+      },
+      "G1_centroid_displacement": 0.7499559963588794,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.9625204687916952,
+        "voxel_std_ratio_median": 0.975942681073186,
+        "voxel_std_ratio_iqr": [
+          0.8222028454357192,
+          1.1429628856009324
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 11.391049755421937,
+        "I_mean": 17.003139966058065,
+        "diff_mean": 5.612090210636127,
+        "diff_ci95": [
+          2.9494823704395348,
+          8.504746270250179
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.03396603396603397
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.16205973543291444
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.2066941045569435,
+        "observed_ci95": [
+          0.19212468910287434,
+          0.22247264878398704
+        ],
+        "null_mean": 0.4457615724994712,
+        "null_ci95": [
+          0.4108310294352837,
+          0.48370513916862934
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.8868867697860061,
+        "null_mean": 0.8222824500464667,
+        "perm_p": 0.13386613386613386
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.4928454723686255
+      },
+      "G8_rdm_correlation": {
+        "observed": 0.5142857142857142,
+        "perm_p": 0.0979020979020979,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": -0.00906596830581829,
+        "achieved_reliability": -0.009798595584417478,
+        "G3_participation_ratio": {
+          "P_mean": 46.46648561590133,
+          "I_mean": 16.934827863504363,
+          "diff_mean": -29.531657752396974,
+          "diff_ci95": [
+            -31.996599161297812,
+            -26.81599801799821
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.016285959258256297,
+          "observed_ci95": [
+            0.015021637462034228,
+            0.017455173322885566
+          ],
+          "null_mean": 0.0029908316713199465,
+          "null_ci95": [
+            0.0021802163447156545,
+            0.003923838819080976
+          ],
+          "perm_p_reorientation": 1.0,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.2066941045569435,
+        "G6_cka_degP_vs_I": 0.9101870770200156,
+        "G6_cka_P_vs_degP": 0.9103965153786573,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 17.003139966058065,
+        "participation_ratio_degP": 46.46648561590133
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": 5.533506274839168,
+        "identity_participation_ratio_diff_vs_I": 5.612090210636127,
+        "alpha_gain": 0.9625204687916952
+      }
+    },
+    "lateral": {
+      "space": "lateral",
+      "n_voxels": 3199,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.26056902967969453,
+        "I": -0.009776519651551298
+      },
+      "G1_centroid_displacement": 0.8582540166052031,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.9449110200670356,
+        "voxel_std_ratio_median": 0.9568613067341958,
+        "voxel_std_ratio_iqr": [
+          0.8066873950751389,
+          1.1500881647732362
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 13.19400390691033,
+        "I_mean": 17.51557340324632,
+        "diff_mean": 4.321569496335995,
+        "diff_ci95": [
+          1.7240826149812993,
+          6.9792410579676885
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.09090909090909091
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.12673224252282922
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.2193367476752335,
+        "observed_ci95": [
+          0.2012038913893257,
+          0.2373696132771949
+        ],
+        "null_mean": 0.4306508439195046,
+        "null_ci95": [
+          0.3902947016790324,
+          0.47141849919780626
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.9580319094461508,
+        "null_mean": 0.8704375470530483,
+        "perm_p": 0.01098901098901099
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.4379718190073323
+      },
+      "G8_rdm_correlation": {
+        "observed": 0.3821428571428571,
+        "perm_p": 0.11988011988011989,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": -0.009776519651551298,
+        "achieved_reliability": -0.0012467227257185085,
+        "G3_participation_ratio": {
+          "P_mean": 46.312136316626244,
+          "I_mean": 17.45637748620019,
+          "diff_mean": -28.855758830426055,
+          "diff_ci95": [
+            -31.19229672244473,
+            -26.116449055810175
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.005442603647475168,
+          "observed_ci95": [
+            0.004890953930412255,
+            0.006012630948397168
+          ],
+          "null_mean": 0.003299100111296232,
+          "null_ci95": [
+            0.0024697230354132605,
+            0.004185878171055322
+          ],
+          "perm_p_reorientation": 1.0,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.2193367476752335,
+        "G6_cka_degP_vs_I": 0.9509339126824119,
+        "G6_cka_P_vs_degP": 0.9065926462697592,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 17.51557340324632,
+        "participation_ratio_degP": 46.312136316626244
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": 4.271751763035599,
+        "identity_participation_ratio_diff_vs_I": 4.321569496335995,
+        "alpha_gain": 0.9449110200670356
+      }
+    },
+    "parietal": {
+      "space": "parietal",
+      "n_voxels": 2351,
+      "n_P": 48,
+      "n_I": 96,
+      "n_match": 48,
+      "reliability": {
+        "P": 0.536063330194433,
+        "I": 0.33049925163443616
+      },
+      "G1_centroid_displacement": 0.7836756706107111,
+      "G2_amplitude_gain": {
+        "global_amplitude_ratio": 0.9297936569934725,
+        "voxel_std_ratio_median": 0.9316395922058419,
+        "voxel_std_ratio_iqr": [
+          0.7965601531870921,
+          1.0923551360443633
+        ]
+      },
+      "G3_participation_ratio": {
+        "P_mean": 6.762050190810114,
+        "I_mean": 8.332195510275476,
+        "diff_mean": 1.5701453194653618,
+        "diff_ci95": [
+          -0.5828687527009502,
+          4.689040386492055
+        ],
+        "n_match": 48,
+        "n_boot": 1000,
+        "perm_p": 0.4005994005994006
+      },
+      "G3_eigenspectrum_logdiv": {
+        "observed": 0.2048484851058482
+      },
+      "G4_subspace_overlap": {
+        "observed_mean": 0.2677777207753466,
+        "observed_ci95": [
+          0.2505367945833364,
+          0.28493128542437857
+        ],
+        "null_mean": 0.46203821399477757,
+        "null_ci95": [
+          0.4239425443194714,
+          0.49917891039832224
+        ],
+        "perm_p_reorientation": 0.000999000999000999,
+        "n_match": 48
+      },
+      "G6_cka": {
+        "observed": 0.47886979943260266,
+        "null_mean": 0.5291538241025731,
+        "perm_p": 0.7192807192807192
+      },
+      "G7_procrustes_disparity": {
+        "observed": 1.034150873177972
+      },
+      "G8_rdm_correlation": {
+        "observed": 0.3,
+        "perm_p": 0.2977022977022977,
+        "n_content": 6
+      },
+      "SNR_matched_perception_control": {
+        "target_reliability": 0.33049925163443616,
+        "achieved_reliability": 0.3373188555274513,
+        "G3_participation_ratio": {
+          "P_mean": 18.484964132553785,
+          "I_mean": 8.226080020166709,
+          "diff_mean": -10.258884112387078,
+          "diff_ci95": [
+            -12.278008198132774,
+            -7.453689068264849
+          ],
+          "n_match": 48,
+          "n_boot": 1000,
+          "perm_p": 0.000999000999000999
+        },
+        "G4_subspace_overlap_degP_vs_I": {
+          "observed_mean": 0.1950579696073534,
+          "observed_ci95": [
+            0.1834258719421342,
+            0.20594161536679095
+          ],
+          "null_mean": 0.2641363065127005,
+          "null_ci95": [
+            0.23917864798097252,
+            0.28909879832323426
+          ],
+          "perm_p_reorientation": 0.000999000999000999,
+          "n_match": 48
+        },
+        "G4_subspace_overlap_raw_P_vs_I": 0.2677777207753466,
+        "G6_cka_degP_vs_I": 0.5991557056598109,
+        "G6_cka_P_vs_degP": 0.9777411723330899,
+        "degP_reproduces_I_participation_ratio": false,
+        "participation_ratio_I": 8.332195510275476,
+        "participation_ratio_degP": 18.484964132553785
+      },
+      "negative_controls": {
+        "gain_only_participation_ratio_diff_vs_I": 1.5009034161272397,
+        "identity_participation_ratio_diff_vs_I": 1.5701453194653618,
+        "alpha_gain": 0.9297936569934725
+      }
+    }
+  },
+  "data_manifest_self_hash": "5865a4859f134bd86b47b213e07d510e62ceda05adc4ce246f1540d2ecb3b136",
+  "self_hash": "1ecbdec9ae0e780640c3f509abd45d916d80d86098649e27382d9250772e55f4"
+}
