@@ -1157,3 +1157,22 @@ jobs:
           python3 -m pytest
           app/tests/test_c3m_alignment.py
           -v --timeout=120
+
+  c3g-state-geometry:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3G state-geometry primitives and data-contract invariants
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3g_geometry.py
+          -v --timeout=120
