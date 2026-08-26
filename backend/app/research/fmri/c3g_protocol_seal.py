@@ -44,6 +44,19 @@ def main() -> None:
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "status": "SEALED_BEFORE_CONFIRMATORY_INSPECTION",
         "is_not_c4": True,
+        "amendments": [
+            {"date": "2026-08-26",
+             "change": "Bug fix in run_c3g_analysis: subspace_overlap is a PAIRED metric taking both "
+                       "states, so G4 is now computed via paired_metric_with_perm (observed P-I "
+                       "overlap vs state-label-relabel null; lower-than-null => reorientation) instead "
+                       "of the single-state subsample_matched helper. The SNR control reports "
+                       "subspace_overlap(degP, I) alongside the raw P-I overlap.",
+             "criteria_changed": False,
+             "confirmatory_results_inspected_before_change": False,
+             "note": "Correctness fix only; the sealed metrics, controls, tests, FDR family, and "
+                     "decision rules are unchanged. Made before any confirmatory C3G output existed "
+                     "(the prior run crashed on the bug before producing results)."},
+        ],
         "central_question": (
             "After correcting cross-session nonstationarity (here by construction: perception and "
             "imagery are the SAME-session, same-content Set-B vision vs imagery trials), is the "

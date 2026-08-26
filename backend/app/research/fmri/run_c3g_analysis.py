@@ -54,7 +54,8 @@ def _folds_by_rep(content: np.ndarray, n_folds: int, seed: int) -> np.ndarray:
 
 
 def state_metric_with_perm(fn, P, Im, n_match, seed, **kw):
-    """Observed diff (subsample-matched) + state-label permutation p."""
+    """Single-state statistic (e.g. participation ratio): observed I−P diff
+    (subsample-matched) + state-label permutation p."""
     obs = G.subsample_matched(fn, P, Im, n_match, N_BOOT, seed, **kw)
     pooled = np.vstack([P, Im])
     nP = P.shape[0]
@@ -67,6 +68,35 @@ def state_metric_with_perm(fn, P, Im, n_match, seed, **kw):
         ii = rng.choice(pi.shape[0], n_match, replace=False)
         null[t] = fn(pi[ii], **kw) - fn(pp[ip], **kw)
     return {**obs, "perm_p": _p_from_null(obs["diff_mean"], null)}
+
+
+def paired_metric_with_perm(fn, P, Im, n_match, seed, **kw):
+    """Paired metric that takes BOTH states (e.g. subspace_overlap(P, I)):
+    observed value (subsample-matched, with CI) + state-label permutation.
+    Lower-than-null overlap => state-specific subspace reorientation."""
+    rng = np.random.default_rng(seed)
+    obs = np.empty(N_BOOT)
+    for t in range(N_BOOT):
+        ip = rng.choice(P.shape[0], n_match, replace=False)
+        ii = rng.choice(Im.shape[0], n_match, replace=False)
+        obs[t] = fn(P[ip], Im[ii], **kw)
+    pooled = np.vstack([P, Im])
+    nP = P.shape[0]
+    rng2 = np.random.default_rng(seed + 1)
+    null = np.empty(N_PERM)
+    for t in range(N_PERM):
+        perm = rng2.permutation(pooled.shape[0])
+        pp, pi = pooled[perm[:nP]], pooled[perm[nP:]]
+        ip = rng2.choice(pp.shape[0], n_match, replace=False)
+        ii = rng2.choice(pi.shape[0], n_match, replace=False)
+        null[t] = fn(pp[ip], pi[ii], **kw)
+    om = float(obs.mean())
+    p_lower = float((np.sum(null <= om) + 1) / (N_PERM + 1))
+    return {"observed_mean": om,
+            "observed_ci95": [float(np.percentile(obs, 2.5)), float(np.percentile(obs, 97.5))],
+            "null_mean": float(null.mean()),
+            "null_ci95": [float(np.percentile(null, 2.5)), float(np.percentile(null, 97.5))],
+            "perm_p_reorientation": p_lower, "n_match": int(n_match)}
 
 
 def content_metric_with_perm(metric_fn, Mp, Mi, seed):
@@ -101,8 +131,8 @@ def analyze_space(name, cols, P_all, I_all, cP, cI, seed):
     out["G3_eigenspectrum_logdiv"] = {
         "observed": G.eigenspectrum_logdivergence(P, Im, N_TOP_SPEC)}
 
-    # ---- G4 subspace overlap ----
-    out["G4_subspace_overlap"] = state_metric_with_perm(
+    # ---- G4 subspace overlap (paired: observed P-I overlap vs relabel null) ----
+    out["G4_subspace_overlap"] = paired_metric_with_perm(
         G.subspace_overlap, P, Im, n_match, seed, k=K_SUBSPACE)
 
     # ---- content-level G6 CKA, G7 Procrustes, G8 crossnobis RDM ----
@@ -135,8 +165,9 @@ def analyze_space(name, cols, P_all, I_all, cP, cI, seed):
     snr = {"target_reliability": relI, "achieved_reliability": relPdeg}
     snr["G3_participation_ratio"] = state_metric_with_perm(
         G.participation_ratio, Pdeg, Im, n_match, seed + 6)
-    snr["G4_subspace_overlap"] = state_metric_with_perm(
+    snr["G4_subspace_overlap_degP_vs_I"] = paired_metric_with_perm(
         G.subspace_overlap, Pdeg, Im, n_match, seed + 6, k=K_SUBSPACE)
+    snr["G4_subspace_overlap_raw_P_vs_I"] = out["G4_subspace_overlap"]["observed_mean"]
     Mpdeg, ids_pd = G.content_average(Pdeg, cP)
     Mpdeg = np.stack([Mpdeg[ids_pd.index(c)] for c in common])
     snr["G6_cka_degP_vs_I"] = float(G.linear_cka(Mpdeg, Mi))
@@ -195,7 +226,9 @@ def main() -> None:
         print(f"[{sp}] reliab P={results[sp]['reliability']['P']:.3f} I={results[sp]['reliability']['I']:.3f} "
               f"PR diff={results[sp]['G3_participation_ratio']['diff_mean']:.2f} "
               f"(p={results[sp]['G3_participation_ratio']['perm_p']:.4f}) "
-              f"subspace diff={results[sp]['G4_subspace_overlap']['diff_mean']:.3f} "
+              f"subspace obs={results[sp]['G4_subspace_overlap']['observed_mean']:.3f} "
+              f"null={results[sp]['G4_subspace_overlap']['null_mean']:.3f} "
+              f"(p={results[sp]['G4_subspace_overlap']['perm_p_reorientation']:.4f}) "
               f"RDM r={results[sp]['G8_rdm_correlation']['observed']:.3f} "
               f"SNRctrl reproduces PR="
               f"{results[sp]['SNR_matched_perception_control']['degP_reproduces_I_participation_ratio']}")

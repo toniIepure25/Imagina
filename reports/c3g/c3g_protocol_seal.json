@@ -5,9 +5,18 @@
   "subject": "subj01",
   "source_c3m_sha": "11445aa90486865ae1fcb33b4e3699e6e501f419",
   "branch": "research/state-specific-geometry-c3g",
-  "created_at": "2026-08-26T12:28:39",
+  "created_at": "2026-08-26T12:34:35",
   "status": "SEALED_BEFORE_CONFIRMATORY_INSPECTION",
   "is_not_c4": true,
+  "amendments": [
+    {
+      "date": "2026-08-26",
+      "change": "Bug fix in run_c3g_analysis: subspace_overlap is a PAIRED metric taking both states, so G4 is now computed via paired_metric_with_perm (observed P-I overlap vs state-label-relabel null; lower-than-null => reorientation) instead of the single-state subsample_matched helper. The SNR control reports subspace_overlap(degP, I) alongside the raw P-I overlap.",
+      "criteria_changed": false,
+      "confirmatory_results_inspected_before_change": false,
+      "note": "Correctness fix only; the sealed metrics, controls, tests, FDR family, and decision rules are unchanged. Made before any confirmatory C3G output existed (the prior run crashed on the bug before producing results)."
+    }
+  ],
   "central_question": "After correcting cross-session nonstationarity (here by construction: perception and imagery are the SAME-session, same-content Set-B vision vs imagery trials), is the residual perception->imagery degradation explained by simple signal attenuation/reliability loss, or a reproducible state-specific representational-geometry transformation?",
   "states": {
     "P_perception": "Set-B VISION betas, 48 trials (6 content x 8 reps), rows visB 192:240",
@@ -99,11 +108,11 @@
   "code_hashes": {
     "c3g_geometry.py": "a289a915498c1f644d5e8809aaa2488970e7fcc3ebdcf3a7d72f39d94c2242ba",
     "c3g_data_contract.py": "afa1beffdb9cdc044c685e8cecbe1e15bf2344903ca34115371dcfda7468eb19",
-    "run_c3g_analysis.py": "c9eb5134d8569617156de4b17dfc7f4785c6cab2d8fde428b43df80d5d8b6dbd",
+    "run_c3g_analysis.py": "588fa29238f4bb680d2b7e387a8b8056844121293267b48527bdde6138bc0377",
     "run_c3g_transforms.py": "135054b097e5c714244af89def6bae616665a3a9f3cbc02826fc16ee19250789"
   },
   "data_manifest_self_hash": "5865a4859f134bd86b47b213e07d510e62ceda05adc4ce246f1540d2ecb3b136",
-  "code_sha": "2911803229116b8f48f7a7584cdd340c374e2f84",
+  "code_sha": "6bdc66613b641c2a894a08089c806e07012290d3",
   "scope": "SINGLE_SUBJECT_subj01_ONLY_NOT_POPULATION_EVIDENCE",
-  "self_hash": "697099663211b29a97af9e8b87caf3d881b093d36976df8c42448ea8356a4df5"
+  "self_hash": "9fd2f7ea258304cd5116b58ba072439ad44a5f74caf5fa34069284803897fe40"
 }
