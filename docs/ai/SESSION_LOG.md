@@ -2,6 +2,37 @@
 
 ---
 
+## 2026-08-26 -- Scientific Gate C3G opened & closed (State-Specific Neural Geometry)
+
+New gate `research/state-specific-geometry-c3g` from C3M final SHA `11445aa`. NOT C4. C3/C3M
+untouched. Phase 0 provenance PASS (all frozen inputs bit-identical; C3M M3 vision gate reproduced
+logically identical, content hash 1db3274f).
+
+**Design.** Compared perception vs imagery as SAME-session, same-6-content Set-B vision (48) vs
+imagery (96) trials, so the cross-session confound cancels by construction. Primary space
+nsdgeneral (15587), secondary ROIs (V1-hV4, ventral/lateral/parietal). Metrics G1-G9 (centroid,
+gain, participation ratio, subspace angles, CKA, Procrustes, crossnobis RDM, split-half
+reliability). Critical control: SNR-matched degraded perception. Protocol SEALED before confirmatory
+inspection (`reports/c3g/c3g_protocol_seal.json`, self_hash 9fd2f7ea; one documented pre-inspection
+bug-fix amendment to the G4 paired-metric handler).
+
+**Result (subj01).** Imagery single-trial reliability ~0 (nsdgeneral 0.011; negative in early
+visual) -- imagery is at the noise floor. Content metrics non-significant (CKA p=0.31, RDM p=0.33).
+Participation ratio not reliably different (p=0.25). The only FDR-significant metric -- subspace
+overlap below the state-relabel null (G4, p=0.001) -- is a reliability artifact: under the SNR
+control the perception-vs-imagery overlap collapses to the noise floor (0.179 -> 0.015;
+reorientation p=1.0), robustly across k in {5,10,20} x 3 seeds. Transforms underpowered (K=6; best
+does not beat identity).
+
+**Decision (sealed rule):** (B) >=1 primary metric FDR-significant = TRUE (G4); (A) SNR control does
+not reproduce phenotype = FALSE => **C3G = SIMPLE_ATTENUATION_SUPPORTED**. Honest framing: the
+residual perception->imagery difference is explained by signal attenuation (imagery at the noise
+floor); a distinct state geometry, if any, is below what this dataset can measure -- a power-limited
+negative, not proof of equivalence. Single subject; no population claim. C4 NOT begun. Full report:
+`reports/c3g/C3G_FINAL_REPORT.md`.
+
+---
+
 ## 2026-08-23 — C3M Real-Data Family-A Vision Gate (partial): session shift confirmed, mean-correction improves but residual collapse persists
 
 ### Environment recovery + frozen-input re-certification
