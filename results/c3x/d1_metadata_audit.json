@@ -1,0 +1,46 @@
+{
+  "artifact": "C3X_D1_METADATA_AUDIT",
+  "dataset": "Deep Image Reconstruction (DIR)",
+  "accession": "OpenNeuro ds001506",
+  "openneuro_url": "https://openneuro.org/datasets/ds001506",
+  "openneuro_s3": "s3://openneuro.org/ds001506 (https://s3.amazonaws.com/openneuro.org/ds001506/)",
+  "license": "CC0",
+  "authors": ["Guohua Shen", "Tomoyasu Horikawa", "Kei Majima", "Yukiyasu Kamitani"],
+  "paper": "Shen, Horikawa, Majima, Kamitani (2019) Deep image reconstruction from human brain activity. PLOS Comput Biol. doi:10.1371/journal.pcbi.1006633",
+  "access_date": "2026-08-27",
+  "verified_from": "OpenNeuro S3 dataset_description.json, README, BIDS session/func listings, imagery events.tsv; KamitaniLab github + figshare",
+  "subjects": ["sub-01", "sub-02", "sub-03"],
+  "scanner": {"field_strength_T": 3, "voxel_mm": [2, 2, 2], "TR_s": 2.0, "TE_ms": 43,
+              "multiband": 4, "n_slices": 76, "whole_brain": true},
+  "sessions": {
+    "ses-imagery": {"runs": 20, "sessions": "3-4", "task": "task-imagery",
+                    "events_columns": ["onset", "duration", "trial_no", "event_type", "category_id",
+                                       "response_time", "evaluation"],
+                    "event_type_codes": {"-1": "initial rest", "1": "cue (4s)", "2": "imagery (8s)",
+                                         "3": "post (3s)", "4": "eval/rest (1s)"},
+                    "imagery_period_event_type": 2,
+                    "content_label": "category_id", "vividness_label": "evaluation"},
+    "ses-perceptionNaturalImageTest": {"runs": 24, "sessions": 3, "role": "matched perception (test images)"},
+    "ses-perceptionNaturalImageTraining": {"runs": 120, "sessions": 15, "role": "perception decoder training (NOT downloaded in C3X)"},
+    "ses-perceptionArtificalImage": {"runs": 20, "role": "geometric shapes (not used in C3X primary)"},
+    "ses-perceptionLetterImage": {"runs": 12, "role": "letters (not used in C3X primary)"}
+  },
+  "perception_imagery_correspondence": "category/image identity (imagery targets are the natural-image test set imagined by category); pixel/category-level, NOT merely semantic - to be certified from labels in Phase 3",
+  "expected_imagery_contents_to_verify": {"unique_categories": "~50 (verify from bdpy labels)",
+                                          "reps_per_category": "~10 (verify)", "runs": 20},
+  "roi_source": {
+    "note": "OpenNeuro BIDS contains raw BOLD only (no ROI masks). The field-standard preprocessed release provides VC-extracted per-subject bdpy .h5 with official V1/V2/V3/V4/VC ROIs and stimulus labels.",
+    "figshare_doi": "10.6084/m9.figshare.7033577.v16",
+    "figshare_article": "https://figshare.com/articles/Deep_Image_Reconstruction/7033577"
+  },
+  "target_representation_compatibility": ["CLIP image", "DINOv2", "low-level visual features",
+    "VGG/CNN features (as in original paper)"],
+  "leakage_risks_audited": {
+    "cue": "imagery trials preceded by a 4s cue (event_type 1); cue names the target category - a semantic-cue confound to be noted; primary reliability uses the imagery window (event_type 2) only",
+    "post_stimulus": "no stimulus is shown during imagery (pure recall)",
+    "run_structure": "content repeated across runs -> use RUN-DISJOINT splits to avoid within-run leakage",
+    "vividness_selection": "evaluation scores present but NOT used to select trials in primary reliability"
+  },
+  "access_status": "PUBLIC (OpenNeuro CC0 raw; figshare CC-BY preprocessed)",
+  "qualification_note": "PRIMARY C3X candidate: matched perception + imagery, multiple imagery runs, repeated identities, public, official visual ROIs."
+}

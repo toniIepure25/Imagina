@@ -1,0 +1,16 @@
+{
+  "artifact": "C3X_D3_METADATA_AUDIT",
+  "dataset": "7T imagined letters",
+  "study": "Senden et al., Reconstructing imagined letters from early visual cortex",
+  "access_date": "2026-08-27",
+  "verified_from": "published-methods description; OpenNeuro not confirmed to host this dataset",
+  "subjects": 6,
+  "scanner": {"field_strength_T": 7, "resolution": "sub-millimeter", "focus": "early visual cortex + pRF"},
+  "design_expected": {"letter_identities": ["H", "T", "S", "C"], "K_contents": 4,
+                      "imagery_runs": 4, "normal_imagery_trials_per_run": 32,
+                      "matched_perception_run": true, "pRF_mapping": true},
+  "scientific_value": "potentially exceptional for TOPOGRAPHIC/retinotopic geometry (7T, pRF, high reps).",
+  "limitations": "K=4 and extremely low stimulus complexity -> cannot justify broad natural-image imagery claims; usable only for restricted topographic geometry.",
+  "access_status": "ACCESS_LIMITED / NOT_LOCATED_ON_OPENNEURO -> treated as BLOCKED_ACCESS for automated acquisition; would require an author/repository data request.",
+  "qualification_note": "High scientific value but access-limited; evaluated ONLY if prospectively required and access is obtained. Not acquired in this gate."
+}

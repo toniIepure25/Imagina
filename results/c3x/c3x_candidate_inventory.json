@@ -1,0 +1,26 @@
+{
+  "artifact": "C3X_CANDIDATE_INVENTORY",
+  "created_at": "2026-08-27",
+  "status": "PLANNED_BEFORE_DOWNLOAD",
+  "measurement_priority": "stimulus-specific IMAGERY RELIABILITY on reproducible data (NOT decoder accuracy, reconstruction quality, or published headline performance)",
+  "d1_minimal_reliability_subset": {
+    "dataset": "ds001506 (DIR)",
+    "source": "KamitaniLab figshare preprocessed bdpy (VC ROI + V1-V4 metadata + stimulus labels), DOI 10.6084/m9.figshare.7033577.v16",
+    "rationale": "the OpenNeuro BIDS is raw BOLD with no ROI masks; the figshare preprocessed VC release is the field-standard, small (~460 MB total), and carries the official visual ROIs and per-sample stimulus/run labels needed for a reliability screen without a custom preprocessing pipeline.",
+    "files": {
+      "sub-01_imagery": {"figshare_id": 22713854, "bytes": 50523461, "md5": "d1a9634e220ff5e836348374d812c636", "url": "https://ndownloader.figshare.com/files/22713854"},
+      "sub-02_imagery": {"figshare_id": 22713863, "bytes": 47889413, "md5": "b558e779770e036e52948191f4886116", "url": "https://ndownloader.figshare.com/files/22713863"},
+      "sub-03_imagery": {"figshare_id": 22713953, "bytes": 42746133, "md5": "5b05fb8e3a388dd821915d02a15ea7d9", "url": "https://ndownloader.figshare.com/files/22713953"},
+      "sub-01_perceptionTest": {"figshare_id": 14830631, "bytes": 114395741, "md5": "ee503598904a4d50a7df7be0880aaadf", "url": "https://ndownloader.figshare.com/files/14830631"},
+      "sub-02_perceptionTest": {"figshare_id": 14830697, "bytes": 108427517, "md5": "3767c08b4b138d3114ec69cfaa8274ab", "url": "https://ndownloader.figshare.com/files/14830697"},
+      "sub-03_perceptionTest": {"figshare_id": 14830856, "bytes": 96773877, "md5": "ffcd06aa419b1f9fbce65709a742a368", "url": "https://ndownloader.figshare.com/files/14830856"}
+    },
+    "total_bytes_estimate": 560756142,
+    "raw_openneuro_alternative": "s3://openneuro.org/ds001506 (raw BOLD, ~183 MB/run) if bdpy reprocessing were required; not used in this gate."
+  },
+  "d2": {"dataset": "ds005191 (Mind Captioning)", "access": "PUBLIC OpenNeuro CC0",
+         "note": "acquired ONLY if D1 prospectively fails; semantic/video-recall paradigm with verbal-cue confound"},
+  "d3": {"dataset": "7T imagined letters (Senden)", "access": "BLOCKED_ACCESS (not located on OpenNeuro; author request required)",
+         "note": "restricted topographic geometry only; not acquired in this gate"},
+  "integrity_policy": ".part + atomic rename + MD5 (figshare) + HDF5 open + shape/label certification; no raw neural data in git"
+}

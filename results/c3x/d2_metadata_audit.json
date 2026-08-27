@@ -1,0 +1,24 @@
+{
+  "artifact": "C3X_D2_METADATA_AUDIT",
+  "dataset": "Mind Captioning",
+  "accession": "OpenNeuro ds005191",
+  "openneuro_url": "https://openneuro.org/datasets/ds005191",
+  "license": "CC0",
+  "authors": ["Tomoyasu Horikawa"],
+  "paper": "Horikawa (2025) Mind captioning (https://www.biorxiv.org / published version)",
+  "access_date": "2026-08-27",
+  "verified_from": "OpenNeuro S3 dataset_description.json + BIDS session listing",
+  "subjects": ["sub-01", "sub-02", "sub-03", "sub-04", "sub-05", "sub-06"],
+  "scanner": {"voxel_mm": [2, 2, 2], "TR_s": 1.0},
+  "sessions": {
+    "ses-testImagery": {"sessions": 5, "role": "imagery of test videos"},
+    "ses-testPerception": {"sessions": 2, "role": "matched perception of the same 72 test videos"},
+    "ses-trainPerception": {"sessions": 10, "role": "perception training (2180 videos)"}
+  },
+  "expected_to_verify": {"test_videos": 72, "perception_reps_per_video": "~5",
+                         "imagery_reps_per_target": "~5", "imagery_runs": "~30"},
+  "paradigm_difference": "imagery is RECALL of complex DYNAMIC VIDEO content, not static image reproduction; potentially strong for semantic/internal-content decoding but LESS directly comparable to the static C3G geometry question.",
+  "critical_confound": "imagery trials include VERBAL DESCRIPTION preparation cues; stimulus-specific SEMANTIC information may exist in the cue independently of internally generated visual imagery. C3X must distinguish visual-imagery reliability from semantic/cue reliability (cue-only nuisance control) if D2 is evaluated.",
+  "access_status": "PUBLIC (OpenNeuro CC0)",
+  "qualification_note": "HIGH/MEDIUM priority; secondary to D1 because paradigm is semantic/video-recall, not static-image imagery. Evaluated ONLY if D1 prospectively fails."
+}
