@@ -2,6 +2,40 @@
 
 ---
 
+## 2026-08-27 -- Scientific Gate C3R (Prospective Imagery Reliability Replication)
+
+New gate `research/imagery-reliability-replication-c3r` (NOT C4; no reconstruction; no geometry).
+Technical parent `7a04b1c`, scientific parent `df81474`. Question: does subj02/05/07 have imagery
+reliability above its noise floor, so a C3G state-geometry replication is identifiable at all?
+
+**Sealed** (`reports/c3r/c3r_protocol_seal.json`, self_hash fb37f320) before inspecting any
+reliability value: subjects [subj02,subj05,subj07], NSD-Imagery func1pt8mm/nsdimagerybetas_fithrf,
+certified row mapping (visB 192:240, imgB 336:384+624:672), INHERITED C3G split-half estimator
+(c3g_geometry sha256 a289a915), stimulus-label permutation null (1000) + non-straddling split-half
+bootstrap CI (1000) + split-seed robustness, reliability-gate rules, and the same-session VISION
+data-quality control. One documented, conservative pre-decision amendment: fixed a straddling
+bootstrap (resampling reps then split-half let a trial land in both halves, inflating the CI) ->
+disjoint-halves-then-resample; point estimate and permutation null unchanged. No geometry callable
+from C3R (guarded by test).
+
+**Acquisition (imagery only, ~3 GB):** subj02/05/07 betas_nsdimagery + perception ncsnr + ROIs
+certified (SHA-256 + HDF5 open + shape/dtype; subject-specific volume dims handled). Selected
+voxels (nsdgeneral AND ncsnr>0): 14088/12902/12511. No core-NSD perception downloaded.
+
+**Reliability screen (sealed, all 3 in one execution):**
+- subj02: R_I=-0.024 (p=0.52) NOISE_FLOOR; R_P=0.481 (p=0.001) PASS -> VISION_RELIABLE_IMAGERY_
+  NOISE_FLOOR (replicates subj01's imagery-specific attenuation).
+- subj05: R_I=0.104 (p=0.23) MARGINAL; R_P=0.195 (p=0.15) MARGINAL -> SESSION_QUALITY_BLOCKER.
+- subj07: R_I=-0.078 (p=0.65) NOISE_FLOOR; R_P=-0.070 (p=0.53) NOISE_FLOOR -> SESSION_QUALITY_BLOCKER.
+
+**Decision:** no RELIABILITY_PASS subject => **C3R = C3R_NO_RELIABLE_IMAGERY_IN_REMAINING_COHORT**.
+Phase 5 (perception foundation) NOT triggered; no perception data; no geometry; no subject eligible
+for future C3G replication. Measurement-bound conclusion (imagery at/near noise floor; subj05/07
+also fail the vision quality control), NOT evidence of perception/imagery geometric equivalence.
+C3/C3M/C3G untouched. Full report `reports/c3r/C3R_FINAL_REPORT.md`.
+
+---
+
 ## 2026-08-26 -- Scientific Gate C3G opened & closed (State-Specific Neural Geometry)
 
 New gate `research/state-specific-geometry-c3g` from C3M final SHA `11445aa`. NOT C4. C3/C3M
