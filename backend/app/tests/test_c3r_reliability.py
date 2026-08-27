@@ -65,6 +65,17 @@ def test_noise_floor_gate():
     assert R.reliability_gate(out) in ("RELIABILITY_NOISE_FLOOR", "RELIABILITY_MARGINAL")
 
 
+def test_bootstrap_ci_not_inflated_on_noise():
+    # Regression: the split-half bootstrap must NOT straddle (a physical trial in
+    # both halves would spuriously inflate the CI). On pure noise the CI must span
+    # ~0, not sit far above the near-zero point estimate.
+    X, c = _noise(seed=5)
+    out = R.reliability_with_inference(X, c, seed=20260826, n_perm=100, n_boot=300)
+    lo, hi = out["bootstrap_ci95"]
+    assert lo < 0.15, f"bootstrap CI lower bound spuriously high on noise: {lo}"
+    assert lo <= out["reliability"] + 0.2
+
+
 def test_bootstrap_determinism():
     X, c = _reliable(seed=4)
     a = R.reliability_with_inference(X, c, seed=7, n_perm=50, n_boot=100)

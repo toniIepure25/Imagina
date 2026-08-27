@@ -25,16 +25,31 @@ N_REP_POINT = 200
 N_REP_RESAMPLE = 60
 
 
-def _content_bootstrap(X: np.ndarray, content: np.ndarray, rng: np.random.Generator):
-    """Resample reps WITHIN each content with replacement (preserves 6x16 shape)."""
+def _splithalf_bootstrap_value(X: np.ndarray, content: np.ndarray, rng: np.random.Generator,
+                               eps: float = 1e-24) -> float:
+    """One split-half reliability draw with a VALID (non-straddling) bootstrap:
+    each content's reps are split into two DISJOINT halves first, then reps are
+    resampled with replacement WITHIN each half. This preserves the split-half
+    logic (no physical trial can appear in both halves, which would spuriously
+    inflate the correlation), then Pearson-r of the concatenated 6-content mean
+    patterns across halves, Spearman-Brown corrected -- matching the inherited
+    estimator's statistic."""
     ids = sorted(set(int(c) for c in content))
-    rows, cont = [], []
+    A, B = [], []
     for c in ids:
         idx = np.where(content == c)[0]
-        pick = rng.choice(idx, len(idx), replace=True)
-        rows.append(X[pick])
-        cont.append(np.full(len(pick), c))
-    return np.vstack(rows), np.concatenate(cont)
+        idx = idx[rng.permutation(len(idx))]
+        h = len(idx) // 2
+        h1, h2 = idx[:h], idx[h:2 * h]
+        a = rng.choice(h1, len(h1), replace=True)
+        b = rng.choice(h2, len(h2), replace=True)
+        A.append(X[a].mean(0))
+        B.append(X[b].mean(0))
+    A, B = np.asarray(A), np.asarray(B)
+    av = (A - A.mean(0)).ravel()
+    bv = (B - B.mean(0)).ravel()
+    r = float(np.dot(av, bv) / (np.linalg.norm(av) * np.linalg.norm(bv) + eps))
+    return 2 * r / (1 + r) if r < 1 else 1.0
 
 
 def reliability_with_inference(X: np.ndarray, content: np.ndarray, seed: int,
@@ -48,10 +63,7 @@ def reliability_with_inference(X: np.ndarray, content: np.ndarray, seed: int,
     p_one_sided = float((np.sum(null >= R) + 1) / (n_perm + 1))
 
     rng2 = np.random.default_rng(seed + 2)
-    boot = np.empty(n_boot)
-    for i in range(n_boot):
-        Xb, cb = _content_bootstrap(X, content, rng2)
-        boot[i] = split_half_reliability(Xb, cb, seed, n_rep=N_REP_RESAMPLE)
+    boot = np.array([_splithalf_bootstrap_value(X, content, rng2) for _ in range(n_boot)])
     ci = [float(np.percentile(boot, 2.5)), float(np.percentile(boot, 97.5))]
 
     seeds = [seed, seed + 100, seed + 200]

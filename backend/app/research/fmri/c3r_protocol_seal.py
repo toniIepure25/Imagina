@@ -48,6 +48,29 @@ def main() -> None:
         "branch": "research/imagery-reliability-replication-c3r",
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "status": "SEALED_BEFORE_RELIABILITY_INSPECTION",
+        "amendments": [
+            {"date": "2026-08-27",
+             "change": "Bootstrap-CI correctness fix. The originally sealed bootstrap ('resample the "
+                       "16 reps within each content with replacement') straddled the split-half "
+                       "boundary: a physical trial resampled into BOTH halves spuriously inflates the "
+                       "split-half correlation, producing CIs inconsistent with the point estimate "
+                       "(e.g. point ~= 0 but CI ~[0.36, 0.63]). Replaced with a non-straddling "
+                       "split-half bootstrap: split each content's reps into two DISJOINT halves "
+                       "first, then resample WITHIN each half with replacement, then Pearson-r of the "
+                       "6-content mean patterns across halves (Spearman-Brown). Point estimate R_I "
+                       "(inherited estimator) and the permutation null are UNCHANGED.",
+             "criteria_changed": False,
+             "conservative": "Yes -- the fix DEFLATES the inflated CI, so it can only make PASS "
+                             "HARDER (CI lower bound > 0 is one of the AND-conditions for PASS); it "
+                             "cannot manufacture a spurious PASS.",
+             "outcomes_seen_before_fix": "subj02 point R_I and permutation p were observed before the "
+                                         "fix; subj02's gate is RELIABILITY_NOISE_FLOOR, determined by "
+                                         "R_I <= 0 (point estimate) and permutation p = 0.52, "
+                                         "INDEPENDENT of the CI. subj05/subj07 were NOT inspected "
+                                         "before the fix. All three are re-run uniformly with the "
+                                         "corrected CI.",
+             "regression_test": "test_c3r_reliability.test_bootstrap_ci_not_inflated_on_noise"},
+        ],
         "c3g_ci_status": "PENDING_RUNNER_INFRASTRUCTURE",
         "c3g_ci_run": "32985840538",
 
@@ -88,8 +111,10 @@ def main() -> None:
                       "recompute reliability with the SAME estimator",
             "n_perm": 1000, "n_rep_resample": 60, "one_sided": True,
         },
-        "bootstrap": {"method": "resample the 16 reps WITHIN each content with replacement "
-                                "(preserves 6x16 shape), recompute reliability", "n_boot": 1000,
+        "bootstrap": {"method": "non-straddling split-half bootstrap: split each content's 16 reps "
+                                "into two DISJOINT halves, resample WITHIN each half with "
+                                "replacement, Pearson-r of the 6-content mean patterns across halves "
+                                "(Spearman-Brown) [amended -- see amendments]", "n_boot": 1000,
                       "ci": "percentile 2.5/97.5"},
         "split_seed_robustness": {"seeds": ["seed", "seed+100", "seed+200"], "seed_base": 20260826},
 
