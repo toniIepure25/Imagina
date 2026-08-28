@@ -1,0 +1,35 @@
+{
+  "artifact": "C3XA_DIR_TARGET_CONTRACT",
+  "dataset": "ds001506 (Deep Image Reconstruction)",
+  "created_at": "2026-08-28",
+  "authoritative_sources": {
+    "paper": "Shen et al. 2019 PLOS Comput Biol 15(1):e1006633 doi:10.1371/journal.pcbi.1006633 (Methods: Mental imagery experiment)",
+    "openneuro": "ds001506 README + task-imagery events.tsv",
+    "kamitani_code": "KamitaniLab/DeepImageReconstruction 7_reconstruct_imagined_image.py",
+    "figshare": "DOI 10.6084/m9.figshare.7033577.v16"
+  },
+  "certified_contract": {
+    "blocks_per_run": 26, "runs": 20, "samples_total": 520,
+    "imagery_targets": 25, "natural_targets": 10, "artificial_targets": 15,
+    "fixation_blocks_per_run": 1, "fixation_samples_total": 20, "target_samples_total": 500
+  },
+  "bdpy_label_semantics": "condition-local ordinal 1-26 (vmap empty); Label==category_index; Label k <-> Img{k:04d}; NOT a global stimulus identity",
+  "family_fixation_assignment": {
+    "natural_labels": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "artificial_labels": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
+    "fixation_label": 26,
+    "basis": "paper contract (25=10nat+15art+1fix) + KamitaniLab official reconstruction code ordering + paper Fig 3; NOT numeric-label equality, NOT any neural result",
+    "certification_level": "PAPER_CONTRACT_plus_KAMITANI_OFFICIAL_CODE"
+  },
+  "matched_perception": {
+    "natural": {"condition": "perceptionNaturalImageTest", "images": 50, "reps": 24},
+    "artificial": {"condition": "perceptionArtificialImage", "images": 40, "reps": 20},
+    "note": "released bdpy does not expose per-imagery-target exact image filenames; matched-perception reliability is computed at the FAMILY-CONDITION level (conservative matched control), not a 1:1 target subset"
+  },
+  "terminology": "DIR imagery = specific memorized IMAGE exemplars (NOT GOD semantic object categories)",
+  "corrections_vs_c3x": [
+    "exclude fixation (Label 26) -> 500 target samples (was 520)",
+    "report within-family reliability R_I_natural (10) and R_I_artificial (15) to avoid natural-vs-artificial family-separation confound",
+    "acquire perceptionArtificialImage as the artificial matched control (C3X had only perceptionNaturalImageTest)"
+  ]
+}
