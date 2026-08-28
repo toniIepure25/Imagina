@@ -2,6 +2,38 @@
 
 ---
 
+## 2026-08-28 -- Scientific Gate C3X (External Imagery Dataset Qualification)
+
+New gate `research/external-imagery-qualification-c3x` (NOT C4; no reconstruction; no geometry) from
+C3R final SHA `25a0524`. Question: which reproducibly-obtainable fMRI imagery dataset has measurable
+stimulus-specific imagery reliability (which NSD-Imagery lacked, C3R)?
+
+**Sealed** (`reports/c3x/c3x_protocol_seal.json`, self_hash bf545a78) before any candidate
+reliability inspection: candidates D1 ds001506 (DIR, HIGH), D2 ds005191 (Mind Captioning, MEDIUM),
+D3 7T letters (BLOCKED_ACCESS); ranking frozen on design+access only; dataset-agnostic RUN-DISJOINT
+split-half estimator (c3x_reliability sha256 623c9236; reduces to the C3G quantity on a run-less
+fixture); stimulus-label permutation null (1000) + non-straddling bootstrap (1000) + split-seed
+robustness; subject gate + dataset gate (>=2 subjects PASS); VC-primary/V1-V4-secondary; D1-first
+conditional rule; vividness-secondary; no-geometry guard.
+
+**D1 acquisition:** figshare preprocessed VC bdpy (DOI 10.6084/m9.figshare.7033577.v16), 6 files
+MD5-certified. Imagery 26 categories x ~20 reps, 20 runs (VC 11726/11114/9919); perceptionTest 50
+categories x ~24 reps.
+
+**D1 reliability screen (sealed):** all 3 subjects imagery PASS -- sub-01 R_I=0.224 (p=0.001,
+CI[0.003,0.238]), sub-02 R_I=0.349 (p=0.001), sub-03 R_I=0.471 (p=0.001); permutation null ~0;
+run-disjoint; matched perception R_P 0.28/0.42/0.65 all reliable; attenuation R_I/R_P ~0.72-0.82.
+Reliable across V1-V4. => DATASET_RELIABILITY_PASS.
+
+**Decision:** **C3X = C3X_EXTERNAL_IMAGERY_DATASET_QUALIFIED, qualified_dataset = ds001506.** Dataset
+hunting STOPS (D2 NOT inspected; remains future replication). No geometry/reconstruction. Descriptive
+contrast: DIR imagery R_I 0.22-0.47 vs NSD-Imagery ~0.011 (noise floor) -- turns the C3G/C3R negative
+into a falsifiable cross-dataset hypothesis (test in the next gate). Next gate: C3XR External
+State-Geometry Replication on ds001506 (freeze C3G geometry family before observing geometry). NOT
+started. C3/C3M/C3G/C3R untouched. Report `reports/c3x/C3X_FINAL_REPORT.md`.
+
+---
+
 ## 2026-08-27 -- Scientific Gate C3R (Prospective Imagery Reliability Replication)
 
 New gate `research/imagery-reliability-replication-c3r` (NOT C4; no reconstruction; no geometry).

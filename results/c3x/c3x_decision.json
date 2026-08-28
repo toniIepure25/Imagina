@@ -1,0 +1,110 @@
+{
+  "artifact": "C3X_DECISION",
+  "created_at": "2026-08-28T13:23:34",
+  "seal_self_hash": "bf545a782200d5b5bd1d395bf2e2120d725f1bb7521c908166cdb5ed286b7f5b",
+  "evaluated_dataset": "D1 ds001506 (Deep Image Reconstruction)",
+  "per_subject": {
+    "sub-01": {
+      "R_I": 0.22399019082119445,
+      "R_I_ci95": [
+        0.003160424130416234,
+        0.23819146643375536
+      ],
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_null_mean": -0.004303197643979454,
+      "R_I_split_seed_min": 0.21852990169360326,
+      "R_P": 0.28222311424043717,
+      "R_P_perm_p": 0.000999000999000999,
+      "attenuation_ratio_RI_over_RP": 0.7936635219409004,
+      "imagery_gate": "SUBJECT_RELIABILITY_PASS",
+      "vision_gate": "SUBJECT_RELIABILITY_PASS",
+      "quality_class": "VISION_RELIABLE_IMAGERY_RELIABLE",
+      "R_I_roi": {
+        "V1": 0.1971873894621413,
+        "V2": 0.2632847974335693,
+        "V3": 0.3299049938157168,
+        "V4": 0.17168508892929268
+      }
+    },
+    "sub-02": {
+      "R_I": 0.3485985125124273,
+      "R_I_ci95": [
+        0.09558906910180862,
+        0.3263663947811511
+      ],
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_null_mean": -0.0031552439988976233,
+      "R_I_split_seed_min": 0.34665716570291855,
+      "R_P": 0.4238827155665251,
+      "R_P_perm_p": 0.000999000999000999,
+      "attenuation_ratio_RI_over_RP": 0.8223937889199388,
+      "imagery_gate": "SUBJECT_RELIABILITY_PASS",
+      "vision_gate": "SUBJECT_RELIABILITY_PASS",
+      "quality_class": "VISION_RELIABLE_IMAGERY_RELIABLE",
+      "R_I_roi": {
+        "V1": 0.42145290463354157,
+        "V2": 0.3866992824169888,
+        "V3": 0.4244990252583196,
+        "V4": 0.23907486156290475
+      }
+    },
+    "sub-03": {
+      "R_I": 0.47104184241039704,
+      "R_I_ci95": [
+        0.16276649247652974,
+        0.4421973304201421
+      ],
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_null_mean": -0.003420007232820589,
+      "R_I_split_seed_min": 0.4622989977544232,
+      "R_P": 0.6534830561522615,
+      "R_P_perm_p": 0.000999000999000999,
+      "attenuation_ratio_RI_over_RP": 0.7208172239138275,
+      "imagery_gate": "SUBJECT_RELIABILITY_PASS",
+      "vision_gate": "SUBJECT_RELIABILITY_PASS",
+      "quality_class": "VISION_RELIABLE_IMAGERY_RELIABLE",
+      "R_I_roi": {
+        "V1": 0.4921429659524814,
+        "V2": 0.5515231033499203,
+        "V3": 0.6274612650937909,
+        "V4": 0.5118814753118074
+      }
+    }
+  },
+  "n_imagery_pass": 3,
+  "dataset_gate": "DATASET_RELIABILITY_PASS",
+  "decision": "C3X_EXTERNAL_IMAGERY_DATASET_QUALIFIED",
+  "qualified_dataset": "ds001506",
+  "d2_inspected": false,
+  "d2_status": "NOT INSPECTED (D1 qualified -> dataset hunting stops; D2 remains a future external replication/generalization dataset)",
+  "measurement_ceiling": {
+    "imagery_R_I_range": [
+      0.22399019082119445,
+      0.47104184241039704
+    ],
+    "perception_R_P_range": [
+      0.28222311424043717,
+      0.6534830561522615
+    ],
+    "attenuation_ratio_RI_over_RP": [
+      0.7936635219409004,
+      0.8223937889199388,
+      0.7208172239138275
+    ],
+    "attenuation_ratio_mean": 0.7789581782582222
+  },
+  "cross_dataset_contrast_descriptive": {
+    "nsd_imagery_subj01_R_I": 0.011,
+    "dir_imagery_R_I_range": [
+      0.22399019082119445,
+      0.47104184241039704
+    ],
+    "note": "DESCRIPTIVE ONLY. NSD-Imagery imagery reliability was at the noise floor (~0.011); DIR/GOD imagery reliability is measurable and significant (0.22-0.47, all p<=0.001). This turns the C3G/C3R negative into a falsifiable cross-dataset hypothesis (does state geometry emerge only when imagery reliability is sufficient?) -- NOT tested in C3X."
+  },
+  "interpretation": "ds001506 (Deep Image Reconstruction) provides demonstrably reliable stimulus-specific imagery signal in visual cortex for all three subjects (imagery PASS; matched perception also reliable; permutation null ~0; run-disjoint). The perception<->imagery geometry question is therefore IDENTIFIABLE on this dataset, unlike NSD-Imagery.",
+  "next_gate": "C3XR - External State-Geometry Replication on ds001506 (freeze C3G geometry hypotheses BEFORE observing geometry). NOT started in C3X.",
+  "no_geometry_computed": true,
+  "no_reconstruction": true,
+  "scope": "dataset qualification conditional on prospectively measured imagery reliability; 3 subjects of one dataset; not an unbiased population prevalence estimate",
+  "self_hash": "2327aaab2bdaed246cb84fde9d0ccb1e0e9ae26b0e34b737dfe126af1cecdc18"
+}

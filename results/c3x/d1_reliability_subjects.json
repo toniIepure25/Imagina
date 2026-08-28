@@ -1,0 +1,71 @@
+{
+  "artifact": "C3X_D1_RELIABILITY_SUBJECTS",
+  "subjects": {
+    "sub-01": {
+      "R_I": 0.22399019082119445,
+      "R_I_ci95": [
+        0.003160424130416234,
+        0.23819146643375536
+      ],
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_null_mean": -0.004303197643979454,
+      "R_I_split_seed_min": 0.21852990169360326,
+      "R_P": 0.28222311424043717,
+      "R_P_perm_p": 0.000999000999000999,
+      "attenuation_ratio_RI_over_RP": 0.7936635219409004,
+      "imagery_gate": "SUBJECT_RELIABILITY_PASS",
+      "vision_gate": "SUBJECT_RELIABILITY_PASS",
+      "quality_class": "VISION_RELIABLE_IMAGERY_RELIABLE",
+      "R_I_roi": {
+        "V1": 0.1971873894621413,
+        "V2": 0.2632847974335693,
+        "V3": 0.3299049938157168,
+        "V4": 0.17168508892929268
+      }
+    },
+    "sub-02": {
+      "R_I": 0.3485985125124273,
+      "R_I_ci95": [
+        0.09558906910180862,
+        0.3263663947811511
+      ],
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_null_mean": -0.0031552439988976233,
+      "R_I_split_seed_min": 0.34665716570291855,
+      "R_P": 0.4238827155665251,
+      "R_P_perm_p": 0.000999000999000999,
+      "attenuation_ratio_RI_over_RP": 0.8223937889199388,
+      "imagery_gate": "SUBJECT_RELIABILITY_PASS",
+      "vision_gate": "SUBJECT_RELIABILITY_PASS",
+      "quality_class": "VISION_RELIABLE_IMAGERY_RELIABLE",
+      "R_I_roi": {
+        "V1": 0.42145290463354157,
+        "V2": 0.3866992824169888,
+        "V3": 0.4244990252583196,
+        "V4": 0.23907486156290475
+      }
+    },
+    "sub-03": {
+      "R_I": 0.47104184241039704,
+      "R_I_ci95": [
+        0.16276649247652974,
+        0.4421973304201421
+      ],
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_null_mean": -0.003420007232820589,
+      "R_I_split_seed_min": 0.4622989977544232,
+      "R_P": 0.6534830561522615,
+      "R_P_perm_p": 0.000999000999000999,
+      "attenuation_ratio_RI_over_RP": 0.7208172239138275,
+      "imagery_gate": "SUBJECT_RELIABILITY_PASS",
+      "vision_gate": "SUBJECT_RELIABILITY_PASS",
+      "quality_class": "VISION_RELIABLE_IMAGERY_RELIABLE",
+      "R_I_roi": {
+        "V1": 0.4921429659524814,
+        "V2": 0.5515231033499203,
+        "V3": 0.6274612650937909,
+        "V4": 0.5118814753118074
+      }
+    }
+  }
+}
