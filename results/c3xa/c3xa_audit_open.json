@@ -1,0 +1,23 @@
+{
+  "artifact": "C3XA_AUDIT_OPEN",
+  "gate": "C3XA",
+  "title": "DIR Target-Contract Correction and Dataset Requalification",
+  "is_not_c4": true, "no_geometry": true, "no_reconstruction": true,
+  "created_at": "2026-08-28",
+  "branch": "research/c3x-dir-target-contract-c3xa",
+  "c3x_final_sha": "d1a482ed89a10abf72376838d43332445857349f",
+  "c3x_ci_workflow": "33163318168",
+  "previous_C3X_decision": "C3X_EXTERNAL_IMAGERY_DATASET_QUALIFIED (qualified_dataset=ds001506)",
+  "previous_C3X_decision_preserved": "yes -- historical qualification based on the then-understood target contract; C3X artifacts are NOT edited or deleted",
+  "posthoc_audit_status": "REQUIRES_TARGET_CONTRACT_REQUALIFICATION",
+  "provisional_status": "C3X_QUALIFICATION_PROVISIONAL_PENDING_TARGET_CONTRACT_CORRECTION",
+  "reason": "fixation exclusion and matched-perception identity mapping not yet certified",
+  "findings_to_resolve": [
+    "C3X used all 26 bdpy Label values as imagery contents; DIR imagery = 25 targets + 1 fixation block per run (20 runs x 26 blocks = 520 samples = 500 target + 20 fixation). Fixation must be excluded.",
+    "DIR imagery targets = 10 natural images + 15 artificial images; matched perception requires BOTH perceptionNaturalImageTest AND perceptionArtificialImage. C3X downloaded only perceptionNaturalImageTest.",
+    "Numeric local Label overlap was treated as shared stimulus identity without an authoritative cross-condition mapping.",
+    "Combined-family reliability risks a natural-vs-artificial separation confound; within-family stimulus-specific reliability must be reported (R_I_natural, R_I_artificial).",
+    "'category/image identity' wording is ambiguous; DIR uses specific memorized IMAGE exemplars (not GOD object categories) -- terminology to be frozen."
+  ],
+  "note": "This is a PROVENANCE CORRECTION, not an outcome-driven re-analysis. C3X is NOT declared invalid; it is superseded by the corrected C3XA replay."
+}
