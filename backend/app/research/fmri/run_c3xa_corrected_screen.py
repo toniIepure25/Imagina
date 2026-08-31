@@ -22,7 +22,11 @@ from pathlib import Path
 
 import numpy as np
 
-from app.research.fmri.c3x_reliability import reliability_with_inference, subject_reliability_gate
+from app.research.fmri.c3x_reliability import (
+    reliability_with_inference,
+    run_disjoint_reliability,
+    subject_reliability_gate,
+)
 from app.research.fmri.run_c3x_d1_acquire_certify import _download, _sha256, parse_bdpy
 
 NATURAL = list(range(1, 11))
@@ -101,15 +105,25 @@ def main() -> None:
                                          "n_content": int(len(set(cpa.tolist()))),
                                          "n_VC": int(Xpa.shape[1])}}
 
-        # PRIMARY family-stratified imagery reliability (fixation excluded)
+        # PRIMARY family-stratified imagery reliability (fixation excluded) -- FULL inference (gated)
         res["R_I_natural"] = infer(*_subset(Xi, ci, ri, NATURAL))
         res["R_I_artificial"] = infer(*_subset(Xi, ci, ri, ARTIFICIAL))
-        # confounded comparison + old C3X (incl fixation)
-        res["R_I_combined_25_confounded"] = infer(*_subset(Xi, ci, ri, NATURAL + ARTIFICIAL))
-        res["R_I_including_fixation_oldC3X"] = infer(Xi, ci, ri)
-        # matched perception per family
-        res["R_P_natural"] = infer(Xpn, cpn, rpn)
-        res["R_P_artificial"] = infer(Xpa, cpa, rpa)
+        # DIAGNOSTIC point estimates only (not gated): confounded 25-target + old C3X (incl fixation)
+        sc, cc, rc = _subset(Xi, ci, ri, NATURAL + ARTIFICIAL)
+        res["R_I_combined_25_confounded"] = {"reliability": run_disjoint_reliability(sc, cc, rc, SEED),
+                                             "diagnostic_point_only": True}
+        res["R_I_including_fixation_oldC3X"] = {"reliability": run_disjoint_reliability(Xi, ci, ri, SEED),
+                                                "diagnostic_point_only": True}
+        # matched perception per family: POINT estimates (fast). R_P_natural's FULL-inference
+        # reliability (perm p, CI) is already established by C3X on the identical
+        # perceptionNaturalImageTest data + estimator (results/c3x/d1_reliability_<sub>.json,
+        # R_P PASS) and is referenced by the decision; full R_P inference (1200/800 samples x
+        # 1000 perm+boot ~= hours each) is not recomputed here.
+        res["R_P_natural"] = {"reliability": run_disjoint_reliability(Xpn, cpn, rpn, SEED),
+                              "point_only": True,
+                              "full_inference_reference": "C3X d1_reliability R_P (PASS)"}
+        res["R_P_artificial"] = {"reliability": run_disjoint_reliability(Xpa, cpa, rpa, SEED),
+                                 "point_only": True}
         # attenuation ratios (within family)
         res["attenuation_natural"] = (res["R_I_natural"]["reliability"] / res["R_P_natural"]["reliability"]
                                       if res["R_P_natural"]["reliability"] > 0 else None)
