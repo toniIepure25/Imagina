@@ -1,0 +1,102 @@
+{
+  "artifact": "C3XA_DECISION",
+  "created_at": "2026-08-31T19:56:13",
+  "seal_self_hash": "c4d59a59f002e4b64b59fbcab90ead96be33dc66cc6b17e26f5a2adcbe647bcd",
+  "correction": "fixation (Label 26) excluded; family-stratified; matched perception per family",
+  "per_subject": {
+    "sub-01": {
+      "R_I_natural": 0.12733523544525396,
+      "R_I_natural_p": 0.07892107892107893,
+      "R_I_natural_ci95": [
+        -0.15117268987719232,
+        0.2458238759850409
+      ],
+      "R_I_natural_pass": false,
+      "R_I_artificial": 0.19549252987453847,
+      "R_I_artificial_p": 0.005994005994005994,
+      "R_I_artificial_pass": false,
+      "R_P_natural_point_c3xa": 0.2822231142404371,
+      "R_P_natural_c3x_full": 0.28222311424043717,
+      "R_P_natural_c3x_full_p": 0.000999000999000999,
+      "R_P_natural_c3x_full_ci95": [
+        0.05188574478633945,
+        0.2659534553714579
+      ],
+      "R_P_natural_reliable": true,
+      "R_P_artificial_point": 0.3239690521480586,
+      "attenuation_natural": 0.45118641606644594,
+      "attenuation_artificial": 0.6034296442155084,
+      "R_I_combined_25_confounded": 0.21965608329926847,
+      "R_I_including_fixation_oldC3X": 0.22399019082119445,
+      "fixation_only_repeatability": 0.15295476540400213
+    },
+    "sub-02": {
+      "R_I_natural": 0.18694958446076157,
+      "R_I_natural_p": 0.026973026973026972,
+      "R_I_natural_ci95": [
+        -0.13361495741935162,
+        0.315375173245228
+      ],
+      "R_I_natural_pass": false,
+      "R_I_artificial": 0.386028538582668,
+      "R_I_artificial_p": 0.000999000999000999,
+      "R_I_artificial_pass": true,
+      "R_P_natural_point_c3xa": 0.4238827155665252,
+      "R_P_natural_c3x_full": 0.4238827155665251,
+      "R_P_natural_c3x_full_p": 0.000999000999000999,
+      "R_P_natural_c3x_full_ci95": [
+        0.18538576486137065,
+        0.3693148748880702
+      ],
+      "R_P_natural_reliable": true,
+      "R_P_artificial_point": 0.47928767773183195,
+      "attenuation_natural": 0.44104082944476947,
+      "attenuation_artificial": 0.8054213711679362,
+      "R_I_combined_25_confounded": 0.34182675407901625,
+      "R_I_including_fixation_oldC3X": 0.3485985125124273,
+      "fixation_only_repeatability": 0.3881555140070895
+    },
+    "sub-03": {
+      "R_I_natural": 0.1738298674578635,
+      "R_I_natural_p": 0.056943056943056944,
+      "R_I_natural_ci95": [
+        -0.27670759644525805,
+        0.3155311813223478
+      ],
+      "R_I_natural_pass": false,
+      "R_I_artificial": 0.4479946924654169,
+      "R_I_artificial_p": 0.000999000999000999,
+      "R_I_artificial_pass": true,
+      "R_P_natural_point_c3xa": 0.6534830561522615,
+      "R_P_natural_c3x_full": 0.6534830561522615,
+      "R_P_natural_c3x_full_p": 0.000999000999000999,
+      "R_P_natural_c3x_full_ci95": [
+        0.4412111837178174,
+        0.5428697490776584
+      ],
+      "R_P_natural_reliable": true,
+      "R_P_artificial_point": 0.43622753390247804,
+      "attenuation_natural": 0.2660051639003187,
+      "attenuation_artificial": 1.0269748185257135,
+      "R_I_combined_25_confounded": 0.43139664390063553,
+      "R_I_including_fixation_oldC3X": 0.471041842410397,
+      "fixation_only_repeatability": 0.7104729404219995
+    }
+  },
+  "n_natural_imagery_pass": 0,
+  "n_artificial_imagery_pass": 2,
+  "n_natural_perception_reliable": 3,
+  "natural_family_qualifies": false,
+  "artificial_family_qualifies": true,
+  "decision": "C3X_RESTRICTED_ARTIFICIAL_IMAGERY_DATASET_QUALIFIED",
+  "supersedes_c3x_decision": "C3X_EXTERNAL_IMAGERY_DATASET_QUALIFIED (historical; based on the pre-correction 26-label contract)",
+  "c3xr_authorized": false,
+  "primary_C3XR_family": "artificial_15",
+  "secondary_family": null,
+  "fixation_sensitivity_note": "compare R_I_including_fixation_oldC3X vs R_I_combined_25 vs family-stratified; and fixation_only_repeatability per subject",
+  "family_confound_note": "combined 25-target reliability is reported as CONFOUNDED (natural-vs-artificial separation); qualification uses WITHIN-family natural.",
+  "no_geometry_computed": true,
+  "no_reconstruction": true,
+  "next_gate_if_authorized": "C3XR External State-Geometry Replication on ds001506 (primary natural_10) - NOT started in C3XA",
+  "self_hash": "5856d9b682ffc71faafbd9b95dc685d3b3183c0c7ab42f177b7a9a757c4ac508"
+}

@@ -2,6 +2,36 @@
 
 ---
 
+## 2026-08-31 -- Scientific Gate C3XA (DIR Target-Contract Correction and Requalification)
+
+Corrective gate `research/c3x-dir-target-contract-c3xa` from C3X final SHA `d1a482e` (NOT C4; no
+geometry; no reconstruction). Post-C3X audit: C3X treated all 26 bdpy Label values as imagery
+contents, but DIR imagery = 25 targets (10 natural + 15 artificial) + 1 FIXATION per run, and the
+matched control needs BOTH perceptionNaturalImageTest AND perceptionArtificialImage; combined
+reliability risks a natural-vs-artificial separation confound.
+
+**Authoritative target contract** (PLOS paper doi:10.1371/journal.pcbi.1006633 + OpenNeuro events +
+KamitaniLab official code): 26 blocks/run = 25 imagery (natural Label 1-10, artificial Label 11-25)
++ fixation (Label 26); 520 samples = 500 target + 20 fixation; bdpy Label is a condition-local
+ordinal (Img{k:04d}); DIR uses specific IMAGE exemplars (not GOD categories). Correction seal
+(self_hash c4d59a59) committed BEFORE corrected outcomes; frozen C3X estimator REUSED UNCHANGED
+(only valid-sample mask corrected); primary future geometry family = natural_10 (frozen).
+
+**Corrected screen** (fixation-excluded, family-stratified; ran locally, cluster API down; local
+extraction independently reproduced C3X exactly): NATURAL imagery MARGINAL in all 3 (R_I_nat
+0.127/0.187/0.174; perm p 0.079/0.027/0.057; bootstrap CI includes 0 in every subject -> 0/3 PASS);
+ARTIFICIAL 2/3 PASS (sub-02 0.386, sub-03 0.448, p=0.001). Fixation-only repeatability high
+(0.15/0.39/0.71) -> the C3X combined-26 positive was partly fixation-driven + family separation.
+R_P point-only locally; R_P_natural full-inference reliability referenced from C3X (identical data).
+
+**Decision (sealed rule):** natural 0/3 PASS, artificial 2/3 PASS =>
+**C3XA = C3X_RESTRICTED_ARTIFICIAL_IMAGERY_DATASET_QUALIFIED**. C3XR for the natural/C3G-comparable
+geometry is NOT authorized; artificial is a restricted family (no broad natural-image claim). C3X
+decision preserved (historical, superseded). C3/C3M/C3G/C3R/C3X untouched. Report
+`reports/c3xa/C3XA_FINAL_REPORT.md`.
+
+---
+
 ## 2026-08-28 -- Scientific Gate C3X (External Imagery Dataset Qualification)
 
 New gate `research/external-imagery-qualification-c3x` (NOT C4; no reconstruction; no geometry) from
