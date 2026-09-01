@@ -1,0 +1,153 @@
+{
+  "artifact": "C3XB_PROTOCOL_SEAL",
+  "gate": "C3XB",
+  "title": "Natural-Object CATEGORY Imagery Qualification on Generic Object Decoding (GOD)",
+  "sealed_at": "2026-09-01",
+  "sealed_before_neural_outcomes": true,
+  "not_c4": true,
+  "no_reconstruction": true,
+  "no_geometry_computed": true,
+  "branch": "research/natural-object-imagery-qualification-c3xb",
+  "base_sha": "789ed0bd5052cb5685bebcfc5886fb746b631059",
+  "protocol_doc": "reports/c3xb/C3XB_PROTOCOL.md",
+  "terminology_binding": {
+    "god_imagery_is": "natural-object CATEGORY imagery",
+    "god_matched_perception_is": "CATEGORY-MATCHED PERCEPTION",
+    "forbidden_descriptions": [
+      "exact-image imagery",
+      "pixel-matched imagery"
+    ],
+    "future_geometry_scope": "category-level geometry only (C3XR-CAT); NOT exact-image C3XR"
+  },
+  "provenance": {
+    "openneuro": {
+      "accession": "ds001246",
+      "version": "1.2.1",
+      "role": "raw-BIDS anchor only"
+    },
+    "figshare_article": 7387130,
+    "figshare_selected_version": 8,
+    "figshare_selected_doi": "10.6084/m9.figshare.7387130.v8",
+    "figshare_license": "CC BY 4.0",
+    "provenance_amendment": "mission pinned v6; Figshare serves only v8 (v1-7 -> HTTP 404); v8 supersedes v6 and carries the corrected category_index/image_index that motivated a post-correction pin. See results/c3xb/c3xb_candidate_inventory.json.",
+    "inventory": "results/c3xb/c3xb_candidate_inventory.json",
+    "cache_rule": "only files matching pinned v8 file_id + supplied_md5 accepted; SHA-256 computed on download; no older cached GOD reused"
+  },
+  "frozen_estimators": {
+    "c3g_geometry.py": "a289a915498c1f644d5e8809aaa2488970e7fcc3ebdcf3a7d72f39d94c2242ba",
+    "c3x_reliability.py": "623c9236056291ac2e8b2fbc75e0fe5c44f1233b1eef0bca4a5420e719b872ef",
+    "c3xb_reliability.py": "33d483a135a9692ff97475730c1bd2d5ea0ef6c57e1bbf23da20ddc33d22628e"
+  },
+  "estimator": {
+    "unit": "run_pair_disjoint",
+    "independent_unit": "2-run pair; 10 pairs; each pair covers all 50 categories exactly once",
+    "split": "5 run-pairs half A / 5 half B => 5 reps/category/half, 250 trials/half",
+    "statistic": "R_I_GOD = Pearson r of concatenated 50-category-mean patterns across halves, Spearman-Brown corrected",
+    "core_primitives": "imported UNCHANGED from c3x_reliability (_content_means, _r_from_halves)",
+    "equivalence_proof": "test_c3xb_reliability.py::test_reduces_to_c3x_run_disjoint (bit-identical to c3x run_disjoint when pair==run)",
+    "permutation_null": "permute category identities WITHIN each run-pair; n_perm >= 1000",
+    "bootstrap": "non-straddling HIERARCHICAL: fix disjoint 5v5 pair split, resample whole run-pairs within each half with replacement; n_boot >= 1000",
+    "split_seeds": [
+      20260901,
+      20260901,
+      20260901
+    ],
+    "split_seed_offsets": [
+      0,
+      100,
+      200
+    ],
+    "n_rep_point": 200
+  },
+  "trial_invariants": {
+    "imagery": {
+      "categories": 50,
+      "reps_per_category": 10,
+      "trials": 500,
+      "runs": 20,
+      "trials_per_run": 25,
+      "run_pair_rule": "every 2 consecutive runs cover all 50 categories exactly once",
+      "violation_state": "BLOCKED_GOD_RUN_CATEGORY_CONTRACT"
+    },
+    "perception_imagenet_test": {
+      "categories": 50,
+      "exemplars_per_category": 1,
+      "valid_reps": 35,
+      "exclude": "one-back repetition (catch) events"
+    },
+    "category_correspondence": {
+      "required": "50/50",
+      "certified_from": "category_index/metadata, NOT row order"
+    }
+  },
+  "cue_leakage_audit": {
+    "paradigm": "3s visual WORD cue -> 15s eyes-closed imagery -> 3s vividness",
+    "must_audit": [
+      "temporal window/volumes",
+      "HRF/GLM handling",
+      "volumes averaged",
+      "cue-interval contribution"
+    ],
+    "states": [
+      "CUE_CONTAMINATION_CONTROLLED",
+      "CUE_CONTAMINATION_PRESENT",
+      "CUE_CONTAMINATION_UNRESOLVED"
+    ],
+    "rule": "primary reliability only if CONTROLLED (released patterns), else leakage-safe GLM from raw with separate cue/imagery/eval regressors frozen before outcomes; UNRESOLVED -> C3XB_BLOCKED_BY_CUE_PROVENANCE",
+    "temporal_control": "early-vs-late imagery reliability always reported"
+  },
+  "rois": {
+    "primary": "VC",
+    "secondary": [
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "LVC",
+      "HVC",
+      "LOC",
+      "FFA",
+      "PPA"
+    ],
+    "constraint": "officially released ROIs only"
+  },
+  "subject_gate": "R_I>0 AND perm p<0.05 AND bootstrap CI lower>0 AND min-over-seeds>0 -> PASS; else MARGINAL/NOISE_FLOOR (frozen c3x subject_reliability_gate)",
+  "matched_perception": {
+    "statistic": "R_P_category from ImageNetTest (50 cat x 35 reps), run-disjoint frozen C3X estimator",
+    "label": "CATEGORY-MATCHED PERCEPTION",
+    "report": "attenuation R_I/R_P"
+  },
+  "dataset_gate": {
+    "qualified": ">=2/5 subjects imagery PASS AND category-matched perception PASS AND cue control acceptable -> C3XB_GOD_CATEGORY_IMAGERY_QUALIFIED",
+    "promising": "exactly 1/5 -> C3XB_GOD_CATEGORY_IMAGERY_PROMISING",
+    "fail": "0/5 -> C3XB_GOD_CATEGORY_IMAGERY_FAIL",
+    "blocked": "cue provenance UNRESOLVED and not repairable from raw -> C3XB_BLOCKED_BY_CUE_PROVENANCE",
+    "authorizes_on_qualified": "restricted future gate C3XR-CAT (category-level geometry) ONLY; NOT exact-image C3XR"
+  },
+  "d2_fallback": {
+    "name": "Mind Captioning",
+    "openneuro": "ds005191",
+    "version": "1.0.2",
+    "frozen_before_god_outcomes": true,
+    "inspect_only_if_god_fails": true,
+    "do_not_inspect_if_god_qualifies": true
+  },
+  "integrity": {
+    "no_raw_neural_in_git": true,
+    "paths_via_env_vars": true,
+    "no_destructive_git": true,
+    "prior_artifacts_preserved": true,
+    "c3xa_history_not_rewritten": true,
+    "no_forbidden_features": [
+      "CLIP",
+      "DINO",
+      "CNN",
+      "diffusion"
+    ],
+    "vividness": "descriptive only, after primary frozen; never used to select trials",
+    "cross_dataset": "descriptive only"
+  },
+  "stop_after_c3xb": true,
+  "self_hash_field": "self_hash",
+  "self_hash": "d4ec63d7401f4953d0b665a8f4348d51a88964ba8f58ae6f4c566148dc0210e5"
+}

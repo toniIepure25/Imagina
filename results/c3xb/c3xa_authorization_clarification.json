@@ -1,0 +1,25 @@
+{
+  "artifact": "C3XA_AUTHORIZATION_CLARIFICATION",
+  "purpose": "Bookkeeping-only successor clarification of what the C3XA decision does and does NOT authorize. This does NOT rewrite C3XA history; results/c3xa/c3xa_decision.json is preserved unchanged and remains the authoritative C3XA record.",
+  "created_at": "2026-09-01",
+  "created_in_gate": "C3XB",
+  "supersedes_history": false,
+  "references": {
+    "c3xa_decision": "results/c3xa/c3xa_decision.json",
+    "c3xa_final_report": "reports/c3xa/C3XA_FINAL_REPORT.md",
+    "c3xa_decision_string": "C3X_RESTRICTED_ARTIFICIAL_IMAGERY_DATASET_QUALIFIED"
+  },
+  "general_C3XR_authorized": false,
+  "natural_exact_or_natural_image_C3XR_authorized": false,
+  "restricted_artificial_shape_pilot_possible": true,
+  "restricted_artificial_shape_pilot_is_not_general_C3XR": true,
+  "reason": "DIR natural imagery failed the prospective reliability gate; artificial shapes qualified only for a restricted stimulus family.",
+  "clarification_detail": {
+    "what_c3xa_qualified": "Only the restricted artificial-shape imagery family on DIR/ds001506 (2/3 subjects reliable), as a clearly-labelled RESTRICTED replication family.",
+    "what_c3xa_did_NOT_qualify": "Natural-image imagery on DIR (0/3 subjects passed the conservative gate; every subject's natural bootstrap CI included 0). No broad natural-image perception->imagery geometry claim is authorized by DIR.",
+    "primary_C3XR_family_field_in_c3xa_decision": "artificial_15 -- this names the ONLY family that qualified; it does NOT constitute general C3XR authorization, and does NOT authorize natural-image or exact-image geometry.",
+    "effect_on_C3XB": "C3XB independently screens a DIFFERENT dataset (GOD/ds001246) for natural-object CATEGORY imagery reliability. C3XB does not rely on and is not authorized by the C3XA artificial-shape qualification."
+  },
+  "self_hash_field": "self_hash",
+  "self_hash": "0719b9213be6f22dc1945d24f816b4ffd28874e5dd7dc49d93023199a2c5574a"
+}
