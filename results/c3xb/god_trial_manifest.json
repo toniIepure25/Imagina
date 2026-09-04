@@ -1,0 +1,111 @@
+{
+  "artifact": "C3XB_GOD_TRIAL_MANIFEST",
+  "subjects": {
+    "Subject1": {
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      }
+    },
+    "Subject2": {
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      }
+    },
+    "Subject3": {
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      }
+    },
+    "Subject4": {
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      }
+    },
+    "Subject5": {
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      }
+    }
+  },
+  "self_hash": "bfdb0f2ab143468e7d0e4f10c19904d6c82ca61db9f3fa3715c3f2a175b7b086"
+}

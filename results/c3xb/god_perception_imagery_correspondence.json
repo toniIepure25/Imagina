@@ -1,0 +1,42 @@
+{
+  "artifact": "C3XB_GOD_PERCEPTION_IMAGERY_CORRESPONDENCE",
+  "level": "natural-object CATEGORY (NOT exact-image / pixel-matched)",
+  "subjects": {
+    "Subject1": {
+      "imagery_categories": 50,
+      "perception_categories": 50,
+      "shared_categories": 50,
+      "is_50_of_50": true,
+      "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+    },
+    "Subject2": {
+      "imagery_categories": 50,
+      "perception_categories": 50,
+      "shared_categories": 50,
+      "is_50_of_50": true,
+      "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+    },
+    "Subject3": {
+      "imagery_categories": 50,
+      "perception_categories": 50,
+      "shared_categories": 50,
+      "is_50_of_50": true,
+      "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+    },
+    "Subject4": {
+      "imagery_categories": 50,
+      "perception_categories": 50,
+      "shared_categories": 50,
+      "is_50_of_50": true,
+      "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+    },
+    "Subject5": {
+      "imagery_categories": 50,
+      "perception_categories": 50,
+      "shared_categories": 50,
+      "is_50_of_50": true,
+      "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+    }
+  },
+  "self_hash": "fef1edd0fa5abf914b67dcaee6804726ee11b36856d185e4ff017c117640461f"
+}
