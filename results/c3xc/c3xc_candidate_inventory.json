@@ -1,0 +1,110 @@
+{
+  "artifact": "C3XC_CANDIDATE_INVENTORY",
+  "created_at": "2026-09-07",
+  "gate": "C3XC",
+  "dataset": {
+    "name": "Mind Captioning",
+    "author": "Tomoyasu Horikawa",
+    "paper": "Horikawa 2025, Science Advances 10.1126/sciadv.adw1464",
+    "openneuro": {
+      "accession": "ds005191",
+      "version": "1.0.2",
+      "doi": "doi:10.18112/openneuro.ds005191.v1.0.2",
+      "role": "raw-BIDS provenance anchor only (398.8 GB; NOT downloaded)"
+    },
+    "figshare": {
+      "article_id": 25808179,
+      "selected_version": 2,
+      "doi": "10.6084/m9.figshare.25808179.v2",
+      "license": "CC BY 4.0",
+      "role": "OPERATIVE preprocessed source"
+    }
+  },
+  "download_url_pattern": "https://ndownloader.figshare.com/files/{file_id}",
+  "files_used": {
+    "imagery": {
+      "testImagery_S1.mat": {
+        "file_id": 46420315,
+        "supplied_md5": "3222af2416bf74ac5ad9282b71902c03",
+        "size": 208713352,
+        "sha256": null
+      },
+      "testImagery_S2.mat": {
+        "file_id": 46420306,
+        "supplied_md5": "62e5f678c3ccff01daac093494597d45",
+        "size": 199920623,
+        "sha256": null
+      },
+      "testImagery_S3.mat": {
+        "file_id": 46420327,
+        "supplied_md5": "c60ff10ca4d6761c647e6ce41fdf26bb",
+        "size": 221286387,
+        "sha256": null
+      },
+      "testImagery_S4.mat": {
+        "file_id": 46420297,
+        "supplied_md5": "ffd1a5f014d009652e5163c6635f00ba",
+        "size": 182650420,
+        "sha256": null
+      },
+      "testImagery_S5.mat": {
+        "file_id": 46420303,
+        "supplied_md5": "955b2487c89f2a3de81517e5a3f718fc",
+        "size": 192409467,
+        "sha256": null
+      },
+      "testImagery_S6.mat": {
+        "file_id": 46420309,
+        "supplied_md5": "4189bfea0901cf27297b52b08490f4b2",
+        "size": 201818885,
+        "sha256": null
+      }
+    },
+    "perception": {
+      "testPerception_S1.mat": {
+        "file_id": 46420324,
+        "supplied_md5": "0a2da51c99b50897543b13c49e062a13",
+        "size": 208984242,
+        "sha256": null
+      },
+      "testPerception_S2.mat": {
+        "file_id": 46420318,
+        "supplied_md5": "61e19f8f4106e35597e0579e270e9b60",
+        "size": 200191753,
+        "sha256": null
+      },
+      "testPerception_S3.mat": {
+        "file_id": 46420330,
+        "supplied_md5": "e0a2da59f02b3359ef96a48322790874",
+        "size": 221582167,
+        "sha256": null
+      },
+      "testPerception_S4.mat": {
+        "file_id": 46420300,
+        "supplied_md5": "f08f53891c6fdc9c13f8d53ab2ac00e0",
+        "size": 182896993,
+        "sha256": null
+      },
+      "testPerception_S5.mat": {
+        "file_id": 46420312,
+        "supplied_md5": "1d32517acc39444695f8c03cac7c4cfb",
+        "size": 192677520,
+        "sha256": null
+      },
+      "testPerception_S6.mat": {
+        "file_id": 46420321,
+        "supplied_md5": "a8a6aea99a8b203b92c38677e29eddc4",
+        "size": 202087683,
+        "sha256": null
+      }
+    }
+  },
+  "not_used": [
+    "trainPerception_S*.mat (training set; not needed for the reliability screen)",
+    "decfeat_wb.zip / feature.zip (deberta-large & timesformer features -- FORBIDDEN: no CLIP/DINO/CNN/text-embedding)",
+    "res_encoding.zip / res_textgen.zip (analysis results)",
+    "Supplementary_Video*.mov"
+  ],
+  "self_hash_field": "self_hash",
+  "self_hash": "f22fa95542f93299b516aa489c7051ae8818daf2c778e12fb6d9520d4cd0d738"
+}
