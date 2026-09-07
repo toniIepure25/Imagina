@@ -1253,6 +1253,7 @@ jobs:
         run: >-
           python3 -m pytest
           app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
           app/tests/test_c3xb_artifacts.py
           app/tests/test_c3xa_correction.py
           app/tests/test_c3x_reliability.py

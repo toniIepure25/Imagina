@@ -1,0 +1,121 @@
+{
+  "artifact": "C3XB_DECISION",
+  "created_at": "2026-09-07T14:23:04",
+  "seal_self_hash": "d4ec63d7401f4953d0b665a8f4348d51a88964ba8f58ae6f4c566148dc0210e5",
+  "dataset": "GOD ds001246 / figshare 7387130 v8",
+  "imagery_type": "natural-object CATEGORY imagery (NOT exact-image / pixel-matched)",
+  "per_subject": {
+    "Subject1": {
+      "R_I_VC": 0.049710915193055524,
+      "R_I_p": 0.23976023976023977,
+      "R_I_ci95": [
+        -0.15063344898678932,
+        0.20483772578456566
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_MARGINAL",
+      "R_P_VC": 0.6534561051893303,
+      "R_P_p": 0.004975124378109453,
+      "R_P_ci95": [
+        0.41257153952749576,
+        0.570498431333082
+      ],
+      "R_P_point_only": false,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.07607383999978459,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": false
+    },
+    "Subject2": {
+      "R_I_VC": 0.08744408685512281,
+      "R_I_p": 0.15484515484515485,
+      "R_I_ci95": [
+        -0.1552793020525348,
+        0.1965901207291939
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_MARGINAL",
+      "R_P_VC": 0.5640826298989944,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.15501999568889527,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": false
+    },
+    "Subject3": {
+      "R_I_VC": 0.17935268035830526,
+      "R_I_p": 0.003996003996003996,
+      "R_I_ci95": [
+        -0.031689297180174186,
+        0.22122027607293387
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_MARGINAL",
+      "R_P_VC": 0.7815094478354306,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.22949521705087966,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": false
+    },
+    "Subject4": {
+      "R_I_VC": 0.0720097054494608,
+      "R_I_p": 0.16083916083916083,
+      "R_I_ci95": [
+        -0.12950105180144256,
+        0.1860558609498347
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_MARGINAL",
+      "R_P_VC": 0.7269778560389132,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.09905350603362299,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": false
+    },
+    "Subject5": {
+      "R_I_VC": 0.010970923329308062,
+      "R_I_p": 0.41358641358641357,
+      "R_I_ci95": [
+        -0.20466753756245842,
+        0.18998554831001888
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_MARGINAL",
+      "R_P_VC": 0.5825510455368681,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.018832552809509535,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": false
+    }
+  },
+  "n_subjects": 5,
+  "n_imagery_pass": 0,
+  "n_imagery_and_perception_pass": 0,
+  "cue_contamination_state": "CUE_CONTAMINATION_CONTROLLED",
+  "cue_control_acceptable": true,
+  "decision": "C3XB_GOD_CATEGORY_IMAGERY_FAIL",
+  "dataset_qualified": false,
+  "authorizes": "nothing",
+  "does_NOT_authorize": "exact-image / pixel-matched C3XR; general C3XR; reconstruction; C4",
+  "d2_fallback_if_fail": {
+    "name": "Mind Captioning",
+    "openneuro": "ds005191",
+    "version": "1.0.2",
+    "inspect": true
+  },
+  "no_geometry_computed": true,
+  "no_reconstruction": true,
+  "not_c4": true,
+  "self_hash": "8ad355d74d4aad4590a852cf30b476f6984778e27cd3ac63ff1b740a139e6da6"
+}

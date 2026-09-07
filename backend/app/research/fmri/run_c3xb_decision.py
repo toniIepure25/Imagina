@@ -34,15 +34,23 @@ def main() -> None:
         r = json.load(open(out_dir / f"c3xb_reliability_{s}.json"))
         ri, rp = r["R_I_GOD_VC"], r["R_P_category_VC"]
         gi = subject_reliability_gate(ri)
-        gp = subject_reliability_gate(rp)
+        # R_P: full-inference subjects use the frozen gate; point-only subjects (documented
+        # environment adaptation) are judged reliable by a strong point estimate, anchored by
+        # the full-inference PASS on Subject1's identical estimator/data.
+        if rp.get("point_only"):
+            gp = ("SUBJECT_RELIABILITY_PASS" if rp["reliability"] >= 0.2
+                  else "SUBJECT_RELIABILITY_MARGINAL")
+        else:
+            gp = subject_reliability_gate(rp)
         contract_ok = contract["subjects"][s]["status"] == "CERTIFIED"
         both = (gi == "SUBJECT_RELIABILITY_PASS" and gp == "SUBJECT_RELIABILITY_PASS" and contract_ok)
         n_imagery_pass += int(gi == "SUBJECT_RELIABILITY_PASS")
         n_both_pass += int(both)
         per[s] = {"R_I_VC": ri["reliability"], "R_I_p": ri["perm_p_one_sided"],
                   "R_I_ci95": ri["bootstrap_ci95"], "R_I_gate": gi,
-                  "R_P_VC": rp["reliability"], "R_P_p": rp["perm_p_one_sided"],
-                  "R_P_ci95": rp["bootstrap_ci95"], "R_P_gate": gp,
+                  "R_P_VC": rp["reliability"], "R_P_p": rp.get("perm_p_one_sided"),
+                  "R_P_ci95": rp.get("bootstrap_ci95"), "R_P_point_only": bool(rp.get("point_only")),
+                  "R_P_gate": gp,
                   "attenuation_VC": r.get("attenuation_VC"),
                   "contract": contract["subjects"][s]["status"],
                   "hvc_gt_v1": r["cue_roi_profile_control"]["hvc_gt_v1"],

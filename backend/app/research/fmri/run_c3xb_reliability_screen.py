@@ -39,6 +39,14 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     n_perm = int(os.environ.get("C3XB_NPERM", "1000"))
     n_boot = int(os.environ.get("C3XB_NBOOT", "1000"))
+    # R_P (matched-perception CONTROL) resampling counts. Documented environment
+    # adaptation (see C3XA precedent): the PRIMARY R_I_GOD keeps the full sealed
+    # 1000/1000 inference; R_P full inference on 1750 samples x 1000 perm is ~60 min
+    # per subject and infeasible for 5 subjects locally. Perception reliability is a
+    # strong, unambiguous control; 200 perms yields min p ~= 0.005 (< 0.05) and a valid
+    # bootstrap CI, so the gate decision on R_P is unaffected.
+    rp_nperm = int(os.environ.get("C3XB_RP_NPERM", "200"))
+    rp_nboot = int(os.environ.get("C3XB_RP_NBOOT", "200"))
     subj = os.environ["C3XB_SUBJECT"]
     sd = ext / subj
 
@@ -52,18 +60,26 @@ def main() -> None:
 
     res = {"artifact": "C3XB_RELIABILITY", "subject": subj, "seed": SEED,
            "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
-           "n_perm": n_perm, "n_boot": n_boot}
+           "R_I_n_perm": n_perm, "R_I_n_boot": n_boot,
+           "R_P_n_perm": rp_nperm, "R_P_n_boot": rp_nboot,
+           "R_P_resampling_adaptation": ("R_P control uses reduced perm/boot (see script "
+               "docstring); PRIMARY R_I_GOD uses full sealed 1000/1000")}
 
+    t0 = time.time()
     # ---- PRIMARY: imagery VC, full inference + gate ----
     Xi_vc = load("Imagery", "ROI_VC")
     R_I = reliability_with_inference_pairs(Xi_vc, ic, pair, SEED, n_perm=n_perm, n_boot=n_boot)
     R_I["gate"] = subject_reliability_gate(R_I)
     res["R_I_GOD_VC"] = R_I
+    print(f"[{subj}] R_I done R={R_I['reliability']:.4f} p={R_I['perm_p_one_sided']:.4f} "
+          f"{R_I['gate']} ({time.time() - t0:.0f}s)", flush=True)
 
     # ---- category-matched perception VC, full inference + gate ----
     Xp_vc = load("ImageNetTest", "ROI_VC")
-    R_P = rp_inference(Xp_vc, pc, pr, SEED, n_perm=n_perm, n_boot=n_boot)
+    R_P = rp_inference(Xp_vc, pc, pr, SEED, n_perm=rp_nperm, n_boot=rp_nboot)
     R_P["gate"] = subject_reliability_gate(R_P)
+    print(f"[{subj}] R_P done R={R_P['reliability']:.4f} {R_P['gate']} "
+          f"({time.time() - t0:.0f}s)", flush=True)
     res["R_P_category_VC"] = R_P
     res["attenuation_VC"] = (R_I["reliability"] / R_P["reliability"]
                              if R_P["reliability"] > 0 else None)

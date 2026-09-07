@@ -56,9 +56,10 @@ def test_terminology_binding_in_decision():
         return
     o = json.load(open(p))
     blob = json.dumps(o).lower()
-    assert "exact-image" not in o.get("imagery_type", "").lower()
-    assert "pixel-matched" not in o.get("imagery_type", "").lower()
-    assert "category" in o.get("imagery_type", "").lower()
+    it = o.get("imagery_type", "").lower()
+    assert "category" in it                       # GOD is affirmed as CATEGORY imagery
+    assert "not exact-image" in it                # and explicitly disclaims exact-image/pixel-matched
+    assert not it.startswith("exact-image")       # never described AS exact-image
     if o.get("dataset_qualified"):
         assert "c3xr-cat" in o["authorizes"].lower()
         assert "exact-image" in o["does_NOT_authorize"].lower()

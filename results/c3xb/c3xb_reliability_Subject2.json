@@ -1,0 +1,111 @@
+{
+  "artifact": "C3XB_RELIABILITY",
+  "subject": "Subject2",
+  "seed": 20260901,
+  "created_at": "2026-09-07T13:41:02",
+  "R_I_n_perm": 1000,
+  "R_I_n_boot": 1000,
+  "R_I_estimator": "c3xb_fast (validated BIT-IDENTICAL to frozen c3xb_reliability)",
+  "R_P_mode": "point_only",
+  "R_P_full_inference_reference": "Subject1 c3xb_reliability full 1000/1000 R_P PASS p=0.005",
+  "R_I_GOD_VC": {
+    "reliability": 0.08744408685512281,
+    "bootstrap_ci95": [
+      -0.1552793020525348,
+      0.1965901207291939
+    ],
+    "bootstrap_mean": 0.047764365809816446,
+    "null_mean": -0.008046361617377026,
+    "null_std": 0.09146123231768279,
+    "perm_p_one_sided": 0.15484515484515485,
+    "split_seed_values": [
+      0.08744408685512281,
+      0.07666676930403461,
+      0.07313041882547018
+    ],
+    "split_seed_min": 0.07313041882547018,
+    "split_seed_max": 0.08744408685512281,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_pairs": 10,
+    "unit": "run_pair_disjoint",
+    "fast_path": true,
+    "gate": "SUBJECT_RELIABILITY_MARGINAL"
+  },
+  "R_P_category_VC": {
+    "reliability": 0.5640826298989944,
+    "point_only": true,
+    "full_inference_reference": "Subject1 c3xb_reliability full 1000/1000 R_P PASS p=0.005"
+  },
+  "attenuation_VC": 0.15501999568889527,
+  "roi_profile": {
+    "ROI_VC": {
+      "R_I": 0.08744408685512281,
+      "R_P": 0.5640826298989944
+    },
+    "ROI_V1": {
+      "R_I": -0.028146834834168254,
+      "R_P": 0.663168380911793,
+      "n_voxels": 751
+    },
+    "ROI_V2": {
+      "R_I": -0.02826223918168715,
+      "R_P": 0.6166501567486299,
+      "n_voxels": 766
+    },
+    "ROI_V3": {
+      "R_I": -0.06487554729933047,
+      "R_P": 0.686231157939122,
+      "n_voxels": 632
+    },
+    "ROI_V4": {
+      "R_I": -0.04965980026681738,
+      "R_P": 0.5487766794090646,
+      "n_voxels": 333
+    },
+    "ROI_LOC": {
+      "R_I": 0.1771907344479519,
+      "R_P": 0.5123507413451689,
+      "n_voxels": 1511
+    },
+    "ROI_FFA": {
+      "R_I": 0.15715224751288465,
+      "R_P": 0.44713661304619634,
+      "n_voxels": 137
+    },
+    "ROI_PPA": {
+      "R_I": 0.38441796906995457,
+      "R_P": 0.6111030371332687,
+      "n_voxels": 332
+    },
+    "LVC_composite": {
+      "R_I": -0.03562586649745416,
+      "R_P": 0.6523806861943475,
+      "composite_of_released": [
+        "ROI_V1",
+        "ROI_V2",
+        "ROI_V3"
+      ]
+    },
+    "HVC_composite": {
+      "R_I": 0.20898305546468957,
+      "R_P": 0.5221614373039344,
+      "composite_of_released": [
+        "ROI_LOC",
+        "ROI_FFA",
+        "ROI_PPA"
+      ]
+    }
+  },
+  "cue_roi_profile_control": {
+    "V1_R_I": -0.028146834834168254,
+    "HVC_R_I": 0.20898305546468957,
+    "hvc_gt_v1": true,
+    "interpretation": "HVC>V1 imagery reliability is consistent with object imagery, NOT a V1-dominated visual word-cue artifact; V1>=HVC would flag cue leakage."
+  },
+  "early_vs_late_temporal_control": {
+    "computable_from_release": false,
+    "reason": "released imagery patterns are single block-averaged amplitudes (one vector per trial); no within-trial time axis. Requires raw BIDS ds001246 + cue/imagery-separated GLM; deferred to C3XR-CAT as a hard prerequisite."
+  },
+  "self_hash": "b47241ba71d3a4df246283f89a664a15915f3081606ab7c4ea1c66762fb33771"
+}
