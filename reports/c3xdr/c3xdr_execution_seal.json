@@ -1,0 +1,203 @@
+{
+  "artifact": "C3XDR_EXECUTION_SEAL",
+  "gate": "C3XDR",
+  "title": "Infrastructure-enabled execution rerun of the sealed C3XD cue-deconfounded D2 question",
+  "sealed_at": "2026-09-10",
+  "is_execution_rerun_not_new_hypothesis": true,
+  "not_c3xe": true,
+  "not_c3xr": true,
+  "not_c3xr_cat": true,
+  "not_c4": true,
+  "no_geometry": true,
+  "no_captioning": true,
+  "no_semantic_decoding": true,
+  "no_reconstruction": true,
+  "branch": "research/d2-cue-deconfounded-imagery-c3xdr",
+  "lineage": {
+    "c3xc_final_sha": "fce7a04ebe0a0b5767eb600d30f5c78520680b8b",
+    "c3xc_decision": "C3XC_D2_SEMANTIC_IMAGERY_QUALIFIED",
+    "c3xd_final_sha": "d60cbfde4cab53270298f4b0df59e3beb8cfddab",
+    "c3xd_decision": "C3XD_BLOCKED_RAW_PIPELINE_INFEASIBLE",
+    "c3xd_seal_self_hash": "1a680c1b1d2e3f0c015bae41088f3a5a97642ff119e9a52b995e1f3c66a723fb",
+    "c3xd_ci_run": "34368467455",
+    "c3xc_c3xd_artifacts_immutable": true
+  },
+  "references_c3xd": {
+    "protocol_seal": "reports/c3xd/c3xd_protocol_seal.json",
+    "event_contract": "results/c3xd/c3xd_event_timing_manifest.json",
+    "design_simulation": "results/c3xd/c3xd_design_simulation.json",
+    "glm_design_selection": "results/c3xd/c3xd_glm_design_selection.json"
+  },
+  "infrastructure_requirement": {
+    "min_usable_persistent_storage_GB": 300,
+    "preferred_GB": 500,
+    "reproducible_preprocessing_stack": true,
+    "container_runtime": true,
+    "remote_compute_ok": true,
+    "audit": "results/c3xdr/infrastructure_audit.json",
+    "fail_closed": "C3XDR_BLOCKED_STORAGE if unmet; download nothing large"
+  },
+  "selective_acquisition": {
+    "dataset": "ds005191 v1.0.2 raw BIDS",
+    "include": [
+      "testImagery func",
+      "testPerception func",
+      "events",
+      "sidecars",
+      "anat/fmap if required"
+    ],
+    "exclude": [
+      "trainPerception"
+    ],
+    "subjects": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6"
+    ],
+    "relevant_subset_GB": 139.4,
+    "sha256_all_inputs": true,
+    "no_raw_neural_in_git": true
+  },
+  "primary_estimator_frozen": {
+    "model": "MODEL_A_LSA",
+    "definition": "separated LSA GLM: per-trial cue + per-trial imagery + per-trial post-video regressors + grouped evaluation + nuisance",
+    "justification": "C3XD design/synthetic ONLY (recovery r min~0.61/mean~0.76; false-positive reliability 0 at cue-gain 0.25x & 0.5x, 0.25 at 1.0x). No A/B/C re-comparison on real BOLD; never tuned on C3XDR outcomes; no switch to LSS if weaker.",
+    "frozen_before_raw_outcome": true
+  },
+  "reliability_estimator": {
+    "normative": "c3xb_reliability.reliability_with_inference_pairs, unit:=imagery SESSION",
+    "accelerator": "c3xc_fast (bit-identical, tested)",
+    "frozen_hashes": {
+      "c3g_geometry.py": "a289a915498c1f644d5e8809aaa2488970e7fcc3ebdcf3a7d72f39d94c2242ba",
+      "c3x_reliability.py": "623c9236056291ac2e8b2fbc75e0fe5c44f1233b1eef0bca4a5420e719b872ef",
+      "c3xb_reliability.py": "33d483a135a9692ff97475730c1bd2d5ea0ef6c57e1bbf23da20ddc33d22628e",
+      "c3xc_fast.py": "dc2b9be3cfd8040d774209099b4c76169095707b53a0f02765c101d2771baa50"
+    },
+    "permutation_null": "within-session video-label permutation; n_perm=1000",
+    "bootstrap": "non-straddling hierarchical over sessions; n_boot=1000",
+    "split_seeds": [
+      20260909,
+      20260909,
+      20260909
+    ],
+    "split_seed_offsets": [
+      0,
+      100,
+      200
+    ],
+    "n_rep_point": 200,
+    "subject_gate": "R_I>0 AND perm p<0.05 AND bootstrap CI lower>0 AND min-over-seeds>0 -> PASS else MARGINAL/NOISE_FLOOR",
+    "hash_change_is_fail_closed": true
+  },
+  "preprocessing_provenance": {
+    "policy": "reproduce published/KamitaniLab Mind Captioning space so released localizer ROIs are reusable; ONE pipeline frozen; container-pinned",
+    "record": [
+      "container image+digest",
+      "software versions",
+      "command line",
+      "parameters",
+      "input hashes",
+      "output-space definition"
+    ],
+    "no_outcome_based_search": true,
+    "no_reliability_inflating_smoothing": true
+  },
+  "roi_contract": {
+    "primary": "VC (C3XC visual-cortex definition)",
+    "secondary": [
+      "V1",
+      "LVC",
+      "HVC"
+    ],
+    "mapping": "certified transform of released metainf.roiname localizer ROIs into raw functional space; record space/source/transform+hashes/affine/voxel-count/orientation/mask-hash/overlap",
+    "certified_status": "C3XDR_ROI_CERTIFIED",
+    "fail_closed": "C3XDR_BLOCKED_ROI_PROVENANCE",
+    "no_approximation": true
+  },
+  "two_stage_execution": {
+    "stage1_S1_technical_qualification_only": true,
+    "forbid_using_S1_RI_decoding_geometry_to_tune": true,
+    "freeze_then_S2_to_S6": true
+  },
+  "contracts": {
+    "imagery": {
+      "trials": 360,
+      "videos": 72,
+      "reps_per_video": 5,
+      "sessions": 5,
+      "no_silent_drop": true,
+      "violation": "C3XDR_BLOCKED_UNIT_CONTRACT"
+    },
+    "perception": {
+      "videos": 72,
+      "reps_per_video": 5,
+      "same_stack": true,
+      "no_figshare_substitution": true
+    },
+    "correspondence": "72/72 by video identity per subject"
+  },
+  "cue_controls": {
+    "cue_magnitude": {
+      "cue_gain_empirical": "G_cue/G_img",
+      "video_gain_empirical": "G_video/G_img",
+      "role": "diagnostic ONLY, never a model selector",
+      "estimator_frozen_before_outcome": true
+    },
+    "falsification": {
+      "R_I_cuevideo_predicted": "propagate estimated cue+video(+nuisance) prediction through the exact Model-A imagery-beta operator; compute its imagery reliability (no true imagery content imported)",
+      "Delta_I": "R_I_observed - R_I_cuevideo_predicted",
+      "inference": "valid within-session randomization/bootstrap; sealed before outcomes",
+      "downgrade_rule": "if valid inferential testing impossible, B becomes a sealed sensitivity criterion with a conservative pre-set decision"
+    },
+    "secondary": [
+      "early-vs-late FIR",
+      "current/previous/next-video contamination"
+    ]
+  },
+  "deconfounding_success_criterion": {
+    "A_raw_imagery_reliability_PASS": true,
+    "B_cuevideo_null_cannot_explain": "Delta_I>0 AND randomization p<0.05 (where exchangeable) else sealed conservative sensitivity",
+    "both_required": true
+  },
+  "dataset_gate": {
+    "subject_pass_requires": [
+      "imagery PASS",
+      "perception PASS",
+      "ROI certified",
+      "unit contract certified",
+      "cue/video contamination criterion passed"
+    ],
+    "qualified": ">=2/6 -> C3XDR_D2_CUE_DECONFOUNDED_IMAGERY_QUALIFIED",
+    "limited": "exactly 1/6 -> C3XDR_D2_CUE_DECONFOUNDED_IMAGERY_LIMITED",
+    "fail": "0/6 genuinely unreliable -> C3XDR_D2_CUE_DECONFOUNDED_IMAGERY_FAIL",
+    "blocked": "execution incomplete -> C3XDR_BLOCKED_* (BLOCKED != FAIL)"
+  },
+  "descriptive_only": [
+    "raw-vs-C3XC-release R_I delta/ratio/rank",
+    "behaviour moderators (post-gate)"
+  ],
+  "forbidden_features": [
+    "DeBERTa",
+    "TimeSformer",
+    "CLIP",
+    "DINO",
+    "LLM embeddings",
+    "captions",
+    "decoded text",
+    "video embeddings"
+  ],
+  "authorization_if_qualified": "ONLY preparation of a separately-sealed C3XE semantic/event state-geometry gate; executes no geometry/reconstruction/C4",
+  "integrity": {
+    "no_raw_neural_in_git": true,
+    "no_destructive_git": true,
+    "prior_gates_immutable": true,
+    "no_outcome_based_model_or_roi_or_subject_or_trial_selection": true,
+    "no_geometry_imports": true
+  },
+  "stop_after_c3xdr": true,
+  "self_hash_field": "self_hash",
+  "self_hash": "7afc79466c75b671865fc787a56e8e421b4774bfd3d2b65b133092450302f43d"
+}
