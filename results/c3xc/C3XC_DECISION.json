@@ -1,0 +1,131 @@
+{
+  "artifact": "C3XC_DECISION",
+  "created_at": "2026-09-09T13:38:08",
+  "seal_self_hash": "e3c2ac5686edda077ad0fbbe575c0deaffe69d4567e09397cf30081eacf762b6",
+  "dataset": "Mind Captioning ds005191 v1.0.2 / figshare 25808179 v2",
+  "content_scope": "internally-generated SEMANTIC/EVENT video-recall (NOT static/category/exact)",
+  "per_subject": {
+    "S1": {
+      "R_I_VC": 0.17231960213775055,
+      "R_I_p": 0.000999000999000999,
+      "R_I_ci95": [
+        0.04999259413568866,
+        0.21112133583949355
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_PASS",
+      "R_P_VC": 0.4678053778809852,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.3683574629225202,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": true
+    },
+    "S2": {
+      "R_I_VC": 0.11396553206723617,
+      "R_I_p": 0.000999000999000999,
+      "R_I_ci95": [
+        0.03894865987847149,
+        0.13294991911979004
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_PASS",
+      "R_P_VC": 0.5238182796236095,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.21756692444778042,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": true
+    },
+    "S3": {
+      "R_I_VC": 0.1995636461353457,
+      "R_I_p": 0.000999000999000999,
+      "R_I_ci95": [
+        0.06584178462846897,
+        0.24371073217185918
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_PASS",
+      "R_P_VC": 0.4768160977431763,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.41853378499573035,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": true
+    },
+    "S4": {
+      "R_I_VC": 0.047367567508716964,
+      "R_I_p": 0.000999000999000999,
+      "R_I_ci95": [
+        -0.017591989127964353,
+        0.07221574981076208
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_MARGINAL",
+      "R_P_VC": 0.45399846755169554,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.10433420131164507,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": false,
+      "imagery_and_perception_pass": false
+    },
+    "S5": {
+      "R_I_VC": 0.07442851282387548,
+      "R_I_p": 0.000999000999000999,
+      "R_I_ci95": [
+        0.01548578070376521,
+        0.09110231763877098
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_PASS",
+      "R_P_VC": 0.4460534346906789,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.16686008230267038,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": true
+    },
+    "S6": {
+      "R_I_VC": 0.08106075058778575,
+      "R_I_p": 0.000999000999000999,
+      "R_I_ci95": [
+        0.008432515679354406,
+        0.10109466180488945
+      ],
+      "R_I_gate": "SUBJECT_RELIABILITY_PASS",
+      "R_P_VC": 0.39180872310305687,
+      "R_P_p": null,
+      "R_P_ci95": null,
+      "R_P_point_only": true,
+      "R_P_gate": "SUBJECT_RELIABILITY_PASS",
+      "attenuation_VC": 0.20688858059565066,
+      "contract": "CERTIFIED",
+      "hvc_gt_v1": true,
+      "imagery_and_perception_pass": true
+    }
+  },
+  "n_subjects": 6,
+  "n_imagery_pass": 5,
+  "n_imagery_and_perception_pass": 5,
+  "cue_state": "CUE_CONTROLLED",
+  "cue_control_acceptable": true,
+  "hvc_gt_v1_over_pass_subjects": true,
+  "decision": "C3XC_D2_SEMANTIC_IMAGERY_QUALIFIED",
+  "dataset_qualified": true,
+  "authorizes": "a FUTURE separately-prespecified D2-content-scoped (semantic/event video-recall) reliability-bounded analysis ONLY",
+  "does_NOT_authorize": "C3XR; C3XR-CAT; reconstruction; captioning/semantic decoding; C4",
+  "no_geometry_computed": true,
+  "no_reconstruction": true,
+  "not_c4": true,
+  "self_hash": "bcba5e7ea77b71e4db38d96f33534f43f5dbe2993f397e17f93872027ba6b3ba"
+}
