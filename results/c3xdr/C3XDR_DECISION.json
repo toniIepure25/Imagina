@@ -1,0 +1,56 @@
+{
+  "artifact": "C3XDR_DECISION",
+  "gate": "C3XDR",
+  "execution_seal_self_hash": "7afc79466c75b671865fc787a56e8e421b4774bfd3d2b65b133092450302f43d",
+  "lineage": {
+    "c3xc_final_sha": "fce7a04ebe0a0b5767eb600d30f5c78520680b8b",
+    "c3xc_decision": "C3XC_D2_SEMANTIC_IMAGERY_QUALIFIED",
+    "c3xd_final_sha": "d60cbfde4cab53270298f4b0df59e3beb8cfddab",
+    "c3xd_decision": "C3XD_BLOCKED_RAW_PIPELINE_INFEASIBLE",
+    "c3xd_seal_self_hash": "1a680c1b1d2e3f0c015bae41088f3a5a97642ff119e9a52b995e1f3c66a723fb",
+    "c3xd_ci_run": "34368467455",
+    "c3xc_c3xd_artifacts_immutable": true
+  },
+  "decision": "C3XDR_BLOCKED_STORAGE",
+  "is_blocked_not_fail": true,
+  "infrastructure_gate": {
+    "required_storage_GB": 300,
+    "best_free_GB": 37.1,
+    "requirement_met": false,
+    "shortfalls": [
+      "best free storage 37.1 GB << 300 GB required (raw BOLD alone 139.4 GB, peak ~223 GB)",
+      "no reproducible preprocessing/registration stack (no fMRIPrep/FSL/SPM/FreeSurfer/nipype)",
+      "no container runtime (docker/apptainer/singularity) for a replayable pipeline",
+      "no reachable remote/pod compute (kube cluster down, no KUBECONFIG, no network mounts)"
+    ]
+  },
+  "raw_reliability_gate_evaluated": false,
+  "subjects_processed": 0,
+  "downloaded_bytes": 0,
+  "primary_model_frozen": "MODEL_A_LSA",
+  "model_selection_touched_real_bold": false,
+  "authorizes": "nothing (blocked); C3XE preparation NOT authorized",
+  "does_NOT_authorize": [
+    "C3XE",
+    "C3XR",
+    "C3XR-CAT",
+    "reconstruction",
+    "captioning",
+    "semantic decoding",
+    "state geometry",
+    "C4"
+  ],
+  "c3xc_status": "PRESERVED, immutable, valid for its declared preprocessed-release scope",
+  "c3xd_status": "PRESERVED, immutable; C3XD_BLOCKED_RAW_PIPELINE_INFEASIBLE stands",
+  "what_would_unblock": [
+    "an execution host with >=300 GB (pref >=500) usable persistent storage",
+    "a reproducible container-pinned preprocessing/registration stack (fMRIPrep/FSL/SPM/FreeSurfer or KamitaniLab code) producing a space compatible with the released ROIs",
+    "then replay the frozen execution seal: selective raw acquisition (trainPerception excluded), Model-A LSA betas, certified VC ROI mapping, and the frozen session-disjoint reliability gate + cue+video-only falsification"
+  ],
+  "no_geometry_computed": true,
+  "no_reconstruction": true,
+  "not_c4": true,
+  "no_raw_neural_data_committed": true,
+  "no_large_download_attempted": true,
+  "self_hash": "6413baff4947d7074caf036ba54431f976b701011a4f9b53a403105c960ea28f"
+}

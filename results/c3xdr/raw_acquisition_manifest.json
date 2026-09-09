@@ -1,0 +1,31 @@
+{
+  "artifact": "C3XDR_RAW_ACQUISITION_MANIFEST",
+  "status": "NOT_ACQUIRED_BLOCKED",
+  "planned_subset": {
+    "dataset": "ds005191 v1.0.2 raw BIDS",
+    "include": [
+      "testImagery func",
+      "testPerception func",
+      "events",
+      "sidecars",
+      "anat/fmap if required"
+    ],
+    "exclude": [
+      "trainPerception"
+    ],
+    "subjects": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6"
+    ],
+    "relevant_subset_GB": 139.4,
+    "sha256_all_inputs": true,
+    "no_raw_neural_in_git": true
+  },
+  "downloaded_bytes": 0,
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed). No large download attempted (per Section 1).",
+  "self_hash": "5bf8e34c69313526c35ef98f830639af854d78f39b2321d6673bddbac2187dfa"
+}

@@ -1,0 +1,8 @@
+{
+  "artifact": "C3XDR_ROI_PROVENANCE",
+  "status": "NOT_EXECUTED_BLOCKED",
+  "primary_roi": "VC",
+  "would_require": "certified transform of released metainf.roiname localizer ROIs into raw functional space; record space/source/transform+hashes/affine/voxel-count/orientation/mask-hash/overlap",
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed). Raw functional space not produced (no preprocessing) -> ROI transform not attempted; remains the C3XD BLOCKED_C3XD_ROI_PROVENANCE risk.",
+  "self_hash": "5c9d3b860d50133f8a760ea5a85641f5181ffd3f5b3a69babed50fb04bc1f81c"
+}

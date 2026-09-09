@@ -1,0 +1,12 @@
+{
+  "artifact": "C3XDR_CUE_MAGNITUDE",
+  "status": "NOT_MEASURED_BLOCKED",
+  "would_report": [
+    "cue_gain_empirical=G_cue/G_img",
+    "video_gain_empirical",
+    "R_cue",
+    "R_postvideo"
+  ],
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed). Requires raw VC betas (needs the raw pipeline).",
+  "self_hash": "f2b5a65958c58f5e25d03f87553dfa9cad5844812c271c68786912256e3f2b56"
+}

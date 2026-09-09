@@ -1,0 +1,21 @@
+{
+  "artifact": "C3XDR_IMAGERY_MANIFEST",
+  "status": "NOT_PRODUCED_BLOCKED",
+  "required_contract": {
+    "trials": 360,
+    "videos": 72,
+    "reps_per_video": 5,
+    "sessions": 5,
+    "no_silent_drop": true,
+    "violation": "C3XDR_BLOCKED_UNIT_CONTRACT"
+  },
+  "event_certified_by_c3xd": {
+    "trials": 360,
+    "videos": 72,
+    "reps": 5,
+    "sessions": 5,
+    "balanced": true
+  },
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed). No raw betas produced. Event/unit contract already certified in C3XD.",
+  "self_hash": "c603793fa795418e8290e8710c35f89c5dcebca017963a715030ec78733c11b0"
+}

@@ -1,0 +1,8 @@
+{
+  "artifact": "C3XDR_PREPROCESSING_SPEC",
+  "status": "NOT_EXECUTED_BLOCKED",
+  "policy": "reproduce published/KamitaniLab Mind Captioning space so released localizer ROIs are reusable; ONE pipeline frozen; container-pinned",
+  "container_runtime_available": false,
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed). No container runtime (docker/apptainer/singularity) and no fMRIPrep/FSL/SPM/FreeSurfer/nipype available -> pipeline not runnable.",
+  "self_hash": "197bd2172ea259abe0276b59c8f1f9a15d110b85987da510537c87d0f14b9122"
+}

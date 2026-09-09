@@ -1,0 +1,8 @@
+{
+  "artifact": "C3XDR_RELIABILITY",
+  "subject": "S2",
+  "status": "NOT_PRODUCED_BLOCKED",
+  "estimator": "c3xb_reliability.reliability_with_inference_pairs, unit:=imagery SESSION",
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed).",
+  "self_hash": "9d734fc17999dd25860af6bdd7e0f7e682db08a6402aaa97a16624895549b46c"
+}

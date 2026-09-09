@@ -1,0 +1,12 @@
+{
+  "artifact": "C3XDR_CUEVIDEO_FALSIFICATION",
+  "status": "NOT_EXECUTED_BLOCKED",
+  "would_compute": [
+    "R_I_observed",
+    "R_I_cuevideo_predicted",
+    "Delta_I",
+    "randomization p/CI"
+  ],
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed).",
+  "self_hash": "8cce6574a3d093128f604788c0f2426b77d82b9efa7d1bf6742057b6ccb7deb8"
+}
