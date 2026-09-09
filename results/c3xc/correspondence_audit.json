@@ -1,0 +1,49 @@
+{
+  "artifact": "C3XC_CORRESPONDENCE_AUDIT",
+  "level": "video identity (semantic/event video-recall); 72 test videos",
+  "subjects": {
+    "S1": {
+      "imagery_videos": 72,
+      "perception_videos": 72,
+      "shared": 72,
+      "is_72_of_72": true,
+      "certified_from": "video identity (imageryID/stimID), NOT row order"
+    },
+    "S2": {
+      "imagery_videos": 72,
+      "perception_videos": 72,
+      "shared": 72,
+      "is_72_of_72": true,
+      "certified_from": "video identity (imageryID/stimID), NOT row order"
+    },
+    "S3": {
+      "imagery_videos": 72,
+      "perception_videos": 72,
+      "shared": 72,
+      "is_72_of_72": true,
+      "certified_from": "video identity (imageryID/stimID), NOT row order"
+    },
+    "S4": {
+      "imagery_videos": 72,
+      "perception_videos": 72,
+      "shared": 72,
+      "is_72_of_72": true,
+      "certified_from": "video identity (imageryID/stimID), NOT row order"
+    },
+    "S5": {
+      "imagery_videos": 72,
+      "perception_videos": 72,
+      "shared": 72,
+      "is_72_of_72": true,
+      "certified_from": "video identity (imageryID/stimID), NOT row order"
+    },
+    "S6": {
+      "imagery_videos": 72,
+      "perception_videos": 72,
+      "shared": 72,
+      "is_72_of_72": true,
+      "certified_from": "video identity (imageryID/stimID), NOT row order"
+    }
+  },
+  "self_hash": "8b532b85afb112c656d66db8e9eeab10777ed86303d308b477ae3a6223959ded"
+}

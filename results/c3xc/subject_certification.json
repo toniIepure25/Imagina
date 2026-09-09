@@ -1,0 +1,346 @@
+{
+  "artifact": "C3XC_SUBJECT_CERTIFICATION",
+  "dataset": "Mind Captioning ds005191 v1.0.2 / figshare 25808179 v2",
+  "created_at": "2026-09-08T13:56:46",
+  "subjects": {
+    "S1": {
+      "subject": "S1",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "n_sessions": 5,
+        "session_unit_contract_ok": true,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_videos": 72,
+        "perception_videos": 72,
+        "shared": 72,
+        "is_72_of_72": true,
+        "certified_from": "video identity (imageryID/stimID), NOT row order"
+      },
+      "roi_voxel_counts_VC_earlyVC_LVC_HVC": {
+        "VC": 17403,
+        "earlyVC": 2516,
+        "LVC": 6223,
+        "HVC": 11065
+      },
+      "per_session": {
+        "1": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "2": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "3": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "4": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "5": {
+          "n_videos": 72,
+          "each_once": true
+        }
+      },
+      "self_hash": "e1b693e74d395214749eac49c0cd6e183d9be8a3af1a0d9bec938b572a36ba2a"
+    },
+    "S2": {
+      "subject": "S2",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "n_sessions": 5,
+        "session_unit_contract_ok": true,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_videos": 72,
+        "perception_videos": 72,
+        "shared": 72,
+        "is_72_of_72": true,
+        "certified_from": "video identity (imageryID/stimID), NOT row order"
+      },
+      "roi_voxel_counts_VC_earlyVC_LVC_HVC": {
+        "VC": 17554,
+        "earlyVC": 2551,
+        "LVC": 6318,
+        "HVC": 11462
+      },
+      "per_session": {
+        "1": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "2": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "3": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "4": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "5": {
+          "n_videos": 72,
+          "each_once": true
+        }
+      },
+      "self_hash": "17bff9d09787bab6566125b364ffb95a88c078695d20857122e8c95b41c2cc96"
+    },
+    "S3": {
+      "subject": "S3",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "n_sessions": 5,
+        "session_unit_contract_ok": true,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_videos": 72,
+        "perception_videos": 72,
+        "shared": 72,
+        "is_72_of_72": true,
+        "certified_from": "video identity (imageryID/stimID), NOT row order"
+      },
+      "roi_voxel_counts_VC_earlyVC_LVC_HVC": {
+        "VC": 20598,
+        "earlyVC": 2549,
+        "LVC": 6919,
+        "HVC": 13420
+      },
+      "per_session": {
+        "1": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "2": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "3": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "4": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "5": {
+          "n_videos": 72,
+          "each_once": true
+        }
+      },
+      "self_hash": "0b80bf093e6db358a4176b3ebb54e0ebc2e722d59bfc75317d20e3d34c76e012"
+    },
+    "S4": {
+      "subject": "S4",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "n_sessions": 5,
+        "session_unit_contract_ok": true,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_videos": 72,
+        "perception_videos": 72,
+        "shared": 72,
+        "is_72_of_72": true,
+        "certified_from": "video identity (imageryID/stimID), NOT row order"
+      },
+      "roi_voxel_counts_VC_earlyVC_LVC_HVC": {
+        "VC": 16824,
+        "earlyVC": 2217,
+        "LVC": 5217,
+        "HVC": 11288
+      },
+      "per_session": {
+        "1": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "2": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "3": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "4": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "5": {
+          "n_videos": 72,
+          "each_once": true
+        }
+      },
+      "self_hash": "d6ee60ff33db8ce41da5f9c2d47f124f6545c243d85858692217dd4500ce9c3d"
+    },
+    "S5": {
+      "subject": "S5",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "n_sessions": 5,
+        "session_unit_contract_ok": true,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_videos": 72,
+        "perception_videos": 72,
+        "shared": 72,
+        "is_72_of_72": true,
+        "certified_from": "video identity (imageryID/stimID), NOT row order"
+      },
+      "roi_voxel_counts_VC_earlyVC_LVC_HVC": {
+        "VC": 15354,
+        "earlyVC": 2186,
+        "LVC": 5859,
+        "HVC": 9223
+      },
+      "per_session": {
+        "1": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "2": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "3": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "4": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "5": {
+          "n_videos": 72,
+          "each_once": true
+        }
+      },
+      "self_hash": "b392cbfabcf0d1367ec52f6740d74d0880495efc047245f6c9e6164d584d474e"
+    },
+    "S6": {
+      "subject": "S6",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "n_sessions": 5,
+        "session_unit_contract_ok": true,
+        "contract_ok": true
+      },
+      "perception": {
+        "n_samples": 360,
+        "n_videos": 72,
+        "reps_min": 5,
+        "reps_max": 5,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_videos": 72,
+        "perception_videos": 72,
+        "shared": 72,
+        "is_72_of_72": true,
+        "certified_from": "video identity (imageryID/stimID), NOT row order"
+      },
+      "roi_voxel_counts_VC_earlyVC_LVC_HVC": {
+        "VC": 18382,
+        "earlyVC": 2152,
+        "LVC": 5770,
+        "HVC": 12118
+      },
+      "per_session": {
+        "1": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "2": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "3": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "4": {
+          "n_videos": 72,
+          "each_once": true
+        },
+        "5": {
+          "n_videos": 72,
+          "each_once": true
+        }
+      },
+      "self_hash": "d53605f2ce72f3d6c57afc367bea44f1cdf5852896f89c855afc74d44fe5125e"
+    }
+  },
+  "n_certified": 6,
+  "all_certified": true,
+  "self_hash": "6ae71a31d61d8ae6d30a8593ded33fdf37357288f32d8edb146f2c9eb4fe8e13"
+}
