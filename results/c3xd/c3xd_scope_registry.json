@@ -1,0 +1,58 @@
+{
+  "artifact": "C3XD_SCOPE_REGISTRY",
+  "created_at": "2026-09-09",
+  "gate": "C3XD",
+  "purpose": "Pin C3XD scope and document (WITHOUT computing) the prospective C3XE geometry scope, to prevent claim drift. Descriptive; authoritative decision = C3XD_DECISION.json.",
+  "c3xd_scope": {
+    "question": "raw-BIDS cue-deconfounded reproducibility of C3XC semantic/event imagery reliability",
+    "is_not": [
+      "C3XR",
+      "C3XR-CAT",
+      "C4",
+      "reconstruction",
+      "captioning",
+      "semantic decoding",
+      "state geometry"
+    ],
+    "content_scope": "internally-generated SEMANTIC/EVENT (video-recall); 72 video identities",
+    "authorizes_on_pass": "ONLY preparation of a future separately-sealed C3XE gate"
+  },
+  "c3xe_prospective_scope_DOCUMENTATION_ONLY": {
+    "status": "NOT COMPUTED; recorded only; requires its own future prospective seal",
+    "content_unit": "72 exact video identities",
+    "primary_roi": "VC",
+    "secondary_roi": [
+      "HVC",
+      "LVC",
+      "V1"
+    ],
+    "candidate_inherited_geometry_family": [
+      "G3 participation ratio",
+      "G4 subspace overlap",
+      "G6 linear CKA",
+      "G8 crossvalidated RDM similarity"
+    ],
+    "critical_control": "SNR-matched perception geometry",
+    "why_stronger_than_C3G": {
+      "C3G": "K=6, imagery reliability ~ noise floor, single subject",
+      "C3XE_candidate": "K=72 matched video identities, 5 imagery reps, 5 perception reps, 6 subjects, 5/6 passed release-level reliability (C3XC)",
+      "note": "NO geometry inference is drawn from this comparison; documentation only"
+    },
+    "group_inference_planning_note": {
+      "n_subjects": 6,
+      "should_not_rely_solely_on": "participant sign-flips",
+      "future_seal_should_consider": [
+        "participant-level effects",
+        "joint within-subject randomization",
+        "100000 group null draws",
+        "mean participant effect",
+        "leave-one-subject-out robustness",
+        "supplementary exact sign-flip",
+        "BH-FDR q=0.05 across the frozen primary geometry family"
+      ],
+      "status": "planning note only; NOT implemented in C3XD"
+    }
+  },
+  "self_hash_field": "self_hash",
+  "self_hash": "c90a43b1049a3b31ed4c7ff846080429a71b3359168adb8895ce0cecd175ef56"
+}
