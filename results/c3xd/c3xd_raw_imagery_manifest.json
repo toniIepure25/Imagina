@@ -1,0 +1,24 @@
+{
+  "artifact": "C3XD_RAW_IMAGERY_MANIFEST",
+  "required_contract": {
+    "subjects": 6,
+    "videos": 72,
+    "reps_per_video": 5,
+    "sessions": 5,
+    "trials": 360,
+    "session_balance": "required"
+  },
+  "event_certified": {
+    "trials": 360,
+    "videos": 72,
+    "reps": 5,
+    "sessions": 5,
+    "balanced": true
+  },
+  "trial_to_video_mapping": "authoritative via BIDS events (imageryID); see event manifest per subject/session/run/trial",
+  "status": "NOT_PRODUCED_BLOCKED",
+  "reason": "raw BOLD betas were not produced: C3XD_BLOCKED_RAW_PIPELINE_INFEASIBLE (139.4 GB raw BOLD vs 37.1 GB free; no reproducible preprocessing/registration stack) + BLOCKED_C3XD_ROI_PROVENANCE (raw-space VC not certifiable).",
+  "contract_certified_from_events": "results/c3xd/c3xd_event_timing_manifest.json",
+  "no_silent_trial_drop": true,
+  "self_hash": "899232e686f23bc6ddb6a38e1d0fe84145a738594419cccc0b0feb3cf188a8e9"
+}

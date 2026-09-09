@@ -1,0 +1,54 @@
+{
+  "artifact": "C3XD_DECISION",
+  "gate": "C3XD",
+  "seal_self_hash": "1a680c1b1d2e3f0c015bae41088f3a5a97642ff119e9a52b995e1f3c66a723fb",
+  "dataset": "ds005191 v1.0.2 (raw BIDS)",
+  "lineage": {
+    "c3xc_final_sha": "fce7a04ebe0a0b5767eb600d30f5c78520680b8b",
+    "c3xc_decision": "C3XC_D2_SEMANTIC_IMAGERY_QUALIFIED",
+    "c3xc_seal_self_hash": "e3c2ac5686edda077ad0fbbe575c0deaffe69d4567e09397cf30081eacf762b6",
+    "c3xc_ci_run": "34343018957",
+    "c3xc_preserved_unchanged": true
+  },
+  "decision": "C3XD_BLOCKED_RAW_PIPELINE_INFEASIBLE",
+  "raw_reliability_gate_evaluated": false,
+  "blocking_conditions": {
+    "insufficient_storage": true,
+    "no_reproducible_preprocessing_stack": true,
+    "roi_provenance": "BLOCKED_C3XD_ROI_PROVENANCE"
+  },
+  "event_contract_certified": {
+    "all_subjects_imagery_360x72x5_balanced": true,
+    "perception_72_videos": true,
+    "correspondence": "72/72 by video identity"
+  },
+  "design_identifiability": {
+    "per_trial_imagery_estimable": true,
+    "primary_model_selected": null,
+    "selection_status": "NO_IDENTIFIABLE_MODEL_AT_EQUAL_MAGNITUDE",
+    "cue_deconfounding_sufficiency": "CONDITIONAL: adequate (no false-positive reliability) if video-specific cue-response magnitude in VC <= 0.5x imagery; UNRESOLVED at comparable magnitude; the true ratio requires raw BOLD (infeasible here)"
+  },
+  "cue_diagnostics_ref": "results/c3xd/c3xd_cue_diagnostics.json",
+  "authorizes": "nothing (blocked); C3XE preparation NOT authorized",
+  "does_NOT_authorize": [
+    "C3XE",
+    "C3XR",
+    "C3XR-CAT",
+    "reconstruction",
+    "captioning",
+    "semantic decoding",
+    "state geometry",
+    "C4"
+  ],
+  "c3xc_status": "PRESERVED and VALID for its declared scope (preprocessed-release reliability); NOT revised, NOT described as erroneous",
+  "what_would_unblock": [
+    "an environment with >=250 GB working storage AND a reproducible fMRIPrep/FSL/SPM/FreeSurfer preprocessing+registration stack",
+    "raw-functional-space VC/localizer ROI masks (or the KamitaniLab derivatives to reproduce them)",
+    "then: freeze Model A (LSA) as primary, extract cue-deconfounded imagery+perception betas, measure the actual VC cue-response magnitude, and run the frozen session-disjoint reliability gate incl. the cue+video-only false-positive control"
+  ],
+  "no_geometry_computed": true,
+  "no_reconstruction": true,
+  "not_c4": true,
+  "no_raw_neural_data_committed": true,
+  "self_hash": "86e9926cf1caa6e42d98d646ea1d54b067da1357e0d560681edc6a6a01cfc0fb"
+}

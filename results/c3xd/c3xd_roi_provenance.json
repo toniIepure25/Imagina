@@ -1,0 +1,9 @@
+{
+  "artifact": "C3XD_ROI_PROVENANCE",
+  "status": "BLOCKED_C3XD_ROI_PROVENANCE",
+  "primary_roi": "VC",
+  "reason": "The C3XC/frozen VC (and V1/LVC/HVC) are localizer-defined voxel indices in the KamitaniLab PREPROCESSED release space. Mapping them to raw-BIDS subject BOLD space requires the KamitaniLab localizer GLMs + anatomical/functional registration + resampling (FreeSurfer/fMRIPrep-class derivatives) that are NOT distributed as raw-functional-space masks in ds005191 and are not reproducible in this environment. No 'close-enough' approximation is permitted (sealed).",
+  "cross_source_validation_possible": false,
+  "consequence": "raw-space VC cannot be certified against the C3XC release -> fail-closed",
+  "self_hash": "31b49a2b4f8521c5459883859e9d812edf52b072c8f4604e814765f8de50c8d1"
+}
