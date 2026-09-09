@@ -12,7 +12,9 @@ Per protocol, **no large data was downloaded** and no raw neural outcome was pro
 
 ## Provenance / lineage
 - Starting SHA `d60cbfde4cab53270298f4b0df59e3beb8cfddab` (C3XD final) → branch
-  `research/d2-cue-deconfounded-imagery-c3xdr` from that SHA. Final SHA recorded at closeout.
+  `research/d2-cue-deconfounded-imagery-c3xdr` from that SHA. CI-verified SHA `2de1874568bacffe…`
+  (CI run **34406371440 = SUCCESS**, c3xdr + all inherited gates + backend-core green); this
+  documentation commit advances the branch tip past that SHA.
 - C3XC final `fce7a04…` (`C3XC_D2_SEMANTIC_IMAGERY_QUALIFIED`); C3XD final `d60cbfd…`
   (`C3XD_BLOCKED_RAW_PIPELINE_INFEASIBLE`, seal `1a680c1b…`, CI 34368467455) — **preserved unchanged**.
 - Execution seal `reports/c3xdr/c3xdr_execution_seal.json` self_hash `7afc7946…`, committed before any
@@ -65,7 +67,7 @@ model/ROI/subject/trial selection on outcomes (nothing was run) ✓; no semantic
 imports (test-enforced) ✓; no raw neural data in git; no large download attempted ✓; C3XC/C3XD immutable
 (empty diff) ✓. Tests: `test_c3xdr_execution.py` (hermetic); ruff clean. CI job
 `c3xdr-d2-cue-deconfounded-imagery` (C3XDR + inherited C3XD/C3XC/C3XB/C3XA/C3X/C3R/C3G/C3M + backend-core
-+ Ruff); CI-tested SHA / run recorded at closeout.
++ Ruff): CI run 34406371440 = SUCCESS on SHA `2de1874568bacffe…` (all jobs green).
 
 ## Scientific bottom line
 C3XDR neither confirms nor refutes C3XC/C3XD: it is an execution attempt that could not proceed past the
