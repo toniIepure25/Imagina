@@ -1,0 +1,436 @@
+{
+  "artifact": "C3XD_DESIGN_SIMULATION",
+  "V": 300,
+  "n_perturbations": 4,
+  "thresholds": {
+    "imagery_recovery_r_min": 0.6,
+    "cue_to_imagery_leakage_max": 0.2,
+    "postvideo_to_imagery_leakage_max": 0.2,
+    "null_false_positive_rate_max": 0.05,
+    "no_candidate_meets -> ": "C3XD_BLOCKED_BY_CUE_DECONFOUNDING"
+  },
+  "per_model": {
+    "A": {
+      "imagery_recovery_r_min": 0.609996254152638,
+      "imagery_recovery_r_mean": 0.7595930017559027,
+      "null_fp_by_cue_gain": {
+        "0.25": {
+          "cue_leak_max": 0.03303435109048033,
+          "video_leak_max": 0.0071599967572336205,
+          "null_false_positive_rate": 0.0
+        },
+        "0.5": {
+          "cue_leak_max": 0.05541381433680138,
+          "video_leak_max": 0.0100302946607235,
+          "null_false_positive_rate": 0.0
+        },
+        "1.0": {
+          "cue_leak_max": 0.11516701514866755,
+          "video_leak_max": 0.0235931197593137,
+          "null_false_positive_rate": 0.25
+        }
+      },
+      "meets_thresholds_at_equal_magnitude": false
+    },
+    "B": {
+      "imagery_recovery_r_min": 0.6381694582800083,
+      "imagery_recovery_r_mean": 0.776410619184861,
+      "null_fp_by_cue_gain": {
+        "0.25": {
+          "cue_leak_max": 0.03073579239106768,
+          "video_leak_max": 0.052269393668165874,
+          "null_false_positive_rate": 0.0
+        },
+        "0.5": {
+          "cue_leak_max": 0.05595831459216736,
+          "video_leak_max": 0.09316281923563446,
+          "null_false_positive_rate": 0.0
+        },
+        "1.0": {
+          "cue_leak_max": 0.10549224280151784,
+          "video_leak_max": 0.17401942321959749,
+          "null_false_positive_rate": 0.5
+        }
+      },
+      "meets_thresholds_at_equal_magnitude": false
+    },
+    "C": {
+      "imagery_recovery_r_min": 0.6934904703691317,
+      "imagery_recovery_r_mean": 0.8127088509106305,
+      "null_fp_by_cue_gain": {
+        "0.25": {
+          "cue_leak_max": 0.09621861420735289,
+          "video_leak_max": 0.0037634360353550555,
+          "null_false_positive_rate": 0.25
+        },
+        "0.5": {
+          "cue_leak_max": 0.1849356444654999,
+          "video_leak_max": 0.007522413810554193,
+          "null_false_positive_rate": 0.75
+        },
+        "1.0": {
+          "cue_leak_max": 0.35726483181405166,
+          "video_leak_max": 0.0038846853130751783,
+          "null_false_positive_rate": 0.75
+        }
+      },
+      "meets_thresholds_at_equal_magnitude": false
+    }
+  },
+  "per_perturbation": [
+    {
+      "perturb": {
+        "shift": 0.0,
+        "width": 1.0,
+        "noise": 1.0,
+        "ar": 0.0
+      },
+      "models": {
+        "A": {
+          "imagery_recovery_r": 0.9026558581608621,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.002546300365824826,
+              "video_leak": -0.002932597321665053,
+              "null_reliability": 0.0005090495618352613,
+              "perm_p": 0.4626865671641791,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": -0.005826427533233906,
+              "video_leak": 0.00038829008928953606,
+              "null_reliability": 0.0012241590528919543,
+              "perm_p": 0.4975124378109453,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": -0.0002154701141861132,
+              "video_leak": -0.0032297001815043366,
+              "null_reliability": -0.005302106929229889,
+              "perm_p": 0.7064676616915423,
+              "false_positive": false
+            }
+          }
+        },
+        "B": {
+          "imagery_recovery_r": 0.9033304340012092,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.001016857008699299,
+              "video_leak": -0.052269393668165874,
+              "null_reliability": 0.0038081445669864216,
+              "perm_p": 0.35323383084577115,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": -0.005816047964800172,
+              "video_leak": -0.09316281923563446,
+              "null_reliability": 0.02544933357025743,
+              "perm_p": 0.004975124378109453,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": 0.0019084807404293007,
+              "video_leak": -0.17401942321959749,
+              "null_reliability": 0.11503967936723349,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            }
+          }
+        },
+        "C": {
+          "imagery_recovery_r": 0.9309523917908592,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.0825375763624755,
+              "video_leak": -0.0037634360353550555,
+              "null_reliability": 0.027573852718081278,
+              "perm_p": 0.004975124378109453,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": 0.14825822279263715,
+              "video_leak": 0.007522413810554193,
+              "null_reliability": 0.07555679616404752,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            },
+            "1.0": {
+              "cue_leak": 0.2998399289425345,
+              "video_leak": -0.003498271959744797,
+              "null_reliability": 0.29343384874358586,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "perturb": {
+        "shift": 1.0,
+        "width": 1.0,
+        "noise": 1.0,
+        "ar": 0.3
+      },
+      "models": {
+        "A": {
+          "imagery_recovery_r": 0.8221915042671921,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.03303435109048033,
+              "video_leak": -0.0071599967572336205,
+              "null_reliability": 0.014364236070184515,
+              "perm_p": 0.05472636815920398,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": 0.05541381433680138,
+              "video_leak": -0.0100302946607235,
+              "null_reliability": -0.006799366788731451,
+              "perm_p": 0.7960199004975125,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": 0.11516701514866755,
+              "video_leak": -0.0235931197593137,
+              "null_reliability": 0.039016972580966834,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            }
+          }
+        },
+        "B": {
+          "imagery_recovery_r": 0.8370841538710762,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.03073579239106768,
+              "video_leak": -0.04239548456032065,
+              "null_reliability": 0.008563016772700615,
+              "perm_p": 0.15422885572139303,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": 0.05595831459216736,
+              "video_leak": -0.07762770652224789,
+              "null_reliability": 0.02269284532137853,
+              "perm_p": 0.014925373134328358,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": 0.10549224280151784,
+              "video_leak": -0.14940958330011228,
+              "null_reliability": 0.124736867228515,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            }
+          }
+        },
+        "C": {
+          "imagery_recovery_r": 0.8620030258827805,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.09621861420735289,
+              "video_leak": 0.00037284203313907923,
+              "null_reliability": 0.035071949739852545,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            },
+            "0.5": {
+              "cue_leak": 0.1849356444654999,
+              "video_leak": 0.0064260476854884774,
+              "null_reliability": 0.12465058382394513,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            },
+            "1.0": {
+              "cue_leak": 0.35726483181405166,
+              "video_leak": -0.0007319283280397556,
+              "null_reliability": 0.36606239872631735,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "perturb": {
+        "shift": -1.0,
+        "width": 1.2,
+        "noise": 1.5,
+        "ar": 0.3
+      },
+      "models": {
+        "A": {
+          "imagery_recovery_r": 0.7035283904429188,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.01065149943770257,
+              "video_leak": 2.6622363437696825e-05,
+              "null_reliability": -0.008662872005779948,
+              "perm_p": 0.8009950248756219,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": 0.018905043952336477,
+              "video_leak": 0.005278400735438593,
+              "null_reliability": 0.01898207094521136,
+              "perm_p": 0.029850746268656716,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": 0.03269552592403916,
+              "video_leak": 0.001295035265796154,
+              "null_reliability": -0.0011600660523000664,
+              "perm_p": 0.5771144278606966,
+              "false_positive": false
+            }
+          }
+        },
+        "B": {
+          "imagery_recovery_r": 0.7270584305871505,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.010775082847393877,
+              "video_leak": -0.023837065405281462,
+              "null_reliability": -0.005977403771278753,
+              "perm_p": 0.7014925373134329,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": 0.017921564159181416,
+              "video_leak": -0.038935050134353597,
+              "null_reliability": 0.017035695490197608,
+              "perm_p": 0.04477611940298507,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": 0.03435390740764342,
+              "video_leak": -0.08430722654798861,
+              "null_reliability": 0.040124538276646415,
+              "perm_p": 0.004975124378109453,
+              "false_positive": false
+            }
+          }
+        },
+        "C": {
+          "imagery_recovery_r": 0.7643895155997503,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.048563885792276405,
+              "video_leak": 0.0035058623603041097,
+              "null_reliability": -0.0010964260076096503,
+              "perm_p": 0.5323383084577115,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": 0.09471194215233258,
+              "video_leak": 0.0050307276105927,
+              "null_reliability": 0.04354885990984357,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            },
+            "1.0": {
+              "cue_leak": 0.1840604354287444,
+              "video_leak": 0.0028914199587834685,
+              "null_reliability": 0.13181299075283995,
+              "perm_p": 0.004975124378109453,
+              "false_positive": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "perturb": {
+        "shift": 0.5,
+        "width": 0.8,
+        "noise": 2.0,
+        "ar": 0.3
+      },
+      "models": {
+        "A": {
+          "imagery_recovery_r": 0.609996254152638,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": -0.012938598831321995,
+              "video_leak": 4.848195225441566e-05,
+              "null_reliability": -0.002699349377614507,
+              "perm_p": 0.6417910447761194,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": -0.01848561229209158,
+              "video_leak": 0.004338421036079295,
+              "null_reliability": 0.015474525488855839,
+              "perm_p": 0.04975124378109453,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": -0.04534116114515182,
+              "video_leak": 0.010937625321592925,
+              "null_reliability": 0.0026361242802334017,
+              "perm_p": 0.417910447761194,
+              "false_positive": false
+            }
+          }
+        },
+        "B": {
+          "imagery_recovery_r": 0.6381694582800083,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": -0.009638681858205695,
+              "video_leak": -0.019152970734764473,
+              "null_reliability": 0.00619123196183532,
+              "perm_p": 0.21890547263681592,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": -0.017195704069904887,
+              "video_leak": -0.029243415050474415,
+              "null_reliability": 0.01649658761079637,
+              "perm_p": 0.029850746268656716,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": -0.04470730382865654,
+              "video_leak": -0.05649154239154422,
+              "null_reliability": 0.01872415480141298,
+              "perm_p": 0.009950248756218905,
+              "false_positive": false
+            }
+          }
+        },
+        "C": {
+          "imagery_recovery_r": 0.6934904703691317,
+          "null_fp_by_cue_gain": {
+            "0.25": {
+              "cue_leak": 0.015289050069439614,
+              "video_leak": -0.002358627268499909,
+              "null_reliability": 0.005154234182227831,
+              "perm_p": 0.26865671641791045,
+              "false_positive": false
+            },
+            "0.5": {
+              "cue_leak": 0.028292018609534834,
+              "video_leak": -0.0007963621511402561,
+              "null_reliability": 0.02051442069337745,
+              "perm_p": 0.004975124378109453,
+              "false_positive": false
+            },
+            "1.0": {
+              "cue_leak": 0.050645422142586494,
+              "video_leak": 0.0038846853130751783,
+              "null_reliability": 0.012020498295774435,
+              "perm_p": 0.0945273631840796,
+              "false_positive": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "note": "synthetic BOLD from REAL S1 imagery timing; model selection is design/synthetic ONLY, never based on real imagery reliability (no real BOLD used).",
+  "self_hash": "21ff244b41d55e75ab12d2c08b6cd987e15485fca1c2918c4c9988e5223f987e"
+}
