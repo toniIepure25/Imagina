@@ -66,7 +66,7 @@ the frozen C3XDR seal can be replayed on the now-available remote infrastructure
 Execution seal referenced unchanged (attempt=2) ✓; Model A / estimator / ROI / threshold unchanged ✓;
 no outcome-based selection (nothing run) ✓; no raw neural data, **no credentials, no kubeconfig** in git
 ✓; no large download ✓; C3XC/C3XD/C3XDR immutable ✓. Tests: `test_c3xdr_r1_execution.py` (hermetic);
-ruff clean; CI job `c3xdr-r1-remote-execution`; CI-tested SHA / run recorded at closeout.
+ruff clean; CI job `c3xdr-r1-remote-execution`: run **34523717512 = SUCCESS** on SHA `e91e9214…` (all jobs green).
 
 ## Scientific bottom line
 C3XDR-R1 advances the program by **resolving the infrastructure blocker** and **isolating the true
