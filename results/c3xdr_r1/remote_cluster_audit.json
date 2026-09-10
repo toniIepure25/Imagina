@@ -1,0 +1,32 @@
+{
+  "artifact": "C3XDR_R1_REMOTE_CLUSTER_AUDIT",
+  "status": "REACHABLE_AUTHENTICATED",
+  "kubeconfig": {
+    "found": true,
+    "path": "C:/Users/ComputaCenter/Downloads/antoniu_iepure.yaml",
+    "size_bytes": 5626,
+    "sha256": "d9380cc31d714415c39831b706b19b18d2e878ee1df99a39ed8529d2aac9ba48",
+    "committed_to_git": false,
+    "secrets_printed": false
+  },
+  "context": "antoniu-iepure@default",
+  "namespace": "runai-romania-dev",
+  "cluster_server": "https://10.130.123.31:10443",
+  "tcp_reachable": true,
+  "rbac": {
+    "get_pods": true,
+    "get_pvc": true,
+    "create_pods": true,
+    "create_jobs": true,
+    "delete_jobs": true,
+    "get_pods_log": true,
+    "create_pods_exec": true,
+    "create_pvc": true,
+    "get_nodes": true,
+    "get_storageclasses": true,
+    "kube_system_forbidden": true
+  },
+  "execution_pod": "orchestraiq-jupyter-5d6c688775-fbxj5 (Running 5d+, node k8s-worker-gpu-node-xe8545)",
+  "note": "audited via EXPLICIT --kubeconfig (not default/localhost). No credentials serialized.",
+  "self_hash": "a82ceb919d6fe115aa7d90a6dd1efb4d220abc75afe2f3e4365922b6dd21773c"
+}

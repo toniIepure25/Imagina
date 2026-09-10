@@ -1,0 +1,12 @@
+{
+  "artifact": "C3XDR_R1_EXECUTION_ATTEMPT",
+  "execution_attempt": 2,
+  "scientific_seal": "7afc79466c75b671865fc787a56e8e421b4774bfd3d2b65b133092450302f43d",
+  "scientific_protocol_changed": false,
+  "model_changed": false,
+  "estimator_changed": false,
+  "ROI_changed": false,
+  "storage_requirement_changed": false,
+  "note": "Retry solely to test the OrchestrAI kubeconfig that attempt-1's audit did not exercise. Same sealed C3XDR protocol/model/estimator/ROI/threshold.",
+  "self_hash": "47e3a6057258c1a0ff870d948b4a6f8ae8335d9375cc72bcf8e0bae89a404aa7"
+}

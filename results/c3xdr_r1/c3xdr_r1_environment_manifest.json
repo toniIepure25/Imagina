@@ -1,0 +1,19 @@
+{
+  "artifact": "C3XDR_R1_ENVIRONMENT_MANIFEST",
+  "status": "INFRA_AVAILABLE_PROVENANCE_BLOCKED",
+  "cluster": "https://10.130.123.31:10443",
+  "namespace": "runai-romania-dev",
+  "execution_pod": "orchestraiq-jupyter-5d6c688775-fbxj5 (Running 5d+, node k8s-worker-gpu-node-xe8545)",
+  "image_digest": "sha256:85ab930435b7afc06396e2949a4fe508d027a7980a319bec6a92f827578e5343",
+  "compute": {
+    "cpus": 256,
+    "mem_Gi": 1007,
+    "gpu": "NVIDIA A100-SXM4-40GB",
+    "kernel": "6.8.0-51-generic",
+    "python": "3.13.15"
+  },
+  "persistent_data_path": "/home/jovyan/work (nfs-client PVC, 107T free)",
+  "preprocessing_environment_frozen": false,
+  "reason_not_frozen": "no reproducible published preprocessing pipeline + no reproducible released-ROI space to target (see roi_provenance).",
+  "self_hash": "209fa6291af5830bb54aceeb21b6454d344cd687822c9ec64022d8fd30978182"
+}

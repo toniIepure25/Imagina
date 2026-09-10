@@ -1,0 +1,40 @@
+{
+  "artifact": "C3XDR_R1_STORAGE_CERTIFICATION",
+  "status": "C3XDR_R1_REMOTE_INFRA_PASS",
+  "requirement_GB": 300,
+  "preferred_GB": 500,
+  "requirement_met": true,
+  "persistent_volumes": [
+    {
+      "pvc": "orchestraiq-jupyter-pvc",
+      "capacity": "1Ti",
+      "storageclass": "nfs-client",
+      "access": "RWO",
+      "mount": "/home/jovyan/legacy-work",
+      "nfs_backend": "10.130.200.199:/ifs/bcm11/...-orchestraiq-jupyter-pvc-...",
+      "fs": "nfs4",
+      "size_T": 138,
+      "avail_T": 107
+    },
+    {
+      "pvc": "orchestraiq-jupyter-extra-pvc",
+      "capacity": "1Ti",
+      "storageclass": "nfs-client",
+      "access": "RWO",
+      "mount": "/home/jovyan/work",
+      "nfs_backend": "10.130.200.199:/ifs/bcm11/...-orchestraiq-jupyter-extra-pvc-...",
+      "fs": "nfs4",
+      "size_T": 138,
+      "avail_T": 107
+    }
+  ],
+  "usable_persistent_free_GB": 107000,
+  "ephemeral_excluded": [
+    "/home/jovyan/local-data (xfs node-local)",
+    "dshm (tmpfs 8Gi)",
+    "emptyDir local-storage"
+  ],
+  "persistence_evidence": "Bound nfs-client (NFS subdir provisioner) PVCs, age 5d+; NFS network-backed storage survives pod restart (PVC persistence contract). A write-probe was intentionally NOT performed to avoid mutating the user's active jupyter workspace (sealed: do not disturb production workloads).",
+  "default_storageclass": "nfs-client (also local-path available); can create new >=300Gi PVC if needed",
+  "self_hash": "157b4575ebc36b14a203332bd78c626b62dbd9e31e53d29665ab9f91f8873645"
+}
