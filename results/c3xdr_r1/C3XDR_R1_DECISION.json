@@ -1,0 +1,42 @@
+{
+  "artifact": "C3XDR_R1_DECISION",
+  "gate": "C3XDR_R1",
+  "execution_attempt": 2,
+  "scientific_seal": "7afc79466c75b671865fc787a56e8e421b4774bfd3d2b65b133092450302f43d",
+  "decision": "C3XDR_R1_BLOCKED_ROI_PROVENANCE",
+  "is_blocked_not_fail": true,
+  "infrastructure_gate": "C3XDR_R1_REMOTE_INFRA_PASS",
+  "storage_certified": true,
+  "usable_persistent_free_GB": 107000,
+  "container_execution_available": true,
+  "advance_over_c3xdr": "C3XDR_BLOCKED_STORAGE is RESOLVED (remote cluster + 107 TB persistent NFS + Kubernetes container execution confirmed via the OrchestrAI kubeconfig). The true remaining blocker is isolated: ROI/preprocessing PROVENANCE.",
+  "raw_reliability_gate_evaluated": false,
+  "subjects_processed": 0,
+  "downloaded_bytes": 0,
+  "authorizes": "nothing (blocked); C3XE preparation NOT authorized",
+  "does_NOT_authorize": [
+    "C3XE",
+    "C3XR",
+    "C3XR-CAT",
+    "reconstruction",
+    "captioning",
+    "semantic decoding",
+    "state geometry",
+    "C4"
+  ],
+  "c3xc_status": "PRESERVED, immutable",
+  "c3xd_status": "PRESERVED, immutable",
+  "c3xdr_status": "PRESERVED, immutable; C3XDR_BLOCKED_STORAGE was correct for attempt 1",
+  "what_would_unblock": [
+    "authoritative KamitaniLab preprocessing pipeline+parameters to reproduce the released functional space exactly (so the released localizer ROIs are directly reusable), OR",
+    "released ROI masks / reference EPI / raw->functional transform enabling an independently certified ROI mapping (author request may be required)",
+    "then replay the frozen C3XDR seal on the (now available) remote infrastructure"
+  ],
+  "no_geometry_computed": true,
+  "no_reconstruction": true,
+  "not_c4": true,
+  "no_raw_neural_data_committed": true,
+  "no_credentials_committed": true,
+  "no_large_download_attempted": true,
+  "self_hash": "fd34b1ec0ae5ae63cd733c1a7775fcc44676caa5c35e5a47ed1ffe06c3ddff00"
+}
