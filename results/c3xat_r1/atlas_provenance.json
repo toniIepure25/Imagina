@@ -1,0 +1,18 @@
+{
+  "artifact": "C3XAT_R1_ATLAS_PROVENANCE",
+  "seal_self_hash": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "primary_roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "templateflow_hosts_wang2015": false,
+  "templateflow_hosts_benson": false,
+  "templateflow_query_result": "no atlas-Wang2015 / atlas-Benson objects under tpl-fsaverage or tpl-MNI152NLin2009cAsym (empty S3 listing)",
+  "authoritative_source": "Wang et al. 2015 maximum-probability atlas via neuropythy (bundled, fixed-hash fetch); native source space is fsaverage/FSL-MNI152",
+  "target_space": "MNI152NLin2009cAsym 2mm",
+  "resampling": "official TemplateFlow MNI152NLin6Asym->MNI152NLin2009cAsym transform, label-safe (GenericLabel/nearest) interpolation; NO custom registration",
+  "benson_secondary": "Benson14 via neuropythy, anatomy-predicted V1+V2+V3 union",
+  "wang25_sha256": null,
+  "benson14_sha256": null,
+  "transform_sha256": null,
+  "status": "ATLAS_SOURCE_IDENTIFIED_HASH_PENDING_INPIPELINE_RESOLUTION",
+  "note": "hashes are computed and frozen inside the pinned pipeline container on the cluster before any R_I; recorded null here (not fabricated).",
+  "self_hash": "98a58e5e69cc8bd5042e3fb4dc74df0ea58eb9a9154bae53535a2080f7ec60f2"
+}
