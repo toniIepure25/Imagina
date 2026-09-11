@@ -1,0 +1,27 @@
+{
+  "artifact": "C3XAT_WANG2015_ATLAS_PROVENANCE",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "atlas": "Wang et al. 2015 Probabilistic Maps of Visual Topography in Human Cortex",
+  "roi_name": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "representation": "volume-based MNI maximum-probability map (MPM)",
+  "maps": 25,
+  "regions": 22,
+  "use_complete_atlas": true,
+  "no_performance_subselection": true,
+  "space": "MNI152 (resampled to MNI152NLin2009cAsym 2mm at ROI construction; transform pinned)",
+  "pinned": {
+    "source_url_or_repository": "PINNED_AT_DOWNLOAD",
+    "file_version": "PINNED_AT_DOWNLOAD",
+    "download_date": null,
+    "sha256": null,
+    "md5": null,
+    "voxel_resolution": "PINNED_AT_DOWNLOAD",
+    "label_table": "PINNED_AT_DOWNLOAD"
+  },
+  "outcome_independent": true,
+  "version_pinned": true,
+  "reproducible_from_public_data": true,
+  "status": "PROVENANCE_SPEC_FROZEN_HASH_VERIFICATION_PENDING_DOWNLOAD",
+  "note": "canonical public atlas; SHA-256/MD5 are recorded null here and set to the verified digest of the exact downloaded file at construction time. No hash is fabricated.",
+  "self_hash": "514c1bc63c95954c497caccb6f59b01426fc8921e4b426f9d3f9d04f08d6beec"
+}

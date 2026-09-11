@@ -1,0 +1,22 @@
+{
+  "artifact": "C3XAT_BENSON14_ATLAS_PROVENANCE",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "atlas": "Benson14 anatomy-predicted retinotopy",
+  "tool": "Neuropythy (pinned)",
+  "roi_name": "BENSON_V1V2V3",
+  "definition": "union of atlas-predicted V1+V2+V3, both hemispheres",
+  "role": "SECONDARY",
+  "cannot_rescue_primary": true,
+  "pinned": {
+    "neuropythy_version": "PINNED_AT_EXECUTION",
+    "benson_template_version": "PINNED_AT_EXECUTION",
+    "template_hashes": null,
+    "download_date": null
+  },
+  "outcome_independent": true,
+  "version_pinned": true,
+  "reproducible_from_public_data": true,
+  "status": "PROVENANCE_SPEC_FROZEN_HASH_VERIFICATION_PENDING_EXECUTION",
+  "note": "Benson14 predicts V1-V3 retinotopic organization from cortical anatomy alone; applied prospectively. Hashes set to verified values at execution. No hash fabricated.",
+  "self_hash": "cf94694247118372c20250afe434c36d0c60e25ae68f85470f61b075e0fdc22b"
+}
