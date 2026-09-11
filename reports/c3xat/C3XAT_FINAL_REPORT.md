@@ -69,8 +69,18 @@ C3XR-CAT, C3XDR-R2, geometry, decoding, reconstruction, or C4.
 No raw BOLD inspected; no neural outcome fabricated; no ROI selected by performance; secondary ROI cannot
 rescue primary; no semantic features; no geometry imports; no reconstruction; no atlas binaries or raw
 data committed (provenance/hashes only); no credentials committed. Prior gates immutable. Tests
-`test_c3xat_qualification.py` (hermetic, synthetic fixtures only); ruff clean; CI job
-`c3xat-atlas-imagery`; CI-verified SHA / run recorded at closeout.
+`test_c3xat_qualification.py` (18 hermetic tests, synthetic fixtures only); ruff clean.
+
+**CI (honest):** job **`c3xat-atlas-imagery` = SUCCESS** on SHA `b7a615d` (run 34617415944) — the C3XAT
+gate + full inherited gate suite passed. The overall run is red only because of **two pre-existing,
+C3XAT-unrelated failures** surfaced by the unpinned dependency install, not by this gate:
+1. `c1-preprocessing-determinism` and `c1-dataset-contract` — `SyntaxError` inside a freshly-installed
+   upstream **MNE** build (`mne/_fiff/utils.py`); every job importing `mne` breaks. The C3XAT gate
+   imports no `mne`. Both passed on the prior run (34584982751) before the new MNE release.
+2. `science-api-cooperative-abort` — a flaky `sqlite3.OperationalError: database is locked` in a
+   timing-sensitive aiosqlite mid-run-abort test.
+These belong to the C1 / science-api lineages and are out of C3XAT scope; fixing them (e.g. pinning
+`mne`) is deferred to their own lineage per STOP-after-C3XAT.
 
 ## STOP after C3XAT
 No geometry, no C3XAG, no decoding, no reconstruction, no C4.
