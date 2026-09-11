@@ -1,0 +1,32 @@
+{
+  "artifact": "C3XAT_R1_EXECUTION_SEAL",
+  "gate": "C3XAT_R1",
+  "execution_attempt": 2,
+  "reuses_c3xat_seal_unchanged": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "designs_new_protocol": false,
+  "frozen_unchanged": [
+    "dataset",
+    "subjects",
+    "primary_roi",
+    "secondary_roi",
+    "model_a",
+    "reliability_estimator",
+    "permutation",
+    "bootstrap",
+    "seeds",
+    "cue_video_falsification",
+    "dataset_gate"
+  ],
+  "attempt1_decision_preserved": "C3XAT_BLOCKED_EXECUTION",
+  "branch": "research/d2-atlas-raw-imagery-c3xat-r1",
+  "parent_sha": "4caeb73",
+  "no_fabrication": true,
+  "no_geometry": true,
+  "no_decoding": true,
+  "no_reconstruction": true,
+  "no_semantic_features": true,
+  "not_c3xag": true,
+  "not_c4": true,
+  "self_hash_field": "self_hash",
+  "self_hash": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a"
+}
