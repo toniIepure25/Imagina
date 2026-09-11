@@ -49,7 +49,8 @@ Provenance-only; no raw BOLD, no neural values, no reliability/geometry imports;
 or correspondence; no atlas substitution; no subject dropping; no outcome-based ROI acceptance; author
 silence not treated as unavailable. No private/binary author artifacts (none exist) and no credentials
 committed. Prior gates immutable. Tests `test_c3xpa_acceptance.py` (hermetic, synthetic fixtures only);
-ruff clean; CI job `c3xpa-author-artifact`; CI-tested SHA / run recorded at closeout.
+ruff clean; CI job `c3xpa-author-artifact`: run **34584982751 = SUCCESS** on SHA `783cc3e` (all jobs
+green).
 
 ## Next action
 If/when the authors provide per-subject VC/LVC/HVC(+V1) masks + a native BOLD reference (or an
