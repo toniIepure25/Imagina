@@ -1,0 +1,22 @@
+{
+  "artifact": "C3XPR_PUBLISHED_PREPROCESSING_CONTRACT",
+  "source": "Horikawa 2025 Science Advances (10.1126/sciadv.adw1464) methods + released metadata",
+  "PUBLICLY_SPECIFIED": [
+    "functional preprocessing methodology described in the paper",
+    "manual correction of FreeSurfer segmentation is reported",
+    "released functional data on a regular 2 mm isotropic world lattice (from .mat xyz)"
+  ],
+  "PUBLICLY_UNSPECIFIED_OR_UNVERIFIED": [
+    "exact fMRIPrep/FreeSurfer/AFNI/ANTs versions not machine-verified here",
+    "identity of the released world frame (native-anat vs MNI) not labelled in release",
+    "no released reference EPI/BOLDref image",
+    "no released affine/header",
+    "no released raw->released transform chain"
+  ],
+  "REQUIRES_DERIVATIVE": [
+    "manually-corrected FreeSurfer surfaces (unreleased) that determine bbregister/surface geometry/retinotopic + localizer ROI boundaries",
+    "localizer/retinotopy runs+GLMs that defined V1/LOC/FFA/PPA/VC (absent from ds005191)"
+  ],
+  "note": "paper-method fidelity is not the blocker; the spatial reference + ROI-defining derivatives are.",
+  "self_hash": "5007b0c608cd6da9efe2f24fc7a8585e27215a55a145539cf441a04a28d2285e"
+}
