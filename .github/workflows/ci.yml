@@ -695,6 +695,34 @@ jobs:
           echo "::notice::Legacy/artifact validation job completed."
           echo "::notice::Preflight: ${{ steps.preflight.outputs.status }}"
 
+  # --- Infrastructure: frozen neural-dependency provenance guard ---
+  # Single reusable check (not duplicated per job): fails EARLY and explicitly with
+  # NEURAL_DEPENDENCY_PROVENANCE_MISMATCH if the installed MNE drifts from the exact
+  # pyproject pin, instead of surfacing later as an obscure error inside a scientific
+  # test (MNE 1.13.1 raised SyntaxError in mne/_fiff/utils.py in run 34617415944).
+  neural-dependency-provenance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Print resolved environment
+        run: |
+          python --version
+          python -c "import mne; print('MNE', mne.__version__)"
+      - name: Assert frozen neural dependency provenance + MNE smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_dependency_provenance.py
+          -v --timeout=120
+
   # --- Scientific Gate C1 (neural-behavioral alignment) ---
   # All jobs below run against tiny synthetic/deterministic fixtures
   # generated in-test (pybv-written BrainVision files, small numpy arrays)
