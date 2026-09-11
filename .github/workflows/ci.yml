@@ -1534,3 +1534,40 @@ jobs:
           app/tests/test_c3g_geometry.py
           app/tests/test_c3m_alignment.py
           -v --timeout=300
+
+  c3xat-r1-execution:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XAT-R1 execution-attempt-2 contracts + inherited suite (hermetic; no cluster/ds005191 download/BOLD)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xat_r1_execution.py
+          app/tests/test_c3xat_qualification.py
+          app/tests/test_c3xpa_acceptance.py
+          app/tests/test_c3xpr_provenance.py
+          app/tests/test_c3xdr_r1_execution.py
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
