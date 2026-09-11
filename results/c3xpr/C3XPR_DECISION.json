@@ -1,0 +1,31 @@
+{
+  "artifact": "C3XPR_DECISION",
+  "gate": "C3XPR",
+  "seal_self_hash": "dc2eb9f9de391dcde9953c5290202104ac8caa353876b1eca0fc4d17ea1e6519",
+  "public_audit_exhaustive": true,
+  "exact_mask_reconstructable_in_released_frame": true,
+  "exact_relation_to_raw_native_functional_space_public": false,
+  "vc_mask_publicly_reconstructable_in_native_raw_space": false,
+  "lvc_hvc_mask_publicly_reconstructable_in_native_raw_space": false,
+  "decision": "C3XPR_PUBLIC_ROI_PROVENANCE_PARTIAL",
+  "state": "C3XPR_AUTHOR_ARTIFACT_REQUIRED",
+  "roi_provenance_unrecoverable": false,
+  "reason_not_unrecoverable": "no authoritative author response yet; silence != unrecoverable",
+  "minimal_missing_artifact": "per-subject VC/LVC/HVC NIfTI masks + matching native-space BOLD reference image (S1-S6)",
+  "author_request_prepared": true,
+  "author_request_sent": false,
+  "author_response_obtained": false,
+  "c3xdr_r2_authorized": false,
+  "c3xdr_r2_authorization_condition": "only upon C3XPR_PUBLIC_ROI_PROVENANCE_RECOVERED or receipt of the requested authoritative spatial artifacts (a future gate)",
+  "immutable_prior_gates": [
+    "C3XC",
+    "C3XD",
+    "C3XDR",
+    "C3XDR-R1"
+  ],
+  "no_raw_bold": true,
+  "no_neural_outcomes": true,
+  "no_geometry": true,
+  "no_substitute_roi": true,
+  "self_hash": "b44864ee57152d8bce5360aebe2554ca45b9e33df6587bbba48b51dbba1fd1a7"
+}
