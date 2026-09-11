@@ -1,0 +1,16 @@
+{
+  "artifact": "C3XPR_ZENODO_GITHUB_PROVENANCE",
+  "zenodo": {
+    "record": "15686864",
+    "content": "horikawa-t/MindCaptioning code snapshot zip (v1.0.0)",
+    "spatial_artifacts": false
+  },
+  "github": {
+    "repo": "horikawa-t/MindCaptioning",
+    "nature": "analysis code (decoding/encoding/text-gen)",
+    "getRoiVoxelIdx": "reads ROI indices ONLY from released .mat metainf; does not define/map from raw",
+    "history_commits_scanned": 100,
+    "spatial_artifacts_in_history": "NONE (no masks/reference/transform/preproc/localizer files)"
+  },
+  "self_hash": "f12f05cbec0b154c60d23b90937352d34c067b28fc3dfa18369f3b7a80d8a2e8"
+}

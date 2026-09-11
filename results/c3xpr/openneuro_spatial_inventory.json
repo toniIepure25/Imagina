@@ -1,0 +1,26 @@
+{
+  "artifact": "C3XPR_OPENNEURO_SPATIAL_INVENTORY",
+  "dataset": "ds005191 v1.0.2",
+  "subjects": [
+    "sub-01..sub-06"
+  ],
+  "present": {
+    "T1w": true,
+    "inplaneT2": true,
+    "fieldmaps": true,
+    "testImagery": true,
+    "testPerception": true,
+    "trainPerception": true
+  },
+  "absent": {
+    "retinotopy": true,
+    "pRF": true,
+    "visual_localizer": true,
+    "category_localizer": true,
+    "MT_localizer": true,
+    "language_localizer": true
+  },
+  "localizer_retinotopy_hits": 0,
+  "consequence": "route 5 (regenerate ROIs from localizer/retinotopy) is NOT available publicly: the runs that defined the ROIs are not in the public raw dataset.",
+  "self_hash": "14b018d4d1a484a3c527c0b8cb91f517ccd89206e3c922d8ba550ce3e1529560"
+}
