@@ -69,7 +69,15 @@ decision) authorizes preparing C3XAG. This gate authorizes nothing further.
 ## Integrity
 No neural outcome fabricated; no ROI selected by performance; no geometry/decoding/reconstruction/
 semantic features; C3XAT seal and all prior gates immutable; no kubeconfig, license, or token committed.
-Tests `test_c3xat_r1_execution.py` (hermetic); ruff clean; CI job `c3xat-r1-execution`.
+Tests `test_c3xat_r1_execution.py` (hermetic, 9 tests); ruff clean.
+
+**CI:** job **`c3xat-r1-execution` = SUCCESS** on SHA `9679929` (run 34639586463). On the MNE-pinned
+ancestry the previously-failing neural jobs are green too — `c1-dataset-contract`,
+`c1-preprocessing-determinism`, and `neural-dependency-provenance` all PASS; no job failures.
+
+**Live-execution snapshot (cluster, outside git):** acquisition Job `c3xat-r1-acquire` reached ~38.6 /
+~46.7 GiB and continues to the persistent PVC; fMRIPrep and the sealed reliability remain to be run and
+collected on resumption.
 
 ## STOP after C3XAT-R1
 No C3XAG; no geometry; no decoding; no reconstruction; no C4.
