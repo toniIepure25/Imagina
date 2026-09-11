@@ -1,0 +1,12 @@
+{
+  "artifact": "C3XAT_SCOPE_REGISTRY",
+  "C3XDR": "exact replay using original released KamitaniLab ROI definitions; still blocked by missing released<->raw spatial provenance.",
+  "C3XPA": "dormant author-artifact validator; may be resumed if authoritative spatial material arrives.",
+  "C3XAT": "new atlas-defined raw-fMRI analysis; does NOT reproduce the original ROI definition.",
+  "no_historical_decision_superseded": true,
+  "c3xdr_status": "PRESERVED, immutable, provenance-blocked",
+  "c3xpa_status": "PRESERVED, immutable, dormant (C3XPA_NO_AUTHOR_ARTIFACT_RECEIVED)",
+  "is_exact_replication_of_kamitani_roi": false,
+  "is_continuation_or_relaxation_of_c3xdr": false,
+  "self_hash": "38b841464ca00600f9d5fe5cf486692c15bb3d013567ac331f39326cd8ebf7a1"
+}
