@@ -1,0 +1,37 @@
+{
+  "artifact": "C3XPA_PROTOCOL_SEAL",
+  "gate": "C3XPA",
+  "sealed_at": "2026-09-11",
+  "provenance_validation_only": true,
+  "no_raw_bold": true,
+  "no_neural_outcomes": true,
+  "no_reliability": true,
+  "no_geometry": true,
+  "not_c3xdr_r2": true,
+  "not_c3xe": true,
+  "not_c4": true,
+  "branch": "research/d2-author-spatial-artifact-c3xpa",
+  "lineage": {
+    "c3xpr_parent_sha": "b42358dee4a05ad22b66d04c773e9af0ac2f979e",
+    "c3xpr_decision": "C3XPR_PUBLIC_ROI_PROVENANCE_PARTIAL",
+    "c3xpr_state": "C3XPR_AUTHOR_ARTIFACT_REQUIRED",
+    "c3xdr_seal": "7afc79466c75b671865fc787a56e8e421b4774bfd3d2b65b133092450302f43d",
+    "prior_gates_immutable": [
+      "C3XC",
+      "C3XD",
+      "C3XDR",
+      "C3XDR-R1",
+      "C3XPR"
+    ]
+  },
+  "hard_precondition": "run ONLY after an authoritative author response/spatial artifact is received; NOT merely because a request was prepared or sent",
+  "precondition_status_at_seal": "UNMET",
+  "exact_match_required": "100% released coordinate-set agreement; Dice~1 insufficient; no approximation",
+  "no_atlas_substitution": true,
+  "no_subject_dropping": true,
+  "no_outcome_based_roi_acceptance": true,
+  "author_silence_not_equals_unavailable": true,
+  "authorizes_on_exact_recovery": "preparation of C3XDR-R2 under the SAME frozen C3XDR seal (does NOT execute it)",
+  "self_hash_field": "self_hash",
+  "self_hash": "089cf68fd289b3f49f1aa40faf63cf6f523b7f4cb0d5f22525591b32732c8c2a"
+}
