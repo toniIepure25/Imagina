@@ -76,8 +76,7 @@ family, not a C3XDR replay).
 ## Integrity / verification
 Provenance-only; no raw BOLD, no neural values, no reliability/geometry imports; no substitute/
 approximate ROI; released `.mat` inspected structurally only; nothing non-public obtained; no
-credentials. Prior gates immutable. Tests `test_c3xpr_provenance.py` (hermetic); ruff clean; CI job
-`c3xpr-roi-provenance`; CI-tested SHA / run recorded at closeout.
+credentials. Prior gates immutable. Tests `test_c3xpr_provenance.py` (hermetic); ruff clean; CI job `c3xpr-roi-provenance`: run **34583447578 = SUCCESS** on SHA `41054cd…` (all jobs green).
 
 ## Scientific bottom line
 The ROI **definitions** are exactly known in the released frame, but the public release omits the single
