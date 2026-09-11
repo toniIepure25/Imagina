@@ -1,0 +1,35 @@
+{
+  "artifact": "C3XPA_DECISION",
+  "gate": "C3XPA",
+  "seal_self_hash": "089cf68fd289b3f49f1aa40faf63cf6f523b7f4cb0d5f22525591b32732c8c2a",
+  "precondition_met": false,
+  "decision": "C3XPA_NO_AUTHOR_ARTIFACT_RECEIVED",
+  "is_certification_state": false,
+  "clarification": "This is NOT a certification outcome (RECOVERED/PARTIAL/CONTRADICTION/UNAVAILABLE), each of which requires received material. The gate did not start because no authoritative artifact was received.",
+  "author_response_obtained": false,
+  "author_confirms_unavailable": false,
+  "per_subject_certified_exact": 0,
+  "cohort_required": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
+  ],
+  "c3xdr_r2_authorized": false,
+  "c3xdr_r2_authorization_condition": "C3XPA_AUTHOR_ROI_PROVENANCE_RECOVERED (exact 100% released coordinate-set agreement + certified native-reference relationship, cohort satisfiable) under the unchanged C3XDR seal",
+  "immutable_prior_gates": [
+    "C3XC",
+    "C3XD",
+    "C3XDR",
+    "C3XDR-R1",
+    "C3XPR"
+  ],
+  "no_raw_bold": true,
+  "no_neural_outcomes": true,
+  "no_geometry": true,
+  "no_fabricated_artifact_or_correspondence": true,
+  "next_action": "if/when the authors provide VC/LVC/HVC(+V1) masks + native BOLD reference (or an acceptable route B/C/D/E artifact), re-run C3XPA validation on the received material.",
+  "self_hash": "5263ad2be4a3ece7b3ea18832b33763f772c1c8fdeaf419fba5205d19ac86f43"
+}
