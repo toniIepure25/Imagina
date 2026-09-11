@@ -1401,3 +1401,37 @@ jobs:
       - name: backend-core smoke
         run: >-
           python3 -m pytest app/tests/test_api_smoke.py -v --timeout=180
+
+  c3xpr-roi-provenance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XPR provenance-only gate + inherited suite (hermetic; no cluster/download/BOLD)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xpr_provenance.py
+          app/tests/test_c3xdr_r1_execution.py
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
