@@ -20,7 +20,7 @@
     "frozen": true
   },
   "preprocessing": {
-    "status": "RUNNING",
+    "status": "RUNNING (all 6 healthy; recon-all dominates; long-running)",
     "jobs": [
       "c3xat-r1-fmriprep-sub01",
       "c3xat-r1-fmriprep-sub02",
@@ -43,5 +43,7 @@
   "dataset_gate_evaluated": false,
   "c3xag_authorized": false,
   "decision_state": "INTERIM (execution_attempt=2 continues; no terminal decision; no genuine blocker hit)",
-  "self_hash": "ec2d9fb06998711157c88b5c2f6a515ac68363e92446e3014860518a6afbc1b4"
+  "trial_contract": "VERIFIED (72 videos / 360 imagery trials / 5 reps / 5 sessions; 72/72 imagery-perception correspondence) for all sub-01..06 from real events.tsv",
+  "resume_next": "on fMRIPrep completion: verify per-subject exit/output hashes -> S1 technical qualification -> implementation_freeze_manifest -> sealed R_I/R_P/cue-video Delta -> dataset gate -> C3XAT_R1_FINAL_DECISION",
+  "self_hash": "fb34f3ed5a9df81a7129aa0cb631a504ad88b2d95b85369c5fcdb670b94a679f"
 }

@@ -1,0 +1,85 @@
+{
+  "artifact": "C3XAT_R1_TRIAL_CONTRACT_VERIFIED",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "source": "parsed from acquired BIDS events.tsv on the persistent PVC (outcome-independent: event/trial counts only)",
+  "required_contract": {
+    "imagery_sessions": 5,
+    "n_imagery_trials": 360,
+    "distinct_videos": 72,
+    "reps_per_video": 5,
+    "imagery_perception_correspondence": "72/72"
+  },
+  "per_subject": {
+    "sub-01": {
+      "imagery_sessions": 5,
+      "n_imagery_trials": 360,
+      "distinct_imagery_videos": 72,
+      "reps_per_video_min": 5,
+      "reps_per_video_max": 5,
+      "distinct_cue_videos": 72,
+      "distinct_postvideo": 72,
+      "distinct_perception_videos": 72,
+      "imagery_perception_identity_overlap": 72
+    },
+    "sub-02": {
+      "imagery_sessions": 5,
+      "n_imagery_trials": 360,
+      "distinct_imagery_videos": 72,
+      "reps_per_video_min": 5,
+      "reps_per_video_max": 5,
+      "distinct_cue_videos": 72,
+      "distinct_postvideo": 72,
+      "distinct_perception_videos": 72,
+      "imagery_perception_identity_overlap": 72
+    },
+    "sub-03": {
+      "imagery_sessions": 5,
+      "n_imagery_trials": 360,
+      "distinct_imagery_videos": 72,
+      "reps_per_video_min": 5,
+      "reps_per_video_max": 5,
+      "distinct_cue_videos": 72,
+      "distinct_postvideo": 72,
+      "distinct_perception_videos": 72,
+      "imagery_perception_identity_overlap": 72
+    },
+    "sub-04": {
+      "imagery_sessions": 5,
+      "n_imagery_trials": 360,
+      "distinct_imagery_videos": 72,
+      "reps_per_video_min": 5,
+      "reps_per_video_max": 5,
+      "distinct_cue_videos": 72,
+      "distinct_postvideo": 72,
+      "distinct_perception_videos": 72,
+      "imagery_perception_identity_overlap": 72
+    },
+    "sub-05": {
+      "imagery_sessions": 5,
+      "n_imagery_trials": 360,
+      "distinct_imagery_videos": 72,
+      "reps_per_video_min": 5,
+      "reps_per_video_max": 5,
+      "distinct_cue_videos": 72,
+      "distinct_postvideo": 72,
+      "distinct_perception_videos": 72,
+      "imagery_perception_identity_overlap": 72
+    },
+    "sub-06": {
+      "imagery_sessions": 5,
+      "n_imagery_trials": 360,
+      "distinct_imagery_videos": 72,
+      "reps_per_video_min": 5,
+      "reps_per_video_max": 5,
+      "distinct_cue_videos": 72,
+      "distinct_postvideo": 72,
+      "distinct_perception_videos": 72,
+      "imagery_perception_identity_overlap": 72
+    }
+  },
+  "all_subjects_pass_contract": true,
+  "fail_closed_violation": false,
+  "note": "trial_type 2=imagery(imageryID), -2=cue(cueID), 3=post-video(stimID); Model A cue/imagery/post-video structure confirmed in data. No neural outcome inspected.",
+  "self_hash": "336bd6b49e2a6f03800148489e3be8c49a467379c17915275f0bf0e22ca76ce9"
+}
