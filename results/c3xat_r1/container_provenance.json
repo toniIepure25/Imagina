@@ -1,0 +1,15 @@
+{
+  "artifact": "C3XAT_R1_CONTAINER_PROVENANCE",
+  "seal_self_hash": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "fmriprep_image": "nipreps/fmriprep:24.1.1",
+  "fmriprep_digest": "sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "digest_resolved_from": "Docker Hub registry (nipreps/fmriprep tag 24.1.1)",
+  "freesurfer_bundled_in_fmriprep": true,
+  "freesurfer_license_secret": "c3xat-fs-license",
+  "output_space": "MNI152NLin2009cAsym",
+  "resolution_mm": 2,
+  "smoothing": "NONE",
+  "status": "CONTAINER_PROVENANCE_RESOLVED",
+  "note": "fMRIPrep 24.1.1 bundles FreeSurfer + ANTs + AFNI + TemplateFlow client; the exact component versions are captured from the pinned digest at run time.",
+  "self_hash": "f7495559ab2644456f69d782dffd8754e11fe2ec9a39d97d8bfe8d815041ae00"
+}
