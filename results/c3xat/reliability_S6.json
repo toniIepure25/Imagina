@@ -1,0 +1,30 @@
+{
+  "artifact": "C3XAT_RELIABILITY",
+  "subject": "S6",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "independent_unit": "imagery SESSION",
+  "estimator": "c3xb_reliability.reliability_with_inference_pairs",
+  "split_seeds": [
+    20260909,
+    20261009,
+    20261109
+  ],
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "n_rep_point": 200,
+  "status": "EXECUTION_BLOCKED",
+  "subject_status": null,
+  "subject_primary_pass": null,
+  "reliability": null,
+  "bootstrap_ci95": null,
+  "bootstrap_mean": null,
+  "null_mean": null,
+  "null_std": null,
+  "perm_p_one_sided": null,
+  "split_seed_values": null,
+  "split_seed_min": null,
+  "split_seed_max": null,
+  "note": "no raw BOLD available in this session; R_I not computed and NOT fabricated. The frozen estimator + seeds will produce this record at confirmatory execution.",
+  "self_hash": "3ddd9aa67d74c2728bcb8d6983bf6faf565f4a5c9306f2dfd4c5fb6ab275cd0d"
+}

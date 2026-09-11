@@ -1,0 +1,43 @@
+{
+  "artifact": "C3XAT_PERCEPTION_RELIABILITY",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "statistic": "R_P_ATLAS",
+  "independent_unit": "perception runs/sessions",
+  "status": "EXECUTION_BLOCKED",
+  "per_subject": {
+    "S1": {
+      "R_I": null,
+      "R_P": null,
+      "R_I_over_R_P_attenuation": null
+    },
+    "S2": {
+      "R_I": null,
+      "R_P": null,
+      "R_I_over_R_P_attenuation": null
+    },
+    "S3": {
+      "R_I": null,
+      "R_P": null,
+      "R_I_over_R_P_attenuation": null
+    },
+    "S4": {
+      "R_I": null,
+      "R_P": null,
+      "R_I_over_R_P_attenuation": null
+    },
+    "S5": {
+      "R_I": null,
+      "R_P": null,
+      "R_I_over_R_P_attenuation": null
+    },
+    "S6": {
+      "R_I": null,
+      "R_P": null,
+      "R_I_over_R_P_attenuation": null
+    }
+  },
+  "no_geometry_from_attenuation": true,
+  "note": "matched perception reliability in the SAME atlas ROI; not computed (blocked).",
+  "self_hash": "e5f3f4b835d98818421340ec5a92516a8e913b34e5e8c5e53d8db7e6acba13a0"
+}
