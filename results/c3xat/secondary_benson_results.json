@@ -1,0 +1,55 @@
+{
+  "artifact": "C3XAT_SECONDARY_BENSON_RESULTS",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "roi": "BENSON_V1V2V3",
+  "role": "SECONDARY",
+  "cannot_change_primary_decision": true,
+  "status": "EXECUTION_BLOCKED",
+  "per_subject": {
+    "S1": {
+      "R_I_BENSON_V1V2V3": null,
+      "R_P_BENSON_V1V2V3": null,
+      "attenuation": null,
+      "R_I_cuevideo_predicted": null,
+      "Delta_I": null
+    },
+    "S2": {
+      "R_I_BENSON_V1V2V3": null,
+      "R_P_BENSON_V1V2V3": null,
+      "attenuation": null,
+      "R_I_cuevideo_predicted": null,
+      "Delta_I": null
+    },
+    "S3": {
+      "R_I_BENSON_V1V2V3": null,
+      "R_P_BENSON_V1V2V3": null,
+      "attenuation": null,
+      "R_I_cuevideo_predicted": null,
+      "Delta_I": null
+    },
+    "S4": {
+      "R_I_BENSON_V1V2V3": null,
+      "R_P_BENSON_V1V2V3": null,
+      "attenuation": null,
+      "R_I_cuevideo_predicted": null,
+      "Delta_I": null
+    },
+    "S5": {
+      "R_I_BENSON_V1V2V3": null,
+      "R_P_BENSON_V1V2V3": null,
+      "attenuation": null,
+      "R_I_cuevideo_predicted": null,
+      "Delta_I": null
+    },
+    "S6": {
+      "R_I_BENSON_V1V2V3": null,
+      "R_P_BENSON_V1V2V3": null,
+      "attenuation": null,
+      "R_I_cuevideo_predicted": null,
+      "Delta_I": null
+    }
+  },
+  "answers": "is any reliable imagery signal already present in anatomy-predicted early visual cortex? -- not evaluable (blocked).",
+  "note": "computed only AFTER the primary WANG25 decision is frozen, at execution.",
+  "self_hash": "d2c4ee024e1581a42352bfb604c98fc2f91b2cd2608aa068f6ef50e76ddf6ea1"
+}
