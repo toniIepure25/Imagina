@@ -1,0 +1,61 @@
+{
+  "artifact": "C3XAT_R1_DECISION",
+  "gate": "C3XAT_R1",
+  "execution_attempt": 2,
+  "seal_self_hash": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "reuses_c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "decision": "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE",
+  "is_blocked_not_fail": true,
+  "infrastructure_gate": "C3XAT_R1_REMOTE_INFRA_PASS",
+  "resolved_this_session": [
+    "live OrchestrAI connection (explicit kubeconfig, ns runai-romania-dev)",
+    "persistent storage (600Gi RWX nfs-client PVC, Bound)",
+    "GPU capacity (4x A100 node)",
+    "cluster+shell egress to OpenNeuro/TemplateFlow",
+    "FreeSurfer license (in-cluster secret)",
+    "fMRIPrep container digest (24.1.1 @ sha256:9aec0b83...)",
+    "ds005191 BIDS contract verified (6 subj, 5 imagery sessions, trainPerception excludable)",
+    "selective ds005191 acquisition launched and running"
+  ],
+  "not_yet_complete": [
+    "full ds005191 sync",
+    "in-pipeline atlas hash resolution",
+    "fMRIPrep preprocessing of S1-S6",
+    "S1 technical qualification",
+    "confirmatory R_I/R_P",
+    "cue/video falsification",
+    "dataset decision"
+  ],
+  "why_not_fail": "no genuine fail-closed blocker was hit (cluster/storage/egress/license/container all available). Only long-running preprocessing remains, which per protocol runs on the persistent cluster and resumes; incomplete confirmatory measurement is BLOCKED, not FAIL.",
+  "resume_path": "on next resumption: collect the acquire job, run in-pipeline atlas resolution+hash, launch fMRIPrep (digest-pinned, +FS license secret, MNI152NLin2009cAsym 2mm, no smoothing), do S1 technical qualification (no R_I inspection), freeze impl hashes, then execute the sealed session-disjoint reliability + cue/video falsification and apply the frozen dataset gate.",
+  "subjects_with_confirmatory_R_I": 0,
+  "dataset_gate_evaluated": false,
+  "no_neural_outcome_fabricated": true,
+  "no_roi_selected_by_performance": true,
+  "no_geometry": true,
+  "no_decoding": true,
+  "no_reconstruction": true,
+  "no_semantic_features": true,
+  "c3xag_authorized": false,
+  "c3xag_authorization_condition": "ONLY C3XAT_D2_ATLAS_IMAGERY_QUALIFIED authorizes PREPARING C3XAG.",
+  "does_NOT_authorize": [
+    "C3XAG execution",
+    "C3XE",
+    "C3XR",
+    "C4",
+    "geometry",
+    "decoding",
+    "reconstruction"
+  ],
+  "immutable_prior_gates": [
+    "C3XC",
+    "C3XD",
+    "C3XDR",
+    "C3XDR-R1",
+    "C3XPR",
+    "C3XPA",
+    "C3XAT"
+  ],
+  "credentials_committed": false,
+  "self_hash": "8709b53309a1c5eed1c8c93ed4fd89acadb743b33d18e326d3fcc4ae4a29be08"
+}
