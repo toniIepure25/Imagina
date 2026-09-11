@@ -1,0 +1,15 @@
+{
+  "artifact": "C3XAT_R1_STATUS_CLARIFICATION",
+  "historical_checkpoint": "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE",
+  "interpretation": "INTERIM_EXECUTION_CHECKPOINT",
+  "attempt_closed": false,
+  "execution_attempt": 2,
+  "continue_same_attempt": true,
+  "administrative_only": true,
+  "modifies_scientific_seal": false,
+  "c3xat_seal_unchanged": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "c3xat_r1_execution_seal_unchanged": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "does_not_delete_or_rewrite": "results/c3xat_r1/C3XAT_R1_DECISION.json (interim checkpoint preserved)",
+  "note": "The committed C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE is an interim execution checkpoint of attempt 2, not a terminal scientific decision. Execution continues on the persistent OrchestrAI state under the same seals; a final decision will be written only on genuine completion or a real fail-closed blocker.",
+  "self_hash": "0cfb2758e5a57e3e44b93c0d22b41e244920d2ce519607d3cae3231d939c40c6"
+}
