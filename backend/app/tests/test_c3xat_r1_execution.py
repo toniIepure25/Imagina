@@ -129,3 +129,84 @@ def test_no_credentials_committed():
     for secretish in ("BEGIN RSA", "BEGIN PRIVATE", "client-certificate-data", "client-key-data",
                       "token:", "password"):
         assert secretish not in blob
+
+
+# --- continuation of execution attempt 2 (acquisition complete, atlas resolved, fMRIPrep running) ---
+
+def _load(name):
+    return json.load(open(_R / name))
+
+
+def test_new_resolved_artifacts_self_hash():
+    for name in ("C3XAT_R1_STATUS_CLARIFICATION.json", "atlas_provenance_resolved.json",
+                 "execution_progress.json"):
+        p = _R / name
+        if p.exists():
+            assert _verify(_load(name)), name
+
+
+def test_status_clarification_is_administrative_and_seals_unchanged():
+    p = _R / "C3XAT_R1_STATUS_CLARIFICATION.json"
+    if not p.exists():
+        return
+    c = _load("C3XAT_R1_STATUS_CLARIFICATION.json")
+    assert c["interpretation"] == "INTERIM_EXECUTION_CHECKPOINT"
+    assert c["attempt_closed"] is False and c["continue_same_attempt"] is True
+    assert c["execution_attempt"] == 2
+    assert c["modifies_scientific_seal"] is False
+    assert c["c3xat_seal_unchanged"] == _C3XAT_SEAL
+    # the historical interim checkpoint must still exist unchanged
+    assert json.load(open(_R / "C3XAT_R1_DECISION.json"))["decision"] == "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE"
+
+
+def test_acquisition_manifest_exact_no_approximate_values():
+    p = _R / "acquisition_manifest.json"
+    if not p.exists():
+        return
+    m = _load("acquisition_manifest.json")
+    s = m["summary"]
+    assert isinstance(s["total_bytes"], int) and s["total_bytes"] > 0
+    assert s["n_files"] == len(m["files"])
+    assert s["zero_byte_files"] == []              # no partial files
+    assert s["trainPerception_in_subset"] is False  # trainPerception excluded from analysis subset
+    assert len(s["subjects"]) == 6
+    for sub, inv in s["inventory"].items():
+        assert len(inv["imagery"]) == 5            # 5 imagery sessions each
+        assert inv["train_present"] == []
+    # every acquired file carries an exact sha256 and byte count (no '~' approximations)
+    for f in m["files"][:50]:
+        assert isinstance(f["bytes"], int) and len(f["sha256"]) == 64
+
+
+def test_atlas_provenance_resolved_real_hashes_complete_mpm():
+    p = _R / "atlas_provenance_resolved.json"
+    if not p.exists():
+        return
+    a = _load("atlas_provenance_resolved.json")
+    assert a["status"] == "ATLAS_SPACE_PROVENANCE_RESOLVED"
+    w = a["wang2015"]
+    assert w["complete_mpm"] is True and w["maps"] == 25 and w["both_hemispheres"] is True
+    assert w["no_performance_subselection"] is True
+    for f in w["maxprob_label_files"]:
+        assert len(f["sha256"]) == 64             # real resolved hash, not null
+    t = a["target_space_transform"]
+    assert t["target_template"] == "MNI152NLin2009cAsym" and t["target_res_mm"] == 2
+    assert t["source_template"] == "MNI152NLin6Asym"
+    assert len(t["sha256"]) == 64                 # transform hashed
+    assert t["custom_registration"] is False and t["result_driven_spatial_adjustment"] is False
+    assert "label-safe" in t["interpolation"]
+    assert a["c3xat_seal"] == _C3XAT_SEAL
+
+
+def test_execution_progress_running_but_no_fabricated_R_I():
+    p = _R / "execution_progress.json"
+    if not p.exists():
+        return
+    e = _load("execution_progress.json")
+    assert e["execution_attempt"] == 2
+    assert e["acquisition"]["status"] == "COMPLETE"
+    assert e["confirmatory_measurement"]["R_I_computed"] is False
+    assert e["confirmatory_measurement"]["fabricated"] is False
+    assert e["dataset_gate_evaluated"] is False
+    assert e["c3xag_authorized"] is False
+    assert e["container"]["frozen"] is True

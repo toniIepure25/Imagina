@@ -1,0 +1,47 @@
+{
+  "artifact": "C3XAT_R1_EXECUTION_PROGRESS",
+  "execution_attempt": 2,
+  "continues_interim_checkpoint": true,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "acquisition": {
+    "status": "COMPLETE",
+    "job": "c3xat-r1-acquire",
+    "n_files": 1063,
+    "total_bytes": 139957018247,
+    "manifest_sha256": "749ded7b58189ecd22aa1899730fbbe3aeb4f5c005a411b26da660a5f087633c",
+    "zero_byte_files": 0,
+    "partial_files": 0,
+    "trainPerception_in_analysis_subset": false,
+    "per_subject": "sub-01..06 each: 5 testImagery sessions + 2 testPerception + ses-anat"
+  },
+  "atlas_provenance": "RESOLVED (see atlas_provenance_resolved.json)",
+  "container": {
+    "image": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+    "frozen": true
+  },
+  "preprocessing": {
+    "status": "RUNNING",
+    "jobs": [
+      "c3xat-r1-fmriprep-sub01",
+      "c3xat-r1-fmriprep-sub02",
+      "c3xat-r1-fmriprep-sub03",
+      "c3xat-r1-fmriprep-sub04",
+      "c3xat-r1-fmriprep-sub05",
+      "c3xat-r1-fmriprep-sub06"
+    ],
+    "node_pool": "cpu-worker (k8s-worker-cpu-node-r770)",
+    "output_space": "MNI152NLin2009cAsym",
+    "res_mm": 2,
+    "smoothing": "NONE",
+    "note": "6 parallel fMRIPrep jobs pinned by digest; long-running (recon-all dominates); results collected on resumption. Runtime is not a blocker."
+  },
+  "confirmatory_measurement": {
+    "status": "NOT_YET_AVAILABLE",
+    "R_I_computed": false,
+    "fabricated": false
+  },
+  "dataset_gate_evaluated": false,
+  "c3xag_authorized": false,
+  "decision_state": "INTERIM (execution_attempt=2 continues; no terminal decision; no genuine blocker hit)",
+  "self_hash": "ec2d9fb06998711157c88b5c2f6a515ac68363e92446e3014860518a6afbc1b4"
+}
