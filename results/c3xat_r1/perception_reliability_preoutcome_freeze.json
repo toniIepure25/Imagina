@@ -1,0 +1,42 @@
+{
+  "artifact": "C3XAT_R1_PERCEPTION_RELIABILITY_PREOUTCOME_FREEZE",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "independent_unit": "perception RUN",
+  "run_session_inventory": {
+    "sessions": [
+      "ses-testPerception01",
+      "ses-testPerception02"
+    ],
+    "runs_per_session": {
+      "ses-testPerception01": 6,
+      "ses-testPerception02": 4
+    },
+    "total_runs": 10,
+    "source": "ds005191 events/BIDS metadata (S3 listing), outcome-independent"
+  },
+  "content_balance": {
+    "distinct_videos": 72,
+    "imagery_perception_identity_overlap": "72/72 (verified in trial_contract_verified.json)"
+  },
+  "estimator_callable": "c3xb_reliability.reliability_with_inference_pairs (independent unit = perception RUN; run-disjoint)",
+  "permutation_unit": "within-run video-label permutation",
+  "bootstrap_unit": "non-straddling run-level",
+  "seeds": {
+    "base": 20260909,
+    "offsets": [
+      0,
+      100,
+      200
+    ]
+  },
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "n_rep_point": 200,
+  "subject_perception_pass_criterion": "R_P>0 AND perm p<0.05 AND bootstrap CI lower>0 AND min sealed-seed R_P>0",
+  "validity": "10 perception runs (>=2) support the frozen run-disjoint split; matches the C3XD lineage (R_P on RAW perception betas, same ROI, run-disjoint)",
+  "roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK (same ROI as R_I)",
+  "no_perception_outcome_used_to_modify_preprocessing_or_roi": true,
+  "outcome_inspected": false,
+  "self_hash": "c1073b3b3b5e7ef6c0781c499e2dbbaa127d28b4d216b23da48eaf4b58947341"
+}

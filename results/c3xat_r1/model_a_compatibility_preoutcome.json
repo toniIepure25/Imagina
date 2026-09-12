@@ -1,0 +1,400 @@
+{
+  "artifact": "C3XAT_R1_MODEL_A_COMPATIBILITY_PREOUTCOME",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "historical_source": "backend/app/research/fmri/run_c3xd_design_sim.py",
+  "historical_source_sha256": "86149809d0631acb74e1b818ece39d03ca581d4bfef2033d01fb5dd292cd0212",
+  "current_implementation": "backend/app/research/fmri/c3xat_pipeline.py",
+  "current_implementation_sha256": "88a7c229a118e6972f5b5d03d9f260a4b0b430ba3bc0e123d99fe8eb5a5e5982",
+  "event_semantics": {
+    "-2": "cue(cueID)",
+    "2": "imagery(imageryID)",
+    "3": "post-video(stimID)",
+    "-5": "evaluation(grouped, unmodulated, no identity)"
+  },
+  "grouped_eval_source": "REAL trial_type=-5 evaluation events (onset+duration), summed then HRF-convolved; NOT mean-of-imagery; NOT vividness/accuracy modulated",
+  "hrf_implementation_identity": "imported run_c3xd_design_sim.spm_hrf (exact frozen primitive; normalized by sum|h|); boxcar tr-parameterised, bit-identical to C3XD boxcar at tr=1.0; conv imported unchanged",
+  "regressor_compatibility": {
+    "basis": "historical S1 imagery timing fixture, all runs, tr=1.0",
+    "max_abs_diff": {
+      "imagery": 0.0,
+      "cue": 0.0,
+      "postvideo": 0.0,
+      "eval": 0.0
+    },
+    "bit_identical": true,
+    "criterion": "bit-identical (0.0) required; achieved"
+  },
+  "design_rank_results": {
+    "per_run": [
+      {
+        "shape": [
+          545,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0000032004810195,
+        "max_abs_cue_imagery_corr": 0.11920627273968389,
+        "max_imagery_vif": 1.22409050044778,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          590,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.3912518426124973,
+        "max_abs_cue_imagery_corr": 0.12032702022827187,
+        "max_imagery_vif": 1.3666493035580047,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          545,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.087262508409103,
+        "max_abs_cue_imagery_corr": 0.08669829843785762,
+        "max_imagery_vif": 1.240550932071643,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          529,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0451392504838775,
+        "max_abs_cue_imagery_corr": 0.15757735533249428,
+        "max_imagery_vif": 1.237129012492,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          540,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.2002910830542555,
+        "max_abs_cue_imagery_corr": 0.15786194473812662,
+        "max_imagery_vif": 1.2843660487618667,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          537,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.000000807851049,
+        "max_abs_cue_imagery_corr": 0.11898701832488592,
+        "max_imagery_vif": 1.2165231713833553,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          559,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.2346783203106304,
+        "max_abs_cue_imagery_corr": 0.1583266943279504,
+        "max_imagery_vif": 1.2981316212727512,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          541,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.087264616351329,
+        "max_abs_cue_imagery_corr": 0.11909747022908172,
+        "max_imagery_vif": 1.2419947304379413,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          544,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0451327816761153,
+        "max_abs_cue_imagery_corr": 0.11917922471840249,
+        "max_imagery_vif": 1.2271782429256277,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          544,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.000003147601778,
+        "max_abs_cue_imagery_corr": 0.11917922471840248,
+        "max_imagery_vif": 1.2238546816301556,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          561,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.3912502961515831,
+        "max_abs_cue_imagery_corr": 0.08715048291825442,
+        "max_imagery_vif": 1.348787665643503,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          527,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0000054615318643,
+        "max_abs_cue_imagery_corr": 0.11870342157728375,
+        "max_imagery_vif": 1.2241739813085681,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          530,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.000010978908722,
+        "max_abs_cue_imagery_corr": 0.157603723702797,
+        "max_imagery_vif": 1.2366646098982443,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          545,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0872626357363804,
+        "max_abs_cue_imagery_corr": 0.08669829843785762,
+        "max_imagery_vif": 1.2408166672415997,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          568,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.39125276216612,
+        "max_abs_cue_imagery_corr": 0.11980165460470003,
+        "max_imagery_vif": 1.367003353548814,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          541,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0451328084356784,
+        "max_abs_cue_imagery_corr": 0.11909747022908175,
+        "max_imagery_vif": 1.2276278179698557,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          559,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.2002910733839143,
+        "max_abs_cue_imagery_corr": 0.1583266943279504,
+        "max_imagery_vif": 1.2855916997194037,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          541,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.000003147384145,
+        "max_abs_cue_imagery_corr": 0.11909747022908175,
+        "max_imagery_vif": 1.2239450884215315,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          528,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0000032494148041,
+        "max_abs_cue_imagery_corr": 0.11873227330287725,
+        "max_imagery_vif": 1.2242358348088582,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          568,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.3912527493382851,
+        "max_abs_cue_imagery_corr": 0.11980165460469987,
+        "max_imagery_vif": 1.368386584742622,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          546,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0872639364457466,
+        "max_abs_cue_imagery_corr": 0.11923321997116365,
+        "max_imagery_vif": 1.2425481635501856,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          559,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.234673485655252,
+        "max_abs_cue_imagery_corr": 0.11957461237968113,
+        "max_imagery_vif": 1.29805482911927,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          560,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.2002848280045253,
+        "max_abs_cue_imagery_corr": 0.08712299153411844,
+        "max_imagery_vif": 1.2838904216181657,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          546,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0000031476017792,
+        "max_abs_cue_imagery_corr": 0.11923321997116358,
+        "max_imagery_vif": 1.2240084375251874,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          563,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.3912518426073421,
+        "max_abs_cue_imagery_corr": 0.11967643121149588,
+        "max_imagery_vif": 1.3659598317471908,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          542,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0000031988028861,
+        "max_abs_cue_imagery_corr": 0.119124824036039,
+        "max_imagery_vif": 1.223961835783666,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          545,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0872626357363804,
+        "max_abs_cue_imagery_corr": 0.11920627273968362,
+        "max_imagery_vif": 1.2404978100220627,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          570,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.2346720413763557,
+        "max_abs_cue_imagery_corr": 0.08739349062695927,
+        "max_imagery_vif": 1.298106114534272,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          566,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.2002848272857212,
+        "max_abs_cue_imagery_corr": 0.08728645767755845,
+        "max_imagery_vif": 1.2842950733138607,
+        "n_imagery": 12
+      },
+      {
+        "shape": [
+          540,
+          38
+        ],
+        "rank": 38,
+        "rank_deficiency": 0,
+        "imagery_condition_number": 1.0000044695180534,
+        "max_abs_cue_imagery_corr": 0.11907001334049465,
+        "max_imagery_vif": 1.2240477241785115,
+        "n_imagery": 12
+      }
+    ],
+    "max_imagery_vif": 1.368386584742622,
+    "max_abs_cue_imagery_corr": 0.1583266943279504,
+    "any_rank_deficient": false,
+    "note": "grouped_eval is the REAL-event regressor (not a linear combination of imagery cols); the previous mean-of-imagery construction (which was exactly collinear) has been removed. Nuisance here is the synthetic-free design (no fMRIPrep confounds in this metadata-only compat test); real runs add the frozen fMRIPrep nuisance columns."
+  },
+  "removed_defect": "grouped_eval = mean(imagery regressors) [exactly linearly dependent] -> REMOVED",
+  "no_new_collinearity_introduced_by_c3xat_r1": true,
+  "outcome_data_inspected": false,
+  "self_hash": "adacd7a838bc13b4dcaac89e149b36fa358fa36bd1ea56ab842094aa14481396"
+}

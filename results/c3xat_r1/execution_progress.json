@@ -44,11 +44,27 @@
   },
   "dataset_gate_evaluated": false,
   "c3xag_authorized": false,
-  "decision_state": "INTERIM (execution_attempt=2 continues; fMRIPrep re-running after deterministic env fix; no terminal decision; no fabricated outcome)",
+  "decision_state": "INTERIM (execution_attempt=2; pre-outcome corrections applied; fMRIPrep re-running; no outcome inspected)",
   "trial_contract": "VERIFIED (72/360/5; 72/72 correspondence)",
   "resume_next": "on fMRIPrep completion: verify per-subject exit/output hashes -> S1 technical qualification -> implementation_freeze_manifest -> sealed R_I/R_P/cue-video Delta -> dataset gate -> C3XAT_R1_FINAL_DECISION",
   "outcome_independent_pipeline": "IMPLEMENTED + synthetically validated (c3xat_pipeline.py; 12 tests pass)",
   "nuisance_spec": "FROZEN (nuisance_spec_freeze.json)",
   "delta_inference": "FROZEN pre-outcome (delta_inference_preoutcome_freeze.json; session-aware paired randomization)",
-  "self_hash": "5bb22b7a8a5944baa68c1ff3e69aa1860db6e59ea33985644ac16e368b9d5f1f"
+  "preoutcome_corrections": {
+    "model_a_grouped_eval": "CORRECTED -> real trial_type=-5 events (removed mean-of-imagery collinear term)",
+    "model_a_c3xd_compatibility": "BIT-IDENTICAL to run_c3xd_design_sim.build_run (maxdiff 0.0; imported spm_hrf/conv)",
+    "design_rank_audit": "rank-deficiency 0; max imagery VIF 1.37; max cue-imagery corr 0.16; no new collinearity",
+    "delta_inference": "CORRECTED -> sealed conservative PAIRED sensitivity (fixed-R_pred permutation rejected pre-outcome)",
+    "five_session_estimator": "CLARIFIED (2v2, 1 omitted); c3xb estimator UNCHANGED",
+    "perception_R_P": "FROZEN -> independent unit = perception RUN (10 runs), run-disjoint",
+    "artifacts": [
+      "model_a_compatibility_preoutcome.json",
+      "delta_inference_preoutcome_correction.json",
+      "five_session_estimator_clarification.json",
+      "perception_reliability_preoutcome_freeze.json"
+    ]
+  },
+  "tests": "test_c3xat_pipeline.py 20 pass (incl. bit-identical C3XD compat, zero-imagery contamination, paired-Delta null-fails/signal-passes, 5-session cert); ruff clean",
+  "implementation_freeze": "NOT YET (awaits these corrections committed + S1 technical qualification)",
+  "self_hash": "94de6a0d92654905817ef83ebc5a87c45391ee7a41617db617aa9ba5fd03ba44"
 }

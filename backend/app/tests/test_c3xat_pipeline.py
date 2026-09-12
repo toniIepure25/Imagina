@@ -13,8 +13,9 @@ from app.research.fmri import c3xat_pipeline as P
 
 
 # ---- event parsing / trial contract --------------------------------------------------------------
-def _synth_session_rows(video_ids, base=0.0):
-    """One synthetic imagery run: for each video a cue(-2), imagery(2), post-video(3) triple."""
+def _synth_session_rows(video_ids, base=0.0, with_eval=True):
+    """One synthetic imagery run: for each video a cue(-2), imagery(2), post-video(3), eval(-5) cycle
+    (matching the real ds005191 trial structure). with_eval=False omits the -5 evaluation events."""
     rows = []
     t = base
     for v in video_ids:
@@ -27,6 +28,10 @@ def _synth_session_rows(video_ids, base=0.0):
         rows.append({"onset": t, "duration": 10, "trial_type": "3", "cueID": 0,
                      "imageryID": 0, "stimID": v})
         t += 11
+        if with_eval:
+            rows.append({"onset": t, "duration": 6, "trial_type": "-5", "cueID": 0,
+                         "imageryID": 0, "stimID": 0})
+            t += 7
     return rows
 
 
@@ -34,9 +39,10 @@ def test_parse_events_maps_kinds_and_ids():
     rows = _synth_session_rows([5, 9])
     ev = P.parse_events(rows, session=1, run=1)
     kinds = sorted({e.kind for e in ev})
-    assert kinds == ["cue", "imagery", "postvideo"]
+    assert kinds == ["cue", "eval", "imagery", "postvideo"]
     imagery = [e for e in ev if e.kind == "imagery"]
     assert {e.video_id for e in imagery} == {5, 9}
+    assert all(e.video_id == 0 for e in ev if e.kind == "eval")  # no identity on evaluation
 
 
 def test_trial_contract_pass_and_fail():
@@ -65,9 +71,9 @@ def test_model_a_design_structure_and_ordering():
     assert len(d["blocks"]["cue"]) == 3
     assert len(d["blocks"]["imagery"]) == 3
     assert len(d["blocks"]["postvideo"]) == 3
-    # deterministic ordering: cue block indices all precede imagery, which precede postvideo
-    assert max(d["blocks"]["cue"]) < min(d["blocks"]["imagery"])
-    assert max(d["blocks"]["imagery"]) < min(d["blocks"]["postvideo"])
+    # deterministic ordering matches C3XD recover_A: imagery block, then cue, then post-video
+    assert max(d["blocks"]["imagery"]) < min(d["blocks"]["cue"])
+    assert max(d["blocks"]["cue"]) < min(d["blocks"]["postvideo"])
     assert "grouped_eval" in d["labels"] and "intercept" in d["labels"]
     assert len(d["nuisance_idx"]) == 6
     # design matrix shape and acceptable rank
@@ -206,3 +212,150 @@ def test_dataset_gate_boundaries():
     assert P.dataset_gate(0, 6) == "C3XAT_D2_ATLAS_IMAGERY_FAIL"
     # fewer than 6 valid measurements cannot FAIL -> blocked
     assert P.dataset_gate(0, 5).startswith("C3XAT_R1_BLOCKED")
+
+
+# ================== PRE-OUTCOME CORRECTION TESTS (Model-A eval, C3XD compat, Delta, 5-session) ======
+import json as _json  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_ROOT = _Path(__file__).resolve().parents[3]
+_FIX = _ROOT / "results" / "c3xd" / "c3xd_s1_imagery_timing.json"
+
+
+def test_eval_events_parsed_from_trial_type_minus5():
+    rows = [
+        {"onset": 0, "duration": 7, "trial_type": "-2", "cueID": 5, "imageryID": 0, "stimID": 0},
+        {"onset": 8, "duration": 12, "trial_type": "2", "cueID": 0, "imageryID": 5, "stimID": 0},
+        {"onset": 21, "duration": 10, "trial_type": "3", "cueID": 0, "imageryID": 0, "stimID": 5},
+        {"onset": 32, "duration": 6, "trial_type": "-5", "cueID": 0, "imageryID": 0, "stimID": 0},
+    ]
+    ev = P.parse_events(rows, 1, 1)
+    evals = [e for e in ev if e.kind == "eval"]
+    assert len(evals) == 1
+    assert evals[0].video_id == 0  # no identity attached to evaluation
+    assert evals[0].onset == 32 and evals[0].duration == 6
+
+
+def test_grouped_eval_from_real_events_not_mean_of_imagery():
+    # a design WITH eval events has a grouped_eval column; without eval events it has none
+    def _mk(with_eval):
+        rows = _synth_session_rows([1, 2, 3], with_eval=with_eval)
+        return P.build_model_a_design(P.parse_events(rows, 1, 1), 260, 1.0)
+    d_with = _mk(True)
+    d_without = _mk(False)
+    assert "grouped_eval" in d_with["labels"]
+    assert "grouped_eval" not in d_without["labels"]
+    # grouped_eval must NOT be a linear combination of the imagery regressors (the old defect)
+    X = d_with["design"]
+    ev = X[:, d_with["labels"].index("grouped_eval")]
+    img = X[:, d_with["blocks"]["imagery"]]
+    beta, *_ = np.linalg.lstsq(img, ev, rcond=None)
+    resid = ev - img @ beta
+    assert np.linalg.norm(resid) > 1e-6, "grouped_eval is (near) linearly dependent on imagery cols"
+
+
+def test_model_a_bit_identical_to_c3xd_build_run():
+    if not _FIX.exists():
+        return
+    from app.research.fmri.run_c3xd_design_sim import TR, build_run, spm_hrf
+    trials = _json.load(open(_FIX))["trials"]
+    by = {}
+    for t in trials:
+        by.setdefault((t["session"], t["run"]), []).append(t)
+    hrf = spm_hrf(TR)
+    for _key, rt in sorted(by.items()):
+        n, cue_c, img_c, vid_c, ev_c = build_run(rt, hrf)
+        te = []
+        for t in rt:
+            te += [P.TrialEvent(t["cue_onset"], t["cue_duration"], "cue", t["cue_id"], 1, 1),
+                   P.TrialEvent(t["imagery_onset"], t["imagery_duration"], "imagery", t["video_id"], 1, 1),
+                   P.TrialEvent(t["video_onset"], t["video_duration"], "postvideo", t["video_stimID"], 1, 1),
+                   P.TrialEvent(t["eval_onset"], t["eval_duration"], "eval", 0, 1, 1)]
+        d = P.build_model_a_design(te, n, TR)
+        X = d["design"]
+        # bit-identical (machine-zero), NOT merely high correlation
+        assert np.max(np.abs(X[:, d["blocks"]["imagery"]].T - img_c)) == 0.0
+        assert np.max(np.abs(X[:, d["blocks"]["cue"]].T - cue_c)) == 0.0
+        assert np.max(np.abs(X[:, d["blocks"]["postvideo"]].T - vid_c)) == 0.0
+        assert np.max(np.abs(X[:, d["labels"].index("grouped_eval")] - ev_c)) == 0.0
+
+
+def test_canonical_hrf_is_imported_c3xd_primitive():
+    from app.research.fmri.run_c3xd_design_sim import spm_hrf
+    assert np.array_equal(P.canonical_hrf(1.0), spm_hrf(tr=1.0))
+
+
+def test_design_rank_audit_well_conditioned_no_new_collinearity():
+    if not _FIX.exists():
+        return
+    trials = _json.load(open(_FIX))["trials"]
+    rt = [t for t in trials if t["session"] == "testImagery01" and t["run"] == 1]
+    te = []
+    for t in rt:
+        te += [P.TrialEvent(t["cue_onset"], t["cue_duration"], "cue", t["cue_id"], 1, 1),
+               P.TrialEvent(t["imagery_onset"], t["imagery_duration"], "imagery", t["video_id"], 1, 1),
+               P.TrialEvent(t["video_onset"], t["video_duration"], "postvideo", t["video_stimID"], 1, 1),
+               P.TrialEvent(t["eval_onset"], t["eval_duration"], "eval", 0, 1, 1)]
+    d = P.build_model_a_design(te, 545, 1.0)
+    aud = P.design_rank_audit(d)
+    assert aud["rank_deficiency"] == 0
+    assert aud["max_imagery_vif"] < 5.0        # no collinearity introduced
+    assert aud["n_imagery"] == len(rt)
+
+
+def test_paired_delta_shared_selection_null_fails_signal_passes():
+    # synthetic betas: reliable imagery template; contamination-predicted = independent noise
+    rng = np.random.default_rng(11)
+    n_sess, n_vid, reps, vox = 5, 8, 4, 12
+    templ = rng.normal(size=(n_vid, vox))
+    obs, pred, vids, sess = [], [], [], []
+    for s in range(n_sess):
+        for v in range(n_vid):
+            for _ in range(reps):
+                obs.append(0.9 * templ[v] + 0.1 * rng.normal(size=vox))   # reliable imagery
+                pred.append(rng.normal(size=vox))                          # unreliable contamination
+                vids.append(v)
+                sess.append(s)
+    obs = np.array(obs)
+    pred = np.array(pred)
+    vids = np.array(vids)
+    sess = np.array(sess)
+    # true imagery above contamination -> passes conservative sensitivity
+    good = P.paired_delta_sensitivity(obs, pred, vids, sess, n_boot=200)
+    assert good["paired"] is True and good["method"] == "SEALED_CONSERVATIVE_SENSITIVITY"
+    assert good["criterion_pass"] is True
+    # NULL: predicted == observed reliable template -> Delta ~ 0 -> must NOT falsely pass
+    null = P.paired_delta_sensitivity(obs, obs.copy(), vids, sess, n_boot=200)
+    assert null["criterion_pass"] is False
+
+
+def test_five_session_split_certification():
+    cert = P.certify_five_session_splits([1, 2, 3, 4, 5], n_rep=50)
+    assert cert["each_split_4_distinct_and_1_omitted"] is True
+    assert cert["halves_never_overlap"] is True
+    assert cert["all_sessions_participate"] is True
+    assert cert["scientific_estimator_changed"] is False
+    assert set(cert["omission_counts"].keys()) == {"1", "2", "3", "4", "5"}
+
+
+def test_preoutcome_correction_artifacts_present_and_consistent():
+    # the correction artifacts must exist, self-consistent, and never claim a real outcome was seen
+    for name, checks in {
+        "delta_inference_preoutcome_correction.json": {
+            "status": "REJECTED_PREOUTCOME_AS_NONDISCRIMINATING_FOR_DELTA",
+            "fallback": "SEALED_CONSERVATIVE_SENSITIVITY", "real_delta_observed": False},
+        "model_a_compatibility_preoutcome.json": {"outcome_data_inspected": False},
+        "perception_reliability_preoutcome_freeze.json": {
+            "independent_unit": "perception RUN", "outcome_inspected": False},
+        "five_session_estimator_clarification.json": {"scientific_estimator_changed": False},
+    }.items():
+        p = _ROOT / "results" / "c3xat_r1" / name
+        if not p.exists():
+            continue
+        o = _json.load(open(p))
+        for k, v in checks.items():
+            assert o[k] == v, (name, k)
+    # historical delta freeze must still exist (not deleted/rewritten)
+    hist = _ROOT / "results" / "c3xat_r1" / "delta_inference_preoutcome_freeze.json"
+    if hist.exists():
+        assert _json.load(open(hist))["artifact"] == "C3XAT_R1_DELTA_INFERENCE_PREOUTCOME_FREEZE"
