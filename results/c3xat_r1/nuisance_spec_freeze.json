@@ -1,0 +1,28 @@
+{
+  "artifact": "C3XAT_R1_NUISANCE_SPEC_FREEZE",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "resolves": "the sealed abstract nuisance family to an EXACT deterministic fMRIPrep-confound rule, frozen BEFORE any beta/R_I outcome",
+  "motion_6dof": [
+    "trans_x",
+    "trans_y",
+    "trans_z",
+    "rot_x",
+    "rot_y",
+    "rot_z"
+  ],
+  "motion_6dof_required": true,
+  "motion_expansions": "NONE (not used; no derivatives/quadratics added)",
+  "tissue_global": [
+    "csf",
+    "white_matter"
+  ],
+  "tissue_rule": "include csf & white_matter if present in confounds.tsv, else omit and record; global_signal NOT used",
+  "run_session_intercept": true,
+  "drift_highpass": "fMRIPrep cosine drift regressors (cosineNN), ALL included per run",
+  "selection_independence": "column inclusion NEVER depends on variance explained, R_I, subject quality, or imagery strength",
+  "missing_column_rule": "required motion6 missing -> fail-closed (C3XAT_R1_BLOCKED_*); optional tissue missing -> omit + record; no subject-specific nuisance model",
+  "implemented_in": "c3xat_pipeline.resolve_confounds",
+  "code_sha256": "b7c93b44455fe399fe8b8609e148e0bb1c2b4240569afb6373a94405e0a9411e",
+  "self_hash": "abdeb81878dda0bef9f1ca574b6c60b6f573784fdd59b36ef3a7c885bd65bb65"
+}
