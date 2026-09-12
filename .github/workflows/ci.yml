@@ -1554,6 +1554,7 @@ jobs:
         run: >-
           python3 -m pytest
           app/tests/test_c3xat_r1_execution.py
+          app/tests/test_c3xat_pipeline.py
           app/tests/test_c3xat_qualification.py
           app/tests/test_c3xpa_acceptance.py
           app/tests/test_c3xpr_provenance.py

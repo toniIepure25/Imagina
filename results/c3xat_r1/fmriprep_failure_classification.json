@@ -1,0 +1,38 @@
+{
+  "artifact": "C3XAT_R1_FMRIPREP_FAILURE_CLASSIFICATION",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "first_run": {
+    "jobs": 6,
+    "completed": [
+      "sub-05 (marked Complete but no final MNI bold)"
+    ],
+    "failed": [
+      "sub-01",
+      "sub-02",
+      "sub-03",
+      "sub-04",
+      "sub-06"
+    ],
+    "usable_final_derivatives": 0,
+    "disk_free_TB_at_diagnosis": 105,
+    "node_memorypressure": false
+  },
+  "root_cause": "shared FreeSurfer SUBJECTS_DIR race: all 6 fMRIPrep jobs used one output dir, so one shared /work/derivatives/sourcedata/freesurfer. Concurrent recon-all materialized an inconsistent/older fsaverage; recon-all BA_exvivo step failed: 'ERROR: Label BA1_exvivo does not exist in SUBJECTS_DIR fsaverage! The fsaverage link probably points to an older freesurfer version' -> recon-all exited with ERRORS -> subject failed.",
+  "classification": "TECHNICAL_ENVIRONMENT_ERROR",
+  "is_scientific_blocker": false,
+  "compromises_sealed_analysis": false,
+  "why_not_failclosed": "Per protocol, fMRIPrep errors fail the gate closed ONLY if they compromise the sealed analysis. This is a recon-all fsaverage-versioning race from sharing one SUBJECTS_DIR across concurrent jobs; it does not touch the frozen dataset/space/atlas/estimator/GLM. Deterministic fix + clean re-run, still execution_attempt=2 (NOT C3XAT-R2, seal unchanged).",
+  "deterministic_fix": {
+    "isolate_per_subject_fs_subjects_dir": "--fs-subjects-dir /work/fs/sub-XX",
+    "isolated_workdir": "-w /work/wf/sub-XX (already per-subject)",
+    "clean_state": "wiped contaminated /work/derivatives and /work/wf; kept ds005191 + resolved atlas",
+    "container_unchanged": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+    "space_unchanged": "MNI152NLin2009cAsym:res-2",
+    "smoothing": "NONE (unchanged)",
+    "subjects_dropped": 0,
+    "denominator_unchanged": 6
+  },
+  "note": "No neural outcome was inspected during diagnosis (only derivative existence, recon-all log text, and QC-level file presence). No subject dropped.",
+  "self_hash": "c3293e280284cde3647779c72c02dbd8de4de3cd345b524412dcb38286e3b5ff"
+}
