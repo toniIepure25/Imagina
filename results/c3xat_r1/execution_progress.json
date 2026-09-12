@@ -20,7 +20,10 @@
     "frozen": true
   },
   "preprocessing": {
-    "status": "RUNNING (all 6 healthy; recon-all dominates; long-running)",
+    "status": "RUNNING (re-launched with fix)",
+    "attempt": "2nd preprocessing launch",
+    "root_cause_of_first_failure": "shared FreeSurfer SUBJECTS_DIR fsaverage race (see fmriprep_failure_classification.json)",
+    "fix": "per-subject --fs-subjects-dir /work/run2/fs/sub-XX + isolated workdir/TemplateFlow; container/space/atlas unchanged; 0 subjects dropped",
     "jobs": [
       "c3xat-r1-fmriprep-sub01",
       "c3xat-r1-fmriprep-sub02",
@@ -29,11 +32,10 @@
       "c3xat-r1-fmriprep-sub05",
       "c3xat-r1-fmriprep-sub06"
     ],
-    "node_pool": "cpu-worker (k8s-worker-cpu-node-r770)",
+    "node_pool": "cpu-worker",
     "output_space": "MNI152NLin2009cAsym",
     "res_mm": 2,
-    "smoothing": "NONE",
-    "note": "6 parallel fMRIPrep jobs pinned by digest; long-running (recon-all dominates); results collected on resumption. Runtime is not a blocker."
+    "smoothing": "NONE"
   },
   "confirmatory_measurement": {
     "status": "NOT_YET_AVAILABLE",
@@ -42,8 +44,11 @@
   },
   "dataset_gate_evaluated": false,
   "c3xag_authorized": false,
-  "decision_state": "INTERIM (execution_attempt=2 continues; no terminal decision; no genuine blocker hit)",
-  "trial_contract": "VERIFIED (72 videos / 360 imagery trials / 5 reps / 5 sessions; 72/72 imagery-perception correspondence) for all sub-01..06 from real events.tsv",
+  "decision_state": "INTERIM (execution_attempt=2 continues; fMRIPrep re-running after deterministic env fix; no terminal decision; no fabricated outcome)",
+  "trial_contract": "VERIFIED (72/360/5; 72/72 correspondence)",
   "resume_next": "on fMRIPrep completion: verify per-subject exit/output hashes -> S1 technical qualification -> implementation_freeze_manifest -> sealed R_I/R_P/cue-video Delta -> dataset gate -> C3XAT_R1_FINAL_DECISION",
-  "self_hash": "fb34f3ed5a9df81a7129aa0cb631a504ad88b2d95b85369c5fcdb670b94a679f"
+  "outcome_independent_pipeline": "IMPLEMENTED + synthetically validated (c3xat_pipeline.py; 12 tests pass)",
+  "nuisance_spec": "FROZEN (nuisance_spec_freeze.json)",
+  "delta_inference": "FROZEN pre-outcome (delta_inference_preoutcome_freeze.json; session-aware paired randomization)",
+  "self_hash": "5bb22b7a8a5944baa68c1ff3e69aa1860db6e59ea33985644ac16e368b9d5f1f"
 }
