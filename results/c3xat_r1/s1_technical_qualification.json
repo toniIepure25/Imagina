@@ -1,0 +1,74 @@
+{
+  "artifact": "C3XAT_R1_S1_TECHNICAL_QUALIFICATION",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "subject": "sub-01",
+  "fmriprep_all6_succeeded": true,
+  "recon_all_all6_finished_without_error": true,
+  "measurements": {
+    "subject": "sub-01",
+    "n_imagery_bold_runs": 30,
+    "n_perception_bold_runs": 10,
+    "imagery_bold_shape": [
+      97,
+      115,
+      97,
+      538
+    ],
+    "imagery_bold_zooms": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "imagery_bold_affine": [
+      [
+        2.0,
+        0.0,
+        0.0,
+        -96.5
+      ],
+      [
+        0.0,
+        2.0,
+        0.0,
+        -132.5
+      ],
+      [
+        0.0,
+        0.0,
+        2.0,
+        -78.5
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "imagery_grid_unique_count": 1,
+    "n_confounds_files": 30,
+    "motion6_present": true,
+    "csf_present": true,
+    "wm_present": true,
+    "n_cosine": 7,
+    "confound_nrows_first": 538,
+    "mni_brain_mask": true,
+    "anat_gm_probseg": true,
+    "freesurfer_surf": true
+  },
+  "technical_checks": {
+    "derivative_completeness": true,
+    "single_imagery_grid": true,
+    "mni_target_grid_matches_atlas_reference": true,
+    "confounds_present_all_runs": true,
+    "frozen_nuisance_available": true,
+    "mni_brain_mask": true,
+    "gray_matter_probseg_available": true,
+    "freesurfer_surfaces_for_benson": true
+  },
+  "S1_technical_qualification_pass": true,
+  "neural_outcome_inspected": false,
+  "note": "Technical-only: derivative completeness, run counts, MNI target-grid correspondence to the frozen atlas reference, confound availability, mask/segmentation/surface availability. NO R_I/R_P/pattern-similarity/Delta inspected.",
+  "self_hash": "bc37aedbdc381974e820743bb258aa888de443ad39c8341e5af8430924611a10"
+}
