@@ -210,3 +210,41 @@ def test_execution_progress_running_but_no_fabricated_R_I():
     assert e["dataset_gate_evaluated"] is False
     assert e["c3xag_authorized"] is False
     assert e["container"]["frozen"] is True
+
+
+# ---- atlas-space provenance blocker (final decision for attempt 2) ---------------------------------
+def test_atlas_space_provenance_blocker_consistency():
+    p = _R / "atlas_space_provenance_blocker.json"
+    if not p.exists():
+        return
+    b = json.load(open(p))
+    assert _verify(b)
+    assert b["is_genuine_fail_closed_blocker"] is True
+    assert b["no_neural_outcome_inspected"] is True
+    # transform was resolved+hashed; only the volumetric Wang MPM source is missing
+    assert "2e3869a0" in b["transform_and_reference_status"]
+
+
+def test_final_decision_blocked_not_fail_and_no_fabrication():
+    p = _R / "C3XAT_R1_FINAL_DECISION.json"
+    if not p.exists():
+        return
+    d = json.load(open(p))
+    assert _verify(d)
+    if d["decision"].startswith("C3XAT_R1_BLOCKED"):
+        assert d["is_blocked_not_fail"] is True
+        assert d["dataset_gate_evaluated"] is False
+        assert d["primary_wang25_roi_constructed"] is False
+        assert d["no_neural_outcome_fabricated"] is True
+        assert d["implementation_freeze_written"] is False
+        assert d["c3xag_authorized"] is False
+        assert d["pass_count_of_6"] is None
+        assert all(v is None for v in d["per_subject_R_I"].values())
+        # interim checkpoint superseded but preserved, seals unchanged
+        assert d["supersedes_interim_execution_checkpoint"] == "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE"
+        assert d["seals_unchanged"] is True and d["not_c3xat_r2"] is True
+        assert d["c3xat_seal"] == _C3XAT_SEAL
+    # the interim checkpoint file itself must still exist unchanged
+    interim = _R / "C3XAT_R1_DECISION.json"
+    if interim.exists():
+        assert json.load(open(interim))["decision"] == "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE"
