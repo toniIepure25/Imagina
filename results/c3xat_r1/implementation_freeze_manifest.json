@@ -5,7 +5,7 @@
   "c3xat_r1_execution_seal": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
   "frozen_code_sha256": {
     "c3xat_pipeline": "88a7c229a118e6972f5b5d03d9f260a4b0b430ba3bc0e123d99fe8eb5a5e5982",
-    "confirmatory_driver": "a1be81a57dc81b9dfa95494c67917c93397a344039d9e1faf94944c9886781ba",
+    "confirmatory_driver": "ab475ad1f36459c0f7ddbfdf401a38d7b670237781b483072763672aa4b7d7db",
     "c3xb_reliability": "33d483a135a9692ff97475730c1bd2d5ea0ef6c57e1bbf23da20ddc33d22628e",
     "c3x_reliability": "623c9236056291ac2e8b2fbc75e0fe5c44f1233b1eef0bca4a5420e719b872ef",
     "model_a_c3xd_primitives": "86149809d0631acb74e1b818ece39d03ca581d4bfef2033d01fb5dd292cd0212"
@@ -58,5 +58,12 @@
   "no_scientific_change_after_freeze": true,
   "not_c3xat_r2": true,
   "seals_unchanged": true,
-  "self_hash": "1c604e734a6f3b3a8acf695392aa95179e05b126dda33303bf35fd89dda284fd"
+  "preoutcome_driver_correction": {
+    "reason": "confirmatory driver read events.tsv from the derivatives tree, but fMRIPrep does not copy events into derivatives (they live in RAW BIDS). All runs were skipped -> empty extraction. Corrected to read events.tsv and RepetitionTime from the RAW BIDS tree; added fail-closed guard.",
+    "classification": "DRIVER_IO_PATH_BUGFIX (not a scientific change; no estimator/design/gate/threshold changed)",
+    "no_outcome_inspected_before_correction": true,
+    "prior_confirmatory_driver_sha256": "a1be81a57dc81b9dfa95494c67917c93397a344039d9e1faf94944c9886781ba",
+    "corrected_confirmatory_driver_sha256": "ab475ad1f36459c0f7ddbfdf401a38d7b670237781b483072763672aa4b7d7db"
+  },
+  "self_hash": "47d20d8faa42bec28253855e6f9180077af0e5ce40762b349bfe89df8d986f87"
 }

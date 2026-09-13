@@ -25,13 +25,33 @@ import pandas as pd
 sys.path.insert(0, "/opt/app")  # cluster: repo mounted/installed; falls back to installed package
 from app.research.fmri import c3xat_pipeline as P  # noqa: E402
 
+RAW_BIDS = os.environ.get("C3XAT_RAW_BIDS", "/work/ds005191")
 
-def _tr_of(bold_path: str) -> float:
-    side = bold_path.replace(".nii.gz", ".json")
+
+def _raw_events_path(deriv_bold_path: str) -> str:
+    """events.tsv live in the RAW BIDS tree (fMRIPrep does not copy them into derivatives)."""
+    stem = os.path.basename(deriv_bold_path).split("_space-")[0]  # sub-XX_ses-..._task-..._run-YY
+    sub = stem.split("_")[0]
+    ses = [t for t in stem.split("_") if t.startswith("ses-")][0]
+    return f"{RAW_BIDS}/{sub}/{ses}/func/{stem}_events.tsv"
+
+
+def _raw_bold_json(deriv_bold_path: str) -> str:
+    stem = os.path.basename(deriv_bold_path).split("_space-")[0]
+    sub = stem.split("_")[0]
+    ses = [t for t in stem.split("_") if t.startswith("ses-")][0]
+    return f"{RAW_BIDS}/{sub}/{ses}/func/{stem}_bold.json"
+
+
+def _tr_of(deriv_bold_path: str) -> float:
+    # RepetitionTime from the RAW BIDS bold sidecar (authoritative)
+    side = _raw_bold_json(deriv_bold_path)
     if os.path.exists(side):
         return float(json.load(open(side))["RepetitionTime"])
-    # fMRIPrep also writes a run json; fall back to the raw sidecar name pattern
-    raise FileNotFoundError(f"no sidecar for {bold_path}")
+    dside = deriv_bold_path.replace(".nii.gz", ".json")
+    if os.path.exists(dside):
+        return float(json.load(open(dside))["RepetitionTime"])
+    raise FileNotFoundError(f"no bold sidecar for {deriv_bold_path}")
 
 
 def _load_run(bold_path, events_path, confounds_path, roi_idx, tr):
@@ -65,12 +85,14 @@ def _betas_for_task(deriv, sub, task, roi_idx):
     patt = f"{deriv}/{sub}/ses-{task}*/func/*space-MNI152NLin2009cAsym*desc-preproc_bold.nii.gz"
     runs = sorted(glob.glob(patt))
     obs, pred, content, unit = [], [], [], []
+    n_used = 0
     for bp in runs:
-        ep = bp.replace("_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz", "_events.tsv")
+        ep = _raw_events_path(bp)  # events.tsv from RAW BIDS
         cp = bp.replace("_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz",
                         "_desc-confounds_timeseries.tsv")
         if not (os.path.exists(ep) and os.path.exists(cp)):
             continue
+        n_used += 1
         tr = _tr_of(bp)
         n_scans, Y, ev_rows, nuis = _load_run(bp, ep, cp, roi_idx, tr)
         trials = P.parse_events(ev_rows, session=_session_of(bp), run=1)
@@ -96,6 +118,9 @@ def _betas_for_task(deriv, sub, task, roi_idx):
             pred.append(b_pred[k])
             content.append(vids[k])
             unit.append(run_unit)
+    if n_used == 0 or len(obs) == 0:
+        raise RuntimeError(f"fail-closed: no usable {task} runs for {sub} "
+                           f"(runs found={len(runs)}, used={n_used}); check raw events/confound paths")
     return (np.asarray(obs), np.asarray(pred), np.asarray(content), np.asarray(unit))
 
 
