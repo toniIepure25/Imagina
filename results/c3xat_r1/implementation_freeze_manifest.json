@@ -1,0 +1,62 @@
+{
+  "artifact": "C3XAT_R1_IMPLEMENTATION_FREEZE_MANIFEST",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "c3xat_r1_execution_seal": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "frozen_code_sha256": {
+    "c3xat_pipeline": "88a7c229a118e6972f5b5d03d9f260a4b0b430ba3bc0e123d99fe8eb5a5e5982",
+    "confirmatory_driver": "a1be81a57dc81b9dfa95494c67917c93397a344039d9e1faf94944c9886781ba",
+    "c3xb_reliability": "33d483a135a9692ff97475730c1bd2d5ea0ef6c57e1bbf23da20ddc33d22628e",
+    "c3x_reliability": "623c9236056291ac2e8b2fbc75e0fe5c44f1233b1eef0bca4a5420e719b872ef",
+    "model_a_c3xd_primitives": "86149809d0631acb74e1b818ece39d03ca581d4bfef2033d01fb5dd292cd0212"
+  },
+  "component_roles": {
+    "event_parser": "c3xat_pipeline.parse_events",
+    "model_a_builder": "c3xat_pipeline.build_model_a_design (imports run_c3xd_design_sim spm_hrf/conv; bit-identical C3XD; real -5 grouped eval)",
+    "confound_resolver": "c3xat_pipeline.resolve_confounds (frozen nuisance)",
+    "beta_extractor": "run_c3xat_r1_confirmatory (per-run LSA pinv(X)@Y_roi; imagery block)",
+    "wang_mask_construction": "antsApplyTransforms GenericLabel (frozen xfm) -> union; certified",
+    "reliability_estimator": "c3xb_reliability.reliability_with_inference_pairs (session-disjoint, unchanged)",
+    "permutation": "within-session video-label (frozen)",
+    "bootstrap": "non-straddling hierarchical (frozen)",
+    "cue_video_operator": "c3xat_pipeline.forward_contamination_bold (zero true-imagery contribution)",
+    "delta_inference": "c3xat_pipeline.paired_delta_sensitivity (sealed conservative PAIRED)",
+    "subject_gate": "c3xat_pipeline.subject_imagery_pass + subject_primary_pass",
+    "dataset_gate": "c3xat_pipeline.dataset_gate (>=2/6)"
+  },
+  "frozen_atlas": {
+    "wang_archive_sha256": "3743ac34bbfef168e1b9244cfa6819d66994b48f2aebacf0c27bca4275b9fe9f",
+    "wang_archive_size": 718625,
+    "primary_target_mask_sha256": "19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc",
+    "primary_target_voxel_count": 7604,
+    "transform_sha256": "2e3869a07b96aec406e0419ca2e434afc54882d37cc212b933b139d1b63a4dfe",
+    "target_space": "MNI152NLin2009cAsym 2mm"
+  },
+  "frozen_inference": {
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_rep_point": 200,
+    "seed_base": 20260909,
+    "seed_offsets": [
+      0,
+      100,
+      200
+    ]
+  },
+  "frozen_container": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "preoutcome_freezes": [
+    "nuisance_spec_freeze.json",
+    "delta_inference_preoutcome_correction.json",
+    "five_session_estimator_clarification.json",
+    "perception_reliability_preoutcome_freeze.json",
+    "model_a_compatibility_preoutcome.json",
+    "wang25_primary_roi_certification.json"
+  ],
+  "real_R_I_before_freeze": false,
+  "real_R_P_before_freeze": false,
+  "real_Delta_before_freeze": false,
+  "no_scientific_change_after_freeze": true,
+  "not_c3xat_r2": true,
+  "seals_unchanged": true,
+  "self_hash": "1c604e734a6f3b3a8acf695392aa95179e05b126dda33303bf35fd89dda284fd"
+}
