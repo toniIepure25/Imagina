@@ -248,3 +248,48 @@ def test_final_decision_blocked_not_fail_and_no_fabrication():
     interim = _R / "C3XAT_R1_DECISION.json"
     if interim.exists():
         assert json.load(open(interim))["decision"] == "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE"
+
+
+# ---- perception-estimand blocker (successor terminal decision, attempt 2) --------------------------
+def test_perception_estimand_blocker_preoutcome():
+    p = _R / "perception_run_split_coverage_preoutcome.json"
+    if not p.exists():
+        return
+    cov = json.load(open(p))
+    assert _verify(cov)
+    # if any 5v5 split has <72 common videos, R_P must be unauthorized (no outcome used)
+    if not cov.get("all_subjects_all_splits_72_common", True):
+        assert cov["R_P_authorized"] is False
+        assert cov["blocked_decision"] == "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND"
+        assert cov["no_workaround_applied"]["outcome_guided"] is False
+
+
+def test_perception_bug_detected_preoutcome_no_outcome_used():
+    p = _R / "confirmatory_driver_perception_bug_preoutcome.json"
+    if not p.exists():
+        return
+    b = json.load(open(p))
+    assert _verify(b)
+    assert b["detected_before_outcome_inspection"] is True
+    assert b["scientific_outcome_used_for_detection"] is False
+    assert b["invalid_outputs_quarantined"] is True
+
+
+def test_final_decision_v2_blocked_no_fabrication():
+    p = _R / "C3XAT_R1_FINAL_DECISION_v2.json"
+    if not p.exists():
+        return
+    d = json.load(open(p))
+    assert _verify(d)
+    if d["decision"] == "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND":
+        assert d["is_blocked_not_fail"] is True
+        assert d["dataset_gate_evaluated"] is False
+        assert d["no_neural_outcome_computed_or_inspected"] is True
+        assert d["R_P_authorized"] is False
+        assert d["c3xag_authorized"] is False
+        assert d["seals_unchanged"] is True and d["not_c3xat_r2"] is True
+        assert d["c3xat_seal"] == _C3XAT_SEAL
+    # prior atlas-blocked final decision preserved unchanged
+    prior = _R / "C3XAT_R1_FINAL_DECISION.json"
+    if prior.exists():
+        assert json.load(open(prior))["decision"] == "C3XAT_R1_BLOCKED_ATLAS_SPACE_PROVENANCE"

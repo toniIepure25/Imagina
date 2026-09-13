@@ -1,0 +1,18 @@
+{
+  "artifact": "C3XAT_R1_IMPLEMENTATION_FREEZE_PREOUTCOME_CORRECTION",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "previous_freeze_preserved": true,
+  "reason": "PERCEPTION_TASK_SEMANTICS_DRIVER_BUG_FOUND_BY_CODE_AUDIT",
+  "outcome_values_inspected": false,
+  "invalid_campaign_outputs_used": false,
+  "imagery_scientific_pipeline_changed": false,
+  "perception_path_corrected_to_match_sealed_R_P_intent": "NOT_REACHED \u2014 blocked at the R_P estimand gate before implementing/running the corrected perception path",
+  "atlas_changed": false,
+  "estimator_changed": false,
+  "threshold_changed": false,
+  "dataset_gate_changed": false,
+  "v2_freeze_created": false,
+  "v2_freeze_reason_not_created": "the 126-split perception content-coverage gate failed (min_common=64<72 for all subjects) -> C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND; per protocol, STOP before computing R_P and before re-freezing/restarting the campaign.",
+  "self_hash": "3a2ed593b0d6a4f9bfb03073742f4f77c63b52c98a40fccdb43584ae9de20c4a"
+}

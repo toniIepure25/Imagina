@@ -1,0 +1,26 @@
+{
+  "artifact": "C3XAT_R1_CONFIRMATORY_DRIVER_PERCEPTION_BUG_PREOUTCOME",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "detected_before_outcome_inspection": true,
+  "scientific_outcome_used_for_detection": false,
+  "detection_basis": "source code + historical ds005191/C3XD event contract + task semantics",
+  "defects": [
+    {
+      "id": 1,
+      "desc": "generic parser treats trial_type==2 as imageryID/kind=imagery; correct for testImagery, but in testPerception trial_type==2 is a VIDEO PRESENTATION whose identity is stimID"
+    },
+    {
+      "id": 2,
+      "desc": "driver sent testPerception through the imagery cue/imagery/post-video/eval MODEL_A_LSA; sealed R_P intent = reliability of RAW perception betas, same ROI, run-disjoint"
+    }
+  ],
+  "invalid_outputs_quarantined": true,
+  "quarantine_dir": "/work/wang/quarantine_pre_correction/",
+  "result_files_found_at_stop": 0,
+  "note": "campaign was terminated ~11 min in, before the reliability step wrote any confirmatory_*.json or printed any R_I/R_P/Delta line; NO outcome file existed to quarantine and NONE was read. Jobs deleted before outcome inspection.",
+  "execution_attempt_num": 2,
+  "seal_changed": false,
+  "imagery_branch_note": "even though the imagery branch may be correct, its outputs from this invalid driver run are discarded; one clean campaign under freeze-v2 will recompute all subjects.",
+  "self_hash": "e2cb864a5dd104537cf1fd727cad7bb67e434a077b096ca4edbd7dc524307d0a"
+}

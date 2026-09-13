@@ -1,0 +1,63 @@
+{
+  "artifact": "C3XAT_R1_PERCEPTION_RUN_SPLIT_COVERAGE_PREOUTCOME",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "partitions_per_subject": "C(10,5)/2 = 126",
+  "per_subject": {
+    "sub-01": {
+      "n_partitions": 126,
+      "min_common": 64,
+      "median_common": 72,
+      "max_common": 72,
+      "all_splits_72_common": false
+    },
+    "sub-02": {
+      "n_partitions": 126,
+      "min_common": 64,
+      "median_common": 72,
+      "max_common": 72,
+      "all_splits_72_common": false
+    },
+    "sub-03": {
+      "n_partitions": 126,
+      "min_common": 64,
+      "median_common": 72,
+      "max_common": 72,
+      "all_splits_72_common": false
+    },
+    "sub-04": {
+      "n_partitions": 126,
+      "min_common": 64,
+      "median_common": 72,
+      "max_common": 72,
+      "all_splits_72_common": false
+    },
+    "sub-05": {
+      "n_partitions": 126,
+      "min_common": 64,
+      "median_common": 72,
+      "max_common": 72,
+      "all_splits_72_common": false
+    },
+    "sub-06": {
+      "n_partitions": 126,
+      "min_common": 64,
+      "median_common": 72,
+      "max_common": 72,
+      "all_splits_72_common": false
+    }
+  },
+  "all_subjects_all_splits_72_common": false,
+  "R_P_authorized": false,
+  "authorization_rule": "R_P_authorized only if EVERY 5v5 run-disjoint split has n_common_videos==72; min_common=64<72 for all subjects -> run-disjoint 72-video estimand not robust -> R_P NOT authorized",
+  "blocked_decision": "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND",
+  "no_workaround_applied": {
+    "split_selection": false,
+    "video_dropping": false,
+    "run_dropping": false,
+    "session_disjoint_switch": false,
+    "run_pair_switch": false,
+    "outcome_guided": false
+  },
+  "self_hash": "dbdd432e2f39004d10fa94572f67d347eebfecf5b014aa11d32808b56e8c334a"
+}

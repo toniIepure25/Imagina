@@ -1,0 +1,247 @@
+{
+  "artifact": "C3XAT_R1_PERCEPTION_EVENT_CONTRACT_PREOUTCOME",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "global_trial_type_counts": {
+    "-1": 60,
+    "2": 2160,
+    "-2": 2040,
+    "3": 240,
+    "-3": 60
+  },
+  "durations_by_trial_type": {
+    "-1": [
+      32.0
+    ],
+    "2": [
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      21.0,
+      23.0
+    ],
+    "-2": [
+      2.0
+    ],
+    "3": [
+      14.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      25.0,
+      26.0,
+      27.0,
+      28.0,
+      29.0,
+      30.0,
+      31.0,
+      32.0,
+      33.0,
+      34.0,
+      35.0,
+      36.0,
+      37.0,
+      38.0,
+      39.0,
+      40.0,
+      41.0,
+      42.0,
+      43.0,
+      44.0,
+      45.0,
+      46.0,
+      47.0,
+      48.0,
+      49.0,
+      50.0,
+      51.0,
+      52.0,
+      53.0,
+      54.0,
+      55.0,
+      56.0,
+      57.0,
+      58.0,
+      59.0,
+      60.0,
+      61.0,
+      62.0,
+      63.0,
+      64.0,
+      65.0,
+      66.0,
+      67.0,
+      68.0,
+      69.0,
+      70.0,
+      71.0,
+      72.0,
+      74.0,
+      75.0,
+      77.0,
+      79.0,
+      85.0
+    ],
+    "-3": [
+      8.0
+    ]
+  },
+  "per_subject": {
+    "sub-01": {
+      "n_runs": 10,
+      "trial_type_counts": {
+        "-1": 10,
+        "2": 360,
+        "-2": 400,
+        "3": 40,
+        "-3": 10
+      },
+      "n_target_trials": 360,
+      "distinct_target_videos": 72,
+      "per_run_target_videos": {
+        "ses-testPerception01:run-01": 36,
+        "ses-testPerception01:run-02": 36,
+        "ses-testPerception01:run-03": 36,
+        "ses-testPerception01:run-04": 36,
+        "ses-testPerception01:run-05": 36,
+        "ses-testPerception01:run-06": 36,
+        "ses-testPerception02:run-01": 36,
+        "ses-testPerception02:run-02": 36,
+        "ses-testPerception02:run-03": 36,
+        "ses-testPerception02:run-04": 36
+      }
+    },
+    "sub-02": {
+      "n_runs": 10,
+      "trial_type_counts": {
+        "-1": 10,
+        "2": 360,
+        "-2": 400,
+        "3": 40,
+        "-3": 10
+      },
+      "n_target_trials": 360,
+      "distinct_target_videos": 72,
+      "per_run_target_videos": {
+        "ses-testPerception01:run-01": 36,
+        "ses-testPerception01:run-02": 36,
+        "ses-testPerception01:run-03": 36,
+        "ses-testPerception01:run-04": 36,
+        "ses-testPerception01:run-05": 36,
+        "ses-testPerception01:run-06": 36,
+        "ses-testPerception02:run-01": 36,
+        "ses-testPerception02:run-02": 36,
+        "ses-testPerception02:run-03": 36,
+        "ses-testPerception02:run-04": 36
+      }
+    },
+    "sub-03": {
+      "n_runs": 10,
+      "trial_type_counts": {
+        "-1": 10,
+        "2": 360,
+        "-2": 400,
+        "3": 40,
+        "-3": 10
+      },
+      "n_target_trials": 360,
+      "distinct_target_videos": 72,
+      "per_run_target_videos": {
+        "ses-testPerception01:run-01": 36,
+        "ses-testPerception01:run-02": 36,
+        "ses-testPerception01:run-03": 36,
+        "ses-testPerception01:run-04": 36,
+        "ses-testPerception01:run-05": 36,
+        "ses-testPerception01:run-06": 36,
+        "ses-testPerception02:run-01": 36,
+        "ses-testPerception02:run-02": 36,
+        "ses-testPerception02:run-03": 36,
+        "ses-testPerception02:run-04": 36
+      }
+    },
+    "sub-04": {
+      "n_runs": 10,
+      "trial_type_counts": {
+        "-1": 10,
+        "2": 360,
+        "-2": 400,
+        "3": 40,
+        "-3": 10
+      },
+      "n_target_trials": 360,
+      "distinct_target_videos": 72,
+      "per_run_target_videos": {
+        "ses-testPerception01:run-01": 36,
+        "ses-testPerception01:run-02": 36,
+        "ses-testPerception01:run-03": 36,
+        "ses-testPerception01:run-04": 36,
+        "ses-testPerception01:run-05": 36,
+        "ses-testPerception01:run-06": 36,
+        "ses-testPerception02:run-01": 36,
+        "ses-testPerception02:run-02": 36,
+        "ses-testPerception02:run-03": 36,
+        "ses-testPerception02:run-04": 36
+      }
+    },
+    "sub-05": {
+      "n_runs": 10,
+      "trial_type_counts": {
+        "-1": 10,
+        "2": 360,
+        "-2": 400,
+        "3": 40,
+        "-3": 10
+      },
+      "n_target_trials": 360,
+      "distinct_target_videos": 72,
+      "per_run_target_videos": {
+        "ses-testPerception01:run-01": 36,
+        "ses-testPerception01:run-02": 36,
+        "ses-testPerception01:run-03": 36,
+        "ses-testPerception01:run-04": 36,
+        "ses-testPerception01:run-05": 36,
+        "ses-testPerception01:run-06": 36,
+        "ses-testPerception02:run-01": 36,
+        "ses-testPerception02:run-02": 36,
+        "ses-testPerception02:run-03": 36,
+        "ses-testPerception02:run-04": 36
+      }
+    },
+    "sub-06": {
+      "n_runs": 10,
+      "trial_type_counts": {
+        "-1": 10,
+        "2": 360,
+        "3": 40,
+        "-2": 40,
+        "-3": 10
+      },
+      "n_target_trials": 360,
+      "distinct_target_videos": 72,
+      "per_run_target_videos": {
+        "ses-testPerception01:run-01": 36,
+        "ses-testPerception01:run-02": 36,
+        "ses-testPerception01:run-03": 36,
+        "ses-testPerception01:run-04": 36,
+        "ses-testPerception02:run-01": 36,
+        "ses-testPerception02:run-02": 36,
+        "ses-testPerception02:run-03": 36,
+        "ses-testPerception02:run-04": 36,
+        "ses-testPerception02:run-05": 36,
+        "ses-testPerception02:run-06": 36
+      }
+    }
+  },
+  "bold_loaded": false,
+  "target_rule": "trial_type==2 AND stimID>0 (video presentation identity=stimID)",
+  "self_hash": "5911045f849e6aaaf9328186d11acdd91c1ca44cc80e9fd8c3dca2e93de6f74a"
+}
