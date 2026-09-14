@@ -359,3 +359,94 @@ def test_preoutcome_correction_artifacts_present_and_consistent():
     hist = _ROOT / "results" / "c3xat_r1" / "delta_inference_preoutcome_freeze.json"
     if hist.exists():
         assert _json.load(open(hist))["artifact"] == "C3XAT_R1_DELTA_INFERENCE_PREOUTCOME_FREEZE"
+
+
+# ================== PERCEPTION PATH (R_P_RUNPAIR) SYNTHETIC TESTS ====================================
+def _perc_run_rows(video_ids, base=0.0, with_others=True):
+    """One synthetic perception run: trial_type==2 target presentations (identity=stimID) + some
+    non-target events of other trial types."""
+    rows = []
+    t = base
+    for v in video_ids:
+        rows.append({"onset": t, "duration": 2, "trial_type": "2", "stimID": v,
+                     "imageryID": 999, "cueID": 888, "vividness": 3, "accuracy": 1})
+        t += 4
+        if with_others:
+            rows.append({"onset": t, "duration": 1, "trial_type": "-1", "stimID": 0,
+                         "imageryID": 0, "cueID": 0})
+            t += 2
+    return rows
+
+
+def test_perception_parser_uses_stimid_not_imagery():
+    rows = _perc_run_rows([5, 9, 12])
+    targets, others = P.parse_perception_events(rows, session=1, run=1)
+    assert [t.video_id for t in targets] == [5, 9, 12]      # identity = stimID (NOT imageryID 999)
+    assert all(t.kind == "perception" for t in targets)
+    assert all(tt == "-1" for (tt, _o, _d) in others)       # non-target events grouped separately
+
+
+def test_perception_runpair_assignment_fixed_consecutive():
+    # session 1 runs 1..6 -> pairs 10,10,11,11,12,12 ; session 2 runs 1..4 -> 20,20,21,21
+    ids_s1 = [P.perception_runpair_id(1, r) for r in range(1, 7)]
+    ids_s2 = [P.perception_runpair_id(2, r) for r in range(1, 5)]
+    assert ids_s1 == [10, 10, 11, 11, 12, 12]
+    assert ids_s2 == [20, 20, 21, 21]
+    assert sorted(set(ids_s1 + ids_s2)) == [10, 11, 12, 20, 21]   # exactly 5 run-pairs
+
+
+def test_perception_lsa_one_beta_per_target_ordered():
+    rows = _perc_run_rows([3, 7, 1])
+    targets, others = P.parse_perception_events(rows, 1, 1)
+    d = P.build_perception_lsa_design(targets, others, 120, 1.0)
+    assert len(d["target_idx"]) == 3
+    assert d["video_ids"] == [3, 7, 1]                      # order == event order (by onset)
+    assert any(lb.startswith("grouped_tt") for lb in d["labels"])
+    assert "intercept" in d["labels"]
+    # no imagery cue/imagery/post-video/eval structure
+    assert not any(lb.startswith(("cue_", "imagery_", "postvideo_", "grouped_eval")) for lb in d["labels"])
+
+
+def test_perception_design_rank_ok():
+    rows = _perc_run_rows(list(range(1, 37)))               # 36 targets like a real run
+    targets, others = P.parse_perception_events(rows, 1, 1)
+    n = int(max(t.onset + t.duration for t in targets)) + 20
+    nuis = np.random.default_rng(0).normal(size=(n, 6))
+    d = P.build_perception_lsa_design(targets, others, n, 1.0, nuisance=nuis)
+    aud = P.perception_design_audit(d)
+    assert aud["rank_deficiency"] == 0
+    assert aud["n_targets"] == 36
+
+
+def test_perception_runpair_reliability_signal_vs_null():
+    # 5 run-pairs, each containing all 72 videos exactly once (the certified estimand)
+    rng = np.random.default_rng(3)
+    n_pairs, n_vid, vox = 5, 72, 30
+    templ = rng.normal(size=(n_vid + 1, vox))
+    obs, content, pair = [], [], []
+    for p in range(n_pairs):
+        for v in range(1, n_vid + 1):
+            obs.append(0.9 * templ[v] + 0.1 * rng.normal(size=vox))
+            content.append(v)
+            pair.append(10 + p)                              # run-pair id as the independent unit
+    obs = np.array(obs)
+    content = np.array(content)
+    pair = np.array(pair)
+    res = P.reliability_with_inference_pairs(obs, content, pair, P.SEED_BASE, n_perm=200, n_boot=200)
+    assert res["reliability"] > 0 and res["split_seed_min"] > 0
+    assert P.subject_imagery_pass(res) is True              # reliable perception passes the frozen gate
+    null = P.reliability_with_inference_pairs(rng.normal(size=obs.shape), content, pair, P.SEED_BASE,
+                                              n_perm=200, n_boot=200)
+    assert P.subject_imagery_pass(null) is False
+
+
+def test_perception_runpair_contract_artifact_if_present():
+    p = _ROOT / "results" / "c3xat_r1" / "perception_runpair_contract_preoutcome.json"
+    if not p.exists():
+        return
+    c = _json.load(open(p))
+    if c.get("all_subjects_pass"):
+        for _sub, s in c["per_subject"].items():
+            assert s["n_run_pairs"] == 5
+            assert s["all_pairs_72_exact"] and s["all_pairs_disjoint_within_pair"]
+            assert s["all_videos_5_repetitions"] and s["subject_contract_pass"]

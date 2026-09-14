@@ -1,0 +1,30 @@
+{
+  "artifact": "C3XAT_R1_PERCEPTION_RUNPAIR_ESTIMAND_PREOUTCOME_SEAL",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "name": "R_P_RUNPAIR",
+  "quantity": "Spearman-Brown corrected run-pair-disjoint split-half reliability of 72-video mean multivoxel perception patterns",
+  "primary_roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "independent_unit": "PERCEPTION RUN-PAIR",
+  "n_independent_units": 5,
+  "content_per_unit": "72/72 videos exactly once (certified in perception_runpair_contract_preoutcome.json)",
+  "pairing_rule": "fixed consecutive run numbers within each session: (01,02),(03,04),(05,06); never cross-session",
+  "replaces": "the unusable RUN-level R_P implementation for C3XAT-R1 ONLY",
+  "reason": "RUN-level splitting changes the content estimand (min_common=64<72); RUN-PAIR restores a fixed 72-video estimand from the dataset's acquisition structure",
+  "estimator_callable": "c3xb_reliability.reliability_with_inference_pairs (UNCHANGED; pair=run-pair id, content=stimID)",
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "n_rep_point": 200,
+  "seed_base": 20260909,
+  "seed_offsets": [
+    0,
+    100,
+    200
+  ],
+  "permutation": "within perception run-pair video-label permutation",
+  "bootstrap": "whole-run-pair non-straddling hierarchical",
+  "no_trial_in_both_halves": true,
+  "neural_outcomes_used": "NONE",
+  "prospective_successor_not_original_seal_rewrite": true,
+  "self_hash": "916e4d704f73c5b474f45bd04f4f446e7d6be43707397e799ce08197008c04be"
+}

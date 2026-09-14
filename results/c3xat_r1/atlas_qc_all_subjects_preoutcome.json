@@ -1,0 +1,97 @@
+{
+  "artifact": "C3XAT_R1_ATLAS_QC_ALL_SUBJECTS_PREOUTCOME",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "primary_mask_sha256": "19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc",
+  "primary_voxels": 7604,
+  "target_shape": [
+    97,
+    115,
+    97
+  ],
+  "roi_not_intersected_with_brainmask": true,
+  "roi_not_eroded_dilated": true,
+  "per_subject": {
+    "sub-01": {
+      "shape": [
+        97,
+        115,
+        97
+      ],
+      "shape_match": true,
+      "affine_match": true,
+      "roi_voxels": 7604,
+      "roi_voxels_ok": true,
+      "roi_finite_bold_fraction": 1.0,
+      "atlas_qc_pass": true
+    },
+    "sub-02": {
+      "shape": [
+        97,
+        115,
+        97
+      ],
+      "shape_match": true,
+      "affine_match": true,
+      "roi_voxels": 7604,
+      "roi_voxels_ok": true,
+      "roi_finite_bold_fraction": 1.0,
+      "atlas_qc_pass": true
+    },
+    "sub-03": {
+      "shape": [
+        97,
+        115,
+        97
+      ],
+      "shape_match": true,
+      "affine_match": true,
+      "roi_voxels": 7604,
+      "roi_voxels_ok": true,
+      "roi_finite_bold_fraction": 1.0,
+      "atlas_qc_pass": true
+    },
+    "sub-04": {
+      "shape": [
+        97,
+        115,
+        97
+      ],
+      "shape_match": true,
+      "affine_match": true,
+      "roi_voxels": 7604,
+      "roi_voxels_ok": true,
+      "roi_finite_bold_fraction": 1.0,
+      "atlas_qc_pass": true
+    },
+    "sub-05": {
+      "shape": [
+        97,
+        115,
+        97
+      ],
+      "shape_match": true,
+      "affine_match": true,
+      "roi_voxels": 7604,
+      "roi_voxels_ok": true,
+      "roi_finite_bold_fraction": 1.0,
+      "atlas_qc_pass": true
+    },
+    "sub-06": {
+      "shape": [
+        97,
+        115,
+        97
+      ],
+      "shape_match": true,
+      "affine_match": true,
+      "roi_voxels": 7604,
+      "roi_voxels_ok": true,
+      "roi_finite_bold_fraction": 1.0,
+      "atlas_qc_pass": true
+    }
+  },
+  "all_subjects_atlas_qc_pass": true,
+  "outcome_inspected": false,
+  "self_hash": "9ab9f74c88de78ad7273eddb964626e8c5dbb8247d379af17d5ba5fd97b933b6"
+}

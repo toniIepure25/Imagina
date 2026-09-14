@@ -293,3 +293,78 @@ def test_final_decision_v2_blocked_no_fabrication():
     prior = _R / "C3XAT_R1_FINAL_DECISION.json"
     if prior.exists():
         assert json.load(open(prior))["decision"] == "C3XAT_R1_BLOCKED_ATLAS_SPACE_PROVENANCE"
+
+
+# ---- perception estimand resolution + freeze v2 (successor, attempt 2) ------------------------------
+def test_perception_runpair_contract_and_resolution():
+    p = _R / "perception_runpair_contract_preoutcome.json"
+    if not p.exists():
+        return
+    c = json.load(open(p))
+    assert _verify(c)
+    assert c["outcome_inspected"] is False
+    if c.get("all_subjects_pass"):
+        for _s, subj in c["per_subject"].items():
+            assert subj["n_run_pairs"] == 5
+            assert subj["all_pairs_72_exact"] and subj["all_pairs_disjoint_within_pair"]
+            assert subj["all_videos_5_repetitions"] and subj["subject_contract_pass"]
+        res = _R / "C3XAT_R1_PERCEPTION_ESTIMAND_BLOCKER_RESOLUTION.json"
+        if res.exists():
+            r = json.load(open(res))
+            assert _verify(r)
+            assert r["resolution"] == "FIXED_72_VIDEO_PERCEPTION_RUNPAIR_ESTIMAND_CERTIFIED"
+            assert r["outcome_inspected"] is False
+            assert r["original_seals_changed"] is False and r["C3XAT_R2"] is False
+            assert all(v is False for v in r["no_workaround_used"].values())
+
+
+def test_perception_estimand_seal_and_five_runpair():
+    seal = _R / "perception_runpair_estimand_preoutcome_seal.json"
+    if seal.exists():
+        s = json.load(open(seal))
+        assert _verify(s)
+        assert s["name"] == "R_P_RUNPAIR" and s["independent_unit"] == "PERCEPTION RUN-PAIR"
+        assert s["n_independent_units"] == 5
+        assert s["estimator_callable"].startswith("c3xb_reliability.reliability_with_inference_pairs")
+        assert s["neural_outcomes_used"] == "NONE"
+    clar = _R / "perception_five_runpair_estimator_clarification.json"
+    if clar.exists():
+        c = json.load(open(clar))
+        assert _verify(c)
+        assert c["scientific_estimator_code_changed"] is False
+
+
+def test_atlas_qc_all_subjects_and_mask_frozen():
+    p = _R / "atlas_qc_all_subjects_preoutcome.json"
+    if not p.exists():
+        return
+    q = json.load(open(p))
+    assert _verify(q)
+    assert q["primary_mask_sha256"] == "19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc"
+    assert q["primary_voxels"] == 7604
+    assert q["roi_not_intersected_with_brainmask"] is True and q["roi_not_eroded_dilated"] is True
+    if q.get("all_subjects_atlas_qc_pass"):
+        for _s, v in q["per_subject"].items():
+            assert v["shape_match"] and v["affine_match"] and v["roi_voxels_ok"]
+            assert v["roi_finite_bold_fraction"] == 1.0 and v["atlas_qc_pass"] is True
+
+
+def test_implementation_freeze_v2_preoutcome():
+    p = _R / "implementation_freeze_manifest_v2.json"
+    if not p.exists():
+        return
+    m = json.load(open(p))
+    assert _verify(m)
+    assert m["real_R_I_before_v2_freeze"] is False
+    assert m["real_R_P_before_v2_freeze"] is False
+    assert m["real_Delta_before_v2_freeze"] is False
+    assert m["imagery_scientific_pipeline_changed"] is False
+    assert m["atlas_changed"] is False and m["estimator_changed"] is False
+    assert m["threshold_changed"] is False and m["dataset_gate_changed"] is False
+    assert m["perception_unit"] == "RUN-PAIR (R_P_RUNPAIR)"
+    assert m["seals_unchanged"] is True and m["not_c3xat_r2"] is True
+    assert m["c3xat_seal"] == _C3XAT_SEAL
+    # v1 freeze preserved unchanged
+    v1 = _R / "implementation_freeze_manifest.json"
+    if v1.exists():
+        assert json.load(open(v1))["artifact"] == "C3XAT_R1_IMPLEMENTATION_FREEZE_MANIFEST"

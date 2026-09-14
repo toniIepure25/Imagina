@@ -417,3 +417,101 @@ def dataset_gate(n_pass: int, n_valid: int) -> str:
     if n_pass == 1:
         return "C3XAT_D2_ATLAS_IMAGERY_LIMITED"
     return "C3XAT_D2_ATLAS_IMAGERY_FAIL"
+
+
+# ================== DEDICATED PERCEPTION PATH (R_P_RUNPAIR; sealed successor for C3XAT-R1) ===========
+def perception_runpair_id(session: int, run: int) -> int:
+    """Fixed consecutive run-pairing WITHIN a session: runs (1,2)->0,(3,4)->1,(5,6)->2 (never across
+    sessions). Returns a globally-unique run-pair id = session*10 + (run-1)//2. Deterministic; never
+    optimized for content or outcome."""
+    return int(session) * 10 + (int(run) - 1) // 2
+
+
+def parse_perception_events(rows, session: int, run: int):
+    """Perception target = trial_type==2 AND stimID>0 (identity = stimID). Returns (targets, others):
+    targets are TrialEvent(kind='perception', video_id=stimID); others are (trial_type, onset, duration)
+    for every non-target event (grouped, unmodulated). NEVER reads imageryID/cueID/vividness/accuracy for
+    target identity."""
+    targets = []
+    others = []
+    for r in rows:
+        tt = str(r.get("trial_type", "")).strip()
+        onset = float(r["onset"])
+        dur = float(r["duration"])
+        if tt == TT_IMAGERY:  # "2" -> perception video presentation (identity = stimID)
+            sid = int(float(r.get("stimID", 0) or 0))
+            if sid > 0:
+                targets.append(TrialEvent(onset, dur, "perception", sid, session, run))
+        else:
+            others.append((tt, onset, dur))
+    return targets, others
+
+
+def build_perception_lsa_design(targets, others, n_scans: int, tr: float,
+                                nuisance: np.ndarray | None = None) -> dict:
+    """Dedicated perception LSA: one canonical-HRF regressor per target (trial_type==2/stimID) video
+    presentation + one grouped unmodulated regressor per OTHER trial_type + intercept + frozen nuisance.
+    Uses the EXACT frozen C3XD HRF/conv primitives. NO cue/imagery/post-video/eval imagery structure; no
+    behavioral/identity modulation of nuisance events."""
+    import collections as _c
+    hrf = canonical_hrf(tr)
+    cols: list[np.ndarray] = []
+    labels: list[str] = []
+    tgt_idx = []
+    for t in sorted(targets, key=lambda x: x.onset):
+        tgt_idx.append(len(cols))
+        cols.append(c3xd_conv(_boxcar_tr(n_scans, t.onset, t.duration, tr), hrf))
+        labels.append(f"perc_v{t.video_id}_on{int(t.onset)}")
+    by_tt = _c.defaultdict(list)
+    for (tt, on, du) in others:
+        by_tt[tt].append((on, du))
+    for tt in sorted(by_tt):
+        box = np.zeros(n_scans)
+        for (on, du) in by_tt[tt]:
+            box = box + _boxcar_tr(n_scans, on, du, tr)
+        cols.append(c3xd_conv(box, hrf))
+        labels.append(f"grouped_tt{tt}")
+    cols.append(np.ones(n_scans))
+    labels.append("intercept")
+    nuis_block = []
+    if nuisance is not None and nuisance.size:
+        for j in range(nuisance.shape[1]):
+            nuis_block.append(len(cols))
+            cols.append(nuisance[:, j])
+            labels.append(f"nuisance_{j}")
+    X = np.vstack(cols).T
+    return {"design": X, "labels": labels, "target_idx": tgt_idx, "nuisance_idx": nuis_block,
+            "video_ids": [t.video_id for t in sorted(targets, key=lambda x: x.onset)]}
+
+
+def perception_design_audit(design_info: dict) -> dict:
+    """Metadata-only technical audit of a perception LSA design: shape, rank, rank deficiency, target
+    submatrix condition number, max target VIF, and max |target vs grouped-event| correlation."""
+    X = design_info["design"]
+    tgt = design_info["target_idx"]
+    grouped = [i for i, lb in enumerate(design_info["labels"]) if lb.startswith("grouped_tt")]
+    rank = int(np.linalg.matrix_rank(X))
+    tmat = X[:, tgt] if tgt else np.zeros((X.shape[0], 0))
+    cond = float(np.linalg.cond(tmat)) if tmat.shape[1] > 1 else 1.0
+    max_tg = 0.0
+    for gi in grouped:
+        for ti in tgt:
+            a = X[:, gi] - X[:, gi].mean()
+            b = X[:, ti] - X[:, ti].mean()
+            d = np.linalg.norm(a) * np.linalg.norm(b)
+            if d > 0:
+                max_tg = max(max_tg, abs(float(np.dot(a, b) / d)))
+    max_vif = 1.0
+    allc = list(range(X.shape[1]))
+    for ti in tgt:
+        rest = [j for j in allc if j != ti]
+        A = X[:, rest]
+        y = X[:, ti]
+        beta, *_ = np.linalg.lstsq(A, y, rcond=None)
+        resid = y - A @ beta
+        r2 = 1.0 - float(np.sum(resid ** 2)) / (float(np.sum((y - y.mean()) ** 2)) + 1e-24)
+        r2 = min(max(r2, 0.0), 1.0 - 1e-12)
+        max_vif = max(max_vif, 1.0 / (1.0 - r2))
+    return {"shape": list(X.shape), "rank": rank, "rank_deficiency": int(X.shape[1] - rank),
+            "target_condition_number": cond, "max_target_vif": float(max_vif),
+            "max_abs_target_grouped_corr": float(max_tg), "n_targets": len(tgt)}

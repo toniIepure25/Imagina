@@ -124,36 +124,97 @@ def _betas_for_task(deriv, sub, task, roi_idx):
     return (np.asarray(obs), np.asarray(pred), np.asarray(content), np.asarray(unit))
 
 
-def run_subject(deriv, sub, roi_idx) -> dict:
-    # imagery: independent unit = SESSION
+def _perception_betas(deriv, sub, roi_idx):
+    """Dedicated perception path: per-run perception LSA -> target betas (identity=stimID); independent
+    unit = fixed consecutive RUN-PAIR. Returns (betas, content=stimID, pair=run-pair id)."""
+    patt = f"{deriv}/{sub}/ses-testPerception*/func/*space-MNI152NLin2009cAsym*desc-preproc_bold.nii.gz"
+    runs = sorted(glob.glob(patt))
+    obs, content, pair = [], [], []
+    n_used = 0
+    for bp in runs:
+        ep = _raw_events_path(bp)
+        cp = bp.replace("_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz",
+                        "_desc-confounds_timeseries.tsv")
+        if not (os.path.exists(ep) and os.path.exists(cp)):
+            continue
+        n_used += 1
+        tr = _tr_of(bp)
+        run_no = int(bp.split("_run-")[1].split("_")[0])
+        ses = _session_of(bp)
+        n_scans, Y, ev_rows, nuis = _load_run(bp, ep, cp, roi_idx, tr)
+        targets, others = P.parse_perception_events(ev_rows, session=ses, run=run_no)
+        d = P.build_perception_lsa_design(targets, others, n_scans, tr, nuisance=nuis)
+        betas = np.linalg.pinv(d["design"]) @ Y
+        b_t = betas[d["target_idx"], :]
+        rp_id = P.perception_runpair_id(ses, run_no)
+        for k in range(b_t.shape[0]):
+            obs.append(b_t[k])
+            content.append(d["video_ids"][k])
+            pair.append(rp_id)
+    if n_used == 0 or len(obs) == 0:
+        raise RuntimeError(f"fail-closed: no usable testPerception runs for {sub}")
+    return np.asarray(obs), np.asarray(content), np.asarray(pair)
+
+
+def run_subject(deriv, sub, roi_idx, atlas_qc_pass) -> dict:
+    # imagery: independent unit = SESSION (unchanged)
     obs, pred, content, sess = _betas_for_task(deriv, sub, "testImagery", roi_idx)
     ri = P.reliability_with_inference_pairs(obs, content, sess, P.SEED_BASE, n_perm=P.N_PERM, n_boot=P.N_BOOT)
     ri_pred = P.reliability_with_inference_pairs(pred, content, sess, P.SEED_BASE,
                                                  n_perm=P.N_PERM, n_boot=P.N_BOOT)
     delta = P.delta_i(ri["reliability"], ri_pred["reliability"])
     sens = P.paired_delta_sensitivity(obs, pred, content, sess)
-    # perception: independent unit = RUN
-    pobs, _pp, pcontent, prun = _betas_for_task(deriv, sub, "testPerception", roi_idx)
-    rp = P.reliability_with_inference_pairs(pobs, pcontent, prun, P.SEED_BASE, n_perm=P.N_PERM, n_boot=P.N_BOOT)
+    # perception: independent unit = fixed RUN-PAIR (sealed successor R_P_RUNPAIR)
+    pobs, pcontent, ppair = _perception_betas(deriv, sub, roi_idx)
+    rp = P.reliability_with_inference_pairs(pobs, pcontent, ppair, P.SEED_BASE, n_perm=P.N_PERM, n_boot=P.N_BOOT)
     imagery_pass = P.subject_imagery_pass(ri)
     perception_pass = P.subject_imagery_pass(rp)
     cuevideo_pass = bool(sens["criterion_pass"])
     unit_contract_pass = bool(len(set(int(s) for s in sess)) == P.N_IMAGERY_SESSIONS
                               and len(set(int(c) for c in content)) == P.N_VIDEOS)
+    runpair_contract_pass = bool(len(set(int(p) for p in ppair)) == 5
+                                 and len(set(int(c) for c in pcontent)) == P.N_VIDEOS
+                                 and int(pobs.shape[0]) == P.N_IMAGERY_TRIALS)
     primary_pass = P.subject_primary_pass(imagery_pass, perception_pass, cuevideo_pass,
-                                          unit_contract_pass, True)
+                                          bool(unit_contract_pass and runpair_contract_pass),
+                                          bool(atlas_qc_pass))
     return {"subject": sub,
             "R_I": ri["reliability"], "perm_p": ri["perm_p_one_sided"], "bootstrap_ci95": ri["bootstrap_ci95"],
             "split_seed_min_R_I": ri["split_seed_min"], "split_seed_values_R_I": ri["split_seed_values"],
             "R_P": rp["reliability"], "R_P_perm_p": rp["perm_p_one_sided"], "R_P_ci95": rp["bootstrap_ci95"],
-            "R_P_split_seed_min": rp["split_seed_min"],
+            "R_P_split_seed_min": rp["split_seed_min"], "R_P_split_seed_values": rp["split_seed_values"],
             "R_I_cuevideo_predicted": ri_pred["reliability"], "Delta_I": delta,
             "paired_delta": sens,
             "imagery_pass": imagery_pass, "perception_pass": perception_pass,
             "cuevideo_pass": cuevideo_pass, "unit_contract_pass": unit_contract_pass,
-            "atlas_qc_pass": True, "primary_pass": primary_pass,
+            "runpair_contract_pass": runpair_contract_pass, "atlas_qc_pass": bool(atlas_qc_pass),
+            "primary_pass": primary_pass,
             "n_imagery_trials": int(obs.shape[0]), "n_perception_trials": int(pobs.shape[0]),
+            "n_perception_runpairs": int(len(set(int(p) for p in ppair))),
             "n_roi_voxels": int(len(roi_idx))}
+
+
+TARGET_SHAPE = (97, 115, 97)
+TARGET_VOXELS = 7604
+
+
+def _atlas_qc_for_subject(deriv, sub, mask_img, roi_idx):
+    """Derive atlas_qc_pass from actual subject data: grid/shape/affine match the frozen ROI grid and
+    ROI finite-BOLD coverage == 100%. The primary ROI membership (7604 voxels) is NOT modified."""
+    import nibabel as nib
+    bold = sorted(glob.glob(f"{deriv}/{sub}/ses-testImagery*/func/"
+                            f"*space-MNI152NLin2009cAsym*desc-preproc_bold.nii.gz"))[0]
+    bimg = nib.load(bold)
+    shape_ok = tuple(bimg.shape[:3]) == TARGET_SHAPE
+    affine_ok = bool(np.allclose(bimg.affine, mask_img.affine, atol=1e-3))
+    b0 = np.asanyarray(bimg.dataobj[..., 0]).reshape(-1)
+    finite = float(np.isfinite(b0[roi_idx]).mean())
+    voxels_ok = int(len(roi_idx)) == TARGET_VOXELS
+    qc = {"subject": sub, "shape_match": shape_ok, "affine_match": affine_ok,
+          "roi_voxels": int(len(roi_idx)), "roi_voxels_ok": voxels_ok,
+          "roi_finite_bold_fraction": finite}
+    qc["atlas_qc_pass"] = bool(shape_ok and affine_ok and voxels_ok and finite == 1.0)
+    return qc
 
 
 def main():
@@ -162,14 +223,17 @@ def main():
     out = os.environ.get("C3XAT_OUT", "/work/wang/results")
     os.makedirs(out, exist_ok=True)
     import nibabel as nib
-    roi = np.asanyarray(nib.load(mask).dataobj) > 0
+    mask_img = nib.load(mask)
+    roi = np.asanyarray(mask_img.dataobj) > 0
     roi_idx = np.where(roi.reshape(-1))[0]
     subs = os.environ.get("C3XAT_SUBS", "sub-01,sub-02,sub-03,sub-04,sub-05,sub-06").split(",")
     for sub in subs:
-        r = run_subject(deriv, sub, roi_idx)
+        qc = _atlas_qc_for_subject(deriv, sub, mask_img, roi_idx)
+        json.dump(qc, open(f"{out}/atlas_qc_{sub}.json", "w"), indent=2)
+        r = run_subject(deriv, sub, roi_idx, qc["atlas_qc_pass"])
         json.dump(r, open(f"{out}/confirmatory_{sub}.json", "w"), indent=2)
         print(f"DONE {sub} R_I={r['R_I']:.4f} p={r['perm_p']:.4f} R_P={r['R_P']:.4f} "
-              f"Delta={r['Delta_I']:.4f} pass={r['primary_pass']}")
+              f"Delta={r['Delta_I']:.4f} atlasqc={qc['atlas_qc_pass']} pass={r['primary_pass']}")
 
 
 if __name__ == "__main__":
