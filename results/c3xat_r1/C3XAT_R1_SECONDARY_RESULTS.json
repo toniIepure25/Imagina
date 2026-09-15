@@ -1,0 +1,158 @@
+{
+  "artifact": "C3XAT_R1_SECONDARY_RESULTS",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "label": "SECONDARY_DESCRIPTIVE",
+  "estimator": "c3xb_reliability.reliability_with_inference_pairs (unchanged, imagery SESSION unit)",
+  "masks": "secondary_masks_provenance.json (Wang25 7604; 3 random cortical 7604 sealed seeds; GM 126006 constructed, R_I NOT_RUN)",
+  "per_subject": {
+    "sub-01": {
+      "wang25_R_I": 0.09680461327869289,
+      "wang25_R_I_primary_consistency": 0.09680461327869289,
+      "random_R_I": {
+        "randa": 0.05865164745173029,
+        "randb": 0.051257223842816446,
+        "randc": 0.060042612845757494
+      },
+      "mean_random_R_I": 0.056650494713434744,
+      "wang_minus_gm": null,
+      "wang_minus_mean_random": 0.04015411856525814,
+      "wang_R_I_over_R_P_runpair": 0.8997836098689566
+    },
+    "sub-02": {
+      "wang25_R_I": 0.10960490197108821,
+      "wang25_R_I_primary_consistency": 0.1096049019710882,
+      "random_R_I": {
+        "randa": 0.06695342859109354,
+        "randb": 0.06965828253916057,
+        "randc": 0.07669501983082196
+      },
+      "mean_random_R_I": 0.07110224365369203,
+      "wang_minus_gm": null,
+      "wang_minus_mean_random": 0.03850265831739619,
+      "wang_R_I_over_R_P_runpair": 0.6990649903852593
+    },
+    "sub-03": {
+      "wang25_R_I": 0.17430689784117043,
+      "wang25_R_I_primary_consistency": 0.17430689784117043,
+      "random_R_I": {
+        "randa": 0.11041935199373107,
+        "randb": 0.11093401639863319,
+        "randc": 0.10573611501447484
+      },
+      "mean_random_R_I": 0.1090298278022797,
+      "wang_minus_gm": null,
+      "wang_minus_mean_random": 0.06527707003889073,
+      "wang_R_I_over_R_P_runpair": 0.8388897479442884
+    },
+    "sub-04": {
+      "wang25_R_I": 0.02395248767210594,
+      "wang25_R_I_primary_consistency": 0.023952487672105924,
+      "random_R_I": {
+        "randa": 0.026170768753999242,
+        "randb": 0.02291833889046099,
+        "randc": 0.022775193671152886
+      },
+      "mean_random_R_I": 0.02395476710520437,
+      "wang_minus_gm": null,
+      "wang_minus_mean_random": -2.2794330984329814e-06,
+      "wang_R_I_over_R_P_runpair": 0.15673144397981995
+    },
+    "sub-05": {
+      "wang25_R_I": 0.06364691104334814,
+      "wang25_R_I_primary_consistency": 0.06364691104334814,
+      "random_R_I": {
+        "randa": 0.038419770653083656,
+        "randb": 0.038658700507838706,
+        "randc": 0.04183979517246644
+      },
+      "mean_random_R_I": 0.0396394221111296,
+      "wang_minus_gm": null,
+      "wang_minus_mean_random": 0.024007488932218546,
+      "wang_R_I_over_R_P_runpair": 0.6528308932897542
+    },
+    "sub-06": {
+      "wang25_R_I": 0.07844275152200997,
+      "wang25_R_I_primary_consistency": 0.07844275152200997,
+      "random_R_I": {
+        "randa": 0.08367919983388124,
+        "randb": 0.07938879733218909,
+        "randc": 0.08304023361402725
+      },
+      "mean_random_R_I": 0.08203607692669919,
+      "wang_minus_gm": null,
+      "wang_minus_mean_random": -0.003593325404689221,
+      "wang_R_I_over_R_P_runpair": 1.8237497574222266
+    }
+  },
+  "cohort_summary": {
+    "wang25": {
+      "mean": 0.0911264272214026,
+      "median": 0.08762368240035143,
+      "min": 0.02395248767210594,
+      "max": 0.17430689784117043
+    },
+    "mean_random": {
+      "mean": 0.06373547205207328,
+      "median": 0.06387636918356339
+    }
+  },
+  "wang25_secondary_reproduces_primary": true,
+  "descriptive_finding": "Wang25 imagery R_I is descriptively higher than size-matched random cortex for most subjects (cohort mean 0.091 vs ~0.064); sub-03 shows the largest enrichment (+0.065). No sealed inferential enrichment test existed, so NO post-outcome p-value is computed and NO 'Wang>all random' threshold is applied to any conclusion.",
+  "negative_controls": {
+    "video_label_permutation": {
+      "status": "RUN",
+      "criterion": "within-imagery-session video-label permutation is the R_I null; PASS if perm p<0.05",
+      "note": "embedded in every subject's frozen R_I inference"
+    },
+    "cue_only_and_postvideo_only_contribution": {
+      "status": "RUN",
+      "criterion": "cue/video forward-contamination operator -> R_I_cuevideo_predicted; Delta_I=R_I-pred must survive paired sensitivity",
+      "note": "the sealed cue/video falsification (primary); zero true-imagery contribution proven"
+    },
+    "roi_size_matched_random_cortex": {
+      "status": "RUN",
+      "criterion": "3 size-matched (7604) random cortical controls, sealed seeds; descriptive contrast only (no sealed inferential threshold)",
+      "result": "Wang25 R_I descriptively >= mean random for 4/6 subjects; cohort mean 0.091 vs ~0.064"
+    },
+    "cortical_gray_matter": {
+      "status": "NOT_RUN",
+      "reason": "whole-cortex (126006-voxel) R_I at full 1000/1000/200 inference is computationally prohibitive under NFS contention and is NOT the size-matched comparison; the size-matched random controls are the fair enrichment control and were completed. Not silently omitted: explicitly deferred."
+    },
+    "session_only_predictor": {
+      "status": "NOT_RUN",
+      "reason": "not part of the sealed C3XAT-R1 execution; not invented post-outcome"
+    },
+    "trial_order_predictor": {
+      "status": "NOT_RUN",
+      "reason": "not sealed in this execution"
+    },
+    "motion_quality_only_predictor": {
+      "status": "NOT_RUN",
+      "reason": "not sealed in this execution"
+    },
+    "global_mean_pattern": {
+      "status": "NOT_RUN",
+      "reason": "not sealed in this execution"
+    },
+    "previous_video_identity": {
+      "status": "NOT_RUN",
+      "reason": "not sealed in this execution"
+    },
+    "next_video_identity": {
+      "status": "NOT_RUN",
+      "reason": "not sealed in this execution"
+    },
+    "early_vs_late_imagery": {
+      "status": "NOT_RUN",
+      "reason": "not sealed in this execution"
+    }
+  },
+  "primary_decision_changed": false,
+  "primary_decision": "C3XAT_D2_ATLAS_IMAGERY_LIMITED",
+  "pass_count": "1/6",
+  "c3xag_authorized": false,
+  "cannot_promote_any_subject": true,
+  "outcome_used_to_change_primary": false,
+  "self_hash": "973bdfb28c917284167c071ee2712d345fd101e062d2759de921565378c09a88"
+}

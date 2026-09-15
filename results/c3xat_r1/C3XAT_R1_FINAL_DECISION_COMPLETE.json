@@ -1,0 +1,211 @@
+{
+  "artifact": "C3XAT_R1_FINAL_DECISION_COMPLETE",
+  "gate": "C3XAT_R1",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "c3xat_r1_execution_seal": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "final_decision": "C3XAT_D2_ATLAS_IMAGERY_LIMITED",
+  "pass_count": "1/6",
+  "only_primary_pass": "sub-03",
+  "qualification_threshold": ">=2/6 primary PASS",
+  "observed": "1/6",
+  "c3xag_preparation_authorized": false,
+  "supersession_chain": [
+    "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE (interim checkpoint, preserved)",
+    "C3XAT_R1_BLOCKED_ATLAS_SPACE_PROVENANCE (preserved; resolved via ProbAtlas_v4 recovery)",
+    "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND (preserved; resolved via fixed run-pair estimand)",
+    "C3XAT_R1_PRIMARY_DATASET_DECISION -> C3XAT_D2_ATLAS_IMAGERY_LIMITED (frozen)",
+    "C3XAT_R1_FINAL_DECISION_COMPLETE (this successor artifact)"
+  ],
+  "primary_decision_ref": "results/c3xat_r1/C3XAT_R1_PRIMARY_DATASET_DECISION.json (immutable)",
+  "per_subject_primary": {
+    "sub-01": {
+      "R_I": 0.09680461327869289,
+      "R_I_perm_p": 0.002997002997002997,
+      "R_I_ci95": [
+        -0.02845776653127961,
+        0.1641390605737003
+      ],
+      "R_I_split_seed_min": 0.09509723364923708,
+      "R_P": 0.10758654882899167,
+      "R_P_perm_p": 0.000999000999000999,
+      "R_P_ci95": [
+        -0.0940064540287466,
+        0.20942839257498164
+      ],
+      "R_I_cuevideo_predicted": 0.12083538222180305,
+      "Delta_I": -0.024030768943110167,
+      "paired_delta_ci95": [
+        -0.20815007648969452,
+        0.12006091275434631
+      ],
+      "imagery_pass": false,
+      "perception_pass": false,
+      "cuevideo_pass": false,
+      "primary_pass": false
+    },
+    "sub-02": {
+      "R_I": 0.1096049019710882,
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_ci95": [
+        0.0201633423891645,
+        0.14678437690280993
+      ],
+      "R_I_split_seed_min": 0.1096049019710882,
+      "R_P": 0.1567878573216551,
+      "R_P_perm_p": 0.000999000999000999,
+      "R_P_ci95": [
+        0.05386412361484953,
+        0.17800230956322358
+      ],
+      "R_I_cuevideo_predicted": 0.02641491171351415,
+      "Delta_I": 0.08318999025757405,
+      "paired_delta_ci95": [
+        -0.12833245591086917,
+        0.14893324040322503
+      ],
+      "imagery_pass": true,
+      "perception_pass": true,
+      "cuevideo_pass": false,
+      "primary_pass": false
+    },
+    "sub-03": {
+      "R_I": 0.17430689784117043,
+      "R_I_perm_p": 0.000999000999000999,
+      "R_I_ci95": [
+        0.06693118123659508,
+        0.2255287687342652
+      ],
+      "R_I_split_seed_min": 0.17325049118077915,
+      "R_P": 0.20778284425135965,
+      "R_P_perm_p": 0.000999000999000999,
+      "R_P_ci95": [
+        0.07771809467719634,
+        0.24712070752390264
+      ],
+      "R_I_cuevideo_predicted": 0.021819589455080435,
+      "Delta_I": 0.15248730838608998,
+      "paired_delta_ci95": [
+        0.017979696928066537,
+        0.22365804683853033
+      ],
+      "imagery_pass": true,
+      "perception_pass": true,
+      "cuevideo_pass": true,
+      "primary_pass": true
+    },
+    "sub-04": {
+      "R_I": 0.023952487672105924,
+      "R_I_perm_p": 0.1928071928071928,
+      "R_I_ci95": [
+        -0.031218005905567805,
+        0.0977876957860699
+      ],
+      "R_I_split_seed_min": 0.021817660806280285,
+      "R_P": 0.1528250302803945,
+      "R_P_perm_p": 0.000999000999000999,
+      "R_P_ci95": [
+        -0.010364245488980035,
+        0.21417082991850606
+      ],
+      "R_I_cuevideo_predicted": -0.03960703069103573,
+      "Delta_I": 0.06355951836314165,
+      "paired_delta_ci95": [
+        -0.04627096628493049,
+        0.17158623020239577
+      ],
+      "imagery_pass": false,
+      "perception_pass": false,
+      "cuevideo_pass": false,
+      "primary_pass": false
+    },
+    "sub-05": {
+      "R_I": 0.06364691104334814,
+      "R_I_perm_p": 0.004995004995004995,
+      "R_I_ci95": [
+        -0.02364906712327767,
+        0.11876392787912421
+      ],
+      "R_I_split_seed_min": 0.06314569892677406,
+      "R_P": 0.09749371804789718,
+      "R_P_perm_p": 0.001998001998001998,
+      "R_P_ci95": [
+        -0.0975630906062158,
+        0.1701466734747401
+      ],
+      "R_I_cuevideo_predicted": -0.007978093243580776,
+      "Delta_I": 0.07162500428692892,
+      "paired_delta_ci95": [
+        -0.04720398678747156,
+        0.11984491587181431
+      ],
+      "imagery_pass": false,
+      "perception_pass": false,
+      "cuevideo_pass": false,
+      "primary_pass": false
+    },
+    "sub-06": {
+      "R_I": 0.07844275152200997,
+      "R_I_perm_p": 0.04595404595404595,
+      "R_I_ci95": [
+        -0.1361355092569603,
+        0.17981395607733605
+      ],
+      "R_I_split_seed_min": 0.07844275152200997,
+      "R_P": 0.04301179545207158,
+      "R_P_perm_p": 0.054945054945054944,
+      "R_P_ci95": [
+        -0.06662973935640672,
+        0.10881006584416335
+      ],
+      "R_I_cuevideo_predicted": 0.0007916091289196605,
+      "Delta_I": 0.0776511423930903,
+      "paired_delta_ci95": [
+        -0.10398605435788859,
+        0.2164173608740639
+      ],
+      "imagery_pass": false,
+      "perception_pass": false,
+      "cuevideo_pass": false,
+      "primary_pass": false
+    }
+  },
+  "secondary_ref": "results/c3xat_r1/C3XAT_R1_SECONDARY_RESULTS.json (SECONDARY_DESCRIPTIVE; cannot change primary)",
+  "integrity_audit_ref": "results/c3xat_r1/final_integrity_audit.json (all checks pass)",
+  "implementation_freeze": "implementation_freeze_manifest_v2.json (pre-outcome, CI-green)",
+  "primary_roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK 7604 voxels; mask 19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc",
+  "claims_supported": "One of six subjects (sub-03) showed reproducible cue/video-deconfounded stimulus-specific imagery-related multivoxel structure in the independently defined Wang25 visual-topographic ROI, with reliable matched perception (run-pair R_P) and conservative evidence that imagery reliability exceeded predicted cue/video contamination.",
+  "claims_not_supported": [
+    "cohort-level qualification (only 1/6; >=2/6 required)",
+    "cohort-level visual-specific representation",
+    "atlas-defined imagery decoding",
+    "reconstruction",
+    "exact Kamitani localizer ROI reproduction"
+  ],
+  "near_threshold_note": "sub-02 had reliable imagery (R_I PASS) and reliable perception (R_P PASS) but FAILED the conservative cue/video Delta criterion (paired CI lower < 0); it is a formal PRIMARY FAIL, NOT a partial/near pass inside the gate. Described outside the gate as the strongest non-passing subject.",
+  "future_direction": "a separately sealed replication/precision gate (not designed or executed here) could test whether the sub-03 effect and sub-02 near-threshold structure reproduce without subject selection or post-hoc tuning",
+  "does_NOT_authorize": [
+    "C3XAG preparation",
+    "C3XAG execution",
+    "C3XE",
+    "C3XR",
+    "C3XDR-R2",
+    "geometry",
+    "decoding",
+    "reconstruction",
+    "C4"
+  ],
+  "seals_unchanged": true,
+  "not_c3xat_r2": true,
+  "no_raw_neural_data_committed": true,
+  "immutable_prior_gates": [
+    "C3XC",
+    "C3XD",
+    "C3XDR",
+    "C3XDR-R1",
+    "C3XPR",
+    "C3XPA",
+    "C3XAT"
+  ],
+  "self_hash": "2392b315566eda446b60737014a6d97ad7f7a8394bef38bc29dff3fdf95f9ce1"
+}
