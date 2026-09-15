@@ -1,0 +1,278 @@
+{
+  "artifact": "C3XRP_PRECISION_DESIGN_ANALYSIS",
+  "gate": "C3XRP",
+  "study_design_only": true,
+  "generative_model": "shared-latent; Delta_truth = imagery-specific reliability above contamination; delta=0 = strict null (obs and pred share only contamination)",
+  "estimator_note": "LIGHTWEIGHT reliability proxy (n_rep=15, n_perm=30, n_boot=30) built from the FROZEN run_pair_disjoint_reliability primitive, for TRACTABLE DESIGN-PLANNING POWER ONLY. The confirmatory C3XRP gate uses the sealed full estimator (n_perm=1000,n_boot=1000,n_rep_point=200). Coarse estimates (SE ~ +/-0.12 at R=18 replicates); targets are aspirational and MUST be re-estimated with the sealed full-resample estimator before acquisition.",
+  "units_grid": [
+    5,
+    7,
+    9,
+    12
+  ],
+  "delta_grid": [
+    0.0,
+    0.05,
+    0.08,
+    0.1,
+    0.15
+  ],
+  "n_replicates": 18,
+  "n_identities": 18,
+  "vox": 48,
+  "r_cont": 0.1,
+  "r_perc": 0.2,
+  "results": [
+    {
+      "n_units": 5,
+      "delta_truth": 0.0,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.0,
+      "p_joint_pass": 0.0,
+      "delta_ci_width_median": 0.20187646277064528,
+      "is_type_I": true,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 5,
+      "delta_truth": 0.05,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.6666666666666666,
+      "p_joint_pass": 0.6666666666666666,
+      "delta_ci_width_median": 0.18250021245704684,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 5,
+      "delta_truth": 0.08,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.8888888888888888,
+      "p_joint_pass": 0.8888888888888888,
+      "delta_ci_width_median": 0.1757861350566588,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 5,
+      "delta_truth": 0.1,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.17401748320995863,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 5,
+      "delta_truth": 0.15,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.1679353677736184,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 7,
+      "delta_truth": 0.0,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.0,
+      "p_joint_pass": 0.0,
+      "delta_ci_width_median": 0.21335886883736124,
+      "is_type_I": true,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 7,
+      "delta_truth": 0.05,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.7222222222222222,
+      "p_joint_pass": 0.7222222222222222,
+      "delta_ci_width_median": 0.19522633939604972,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 7,
+      "delta_truth": 0.08,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.8333333333333334,
+      "p_joint_pass": 0.8333333333333334,
+      "delta_ci_width_median": 0.18959187827768692,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 7,
+      "delta_truth": 0.1,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.1848763028040561,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 7,
+      "delta_truth": 0.15,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.17359760572816021,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 9,
+      "delta_truth": 0.0,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.0,
+      "p_joint_pass": 0.0,
+      "delta_ci_width_median": 0.20138241365768178,
+      "is_type_I": true,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 9,
+      "delta_truth": 0.05,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.7222222222222222,
+      "p_joint_pass": 0.7222222222222222,
+      "delta_ci_width_median": 0.1822225774455027,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 9,
+      "delta_truth": 0.08,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.8888888888888888,
+      "p_joint_pass": 0.8888888888888888,
+      "delta_ci_width_median": 0.17521447374131488,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 9,
+      "delta_truth": 0.1,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.8888888888888888,
+      "p_joint_pass": 0.8888888888888888,
+      "delta_ci_width_median": 0.1707127922557147,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 9,
+      "delta_truth": 0.15,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.1608190912720493,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 12,
+      "delta_truth": 0.0,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.0,
+      "p_joint_pass": 0.0,
+      "delta_ci_width_median": 0.14645657786610408,
+      "is_type_I": true,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 12,
+      "delta_truth": 0.05,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 0.9444444444444444,
+      "p_joint_pass": 0.9444444444444444,
+      "delta_ci_width_median": 0.13006219054292545,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 12,
+      "delta_truth": 0.08,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.12210943720132914,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 12,
+      "delta_truth": 0.1,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.1212091400666219,
+      "is_type_I": false,
+      "n_replicates": 18
+    },
+    {
+      "n_units": 12,
+      "delta_truth": 0.15,
+      "p_imagery_pass": 1.0,
+      "p_perception_pass": 1.0,
+      "p_delta_pass": 1.0,
+      "p_joint_pass": 1.0,
+      "delta_ci_width_median": 0.12265244955376263,
+      "is_type_I": false,
+      "n_replicates": 18
+    }
+  ],
+  "targets": {
+    "type_I": "<=0.05 at delta=0",
+    "power_0.08": ">=0.80",
+    "power_0.15": ">=0.90"
+  },
+  "type_I_by_units": {
+    "5": 0.0,
+    "7": 0.0,
+    "9": 0.0,
+    "12": 0.0
+  },
+  "joint_power_0.08_by_units": {
+    "5": 0.8888888888888888,
+    "7": 0.8333333333333334,
+    "9": 0.8888888888888888,
+    "12": 1.0
+  },
+  "joint_power_0.15_by_units": {
+    "5": 1.0,
+    "7": 1.0,
+    "9": 1.0,
+    "12": 1.0
+  },
+  "recommended_min_units": 5,
+  "recommendation": "smallest evaluated design meeting all coarse targets (Type-I<=0.05, power>=0.80@0.08, >=0.90@0.15)",
+  "future_acquisition_only": true,
+  "changes_any_existing_gate": false,
+  "delta_chosen_to_resemble_subject": false,
+  "computed_on": "OrchestrAI cluster",
+  "elapsed_sec": 215.6,
+  "self_hash": "6c49cd1637f084f48e03e71e3b8f0db4e21e0d5c21c6be5f9e6a62a04ff230c4"
+}

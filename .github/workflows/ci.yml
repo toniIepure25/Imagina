@@ -1572,3 +1572,26 @@ jobs:
           app/tests/test_c3g_geometry.py
           app/tests/test_c3m_alignment.py
           -v --timeout=300
+
+  c3xrp-replication-precision:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XRP replication & precision (design/seal-only; no real neural outcome) + C3XAT-R1 immutability
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xrp_replication_precision.py
+          app/tests/test_c3xat_r1_execution.py
+          app/tests/test_c3xat_pipeline.py
+          -v --timeout=300
