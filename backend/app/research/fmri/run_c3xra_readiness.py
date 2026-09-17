@@ -26,8 +26,10 @@ REPORTS = os.path.join(ROOT, "reports", "c3xra")
 
 
 def _sha256_file(path):
+    """Line-ending-agnostic content hash (CRLF -> LF) so immutability verification matches on every
+    platform regardless of git autocrlf; equals the committed LF-blob hash."""
     with open(path, "rb") as f:
-        return hashlib.sha256(f.read()).hexdigest()
+        return hashlib.sha256(f.read().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def _load(path):
