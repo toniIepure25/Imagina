@@ -111,6 +111,7 @@ def test_task_dryrun_validation_artifact_pass():
 
 # ---- BIDS --------------------------------------------------------------------
 def test_mock_bids_structurally_valid():
+    pytest.importorskip("nibabel")  # writing the synthetic mock needs nibabel (neural extra)
     root = tempfile.mkdtemp(prefix="c3xra_bids_test_")
     B.generate(root, imagery_units=1, imagery_runs=1, perception_units=1)
     assert os.path.exists(os.path.join(root, "dataset_description.json"))

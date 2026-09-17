@@ -1628,6 +1628,6 @@ jobs:
           print(json.dumps(B.generate(d, imagery_units=2, imagery_runs=1, perception_units=1)));
           open('/tmp/bids_root.txt','w').write(d)"
       - name: Official BIDS Validator (require 0 errors)
-        run: npx --yes bids-validator "$(cat /tmp/bids_root.txt)"
+        run: npx --yes bids-validator@1.14.14 "$(cat /tmp/bids_root.txt)"
       - name: C3XRA readiness decision + safety guard (immutability, no raw data, no PII, ethics placeholders)
         run: PYTHONPATH=. python3 app/research/fmri/run_c3xra_readiness.py

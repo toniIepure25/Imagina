@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 import os
 
-import nibabel as nib
 import numpy as np
 
 from app.research.fmri import c3xra_schedule as S
@@ -22,7 +21,15 @@ BOLD_SHAPE = (8, 8, 6)          # tiny; validity only, not analysis
 AFFINE = np.diag([2.0, 2.0, 2.0, 1.0])
 
 
+def _nib():
+    """Lazy import: nibabel is only needed to WRITE the synthetic mock (neural extra), never to import
+    this module (so test collection in environments without nibabel does not break)."""
+    import nibabel as nib
+    return nib
+
+
 def _save_bold(path: str, n_vols: int, seed: int):
+    nib = _nib()
     rng = np.random.default_rng(S.MASTER_SEED ^ 0xB1D5 ^ seed)
     data = rng.standard_normal((*BOLD_SHAPE, n_vols)).astype(np.float32)
     img = nib.Nifti1Image(data, AFFINE)
@@ -32,6 +39,7 @@ def _save_bold(path: str, n_vols: int, seed: int):
 
 
 def _save_anat(path: str):
+    nib = _nib()
     rng = np.random.default_rng(S.MASTER_SEED ^ 0xA4A7)
     img = nib.Nifti1Image(rng.standard_normal((10, 10, 8)).astype(np.float32), np.diag([1.0, 1.0, 1.0, 1.0]))
     nib.save(img, path)
