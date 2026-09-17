@@ -1,0 +1,31 @@
+{
+  "artifact": "C3XRA_TASK_DRYRUN_VALIDATION",
+  "gate": "C3XRA",
+  "hardware_free": true,
+  "backend": "MockBackend",
+  "participants_simulated": [
+    1,
+    2
+  ],
+  "imagery_units": 7,
+  "imagery_trials_emitted": 1008,
+  "imagery_trials_expected": 1008,
+  "perception_trials_emitted": 1008,
+  "perception_trials_expected": 1008,
+  "identity_contract_violations": 0,
+  "missing_mandatory_events": 0,
+  "timing_order_violations": 0,
+  "max_dropped_frames_per_trial": 0,
+  "duplicate_identity_runs": 0,
+  "clock_monotonic": true,
+  "crash_safe_jsonl": true,
+  "prospective_tolerances": {
+    "max_dropped_frames_per_trial": 2,
+    "max_missing_mandatory_events": 0,
+    "max_identity_contract_violations": 0,
+    "max_duplicate_identity_runs": 0,
+    "max_timing_order_violations": 0
+  },
+  "pass": true,
+  "self_hash": "61ed3e034761c79a9b5bffd5974b441bd77ebb4a85977a327acf46bd6fa140e5"
+}

@@ -1,0 +1,26 @@
+{
+  "artifact": "C3XRA_BEHAVIOR_SECONDARY_SEAL",
+  "gate": "C3XRA",
+  "behavioral_measures": [
+    "vividness_rating",
+    "attention_check",
+    "recognition_accuracy",
+    "confidence"
+  ],
+  "role": "SECONDARY/descriptive only",
+  "does_not_influence": [
+    "GLM design",
+    "beta weights",
+    "participant inclusion",
+    "ROI definition",
+    "R_I",
+    "R_P",
+    "Delta",
+    "subject PASS",
+    "cohort gate"
+  ],
+  "grouped_eval_regressor_is_unmodulated": true,
+  "no_vividness_or_accuracy_parametric_modulation_in_primary_GLM": true,
+  "sealed": true,
+  "self_hash": "46dafb63d2e64513fd63c852b4377a5f25c29a34971e1e97f75f5742b2e0db73"
+}

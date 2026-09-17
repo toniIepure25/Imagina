@@ -1,0 +1,25 @@
+{
+  "artifact": "C3XRA_SPATIAL_SPECIFICITY_FREEZE",
+  "gate": "C3XRA",
+  "role": "SECONDARY (not primary)",
+  "n_random_masks": 1000,
+  "mask_seed_base": 20260909,
+  "mask_seed_rule": "seed_base + mask_index (0..999)",
+  "algorithm": "random contiguous cortical parcel sampling in MNI152NLin2009cAsym 2mm, matched to the Wang25 ROI voxel count, restricted to a gray-matter cortical mask, EXCLUDING all Wang25 voxels",
+  "matched_voxel_count": 7604,
+  "gray_matter_constraint": true,
+  "wang25_excluded_from_random": true,
+  "statistic": "E = R_I(Wang25) - mean_over_random(R_I(random_mask))",
+  "participant_statistic": "E_subject computed per technically-valid participant with the FROZEN estimator",
+  "cohort_statistic": "mean E_subject across the fixed evaluable denominator",
+  "inference": {
+    "permutation": "same within-pair content permutation as primary, applied to Wang25 and each random mask; n_perm=1000",
+    "bootstrap": "non-straddling hierarchical bootstrap of E, n_boot=1000",
+    "multiple_comparison": "random masks form the empirical null for E; one-sided p = fraction of random R_I >= Wang25 R_I (rank-based, inherently multiplicity-controlled)",
+    "threshold": "E>0 AND one-sided p<0.05 AND bootstrap CI lower>0"
+  },
+  "not_primary": true,
+  "does_not_gate_replication_outcome": true,
+  "purpose": "characterizes topographic specificity of any imagery reliability; reported alongside, never as, the primary C3XRP replication decision",
+  "self_hash": "2fa1aa51d4a99e44d583e582f6f22fef1845b7a504953259b8e6fe83ca707bcf"
+}

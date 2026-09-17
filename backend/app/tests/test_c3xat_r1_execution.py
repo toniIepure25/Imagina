@@ -368,3 +368,63 @@ def test_implementation_freeze_v2_preoutcome():
     v1 = _R / "implementation_freeze_manifest.json"
     if v1.exists():
         assert json.load(open(v1))["artifact"] == "C3XAT_R1_IMPLEMENTATION_FREEZE_MANIFEST"
+
+
+# ---- primary dataset decision (LIMITED, frozen) + secondary cannot change it -----------------------
+def test_primary_dataset_decision_limited_1of6():
+    p = _R / "C3XAT_R1_PRIMARY_DATASET_DECISION.json"
+    if not p.exists():
+        return
+    d = json.load(open(p))
+    assert _verify(d)
+    assert d["primary_dataset_decision"] == "C3XAT_D2_ATLAS_IMAGERY_LIMITED"
+    assert d["pass_count"] == 1 and d["n_subjects"] == 6
+    passing = [s for s, v in d["per_subject"].items() if v["primary_pass"]]
+    assert passing == ["sub-03"]                       # sub-03 is the ONLY primary PASS
+    # sub-02 reliable imagery+perception but Delta fails -> NOT promoted
+    s2 = d["per_subject"]["sub-02"]
+    assert s2["imagery_pass"] is True and s2["perception_pass"] is True
+    assert s2["cuevideo_pass"] is False and s2["primary_pass"] is False
+    assert d["qualified"] is False and d["c3xag_preparation_authorized"] is False
+    assert d["no_subject_dropped"] is True and d["frozen_before_secondary"] is True
+
+
+def test_secondary_cannot_change_primary():
+    s = _R / "C3XAT_R1_SECONDARY_RESULTS.json"
+    if not s.exists():
+        return
+    o = json.load(open(s))
+    assert _verify(o)
+    assert o["primary_decision_changed"] is False
+    assert o["primary_decision"] == "C3XAT_D2_ATLAS_IMAGERY_LIMITED"
+    assert o["pass_count"] == "1/6"
+    assert o["c3xag_authorized"] is False
+
+
+def test_final_decision_complete_limited():
+    p = _R / "C3XAT_R1_FINAL_DECISION_COMPLETE.json"
+    if not p.exists():
+        return
+    d = json.load(open(p))
+    assert _verify(d)
+    assert d["final_decision"] == "C3XAT_D2_ATLAS_IMAGERY_LIMITED"
+    assert d["pass_count"] == "1/6" and d["only_primary_pass"] == "sub-03"
+    assert d["c3xag_preparation_authorized"] is False
+    assert d["seals_unchanged"] is True and d["not_c3xat_r2"] is True
+    assert d["c3xat_seal"] == _C3XAT_SEAL
+    # historical decisions preserved (unchanged files still present)
+    for hist in ("C3XAT_R1_DECISION.json", "C3XAT_R1_FINAL_DECISION.json",
+                 "C3XAT_R1_FINAL_DECISION_v2.json", "C3XAT_R1_PRIMARY_DATASET_DECISION.json"):
+        assert (_R / hist).exists()
+
+
+def test_final_integrity_audit_passes():
+    p = _R / "final_integrity_audit.json"
+    if not p.exists():
+        return
+    a = json.load(open(p))
+    assert _verify(a)
+    assert a["all_pass"] is True
+    assert a["primary_decision"] == "C3XAT_D2_ATLAS_IMAGERY_LIMITED"
+    assert a["c3xag_authorized"] is False
+    assert a["no_raw_neural_data_committed"] is True
