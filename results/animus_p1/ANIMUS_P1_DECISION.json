@@ -1,0 +1,30 @@
+{
+  "artifact": "ANIMUS_P1_DECISION",
+  "milestone": "ANIMUS-P1",
+  "scientific_parent": "b3eca7c",
+  "decision": "ANIMUS_P1_VERTICAL_SLICE_PASS",
+  "all_checks_pass": true,
+  "checks": {
+    "animus_beats_static_gain": true,
+    "animus_beats_random_gain": true,
+    "valid_completed_loops_ge_95pct": true,
+    "median_loop_gain_positive": true,
+    "median_uncertainty_decreases": true,
+    "animus_gain_ge_20pct_better_than_random": true,
+    "animus_fewer_iters_than_random": true,
+    "privacy_invariant_pass": true,
+    "deterministic_replay_pass": true
+  },
+  "gain_improvement_over_random": 0.5971,
+  "animus_median_iters_to_threshold": 5.0,
+  "random_median_iters_to_threshold": 8.0,
+  "external_scientific_status": {
+    "imagery_reliability": "LIMITED cohort evidence (C3XAT-R1)",
+    "independent_replication": "not yet executed (C3XRA ready, not run)",
+    "content_decoder": "not validated",
+    "geometry": "not authorized",
+    "neural_reconstruction": "not validated"
+  },
+  "claim_level_operating_ceiling": "L1_BEHAVIORAL_ASSISTED",
+  "self_hash": "6dcb585f6914c2f8dc3dad9febc2d2bc58a368eb33c36d10f1d360a52eac1d27"
+}

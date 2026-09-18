@@ -1,0 +1,86 @@
+{
+  "artifact": "ANIMUS_P1_BENCHMARK_SUMMARY",
+  "milestone": "ANIMUS-P1",
+  "n_targets": 100,
+  "seed_families": [
+    1,
+    2,
+    3
+  ],
+  "total_trials": 1500,
+  "similarity_threshold": 0.7,
+  "observation_mode": "SIMULATED_NEURAL",
+  "imaginer_params": {
+    "imagery_strength": 0.8,
+    "neural_noise": 0.35,
+    "feedback_noise": 0.12,
+    "attention_drift": 0.03,
+    "fatigue": 0.0,
+    "fatigue_rate": 0.015,
+    "memory_decay": 0.01,
+    "response_bias": 0.0
+  },
+  "per_controller": {
+    "STATIC": {
+      "n": 300,
+      "median_loop_gain": 0.16124,
+      "median_final_similarity": 0.6711199999999999,
+      "median_uncertainty_reduction": 0.38998,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.33,
+      "median_iterations_to_threshold_reached": 2.0,
+      "median_iterations_to_threshold_censored": 9.0,
+      "median_attribute_accuracy": 0.25,
+      "median_object_accuracy": 0.8125
+    },
+    "RANDOM": {
+      "n": 300,
+      "median_loop_gain": 0.179825,
+      "median_final_similarity": 0.69343,
+      "median_uncertainty_reduction": 0.40700000000000003,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.5066666666666667,
+      "median_iterations_to_threshold_reached": 4.0,
+      "median_iterations_to_threshold_censored": 8.0,
+      "median_attribute_accuracy": 0.375,
+      "median_object_accuracy": 0.8125
+    },
+    "GREEDY_USER_FEEDBACK": {
+      "n": 300,
+      "median_loop_gain": 0.149195,
+      "median_final_similarity": 0.65862,
+      "median_uncertainty_reduction": 0.3903,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.29,
+      "median_iterations_to_threshold_reached": 2.0,
+      "median_iterations_to_threshold_censored": 9.0,
+      "median_attribute_accuracy": 0.25,
+      "median_object_accuracy": 0.8125
+    },
+    "GREEDY_NEURAL_ONLY": {
+      "n": 300,
+      "median_loop_gain": 0.168155,
+      "median_final_similarity": 0.675475,
+      "median_uncertainty_reduction": 0.38862,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.37333333333333335,
+      "median_iterations_to_threshold_reached": 3.0,
+      "median_iterations_to_threshold_censored": 9.0,
+      "median_attribute_accuracy": 0.25,
+      "median_object_accuracy": 0.8125
+    },
+    "ANIMUS_ACTIVE": {
+      "n": 300,
+      "median_loop_gain": 0.287195,
+      "median_final_similarity": 0.799605,
+      "median_uncertainty_reduction": 0.41169,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.9633333333333334,
+      "median_iterations_to_threshold_reached": 5.0,
+      "median_iterations_to_threshold_censored": 5.0,
+      "median_attribute_accuracy": 0.875,
+      "median_object_accuracy": 0.8125
+    }
+  },
+  "self_hash": "40b31f27122e85b31ac63be177d08f8cbab0e1ec8f4aed01a6b5c2400bc66ee9"
+}

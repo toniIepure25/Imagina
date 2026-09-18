@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.animus import router as animus_router
 from app.api.calibration import router as calibration_router
 from app.api.experiments import router as experiments_router
 from app.api.exports import router as exports_router
@@ -79,6 +80,7 @@ app.include_router(research_router)
 app.include_router(research_protocol_router)
 app.include_router(synthetic_runtime_router)
 app.include_router(research_science_router)
+app.include_router(animus_router)
 
 
 @app.websocket("/ws/sessions/{session_id}")

@@ -1,0 +1,9 @@
+{
+  "artifact": "ANIMUS_P1_PRIVACY_AUDIT",
+  "milestone": "ANIMUS-P1",
+  "clean_payload_accepted": true,
+  "forbidden_payloads_tested": 6,
+  "forbidden_payloads_rejected": 6,
+  "pass": true,
+  "self_hash": "b9b534a5a11f729ef9c40c52ac909e8e1a511336ef01f15e54e118934eadbacd"
+}
