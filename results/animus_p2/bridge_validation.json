@@ -1,0 +1,31 @@
+{
+  "artifact": "ANIMUS_P2_BRIDGE_VALIDATION",
+  "milestone": "ANIMUS-P2",
+  "synthetic_only": true,
+  "n_trials": 120,
+  "median_neural_initialization_gain": 0.08777500065794214,
+  "gain_bootstrap_ci95": [
+    0.08224479365027482,
+    0.1095686587762592
+  ],
+  "median_initial_similarity_uninformed": 0.01838649527375131,
+  "median_initial_similarity_neural": 0.3818319043693923,
+  "median_iters_to_threshold_uninformed": 4.0,
+  "median_iters_to_threshold_neural": 1.0,
+  "mode_medians": {
+    "BEHAVIORAL_ONLY": 0.7526414239276915,
+    "NEURAL_ONLY": 0.3818319043693923,
+    "NEURAL_PLUS_BEHAVIORAL": 0.8469426125639871
+  },
+  "neural_init_gain_positive": true,
+  "neural_faster": true,
+  "fused_ge_both": true,
+  "belief_fusion_respects_uncertainty": {
+    "high_conf_moves_more": true,
+    "high_conf_mean": 0.9524,
+    "low_conf_mean": 0.1667,
+    "pass": true
+  },
+  "bridge_pass": true,
+  "self_hash": "e8be6cc5c70cf1a0f99e28e5c0a1608e82b1f208aa2e7152caf200f841d75396"
+}

@@ -1,0 +1,92 @@
+{
+  "artifact": "ANIMUS_P2_PROTOCOL_SEAL",
+  "milestone": "ANIMUS-P2",
+  "scientific_parent": "a0b6ca7",
+  "dataset": {
+    "primary": "ds004496 (NOD)",
+    "fallback": "ds001499 (BOLD5000)",
+    "selection": "results/animus_p2/perception_dataset_candidate_matrix.json",
+    "provenance_verified_at_staging": true
+  },
+  "participant_denominator": "fixed eligible subjects (prospective subset by subject id; no shrinkage)",
+  "stimulus_partitions": {
+    "grouped_by": "stimulus_identity",
+    "train": 0.7,
+    "val": 0.15,
+    "test": 0.15,
+    "seal": "results/animus_p2/content_split_seal.json"
+  },
+  "roi": {
+    "primary": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+    "secondary": [
+      "V1/V2/V3",
+      "whole_visual",
+      "whole_GM",
+      "size_matched_random_cortical"
+    ],
+    "no_outcome_based_selection": true
+  },
+  "neural_preprocessing": {
+    "reuse": "C3XRA/C3XAT reproducibility discipline",
+    "beta_extraction": "dataset-provided beta IF exact/reproducible, else frozen LSA/GLM; never mixed across subjects",
+    "voxel_order": "frozen per subject; no univariate outcome selection",
+    "normalization": "fold-safe (train-only fit)"
+  },
+  "target_embedding": {
+    "family": "frozen_vision_language_embedding",
+    "model_id": "open_clip:ViT-B-32",
+    "pretrained": "laion2b_s34b_b79k",
+    "embedding_dim": 512,
+    "input_preprocessing": "clip_bicubic_224_center_crop_openai_norm",
+    "normalization": "unit_l2",
+    "derived_from": "visual_stimulus_image (NOT caption)",
+    "weights_hash": "TO_PIN_AT_STAGING",
+    "code_version": "open_clip_torch (pinned at staging)"
+  },
+  "target_is_visual_not_caption": true,
+  "decoder": {
+    "primary_family": "ridge_linear_multioutput",
+    "alpha_grid": [
+      1.0,
+      10.0,
+      100.0,
+      1000.0,
+      10000.0
+    ],
+    "selection": "nested validation",
+    "secondary": [
+      "low_rank",
+      "small_MLP (descriptive)"
+    ]
+  },
+  "uncertainty_method": "bootstrap decoder ensemble (predictive spread), calibrated on validation",
+  "reject_option": "uncertainty>validation-threshold OR QC/ROI invalid OR OOD -> valid=false",
+  "permutation": {
+    "within_test_label_permutation": true,
+    "n_perm": 1000
+  },
+  "bootstrap": {
+    "identity_bootstrap": true,
+    "n_boot": 1000
+  },
+  "seeds": [
+    20260909,
+    20261009,
+    20261109
+  ],
+  "primary_statistic": "content margin M = mean(cos(p_i,t_i) - mean_{j!=i} cos(p_i,t_j)), held-out test",
+  "subject_pass": "data_contract & atlas_qc & M>0 & perm_p<0.01 & bootstrap_ci_lower>0 & all_seeds_positive",
+  "dataset_gate": "required_passes=max(2,ceil(N/3)); VALIDATED/LIMITED/FAIL/BLOCKED; fixed denominator",
+  "negative_controls": [
+    "label_permutation",
+    "category_matched_decoys",
+    "low_level_baseline",
+    "run_session_fingerprint",
+    "within/cross-run shuffle"
+  ],
+  "claim_authorization": "capability-scoped; success authorizes PERCEPTION_NEURAL_CONTENT ONLY; imagery/dream/reconstruction remain unauthorized",
+  "animus_integration_test": "neural-initialization experiment (uninformed vs neural vs fused) on held-out perception trials; product bridge cannot rescue a failed decoder",
+  "confirmatory_command": "run_p2_confirmatory (unlocks frozen test only after this seal is CI-green)",
+  "no_image_reconstruction_in_primary_gate": true,
+  "self_hash": "47d6342972f39cb38c7d15d244bf0dabb24c56898cce3dc42e562741f401c19b"
+}

@@ -1,0 +1,58 @@
+{
+  "artifact": "ANIMUS_P2_ANCHOR",
+  "milestone": "ANIMUS-P2",
+  "parent_sha": "a0b6ca71462e91a10ed642f9907bc4d4b03c26bc",
+  "parent_branch": "product/animus-p1-closed-loop-amplifier",
+  "parent_ci_run": "35403166778=SUCCESS",
+  "purpose": "Validated perception-content neural adapter; perception only.",
+  "hash_normalization": "crlf->lf (line-ending-agnostic; equals committed LF-blob sha256)",
+  "immutable_referenced_artifacts": {
+    "animus_p1_decision": {
+      "path": "results/animus_p1/ANIMUS_P1_DECISION.json",
+      "file_sha256": "390ca0307589f824d06591b40971976b4db67fac1e6602912e7849c622dce55e",
+      "self_hash": "6dcb585f6914c2f8dc3dad9febc2d2bc58a368eb33c36d10f1d360a52eac1d27"
+    },
+    "animus_p1_benchmark": {
+      "path": "results/animus_p1/benchmark_summary.json",
+      "file_sha256": "60f94fbd4a2e9c8a7e84ea2a0c98d4d52e64dc68f128817ccec4f3cae1d06a0c",
+      "self_hash": "40b31f27122e85b31ac63be177d08f8cbab0e1ec8f4aed01a6b5c2400bc66ee9"
+    },
+    "c3xat_r1_final": {
+      "path": "results/c3xat_r1/C3XAT_R1_FINAL_DECISION_COMPLETE.json",
+      "file_sha256": "9d8cea0c4c2001d0bbf9158ec1d64f9471b16ef8fdd426de1f8b98682e28cf7d",
+      "self_hash": "2392b315566eda446b60737014a6d97ad7f7a8394bef38bc29dff3fdf95f9ce1"
+    },
+    "c3xrp_protocol_seal": {
+      "path": "reports/c3xrp/c3xrp_protocol_seal.json",
+      "file_sha256": "061d50c7f5af9fc9537f7dbf5348a17e62aee17b1133835a0a789d57e0ae8ae0",
+      "self_hash": "5586e68e1e89c9ed435151d076643bc1e06f55a8dffcbec6ff3fe8ebbc06170e"
+    },
+    "c3xra_readiness": {
+      "path": "results/c3xra/C3XRA_READINESS_DECISION.json",
+      "file_sha256": "c9b56080d1e5915c8987bedc4b05f3dd85b224f612e10e6e283df6374fa73c6e",
+      "self_hash": "e03e1565eb26c5c766b862fa6a00e577bd802dc9077d6fda96a2ada7c858fdfd"
+    },
+    "wang25_cert": {
+      "path": "results/c3xat_r1/wang25_primary_roi_certification.json",
+      "file_sha256": "6ba38f8bfc4f25eddf627894574065127ca1a16b4da6fab206f4f99bdecfe9ba",
+      "self_hash": "9d487e8718b3faddd4ad84f5926a6fb22c4c9e75424bd8ce2554c00fd901854e"
+    }
+  },
+  "preserved_decisions": {
+    "C3XAT_R1": "LIMITED 1/6 (immutable)",
+    "C3XRP": "NO_PUBLIC_REPLICATION_DATASET (sealed)",
+    "C3XRA": "ACQUISITION_READY; acquisition NOT authorized",
+    "ANIMUS_P1": "ANIMUS_P1_VERTICAL_SLICE_PASS"
+  },
+  "not_imagery_decoding": true,
+  "not_c3xag": true,
+  "not_neural_reconstruction": true,
+  "c3xag_authorized": false,
+  "imagery_neural_content_authorized": false,
+  "forbidden_primary_datasets": [
+    "NSD perception (used in C3)",
+    "ds005191 Mind Captioning",
+    "ds001246 GOD"
+  ],
+  "self_hash": "e8a4785b57f66b600caf7e6ed267a5a8f32e87136a67f58c85085311bfe19c77"
+}

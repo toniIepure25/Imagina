@@ -1656,3 +1656,32 @@ jobs:
         run: PYTHONPATH=. python3 app/research/animus/run_animus_p1_benchmark.py 100
       - name: ANIMUS-P1 CI guard (C3X immutability, C3XAG unauthorized, no false neural claims, decision PASS)
         run: PYTHONPATH=. python3 app/research/animus/run_animus_p1_ci_guard.py
+
+  animus-p2-perception-neural-adapter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P2 tests (leakage / firewall / gate / capability isolation / uncertainty / bridge)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p2.py
+          -v --timeout=300
+      - name: ANIMUS-P2 method validation on synthetic data (signal VALIDATES, null FAILS; leakage-free)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_method_validation.py
+      - name: ANIMUS-P2 protocol seal + firewall audit + product-bridge validation (synthetic)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_protocol_seal.py
+      - name: ANIMUS-P2 scientific decision + capability update (imagery stays unauthorized)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_decision.py
+      - name: ANIMUS-P2 CI guard (immutability, C3XAG/imagery unauthorized, no neural data, firewall)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_ci_guard.py

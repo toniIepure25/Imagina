@@ -1,0 +1,49 @@
+{
+  "artifact": "ANIMUS_P2_SCIENTIFIC_DECISION",
+  "milestone": "ANIMUS-P2",
+  "scientific_parent": "a0b6ca7",
+  "protocol_sealed": true,
+  "decision": "ANIMUS_P2_BLOCKED_CONFIRMATORY_PENDING",
+  "reason": "Prospective protocol sealed and method/bridge validated on synthetic data; the REAL confirmatory perception decode (independent dataset on the OrchestrAIQ cluster) has not produced per-subject results yet. No neural-content claim is made. Re-run this after the confirmatory cluster job writes results/animus_p2/subjects/*.json.",
+  "n_eligible": 0,
+  "n_valid": 0,
+  "n_pass": 0,
+  "required_passes": null,
+  "capability_after": {
+    "matrix": {
+      "BEHAVIORAL_IMAGERY_ASSIST": "AUTHORIZED",
+      "BIOSIGNAL_STATE": "NOT_VALIDATED",
+      "PERCEPTION_NEURAL_CONTENT": "BLOCKED",
+      "IMAGERY_NEURAL_CONTENT": "UNAUTHORIZED",
+      "DREAM_NEURAL_CONTENT": "UNAUTHORIZED",
+      "NEURAL_RECONSTRUCTION": "UNAUTHORIZED"
+    },
+    "usable": {
+      "BEHAVIORAL_IMAGERY_ASSIST": true,
+      "BIOSIGNAL_STATE": false,
+      "PERCEPTION_NEURAL_CONTENT": false,
+      "IMAGERY_NEURAL_CONTENT": false,
+      "DREAM_NEURAL_CONTENT": false,
+      "NEURAL_RECONSTRUCTION": false
+    },
+    "labels": {
+      "BEHAVIORAL_IMAGERY_ASSIST": "Behavioral-assisted imagination amplifier (no decoded neural content)",
+      "BIOSIGNAL_STATE": "Biosignal state \u2014 not validated",
+      "PERCEPTION_NEURAL_CONTENT": "Validated perception-content neural adapter (visual perception only)",
+      "IMAGERY_NEURAL_CONTENT": "Imagery neural content \u2014 NOT authorized (requires C3XRP replication + P3 gate)",
+      "DREAM_NEURAL_CONTENT": "Dream neural content \u2014 NOT authorized",
+      "NEURAL_RECONSTRUCTION": "Neural image reconstruction \u2014 NOT authorized"
+    }
+  },
+  "perception_status": "BLOCKED",
+  "imagery_status": "UNAUTHORIZED",
+  "imagery_remains_unauthorized": true,
+  "authorized_claim": "none (perception not validated)",
+  "forbidden_claims": [
+    "imagery neural content",
+    "thought decoding",
+    "dream decoding",
+    "mental image reconstruction"
+  ],
+  "self_hash": "b73c4355998d561ccb0452cbb22242a7af54556d263a018ee93e1082aa7448ab"
+}
