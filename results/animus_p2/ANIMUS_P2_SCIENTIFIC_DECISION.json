@@ -1,10 +1,10 @@
 {
   "artifact": "ANIMUS_P2_SCIENTIFIC_DECISION",
-  "milestone": "ANIMUS-P2",
+  "milestone": "ANIMUS-P2 (resolved by P2E)",
   "scientific_parent": "a0b6ca7",
   "protocol_sealed": true,
-  "decision": "ANIMUS_P2_BLOCKED_CONFIRMATORY_PENDING",
-  "reason": "Prospective protocol sealed and method/bridge validated on synthetic data; the REAL confirmatory perception decode (independent dataset on the OrchestrAIQ cluster) has not produced per-subject results yet. No neural-content claim is made. Re-run this after the confirmatory cluster job writes results/animus_p2/subjects/*.json.",
+  "decision": "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE",
+  "reason": "Sealed volumetric-MNI Wang25 ROI cannot be applied to either candidate dataset's published T1w/fsnative-only fMRIPrep derivatives; no MNI<->T1w transform in provenance. Establishing it requires a cohort re-preprocessing decision that belongs to a fresh prospective seal (P2-R), not confirmatory execution. Verified by real cluster reconnaissance; NO neural outcome computed or fabricated.",
   "n_eligible": 0,
   "n_valid": 0,
   "n_pass": 0,
@@ -38,12 +38,13 @@
   "perception_status": "BLOCKED",
   "imagery_status": "UNAUTHORIZED",
   "imagery_remains_unauthorized": true,
-  "authorized_claim": "none (perception not validated)",
+  "authorized_claim": "none (perception not validated; blocked at ROI spatial provenance)",
+  "unblock_path": "a P2-R prospective re-seal authorizing pinned fMRIPrep-to-MNI152NLin2009cAsym re-derivation of subject normalization (as C3XAT did), OR a dataset whose published provenance includes MNI152NLin2009cAsym-space derivatives.",
   "forbidden_claims": [
     "imagery neural content",
     "thought decoding",
     "dream decoding",
     "mental image reconstruction"
   ],
-  "self_hash": "b73c4355998d561ccb0452cbb22242a7af54556d263a018ee93e1082aa7448ab"
+  "self_hash": "3c25ebf78effa0e12314358e8ccd838765451f9ded6682eb8d52ad1e27719546"
 }

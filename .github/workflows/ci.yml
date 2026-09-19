@@ -1685,3 +1685,31 @@ jobs:
         run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_decision.py
       - name: ANIMUS-P2 CI guard (immutability, C3XAG/imagery unauthorized, no neural data, firewall)
         run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_ci_guard.py
+
+  animus-p2e-real-confirmatory:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P2E tests (seal inheritance / ROI spatial-provenance block / capability isolation)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p2e.py
+          app/tests/test_animus_p2.py
+          -v --timeout=300
+      - name: ANIMUS-P2E resolution (verified provenance -> specific terminal; no neural data)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2e_confirmatory.py
+      - name: ANIMUS-P2E CI guard (seal inherited, spatial cert failed, no raw data/secrets, imagery unauthorized)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2e_ci_guard.py
+      - name: ANIMUS-P2 CI guard (immutability / capability isolation carried forward)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_ci_guard.py

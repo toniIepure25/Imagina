@@ -1,0 +1,41 @@
+{
+  "artifact": "ANIMUS_P2E_SPATIAL_TRANSFORM_CERTIFICATION",
+  "milestone": "ANIMUS-P2E",
+  "certification_pass": false,
+  "reason": "no MNI152NLin2009cAsym-space derivatives or MNI<->T1w transform available in either candidate dataset's published provenance; sealed volumetric Wang25 MPM cannot be applied to subject BOLD without re-deriving normalization (out of scope for confirmatory execution per \u00a72; \u00a77 mandates fail-closed).",
+  "findings": {
+    "sealed_primary_roi": "WANG25 volumetric MPM in MNI152NLin2009cAsym 2mm (staged: /work/wang/out/WANG25_primary_union_2009c2mm.nii.gz, shape (97,115,97) 2mm)",
+    "primary_dataset": {
+      "id": "ds004496 (NOD)",
+      "public_fmriprep_spaces": [
+        "T1w"
+      ],
+      "mni2009c_space_present": false,
+      "mni_to_t1w_transform_present": false,
+      "anat_derivatives_present": false,
+      "note": "sub-01 anat/ empty in fmriprep derivatives; only space-T1w func; ciftify is fsLR/CIFTI (not the sealed volumetric Wang25 MPM)."
+    },
+    "fallback_dataset": {
+      "id": "ds001499 (BOLD5000)",
+      "public_fmriprep_spaces": [
+        "T1w",
+        "fsnative",
+        "orig"
+      ],
+      "mni2009c_space_present": false,
+      "mni_to_t1w_transform_present": false,
+      "anat_derivatives_present": true,
+      "freesurfer_present": true,
+      "spm_derivatives": "subject-space functional ROI masks (EarlyVis/LOC/OPA/PPA/RSC), NOT the sealed Wang25 atlas and NOT per-image betas",
+      "note": "only affine target-fsnative / space-orig-to-T1w transforms; no MNI152NLin2009c warp/h5."
+    },
+    "reconnaissance_jobs": [
+      "animus-p2e-inventory",
+      "animus-p2e-xfmhunt",
+      "animus-p2e-b5kprov (all Completed)"
+    ],
+    "neural_outcomes_inspected": false
+  },
+  "rule": "\u00a77 ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE \u2014 do NOT invent a registration, switch atlas, or use a vaguely similar template.",
+  "self_hash": "eee652b639eeae5d892464df8099f04cbca6ec5dfac3a3135b97d72bbcf1a50b"
+}

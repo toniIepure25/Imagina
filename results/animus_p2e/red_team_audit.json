@@ -1,0 +1,18 @@
+{
+  "artifact": "ANIMUS_P2E_RED_TEAM_AUDIT",
+  "milestone": "ANIMUS-P2E",
+  "scope": "pre-outcome provenance/leakage review",
+  "checks": {
+    "stimulus_leakage": "N/A (no decode run)",
+    "normalization_leakage": "N/A",
+    "roi_outcome_selection": "none (ROI is sealed Wang25; no outcome-based selection)",
+    "subject_selection": "none (blocked before subject decoding)",
+    "wrong_transform_direction": "N/A (no transform applied)",
+    "test_set_reuse": "none",
+    "claim_inflation": "none (perception not validated)",
+    "hidden_target_leakage": "N/A"
+  },
+  "critical_unresolved_issues": [],
+  "audit_pass": true,
+  "self_hash": "ba274f402aa38d45298d594ed0ba08b682d3b7464f0c20d1b0b856b11ad7c547"
+}

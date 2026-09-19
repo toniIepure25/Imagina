@@ -1,8 +1,10 @@
 # ANIMUS-P2 Neural Decoder — Model Card
 
-> **Status: NOT VALIDATED (confirmatory pending).** The sealed pipeline is proven correct on synthetic data;
-> the real perception decoder is trained/validated only when the confirmatory cluster run completes. Until
-> then no perception-content claim is authorized.
+> **Status: NOT VALIDATED — `ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE`.** The sealed pipeline is proven
+> correct on synthetic data, but P2E real-execution reconnaissance found that neither the sealed primary
+> (NOD) nor the fallback (BOLD5000) publishes MNI152NLin2009cAsym-space derivatives or an MNI↔T1w transform,
+> so the sealed volumetric Wang25 ROI cannot be applied without a cohort re-preprocessing re-seal (P2-R).
+> No perception-content claim is authorized; no real decoder was trained.
 
 ## Intended use
 Estimate a frozen visual-content embedding from fMRI acquired **while a participant perceives a visual

@@ -3,8 +3,26 @@
 Two results are kept strictly separate. Never merged into one vague success statement.
 
 ## Part A — Scientific decoder result
-**Current decision: `ANIMUS_P2_BLOCKED_CONFIRMATORY_PENDING`** (see
-`results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json`). Meaning:
+**Resolved decision (by P2E real-execution reconnaissance): `ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE`**
+(see `results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json` and `results/animus_p2e/`).
+
+P2E ran REAL cluster reconnaissance to execute the confirmatory. Verified finding (no neural outcome
+inspected or fabricated): the sealed primary ROI is the volumetric Wang25 MPM in **MNI152NLin2009cAsym**,
+but **neither the sealed primary (NOD ds004496) nor the fallback (BOLD5000 ds001499) publishes
+MNI152NLin2009cAsym-space fMRIPrep derivatives or an MNI↔T1w transform** — both are T1w/fsnative/orig only,
+and NOD's anat derivatives are absent. BOLD5000's "spm" derivatives are its own functional ROIs
+(EarlyVis/LOC/OPA/PPA/RSC), not the sealed Wang25 atlas. Per **§7** the exact reproducible ROI↔BOLD relation
+cannot be established from either dataset's provenance; per **§2** introducing a cohort re-preprocessing
+(fMRIPrep-to-MNI re-derivation) is a new-provenance decision that belongs to a fresh prospective seal
+(P2-R), not confirmatory execution. No atlas switch, no invented registration, no template substitution
+(all §7-forbidden). Perception stays `BLOCKED`; imagery `UNAUTHORIZED`.
+
+**Unblock path:** a P2-R prospective re-seal authorizing pinned fMRIPrep-to-MNI152NLin2009cAsym re-derivation
+of subject normalization (exactly as C3XAT did for ds005191), OR a dataset whose published provenance
+already includes MNI152NLin2009cAsym-space derivatives. Then the committed `run_p2_confirmatory.py` runs the
+sealed decode unchanged.
+
+*(Prior interim state, superseded: `ANIMUS_P2_BLOCKED_CONFIRMATORY_PENDING`.)* Meaning of the sealed state:
 
 - The prospective protocol is **sealed** (`animus_p2_protocol_seal.json`) and the entire decoding →
   evaluation → control → uncertainty → gate machinery is **validated on synthetic data**
