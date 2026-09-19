@@ -13,9 +13,17 @@ Two results are kept strictly separate. Never merged into one vague success stat
   correctly FAILs and collapses under permutation, normalization/splits are leakage-free, and uncertainty
   is calibrated.
 - The **real confirmatory perception decode** on an independent dataset runs on the OrchestrAIQ cluster
-  (fMRIPrep/GLM discipline as in C3XAT/C3XRA). Until per-subject confirmatory results
-  (`results/animus_p2/subjects/*.json`) exist, **no perception-content claim is made** and
-  `PERCEPTION_NEURAL_CONTENT` stays not usable.
+  (fMRIPrep/GLM discipline as in C3XAT/C3XRA). **Feasibility is confirmed and real staging has begun**
+  (`results/animus_p2/confirmatory_staging_status.json`): the 102 TB workspace PVC, the staged Wang25 MNI
+  atlas, OpenNeuro S3 access, and CPU/GPU workers are all verified; probe + staging-inspect jobs ran and
+  real BOLD5000 events were downloaded to the PVC. The confirmatory is a **multi-hour cluster pipeline**
+  (both BOLD5000 and NOD publish fMRIPrep in T1w/fsnative space, so the MNI Wang25 atlas must be
+  registered to each subject's T1w space, then a frozen LSA/GLM extracts per-stimulus ROI betas, plus
+  CLIP embedding of the stimulus set, decode + controls across the subject subset). This exceeds a single
+  session's rigorous-completion bounds. The confirmatory executor `run_p2_confirmatory.py` is committed and
+  **refuses to run without staged feature bundles** (no fabrication); it consumes the exact sealed
+  per-subject pipeline (`p2/pipeline.py`). Until `results/animus_p2/subjects/*.json` exist, **no
+  perception-content claim is made** and `PERCEPTION_NEURAL_CONTENT` stays not usable.
 - Imagery/dream/reconstruction remain **unauthorized** regardless (capability invariant, tested).
 
 When the confirmatory completes, `run_p2_decision` produces VALIDATED / LIMITED / FAIL and updates the

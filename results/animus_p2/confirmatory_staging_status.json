@@ -1,0 +1,54 @@
+{
+  "artifact": "ANIMUS_P2_CONFIRMATORY_STAGING_STATUS",
+  "milestone": "ANIMUS-P2",
+  "cluster": "OrchestrAIQ RunAI (runai-romania-dev)",
+  "feasibility": "CONFIRMED",
+  "resources_verified": {
+    "workspace_pvc": "c3xat-r1-workspace RWX, 102TB free at /work",
+    "wang25_atlas_staged": "/work/wang/out/WANG25_primary_union_2009c2mm.nii.gz (MNI152NLin2009c 2mm)",
+    "network": "pypi + OpenNeuro S3 reachable from pods",
+    "compute": "cpu-worker + gpu-worker Ready"
+  },
+  "real_execution_started": {
+    "probe_job": "animus-p2-probe (Completed)",
+    "stage_inspect_job": "animus-p2-stage-inspect (Completed)",
+    "downloaded": "/work/animus_p2/bold5000/sub-CSI1/events/ (150 events.tsv; real data on PVC)"
+  },
+  "dataset_findings": {
+    "BOLD5000_ds001499": {
+      "subjects": 4,
+      "public_fmriprep_spaces": [
+        "T1w",
+        "fsnative"
+      ],
+      "mni2009c_available": false,
+      "per_subject_fmriprep_gb": 57,
+      "events": "onset/duration/cond/image (stimulus identity present)",
+      "stimulus_images_in_dataset": false,
+      "note": "needs separate BOLD5000_Stimuli for CLIP"
+    },
+    "NOD_ds004496": {
+      "subjects": 30,
+      "public_fmriprep_spaces_seen": [
+        "T1w"
+      ],
+      "stimulus_images_in_dataset": true,
+      "betas_precomputed": false,
+      "note": "stimuli/imagenet + coco present; must run GLM for betas"
+    }
+  },
+  "space_mismatch": "public fMRIPrep for both datasets is T1w/fsnative; staged Wang25 atlas is MNI2009c. Confirmatory requires per-subject atlas registration (Wang25 MNI -> subject T1w via fMRIPrep from-MNI152NLin2009cAsym_to-T1w transform) OR a surface Wang2015 fsaverage->fsnative pipeline.",
+  "remaining_confirmatory_pipeline": [
+    "download fMRIPrep T1w BOLD + events + confounds for the prospectively-fixed subject subset (~57GB/subj)",
+    "download stimulus images (BOLD5000_Stimuli figshare) or use NOD in-dataset stimuli",
+    "warp Wang25 MNI atlas -> each subject T1w (antsApplyTransforms) with per-subject atlas QC",
+    "frozen LSA/GLM (nilearn/C3XAT discipline) -> per-stimulus betas in Wang25 ROI -> feature bundles (.npz)",
+    "CLIP-embed unique stimuli with the sealed frozen encoder -> target embeddings",
+    "run run_p2_confirmatory.py --features-dir /work/animus_p2/features -> subjects/*.json",
+    "run run_p2_decision.py -> VALIDATED/LIMITED/FAIL + capability update"
+  ],
+  "estimated_effort": "multi-hour cluster pipeline with iteration against real-data layout; exceeds a single session's rigorous-completion bounds",
+  "decision_this_session": "ANIMUS_P2_BLOCKED_CONFIRMATORY_PENDING",
+  "integrity": "no confirmatory outcome fabricated; executor refuses to run without staged feature bundles; protocol sealed + CI-green (firewall satisfied); apparatus execution-ready",
+  "self_hash": "8dc9555f601b8e416c38bbf49c5df7dbc7d4ef9c8716fa4c21d1bca20fe34bb8"
+}
