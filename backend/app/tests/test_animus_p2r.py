@@ -68,3 +68,42 @@ def test_wrong_affine_is_detected():
     a = np.diag([2.0, 2.0, 2.0, 1.0])
     b = np.diag([3.0, 3.0, 3.0, 1.0])
     assert not np.allclose(a, b)        # a grid-compatibility check must fail-closed on affine mismatch
+
+
+# --- frozen LSA-GLM feature extractor (design math; no real NIfTI) ------------------------------------
+def test_lsa_design_recovers_known_betas():
+    from app.research.animus_p2.extract_features_p2r import build_lsa_design, lsa_betas
+    tr, n_scans, n_vox = 2.0, 120, 8
+    rng = np.random.default_rng(0)
+    # 10 well-separated trials
+    onsets = list(np.arange(6.0, 6.0 + 10 * 20.0, 20.0))
+    durs = [1.0] * 10
+    nuis = rng.standard_normal((n_scans, 6))
+    design, tidx = build_lsa_design(onsets, durs, tr, n_scans, nuis)
+    assert len(tidx) == 10 and design.shape[0] == n_scans
+    true_betas = rng.standard_normal((10, n_vox))
+    # BOLD = trial design @ true + nuisance/intercept structure + small noise
+    full = design.copy()
+    coef = np.zeros((design.shape[1], n_vox))
+    coef[tidx, :] = true_betas
+    bold = full @ coef + 0.01 * rng.standard_normal((n_scans, n_vox))
+    rec = lsa_betas(bold, design, tidx)
+    # recovered trial betas correlate ~1 with truth
+    r = np.corrcoef(rec.ravel(), true_betas.ravel())[0, 1]
+    assert r > 0.98
+
+
+def test_frozen_nuisance_selection_and_failclosed():
+    from app.research.animus_p2.extract_features_p2r import select_frozen_nuisance
+    n = 50
+    conf = {c: np.random.default_rng(1).standard_normal(n) for c in
+            ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z", "csf", "white_matter",
+             "cosine00", "cosine01", "framewise_displacement"]}
+    mat, sel = select_frozen_nuisance(conf)
+    assert "trans_x" in sel and "csf" in sel and "cosine00" in sel
+    assert "framewise_displacement" not in sel   # not in the frozen set
+    assert mat.shape == (n, len(sel))
+    # missing required motion -> fail-closed
+    import pytest
+    with pytest.raises(ValueError):
+        select_frozen_nuisance({"csf": np.zeros(n), "cosine00": np.zeros(n)})
