@@ -11,14 +11,15 @@
     "output_space": "MNI152NLin2009cAsym:res-2",
     "fs_license": "secret c3xat-fs-license",
     "bids_filter": "task-imagenet",
-    "sub-01": "FMRIPREP_RUNNING (workflow built: 8594 nodes; 'fMRIPrep started!'; processing 43 imagenet runs -> MNI2009c; job animus-p2r-fmriprep-sub01)"
+    "sub-01": "FMRIPREP_COMPLETE (43 imagenet MNI2009c bold + confounds + T1w<->MNI transforms; grid == Wang25; ROI 7604 vox coverage 1.0)"
   },
   "per_subject": {
     "sub-01": {
       "raw_audit": "PASS",
       "staging": "COMPLETE",
-      "fmriprep": "FMRIPREP_RUNNING",
-      "spatial_qc": "PENDING",
+      "fmriprep": "FMRIPREP_COMPLETE",
+      "spatial_qc": "PASS",
+      "roi_qc": "PASS (7604 vox, coverage 1.0)",
       "feature_bundle": "PENDING"
     },
     "sub-02": {
@@ -58,6 +59,7 @@
     }
   },
   "no_decoding_performance_in_status": true,
-  "note": "Pilot fMRIPrep (sub-01, ~43 imagenet runs) is a multi-hour-to-day job; the full 6-subject cohort preprocessing + feature extraction + confirmatory decode is a multi-day cluster effort continuing beyond this session on persistent infrastructure. No neural outcome computed; firewall intact.",
-  "self_hash": "e099e0c72b9a67714d08a520adf7f0817848907e1278b149683a36a0538ff7a2"
+  "note": "sub-01 fMRIPrep COMPLETE + spatial/ROI QC PASS. Grid-identical to Wang25 (no resampling). sub-02..06 staging/fMRIPrep next (serial, single cpu-worker). Firewall intact: NO decoding metric computed.",
+  "clip_embedding": "RUNNING (24000 stimuli; embedding on cpu-worker)",
+  "self_hash": "64fd5c0ff43e295f434b429d3dcc027a5a8ad72c99e012b08c3d5f575bc2db03"
 }

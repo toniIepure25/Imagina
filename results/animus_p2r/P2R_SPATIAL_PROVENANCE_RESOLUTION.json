@@ -1,0 +1,19 @@
+{
+  "artifact": "ANIMUS_P2R_SPATIAL_PROVENANCE_RESOLUTION",
+  "milestone": "ANIMUS-P2R",
+  "prior_blocker": "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE",
+  "method": "PINNED_RAW_NOD_FMRIPREP_TO_MNI2009C",
+  "dataset": "ds004496 v2.1.2",
+  "fmriprep_digest": "sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "template": "MNI152NLin2009cAsym",
+  "resolution": "res-2 (2mm)",
+  "wang25_sha256_prefix": "19b681ecba5c",
+  "wang25_voxel_count": 7604,
+  "resolved_on_pilot_sub01": true,
+  "pilot_finding": "real fMRIPrep of raw NOD sub-01 -> MNI152NLin2009cAsym:res-2 produces BOLD grid IDENTICAL to the sealed Wang25 atlas (shape (97,115,97), 2mm, affine equal); direct sealed-mask application, NO resampling; ROI finite coverage 1.0. => the ROI<->BOLD spatial relation IS reproducibly establishable via the sealed-authorized fMRIPrep provenance. The P2E blocker is RESOLVED in method.",
+  "all_subject_spatial_qc": "sub-01 PASS; sub-02..06 PENDING (compute)",
+  "cohort_status": "DEFERRED \u2014 full 6-subject fMRIPrep is ~30-44h exclusive cpu-worker (single node, serial); shared hardware is needed for other work, so the cohort confirmatory is not run in this window.",
+  "neural_outcomes_inspected_before_resolution": false,
+  "resolved": "PARTIAL (method proven on pilot; cohort execution deferred, not blocked scientifically)",
+  "self_hash": "d02987a7707370194b3a189dfbf300592c7734d0de6fa1f4368000dcd730f527"
+}

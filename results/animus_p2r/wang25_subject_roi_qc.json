@@ -1,0 +1,18 @@
+{
+  "artifact": "ANIMUS_P2R_WANG25_SUBJECT_ROI_QC",
+  "milestone": "ANIMUS-P2R",
+  "per_subject": {
+    "sub-01": {
+      "wang25_voxel_count": 7604,
+      "roi_finite_coverage": 1.0,
+      "grid_compatible": true,
+      "nan_inf": 0,
+      "empty_mask": false,
+      "technical_validity": "PASS",
+      "status": "READY_FOR_FEATURE_EXTRACTION"
+    }
+  },
+  "technical_criterion": "grid-compatible AND finite ROI coverage>=0.95 AND non-empty mask; NO outcome-based voxel removal; frozen voxel order",
+  "no_performance_used": true,
+  "self_hash": "1537d75ac18de3d3b55bd05f2286fe65019e23a63c1902d7b2bf74fcb501b15c"
+}
