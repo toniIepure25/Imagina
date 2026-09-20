@@ -1,0 +1,69 @@
+{
+  "artifact": "ANIMUS_P2R_NOD_RAW_PREPROCESSING_AUDIT",
+  "milestone": "ANIMUS-P2R",
+  "dataset": "OpenNeuro ds004496 (NOD)",
+  "version": "v2.1.2",
+  "bids_version": "1.4.1",
+  "doi": "doi:10.18112/openneuro.ds004496.v2.1.2",
+  "verified_on_cluster": "job animus-p2r-rawaudit (Completed)",
+  "per_subject": {
+    "sub-01": {
+      "raw_t1w": true,
+      "imagenet_bold_runs": 43,
+      "imagenet_events": 43,
+      "fieldmaps_present": true,
+      "bold_json_complete": true,
+      "imagenet_bold_gb": 9.5
+    },
+    "sub-02": {
+      "raw_t1w": true,
+      "imagenet_bold_runs": 40,
+      "imagenet_events": 40,
+      "fieldmaps_present": true,
+      "bold_json_complete": true,
+      "imagenet_bold_gb": 9.5
+    },
+    "sub-03": {
+      "raw_t1w": true,
+      "imagenet_bold_runs": 40,
+      "imagenet_events": 40,
+      "fieldmaps_present": true,
+      "bold_json_complete": true,
+      "imagenet_bold_gb": 9.5
+    },
+    "sub-04": {
+      "raw_t1w": true,
+      "imagenet_bold_runs": 40,
+      "imagenet_events": 40,
+      "fieldmaps_present": true,
+      "bold_json_complete": true,
+      "imagenet_bold_gb": 9.5
+    },
+    "sub-05": {
+      "raw_t1w": true,
+      "imagenet_bold_runs": 40,
+      "imagenet_events": 40,
+      "fieldmaps_present": true,
+      "bold_json_complete": true,
+      "imagenet_bold_gb": 9.5
+    },
+    "sub-06": {
+      "raw_t1w": true,
+      "imagenet_bold_runs": 40,
+      "imagenet_events": 40,
+      "fieldmaps_present": true,
+      "bold_json_complete": true,
+      "imagenet_bold_gb": 9.5
+    }
+  },
+  "bold_acquisition": {
+    "tr_s": 2.0,
+    "echo_time_s": 0.034,
+    "phase_encoding": "j-",
+    "slice_timing_present": true,
+    "task": "imagenet"
+  },
+  "raw_available": true,
+  "blocked": false,
+  "self_hash": "54071fce58ce817c3c2fd68599118612d98c8acdc287e11f0370a4fdf551ab7e"
+}

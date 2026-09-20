@@ -1,0 +1,19 @@
+{
+  "artifact": "ANIMUS_P2R_TARGET_REPRESENTATION_INHERITANCE",
+  "milestone": "ANIMUS-P2R",
+  "inherited_from": "P2 protocol seal",
+  "unchanged": true,
+  "target_encoder": {
+    "family": "frozen_vision_language_embedding",
+    "model_id": "open_clip:ViT-B-32",
+    "pretrained": "laion2b_s34b_b79k",
+    "embedding_dim": 512,
+    "input_preprocessing": "clip_bicubic_224_center_crop_openai_norm",
+    "normalization": "unit_l2",
+    "derived_from": "visual_stimulus_image (NOT caption)",
+    "weights_hash": "TO_PIN_AT_STAGING",
+    "code_version": "open_clip_torch (pinned at staging)"
+  },
+  "swapped": false,
+  "self_hash": "f88e96bc85e07dce5ac71c87f90bf38cc18873460fccba9e400c359d7de8ac75"
+}

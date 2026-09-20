@@ -1,0 +1,48 @@
+{
+  "artifact": "ANIMUS_P2R_ANCHOR",
+  "milestone": "ANIMUS-P2R",
+  "parent_sha": "b9c49e1",
+  "purpose": "Prospective spatial-provenance recovery; only the raw->MNI preprocessing provenance is amended.",
+  "hash_normalization": "crlf->lf",
+  "immutable_referenced_artifacts": {
+    "animus_p2_decision": {
+      "path": "results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json",
+      "file_sha256": "51c1e8206cc774ae01c39fb1eb283efb6b8716a4fdea2faf199dd9182df6ad23",
+      "self_hash": "3c25ebf78effa0e12314358e8ccd838765451f9ded6682eb8d52ad1e27719546"
+    },
+    "animus_p2_protocol_seal": {
+      "path": "results/animus_p2/animus_p2_protocol_seal.json",
+      "file_sha256": "76215e197af2af47bfab1ccddfc92f66e09afe55e97aa73220c1394eef39e46f",
+      "self_hash": "47d6342972f39cb38c7d15d244bf0dabb24c56898cce3dc42e562741f401c19b"
+    },
+    "animus_p2_anchor": {
+      "path": "results/animus_p2/animus_p2_anchor.json",
+      "file_sha256": "a0dc3e0ecdacef4f31b0e508a8331953b64096be5ed05d1cd4f534b905f91c81",
+      "self_hash": "e8a4785b57f66b600caf7e6ed267a5a8f32e87136a67f58c85085311bfe19c77"
+    },
+    "p2e_spatial_cert": {
+      "path": "results/animus_p2e/spatial_transform_certification.json",
+      "file_sha256": "485855be219fb3ce4c10086d947d9867b6a94f2c010cbf9a9adde7f135547f27",
+      "self_hash": "eee652b639eeae5d892464df8099f04cbca6ec5dfac3a3135b97d72bbcf1a50b"
+    },
+    "p2e_final_integrity": {
+      "path": "results/animus_p2e/final_integrity_audit.json",
+      "file_sha256": "f9a26133144d15926af09f4cffbe5e5e99a1fbe2904155563d4c6b0742dd3c85",
+      "self_hash": "3b10592f4fe73ca152d1da0c1eecba7a172174d14c7e15b53ce2a6c97d83ef15"
+    },
+    "c3xat_r1_final": {
+      "path": "results/c3xat_r1/C3XAT_R1_FINAL_DECISION_COMPLETE.json",
+      "file_sha256": "9d8cea0c4c2001d0bbf9158ec1d64f9471b16ef8fdd426de1f8b98682e28cf7d",
+      "self_hash": "2392b315566eda446b60737014a6d97ad7f7a8394bef38bc29dff3fdf95f9ce1"
+    },
+    "wang25_cert": {
+      "path": "results/c3xat_r1/wang25_primary_roi_certification.json",
+      "file_sha256": "6ba38f8bfc4f25eddf627894574065127ca1a16b4da6fab206f4f99bdecfe9ba",
+      "self_hash": "9d487e8718b3faddd4ad84f5926a6fb22c4c9e75424bd8ce2554c00fd901854e"
+    }
+  },
+  "historical_blocker_preserved": "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE",
+  "c3xag_authorized": false,
+  "imagery_neural_content_authorized": false,
+  "self_hash": "696f6a4aad0dce8fcc284effa5f52ee07902d52f6dabab5ea65d33728ed1c640"
+}

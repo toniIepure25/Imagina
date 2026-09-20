@@ -1,0 +1,16 @@
+{
+  "artifact": "ANIMUS_P2R_SPLIT_INHERITANCE",
+  "milestone": "ANIMUS-P2R",
+  "inherited_from": "P2 protocol seal",
+  "unchanged": true,
+  "stimulus_partitions": {
+    "grouped_by": "stimulus_identity",
+    "train": 0.7,
+    "val": 0.15,
+    "test": 0.15,
+    "seal": "results/animus_p2/content_split_seal.json"
+  },
+  "grouped_by": "stimulus_identity",
+  "regenerated": false,
+  "self_hash": "741c95d295c860fe5d7b62c458ab4c33a16559c7a5b31ea77dde2af14fcdae20"
+}
