@@ -1,0 +1,63 @@
+{
+  "artifact": "ANIMUS_P2R_PREPROCESSING_EXECUTION_STATUS",
+  "milestone": "ANIMUS-P2R",
+  "cluster": "OrchestrAIQ RunAI (runai-romania-dev)",
+  "real_execution_launched": true,
+  "staging": {
+    "sub-01": "COMPLETE (19GB raw BIDS on PVC: 43 imagenet bold+events, 12 fmap, T1w)"
+  },
+  "fmriprep": {
+    "image": "nipreps/fmriprep@sha256:9aec0b83...",
+    "output_space": "MNI152NLin2009cAsym:res-2",
+    "fs_license": "secret c3xat-fs-license",
+    "bids_filter": "task-imagenet",
+    "sub-01": "FMRIPREP_RUNNING (workflow built: 8594 nodes; 'fMRIPrep started!'; processing 43 imagenet runs -> MNI2009c; job animus-p2r-fmriprep-sub01)"
+  },
+  "per_subject": {
+    "sub-01": {
+      "raw_audit": "PASS",
+      "staging": "COMPLETE",
+      "fmriprep": "FMRIPREP_RUNNING",
+      "spatial_qc": "PENDING",
+      "feature_bundle": "PENDING"
+    },
+    "sub-02": {
+      "raw_audit": "PASS",
+      "staging": "PENDING",
+      "fmriprep": "FMRIPREP_PENDING",
+      "spatial_qc": "PENDING",
+      "feature_bundle": "PENDING"
+    },
+    "sub-03": {
+      "raw_audit": "PASS",
+      "staging": "PENDING",
+      "fmriprep": "FMRIPREP_PENDING",
+      "spatial_qc": "PENDING",
+      "feature_bundle": "PENDING"
+    },
+    "sub-04": {
+      "raw_audit": "PASS",
+      "staging": "PENDING",
+      "fmriprep": "FMRIPREP_PENDING",
+      "spatial_qc": "PENDING",
+      "feature_bundle": "PENDING"
+    },
+    "sub-05": {
+      "raw_audit": "PASS",
+      "staging": "PENDING",
+      "fmriprep": "FMRIPREP_PENDING",
+      "spatial_qc": "PENDING",
+      "feature_bundle": "PENDING"
+    },
+    "sub-06": {
+      "raw_audit": "PASS",
+      "staging": "PENDING",
+      "fmriprep": "FMRIPREP_PENDING",
+      "spatial_qc": "PENDING",
+      "feature_bundle": "PENDING"
+    }
+  },
+  "no_decoding_performance_in_status": true,
+  "note": "Pilot fMRIPrep (sub-01, ~43 imagenet runs) is a multi-hour-to-day job; the full 6-subject cohort preprocessing + feature extraction + confirmatory decode is a multi-day cluster effort continuing beyond this session on persistent infrastructure. No neural outcome computed; firewall intact.",
+  "self_hash": "e099e0c72b9a67714d08a520adf7f0817848907e1278b149683a36a0538ff7a2"
+}
