@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: animus-p2r-fmriprep-cohort
+  namespace: runai-romania-dev
+  labels: {project: romania-dev, gate: animus-p2r, stage: fmriprep-cohort}
+spec:
+  completionMode: Indexed
+  completions: 5
+  parallelism: 1
+  backoffLimit: 15
+  ttlSecondsAfterFinished: 259200
+  template:
+    metadata:
+      labels: {runai/node-pool: cpu-worker, project: romania-dev, gate: animus-p2r, stage: fmriprep-cohort}
+    spec:
+      schedulerName: runai-scheduler
+      nodeSelector: {runai/node-pool: cpu-worker}
+      restartPolicy: Never
+      containers:
+        - name: fmriprep
+          image: nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6
+          env:
+            - {name: TEMPLATEFLOW_HOME, value: /work/animus_p2r/tf}
+            - {name: NVIDIA_VISIBLE_DEVICES, value: void}
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -e
+              IDX=${JOB_COMPLETION_INDEX:-0}
+              N=$((IDX+2)); S=$(printf "sub-%02d" $N)
+              echo "=== fMRIPrep cohort worker: index=$IDX subject=$S ==="
+              R=/work/animus_p2r
+              # idempotent: skip if MNI imagenet outputs already present
+              DONE=$(find $R/derivatives/fmriprep/$S -name "*task-imagenet*space-MNI152NLin2009cAsym*preproc_bold.nii.gz" 2>/dev/null | wc -l)
+              if [ "$DONE" -ge 30 ]; then echo "$S already has $DONE MNI bold -> SKIP"; exit 0; fi
+              # wait for this subject's raw staging (staging job writes $S.staged)
+              for i in $(seq 1 240); do [ -f $R/raw/$S.staged ] && break; echo "waiting for $S staging ($i)"; sleep 60; done
+              [ -f $R/raw/$S.staged ] || { echo "STAGING_TIMEOUT $S"; exit 1; }
+              echo "$S staged; launching fMRIPrep"
+              mkdir -p $R/fs/$S $R/work/$S
+              fmriprep $R/raw $R/derivatives/fmriprep participant \
+                --participant-label ${S#sub-} \
+                --output-spaces MNI152NLin2009cAsym:res-2 \
+                --fs-license-file /fs/license.txt \
+                --fs-subjects-dir $R/fs/$S \
+                --bids-filter-file $R/imagenet_filter.json \
+                --skip-bids-validation --nthreads 12 --omp-nthreads 8 --mem-mb 30000 \
+                --notrack --stop-on-first-crash -w $R/work/$S
+              echo "$S FMRIPREP_DONE"
+          resources:
+            requests: {cpu: "8", memory: 30Gi}
+            limits: {cpu: "12", memory: 44Gi}
+          volumeMounts:
+            - {name: work, mountPath: /work}
+            - {name: fslic, mountPath: /fs}
+      volumes:
+        - name: work
+          persistentVolumeClaim: {claimName: c3xat-r1-workspace}
+        - name: fslic
+          secret: {secretName: c3xat-fs-license}

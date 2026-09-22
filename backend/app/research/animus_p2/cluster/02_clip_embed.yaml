@@ -1,0 +1,122 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: animus-p2r-clip-embed
+  namespace: runai-romania-dev
+  labels: {project: romania-dev, gate: animus-p2r, stage: embeddings}
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 172800
+  template:
+    metadata:
+      labels: {runai/node-pool: cpu-worker, project: romania-dev, gate: animus-p2r, stage: embeddings}
+    spec:
+      schedulerName: runai-scheduler
+      nodeSelector: {runai/node-pool: cpu-worker}
+      restartPolicy: Never
+      containers:
+        - name: clip
+          image: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -e
+              pip install --quiet open_clip_torch awscli pillow numpy 2>&1 | tail -1
+              mkdir -p /work/animus_p2r/embeddings /work/animus_p2r/stim
+              B=s3://openneuro.org/ds004496
+              echo "== collect unique imagenet stim_file across sub-01..06 events =="
+              python - <<'PY'
+              import subprocess, os, csv, json
+              subs=[f"sub-{i:02d}" for i in range(1,7)]
+              stims=set()
+              for s in subs:
+                  # list events keys
+                  out=subprocess.run(["aws","s3","ls","--no-sign-request","--recursive",
+                                      f"s3://openneuro.org/ds004496/{s}/"],capture_output=True,text=True).stdout
+                  keys=[l.split()[-1] for l in out.splitlines() if "ses-imagenet" in l and l.endswith("events.tsv")]
+                  for k in keys:
+                      tsv=subprocess.run(["aws","s3","cp","--no-sign-request",f"s3://openneuro.org/{k}","-"],
+                                         capture_output=True,text=True).stdout
+                      for row in csv.DictReader(tsv.splitlines(), delimiter="\t"):
+                          sf=row.get("stim_file","")
+                          if sf and sf.lower().endswith((".jpeg",".jpg",".png")):
+                              stims.add(sf.strip())
+              stims=sorted(stims)
+              json.dump(stims, open("/work/animus_p2r/stim/stim_list.json","w"))
+              print("unique imagenet stimuli:", len(stims))
+              PY
+              echo "== download referenced stimulus images (parallel) =="
+              python - <<'PY'
+              import json, subprocess, os
+              stims=json.load(open("/work/animus_p2r/stim/stim_list.json"))
+              base="s3://openneuro.org/ds004496/stimuli/"
+              os.makedirs("/work/animus_p2r/stim/img",exist_ok=True)
+              # build a batch file of cp commands, run with xargs -P
+              missing=[]
+              cmds=[]
+              for sf in stims:
+                  dst=f"/work/animus_p2r/stim/img/{sf.replace('/','__')}"
+                  if not os.path.exists(dst):
+                      cmds.append((base+sf, dst))
+              print("to download:", len(cmds))
+              open("/tmp/dl.sh","w").write("\n".join(
+                  f"aws s3 cp --no-sign-request '{u}' '{d}' >/dev/null 2>&1 || echo MISS {u}" for u,d in cmds))
+              subprocess.run(["bash","-lc","cat /tmp/dl.sh | xargs -I{} -P 16 bash -lc '{}'"])
+              PY
+              echo "== CLIP embed (open_clip ViT-B-32 laion2b_s34b_b79k) =="
+              python - <<'PY'
+              import json, os, hashlib, glob
+              import numpy as np, torch, open_clip
+              from PIL import Image
+              dev="cuda" if torch.cuda.is_available() else "cpu"
+              print("device", dev, "cuda", torch.cuda.is_available())
+              model, _, pre = open_clip.create_model_and_transforms("ViT-B-32", pretrained="laion2b_s34b_b79k")
+              model=model.to(dev).eval()
+              # pin weights hash
+              ckpts=glob.glob(os.path.expanduser("~/.cache/**/*.bin"),recursive=True)+\
+                    glob.glob(os.path.expanduser("~/.cache/**/open_clip_pytorch_model.bin"),recursive=True)
+              wh=None
+              for c in ckpts:
+                  if "ViT-B-32" in c or "laion2b" in c or "open_clip" in c:
+                      wh=hashlib.sha256(open(c,"rb").read()).hexdigest(); break
+              stims=json.load(open("/work/animus_p2r/stim/stim_list.json"))
+              ids=[]; embs=[]; man=[]
+              bs=256; batch=[]; bids=[]
+              def flush():
+                  if not batch: return
+                  x=torch.stack(batch).to(dev)
+                  with torch.no_grad():
+                      f=model.encode_image(x); f=f/f.norm(dim=-1,keepdim=True)
+                  for i,e in zip(bids, f.cpu().numpy()):
+                      ids.append(i); embs.append(e.astype(np.float32))
+                  batch.clear(); bids.clear()
+              for sf in stims:
+                  p=f"/work/animus_p2r/stim/img/{sf.replace('/','__')}"
+                  if not os.path.exists(p): continue
+                  try: im=Image.open(p).convert("RGB")
+                  except Exception: continue
+                  batch.append(pre(im)); bids.append(sf)
+                  ssha=hashlib.sha256(open(p,"rb").read()).hexdigest()
+                  man.append({"stimulus_id":sf,"stim_sha256":ssha})
+                  if len(batch)>=bs: flush()
+              flush()
+              E=np.stack(embs) if embs else np.zeros((0,512),np.float32)
+              np.savez("/work/animus_p2r/embeddings/imagenet_clip_vitb32.npz",
+                       stimulus_ids=np.array(ids), embeddings=E)
+              man_meta={"artifact":"ANIMUS_P2R_STIMULUS_EMBEDDING_MANIFEST",
+                        "encoder":"open_clip:ViT-B-32","pretrained":"laion2b_s34b_b79k",
+                        "weights_sha256":wh,"embedding_dim":int(E.shape[1]) if E.size else 512,
+                        "normalization":"unit_l2","n_stimuli":len(ids),
+                        "embeddings_sha256":hashlib.sha256(E.tobytes()).hexdigest(),
+                        "per_stimulus":man[:5],"n_manifest":len(man)}
+              json.dump(man_meta, open("/work/animus_p2r/embeddings/manifest.json","w"), indent=2)
+              print("EMBEDDED", len(ids), "dim", E.shape, "weights_sha", (wh or "NA")[:16])
+              PY
+              echo "CLIP_EMBED_DONE"
+          resources:
+            limits: {cpu: "6", memory: 24Gi}
+            requests: {cpu: "2", memory: 8Gi}
+          volumeMounts: [{name: work, mountPath: /work}]
+      volumes:
+        - name: work
+          persistentVolumeClaim: {claimName: c3xat-r1-workspace}

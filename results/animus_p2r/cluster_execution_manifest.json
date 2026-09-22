@@ -1,0 +1,27 @@
+{
+  "artifact": "ANIMUS_P2R_CLUSTER_EXECUTION_MANIFEST",
+  "milestone": "ANIMUS-P2R",
+  "authorized_compute_window": true,
+  "cluster": "OrchestrAIQ runai-romania-dev",
+  "fmriprep_image": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "fs_license_secret": "c3xat-fs-license",
+  "workspace_pvc": "c3xat-r1-workspace (102TB free)",
+  "stages": {
+    "01_stage_sub02-06": "aws s3 sync raw NOD sub-02..06 -> /work/animus_p2r/raw + .staged markers",
+    "02_clip_embed": "open_clip ViT-B-32 laion2b_s34b_b79k -> /work/animus_p2r/embeddings/imagenet_clip_vitb32.npz (24000 stimuli; images pre-downloaded)",
+    "03_fmriprep_cohort_indexed": "Indexed Job completions=5 parallelism=1: sub-02..06 -> MNI152NLin2009cAsym:res-2; waits per-subject staging; idempotent; isolated work/fs dirs",
+    "04_extract_features_sweep": "Wang25 ROI frozen LSA-GLM -> /work/animus_p2r/features/sub-XX.npz + manifest (run after fmriprep+clip)"
+  },
+  "autonomy": "fMRIPrep cohort is an Indexed Job that runs serially on the single cpu-worker and survives session/SSH disconnect; resumable + idempotent (skips subjects with existing MNI outputs / bundles).",
+  "sub01_status": "fMRIPrep COMPLETE; MNI grid == Wang25; ROI 7604 vox; coverage 1.0 (preserved on PVC).",
+  "firewall": "NO decoding metric until P2R_CONFIRMATORY_IMPLEMENTATION_FREEZE committed CI-green.",
+  "next_after_bundles": [
+    "verify CLIP provenance (weights SHA)",
+    "split inheritance audit",
+    "preconfirmatory red-team",
+    "P2R_CONFIRMATORY_IMPLEMENTATION_FREEZE (commit CI-green)",
+    "run_p2_confirmatory",
+    "run_p2_decision"
+  ],
+  "self_hash": "75aa81fabb727b18afd2606a37e7ab17ee03933d03b4c463ec92610f8c595139"
+}

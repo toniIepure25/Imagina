@@ -15,51 +15,45 @@
   },
   "per_subject": {
     "sub-01": {
-      "raw_audit": "PASS",
-      "staging": "COMPLETE",
-      "fmriprep": "FMRIPREP_COMPLETE",
+      "fmriprep": "COMPLETE",
       "spatial_qc": "PASS",
-      "roi_qc": "PASS (7604 vox, coverage 1.0)",
-      "feature_bundle": "PENDING"
+      "roi_qc": "PASS(7604,cov1.0)",
+      "feature_bundle": "PENDING(sweep)"
     },
     "sub-02": {
-      "raw_audit": "PASS",
-      "staging": "PENDING",
-      "fmriprep": "FMRIPREP_PENDING",
+      "staging": "RUNNING",
+      "fmriprep": "PENDING(indexed serial)",
       "spatial_qc": "PENDING",
       "feature_bundle": "PENDING"
     },
     "sub-03": {
-      "raw_audit": "PASS",
-      "staging": "PENDING",
-      "fmriprep": "FMRIPREP_PENDING",
+      "staging": "RUNNING",
+      "fmriprep": "PENDING(indexed serial)",
       "spatial_qc": "PENDING",
       "feature_bundle": "PENDING"
     },
     "sub-04": {
-      "raw_audit": "PASS",
-      "staging": "PENDING",
-      "fmriprep": "FMRIPREP_PENDING",
+      "staging": "RUNNING",
+      "fmriprep": "PENDING(indexed serial)",
       "spatial_qc": "PENDING",
       "feature_bundle": "PENDING"
     },
     "sub-05": {
-      "raw_audit": "PASS",
-      "staging": "PENDING",
-      "fmriprep": "FMRIPREP_PENDING",
+      "staging": "RUNNING",
+      "fmriprep": "PENDING(indexed serial)",
       "spatial_qc": "PENDING",
       "feature_bundle": "PENDING"
     },
     "sub-06": {
-      "raw_audit": "PASS",
-      "staging": "PENDING",
-      "fmriprep": "FMRIPREP_PENDING",
+      "staging": "RUNNING",
+      "fmriprep": "PENDING(indexed serial)",
       "spatial_qc": "PENDING",
       "feature_bundle": "PENDING"
     }
   },
   "no_decoding_performance_in_status": true,
-  "note": "sub-01 fMRIPrep COMPLETE + spatial/ROI QC PASS. Grid-identical to Wang25 (no resampling). sub-02..06 staging/fMRIPrep next (serial, single cpu-worker). Firewall intact: NO decoding metric computed.",
-  "clip_embedding": "RUNNING (24000 stimuli; embedding on cpu-worker)",
-  "self_hash": "64fd5c0ff43e295f434b429d3dcc027a5a8ad72c99e012b08c3d5f575bc2db03"
+  "note": "Autonomous cohort campaign running on cluster (~35h serial fMRIPrep). Firewall intact. Confirmatory runs after all 6 feature bundles exist + implementation freeze committed CI-green.",
+  "clip_embedding": "RUNNING (re-launched; embeds 24000 -> embeddings/imagenet_clip_vitb32.npz)",
+  "cohort_campaign": "LAUNCHED (authorized compute window): Indexed fMRIPrep Job sub-02..06 serial + CLIP re-embed (24000; images pre-downloaded) + staging sub-02..06. Autonomous, survives disconnect.",
+  "self_hash": "4df6a8db7d7bd29a99f4d62d21469e5bd0c2fb0ba9ba0bd8845a4ca71d7d4c85"
 }
