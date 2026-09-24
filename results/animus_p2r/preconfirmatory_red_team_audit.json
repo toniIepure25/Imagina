@@ -1,0 +1,24 @@
+{
+  "artifact": "ANIMUS_P2R_PRECONFIRMATORY_RED_TEAM_AUDIT",
+  "milestone": "ANIMUS-P2R",
+  "checks": {
+    "transform_direction": "MNI2009c fMRIPrep output grid == sealed Wang25 (affine+shape equal); no transform applied to atlas (direct mask)",
+    "template": "MNI152NLin2009cAsym res-2",
+    "resolution": "2mm",
+    "wang25_hash": "19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc",
+    "roi_voxel_count": 7604,
+    "roi_mapping": "identical grid; no resampling",
+    "stimulus_mapping": "events stim_file -> synset category + CLIP embedding; 4000 unique/subject",
+    "clip_provenance": "open_clip ViT-B-32 laion2b_s34b_b79k (matches seal); embeddings_sha256 55d2d991",
+    "split_inheritance": "frozen seed; leakage_free all subjects",
+    "duplicate_leakage": "grouped by identity; all reps one partition",
+    "normalization_leakage": "fold-safe train-only (sealed FoldSafeNormalizer)",
+    "pca_leakage": "n_components=None (no PCA)",
+    "hyperparameter_leakage": "alpha via validation only (sealed select_alpha)",
+    "subject_denominator": "fixed sub-01..06",
+    "feature_finite": "all finite, zero zero-variance voxels"
+  },
+  "critical_unresolved_issues": [],
+  "audit_pass": true,
+  "self_hash": "29abd443cb7e183f3e5c4e0b45dab4290403305220d482d6faef55de12943c49"
+}
