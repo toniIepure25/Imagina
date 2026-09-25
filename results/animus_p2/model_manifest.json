@@ -1,0 +1,18 @@
+{
+  "artifact": "ANIMUS_P2_MODEL_MANIFEST",
+  "milestone": "ANIMUS-P2",
+  "subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-05",
+    "sub-06"
+  ],
+  "features_dir": "/work/animus_p2r/features",
+  "protocol_seal": "/work/animus_p2r/results/animus_p2/animus_p2_protocol_seal.json",
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "reproduction": "run_p2_confirmatory --features-dir <dir>",
+  "self_hash": "f9f87173dd3205c6f44f64f99bbf91cbc2320daa3d52fff90297a5b71beaf2c0"
+}

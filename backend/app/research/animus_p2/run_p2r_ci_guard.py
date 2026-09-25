@@ -3,7 +3,8 @@
 Verifies the re-seal changed ONLY the spatial-preprocessing provenance: P2/P2E history immutable, split /
 target-encoder / decoder inherited unchanged, target space is exactly MNI152NLin2009cAsym, Wang25 unchanged,
 fMRIPrep pinned by digest (no floating tags), participant denominator frozen without performance-based
-selection, capability stays BLOCKED, imagery UNAUTHORIZED, and no raw neural data / secrets committed.
+selection, the confirmatory firewall held (implementation frozen before any metric was inspected), the live
+decision is a legitimate confirmatory outcome, imagery UNAUTHORIZED, and no raw neural data / secrets committed.
 """
 from __future__ import annotations
 
@@ -67,9 +68,23 @@ def main() -> int:
     problems["denominator_frozen"] = [] if (denom["no_performance_based_selection"]
                                             and denom["frozen_before_outcomes"]) else ["selection risk"]
 
-    # capability stays blocked; imagery unauthorized
+    # confirmatory firewall: the implementation was frozen (CI-green) BEFORE any decoding metric was
+    # inspected, so the eventual outcome (VALIDATED/LIMITED/FAIL) is honest either way.
+    frz = os.path.join(P2R, "P2R_CONFIRMATORY_IMPLEMENTATION_FREEZE.json")
+    firewall_keys = ("real_decoder_performance_inspected_before_freeze", "real_M_inspected_before_freeze",
+                     "real_2AFC_inspected_before_freeze", "real_retrieval_inspected_before_freeze",
+                     "subject_PASS_inspected_before_freeze")
+    if not os.path.exists(frz):
+        problems["confirmatory_firewall"] = ["freeze missing"]
+    else:
+        fz = _load(frz)
+        problems["confirmatory_firewall"] = [k for k in firewall_keys if fz.get(k) is not False]
+
+    # the live decision is a legitimate confirmatory outcome; imagery never authorized regardless.
     dec = _load(os.path.join(P2, "ANIMUS_P2_SCIENTIFIC_DECISION.json"))
-    problems["perception_blocked_pre_result"] = [] if dec["perception_status"] == "BLOCKED" else ["not blocked"]
+    legit = {"ANIMUS_P2_PERCEPTION_DECODER_VALIDATED", "ANIMUS_P2_PERCEPTION_DECODER_LIMITED",
+             "ANIMUS_P2_PERCEPTION_DECODER_FAIL", "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE"}
+    problems["decision_legitimate"] = [] if dec["decision"] in legit else [f"unexpected {dec['decision']}"]
     problems["imagery_unauthorized"] = [] if dec["imagery_remains_unauthorized"] else ["imagery authorized"]
 
     # no raw neural data / secrets committed

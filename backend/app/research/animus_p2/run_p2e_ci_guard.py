@@ -41,11 +41,23 @@ def main() -> int:
         problems["spatial_certification"] = [] if c.get("certification_pass") is False else \
             ["certification unexpectedly passed without MNI provenance"]
 
+    # The P2E historical finding (ROI spatial-provenance block) is preserved as a snapshot artifact,
+    # because the live decision file is legitimately advanced by the P2-R successor milestone once the
+    # spatial provenance is recovered. The P2E block itself must remain byte-preserved and honest.
+    snap = os.path.join(P2E, "ANIMUS_P2E_DECISION_SNAPSHOT.json")
+    if not os.path.exists(snap):
+        problems["decision"] = ["P2E decision snapshot missing"]
+        problems["perception_blocked"] = ["P2E decision snapshot missing"]
+    else:
+        s = json.load(open(snap, encoding="utf-8"))
+        problems["decision"] = [] if s.get("decision") == "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE" else \
+            [f"unexpected P2E snapshot decision {s.get('decision')}"]
+        problems["perception_blocked"] = [] if s.get("perception_status") == "BLOCKED" else \
+            ["P2E snapshot perception not BLOCKED"]
+
+    # Invariant that must hold across the P2E block AND any successor: imagery is never authorized.
     dec = os.path.join(P2, "ANIMUS_P2_SCIENTIFIC_DECISION.json")
     d = json.load(open(dec, encoding="utf-8"))
-    problems["decision"] = [] if d.get("decision") == "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE" else \
-        [f"unexpected decision {d.get('decision')}"]
-    problems["perception_blocked"] = [] if d.get("perception_status") == "BLOCKED" else ["perception not BLOCKED"]
     problems["imagery_unauthorized"] = [] if d.get("imagery_remains_unauthorized") else ["imagery authorized!"]
 
     # no raw neural data / images / credentials committed under results/animus_p2e or animus_p2

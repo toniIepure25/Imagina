@@ -39,11 +39,20 @@ def test_spatial_certification_fails_closed():
 
 
 def test_decision_is_roi_spatial_provenance_block():
-    d = _load(os.path.join(P2, "ANIMUS_P2_SCIENTIFIC_DECISION.json"))
+    # The P2E historical block is preserved as a snapshot; the live decision file is legitimately
+    # advanced by the P2-R successor once spatial provenance is recovered.
+    d = _load(os.path.join(P2E, "ANIMUS_P2E_DECISION_SNAPSHOT.json"))
     assert d["decision"] == "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE"
     assert d["perception_status"] == "BLOCKED"
     assert d["imagery_remains_unauthorized"] is True
     assert d["n_pass"] == 0 and d["authorized_claim"].startswith("none")
+
+
+def test_live_decision_never_authorizes_imagery():
+    # Whatever the successor milestone decides, imagery must remain unauthorized in the live file.
+    d = _load(os.path.join(P2, "ANIMUS_P2_SCIENTIFIC_DECISION.json"))
+    assert d["imagery_remains_unauthorized"] is True
+    assert d["capability_after"]["matrix"]["IMAGERY_NEURAL_CONTENT"] == "UNAUTHORIZED"
 
 
 def test_block_keeps_capabilities_correct():

@@ -44,10 +44,19 @@ def test_raw_available_not_blocked():
     assert all(v["raw_t1w"] and v["fieldmaps_present"] for v in a["per_subject"].values())
 
 
-def test_capability_still_blocked_during_p2r():
+def test_confirmatory_outcome_legitimate_imagery_unauthorized():
+    # Post-confirmatory: the live decision is a legitimate confirmatory outcome and imagery is never
+    # authorized by a perception advance. The confirmatory firewall (freeze before any metric inspected)
+    # is verified separately by the P2-R CI guard.
     dec = _load(os.path.join(P2, "ANIMUS_P2_SCIENTIFIC_DECISION.json"))
-    assert dec["perception_status"] == "BLOCKED"
+    assert dec["decision"] in {
+        "ANIMUS_P2_PERCEPTION_DECODER_VALIDATED",
+        "ANIMUS_P2_PERCEPTION_DECODER_LIMITED",
+        "ANIMUS_P2_PERCEPTION_DECODER_FAIL",
+        "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE",
+    }
     assert dec["imagery_remains_unauthorized"] is True
+    assert dec["capability_after"]["matrix"]["IMAGERY_NEURAL_CONTENT"] == "UNAUTHORIZED"
 
 
 # --- §35 hermetic spatial-technical fixtures (no performance endpoint) -----------------------------------
