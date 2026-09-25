@@ -53,8 +53,12 @@ def main() -> int:
     p2_seal = _load(os.path.join(P2, "animus_p2_protocol_seal.json"))
 
     # --- anchor (immutability of prior history) --------------------------------
+    # The P2E ROI-spatial-provenance block is the immutable historical decision; it is preserved byte-for-
+    # byte in the snapshot below. The LIVE decision file is legitimately advanced by this P2-R successor
+    # (VALIDATED/LIMITED/FAIL), so it is NOT an immutability anchor — it carries its own self_hash and is
+    # tracked by git. Anchoring the snapshot keeps `historical_blocker_preserved` honest and deterministic.
     refs = {
-        "animus_p2_decision": "results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json",
+        "animus_p2_decision": "results/animus_p2e/ANIMUS_P2E_DECISION_SNAPSHOT.json",
         "animus_p2_protocol_seal": "results/animus_p2/animus_p2_protocol_seal.json",
         "animus_p2_anchor": "results/animus_p2/animus_p2_anchor.json",
         "p2e_spatial_cert": "results/animus_p2e/spatial_transform_certification.json",

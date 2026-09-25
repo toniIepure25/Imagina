@@ -8,8 +8,7 @@
     "animus_p2_decision": {
       "path": "results/animus_p2e/ANIMUS_P2E_DECISION_SNAPSHOT.json",
       "file_sha256": "51c1e8206cc774ae01c39fb1eb283efb6b8716a4fdea2faf199dd9182df6ad23",
-      "self_hash": "3c25ebf78effa0e12314358e8ccd838765451f9ded6682eb8d52ad1e27719546",
-      "note": "P2E-block decision byte-preserved as a snapshot; the live decision path is legitimately advanced by the P2-R successor once spatial provenance is recovered."
+      "self_hash": "3c25ebf78effa0e12314358e8ccd838765451f9ded6682eb8d52ad1e27719546"
     },
     "animus_p2_protocol_seal": {
       "path": "results/animus_p2/animus_p2_protocol_seal.json",
@@ -45,5 +44,5 @@
   "historical_blocker_preserved": "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE",
   "c3xag_authorized": false,
   "imagery_neural_content_authorized": false,
-  "self_hash": "30695ed2cfe0703cc3bcfcca1e28efdc5263c0eaa4ade62969965f37b8859fab"
+  "self_hash": "bfda0062f92ed4378b6566b9b0fad6a9f0bbcf24190a07472075d86a6eb8de50"
 }

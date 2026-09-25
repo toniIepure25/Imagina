@@ -853,6 +853,34 @@ This is honest role-oriented information separation, not authenticated access co
 - One invalid inference or failed campaign invalidates the entire package
 - Explicit tracking of which results failed and why
 
+
+## ADR-039: ANIMUS-P2-R VALIDATED — preserve the P2E block as a snapshot; advance the live decision
+
+**Status:** Accepted
+**Date:** 2026-09-26
+**Context:** The P2E ROI-spatial-provenance block and the P2 confirmatory decision share one live file
+(`results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json`). ANIMUS-P2-R recovered the MNI2009c provenance and
+the sealed decoder returned `ANIMUS_P2_PERCEPTION_DECODER_VALIDATED` (2/6 NOD subjects), so the live file
+must legitimately advance — but the P2E historical block and its guards/tests must not be falsified.
+
+**Decision:**
+- Preserve the P2E block byte-for-byte as `results/animus_p2e/ANIMUS_P2E_DECISION_SNAPSHOT.json` (self-hash
+  intact; normalized SHA equals the anchor-pinned hash).
+- Repoint `p2r_anchor.json` immutable ref for the P2 decision to that snapshot (same file_sha256) and
+  re-self-hash the anchor.
+- P2E guard/test now check the historical block on the snapshot; P2R guard/test replace the pre-result
+  "perception BLOCKED" check with a confirmatory-firewall check (freeze committed before any metric
+  inspected) + a legitimate-outcome check. The invariant "imagery is never authorized by a perception
+  advance" is asserted on the LIVE file in both suites.
+- The real product bridge (`run_p2_product_bridge.py`) runs only when the live decision is VALIDATED and is
+  gated by the capability enforcement; no product tuning.
+
+**Consequences:**
+- CI stays green across the milestone advance without rewriting history.
+- The historical block remains auditable and byte-verifiable; a future FAIL/LIMITED re-run would still be
+  representable on the live file without touching the snapshot.
+- PERCEPTION_NEURAL_CONTENT=VALIDATED; imagery/dream/reconstruction UNAUTHORIZED; C3XAG unauthorized.
+
 ---
 
-*Last updated: 2026-07-15 — Scientific Gate C0.2 Worker, Replay Provenance and CI Truth Closure*
+*Last updated: 2026-09-26 — ANIMUS-P2-R real confirmatory VALIDATED*

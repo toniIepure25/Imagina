@@ -1,0 +1,47 @@
+{
+  "artifact": "ANIMUS_P2R_FINAL_INTEGRITY_AUDIT",
+  "milestone": "ANIMUS-P2R",
+  "scientific_decision": "ANIMUS_P2_PERCEPTION_DECODER_VALIDATED",
+  "perception_validated": true,
+  "p2e_block_preserved_byte_identical": true,
+  "only_spatial_provenance_changed": true,
+  "inherited_unchanged_from_p2": {
+    "question": true,
+    "primary_dataset": "NOD ds004496",
+    "split": true,
+    "target_encoder": "open_clip:ViT-B-32",
+    "decoder": "ridge_linear_multioutput",
+    "primary_statistic": "content margin M = mean(cos(p_i,t_i) - mean_{j!=i} cos(p_i,t_j)), held-out test",
+    "permutation": {
+      "within_test_label_permutation": true,
+      "n_perm": 1000
+    },
+    "bootstrap": {
+      "identity_bootstrap": true,
+      "n_boot": 1000
+    },
+    "seeds": [
+      20260909,
+      20261009,
+      20261109
+    ],
+    "subject_pass": "data_contract & atlas_qc & M>0 & perm_p<0.01 & bootstrap_ci_lower>0 & all_seeds_positive",
+    "dataset_gate": "required_passes=max(2,ceil(N/3)); VALIDATED/LIMITED/FAIL/BLOCKED; fixed denominator",
+    "negative_controls": [
+      "label_permutation",
+      "category_matched_decoys",
+      "low_level_baseline",
+      "run_session_fingerprint",
+      "within/cross-run shuffle"
+    ]
+  },
+  "denominator_frozen_before_outcomes": true,
+  "confirmatory_firewall_held_no_metric_before_freeze": true,
+  "imagery_dream_reconstruction_unauthorized": true,
+  "c3xag_unauthorized": true,
+  "no_atlas_switch_no_invented_registration": true,
+  "product_bridge_no_tuning": true,
+  "no_raw_neural_or_secrets_committed": [],
+  "all_pass": true,
+  "self_hash": "d863ebb88d33d86135f4fe2282e172cc7b641ab33cf1172628f746330fa1a8ad"
+}

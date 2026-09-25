@@ -14,5 +14,13 @@
   "n_perm": 1000,
   "n_boot": 1000,
   "reproduction": "run_p2_confirmatory --features-dir <dir>",
-  "self_hash": "f9f87173dd3205c6f44f64f99bbf91cbc2320daa3d52fff90297a5b71beaf2c0"
+  "validated_subjects": [
+    "sub-04",
+    "sub-06"
+  ],
+  "model_weights_sha256": {
+    "sub-04": "cd3ee7dd93d0539d6895cbe1033753caa193042416c40f1e657c2790f1555c2f",
+    "sub-06": "ff822831d00a91d1ca6e36fe30508a9c98ef82c542e4921b2523c601cb45821d"
+  },
+  "self_hash": "6525e195e116c6431eeaddc77ff2c768d2b519f3e9332816d46c29703d9575b8"
 }
