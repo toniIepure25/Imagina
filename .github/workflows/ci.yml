@@ -1742,3 +1742,32 @@ jobs:
         run: PYTHONPATH=. python3 app/research/animus_p2/run_p2r_ci_guard.py
       - name: ANIMUS-P2E CI guard (prior block preserved; imagery unauthorized)
         run: PYTHONPATH=. python3 app/research/animus_p2/run_p2e_ci_guard.py
+
+  animus-p2xr-independent-replication:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P2XR tests (adapters / cross-dataset decision / Type-I / seal inheritance / firewall)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p2xr.py
+          -v --timeout=300
+      - name: ANIMUS-P2XR pre-outcome power / Type-I audit (frozen gate operating characteristics)
+        run: PYTHONPATH=. python3 app/research/animus_p2xr/run_p2xr_power_audit.py
+      - name: ANIMUS-P2XR prospective protocol seal (only adapters+denominators changed; method inherited)
+        run: PYTHONPATH=. python3 app/research/animus_p2xr/run_p2xr_seal.py
+      - name: ANIMUS-P2XR CI guard (inheritance unchanged; NOD closed; imagery unauthorized; outcome firewall)
+        run: PYTHONPATH=. python3 app/research/animus_p2xr/run_p2xr_ci_guard.py
+      - name: ANIMUS-P2R CI guard (parent immutability carried forward)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2r_ci_guard.py

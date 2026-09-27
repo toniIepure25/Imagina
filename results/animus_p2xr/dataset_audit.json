@@ -1,0 +1,103 @@
+{
+  "artifact": "ANIMUS_P2XR_DATASET_AUDIT",
+  "milestone": "ANIMUS-P2XR",
+  "datasets": {
+    "ds001499": {
+      "task": "task-5000scenes",
+      "subjects": {
+        "sub-CSI1": {
+          "n_event_files": 142,
+          "n_valid_trials": 5254,
+          "n_unique_identities": 4916,
+          "n_repeated_presentations": 338,
+          "trial_kind_counts": {
+            "imagenet": 1916,
+            "coco": 2000,
+            "scenes": 1000,
+            "rep_coco": 135,
+            "rep_imagenet": 135,
+            "rep_scenes": 68
+          }
+        },
+        "sub-CSI2": {
+          "n_event_files": 142,
+          "n_valid_trials": 5254,
+          "n_unique_identities": 4916,
+          "n_repeated_presentations": 338,
+          "trial_kind_counts": {
+            "imagenet": 1916,
+            "coco": 2000,
+            "scenes": 1000,
+            "rep_coco": 135,
+            "rep_imagenet": 135,
+            "rep_scenes": 68
+          }
+        },
+        "sub-CSI3": {
+          "n_event_files": 142,
+          "n_valid_trials": 5254,
+          "n_unique_identities": 4916,
+          "n_repeated_presentations": 338,
+          "trial_kind_counts": {
+            "imagenet": 1916,
+            "coco": 2000,
+            "scenes": 1000,
+            "rep_coco": 133,
+            "rep_imagenet": 136,
+            "rep_scenes": 69
+          }
+        },
+        "sub-CSI4": {
+          "n_event_files": 84,
+          "n_valid_trials": 3108,
+          "n_unique_identities": 2952,
+          "n_repeated_presentations": 156,
+          "trial_kind_counts": {
+            "imagenet": 1122,
+            "coco": 1188,
+            "scenes": 594,
+            "rep_coco": 86,
+            "rep_imagenet": 86,
+            "rep_scenes": 32
+          }
+        }
+      }
+    },
+    "ds004192": {
+      "task": "task-things",
+      "subjects": {
+        "sub-01": {
+          "n_event_files": 120,
+          "n_valid_trials": 9840,
+          "n_unique_identities": 8740,
+          "n_repeated_presentations": 1100,
+          "trial_kind_counts": {
+            "exp": 8640,
+            "test": 1200
+          }
+        },
+        "sub-02": {
+          "n_event_files": 120,
+          "n_valid_trials": 9840,
+          "n_unique_identities": 8740,
+          "n_repeated_presentations": 1100,
+          "trial_kind_counts": {
+            "exp": 8640,
+            "test": 1200
+          }
+        },
+        "sub-03": {
+          "n_event_files": 120,
+          "n_valid_trials": 9840,
+          "n_unique_identities": 8740,
+          "n_repeated_presentations": 1100,
+          "trial_kind_counts": {
+            "exp": 8640,
+            "test": 1200
+          }
+        }
+      }
+    }
+  },
+  "self_hash": "04c6cb85254f2fe2c32df6c77bdfd0c6d2d823a029c97bffbb0152a530c831b5"
+}

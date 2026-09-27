@@ -1,0 +1,23 @@
+{
+  "artifact": "ANIMUS_P2XR_ANCHOR",
+  "milestone": "ANIMUS-P2XR",
+  "p2r_parent_sha": "71371b2fd74ab13a7cfc7e75937b27286d70381c",
+  "immutable_referenced_artifacts": {
+    "p2r_remote_closeout": {
+      "path": "results/animus_p2r/P2R_REMOTE_CLOSEOUT.json",
+      "file_sha256": "d8754a2a3575009f0b688929492579072301d36bda4173e5ac7d5da1c15220d6"
+    },
+    "p2_decision_snapshot": {
+      "path": "results/animus_p2e/ANIMUS_P2E_DECISION_SNAPSHOT.json",
+      "file_sha256": "51c1e8206cc774ae01c39fb1eb283efb6b8716a4fdea2faf199dd9182df6ad23"
+    },
+    "p2_validated_decision": {
+      "path": "results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json",
+      "file_sha256": "ee42d706475e58f101aa949965f07309ea2075c59ed0a1f4902c719a821de438"
+    }
+  },
+  "nod_closed_for_development": true,
+  "c3xag_authorized": false,
+  "imagery_neural_content_authorized": false,
+  "self_hash": "68564e8029eb47216663825ee67e00622aea0804bc019506601c350ce7088bdc"
+}

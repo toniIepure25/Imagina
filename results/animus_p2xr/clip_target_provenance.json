@@ -1,0 +1,14 @@
+{
+  "artifact": "ANIMUS_P2XR_CLIP_TARGET_PROVENANCE",
+  "milestone": "ANIMUS-P2XR",
+  "model_id": "open_clip:ViT-B-32",
+  "pretrained": "laion2b_s34b_b79k",
+  "embedding_dim": 512,
+  "input_preprocessing": "clip_bicubic_224_center_crop_openai_norm",
+  "normalization": "unit_l2",
+  "derived_from": "visual_stimulus_image (NOT caption)",
+  "matches_p2_seal": true,
+  "weights_sha256": "TO_PIN_AT_IMPLEMENTATION_FREEZE",
+  "note": "Exact P2 target encoder inherited; per-dataset stimulus-embedding SHAs are produced at staging and pinned in P2XR_CONFIRMATORY_IMPLEMENTATION_FREEZE.json, not here.",
+  "self_hash": "c5d4d126d742cd91bbfaba9cddd7219efac48ac8cf6da41e81dadb2908502d5e"
+}

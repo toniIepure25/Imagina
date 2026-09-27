@@ -1,0 +1,13 @@
+{
+  "artifact": "ANIMUS_P2XR_STIMULUS_OVERLAP_AUDIT",
+  "milestone": "ANIMUS-P2XR",
+  "method": "exact identity/basename match (SHA/perceptual-hash overlap deferred to stimulus staging)",
+  "n_bold5000_unique": 4916,
+  "n_things_unique": 8740,
+  "n_nod_unique": 24000,
+  "bold5000_vs_nod_basename_overlap": 44,
+  "things_vs_nod_basename_overlap": 0,
+  "bold5000_vs_things_basename_overlap": 0,
+  "note": "BOLD5000 imagenet-family ids share the ImageNet source with NOD; held-out identity evaluation is WITHIN each replication dataset, and no NOD outcome informs training. Any cross-dataset identity match is reported, not excluded, at this stage.",
+  "self_hash": "385d480f86e1eb6de72be0a1fa94ee5e617e74db36ca6c015949533ee36a11a1"
+}

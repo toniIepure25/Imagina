@@ -1,0 +1,30 @@
+{
+  "artifact": "ANIMUS_P2XR_PARTICIPANT_DENOMINATOR_FREEZE",
+  "milestone": "ANIMUS-P2XR",
+  "frozen_before_outcomes": true,
+  "no_performance_based_selection": true,
+  "datasets": {
+    "ds001499": {
+      "version": "v1.3.1",
+      "subjects": [
+        "sub-CSI1",
+        "sub-CSI2",
+        "sub-CSI3",
+        "sub-CSI4"
+      ],
+      "n_eligible": 4
+    },
+    "ds004192": {
+      "version": "v1.0.7",
+      "subjects": [
+        "sub-01",
+        "sub-02",
+        "sub-03"
+      ],
+      "n_eligible": 3
+    }
+  },
+  "total_denominator": 7,
+  "exclusion_policy": "only predeclared TECHNICAL invalidity (missing raw T1w/BOLD/events/fieldmaps, failed atlas/grid QC, or measurement-contract incompatibility) may reduce N_valid; never SNR/response/decoding performance.",
+  "self_hash": "7b2ba42bec4fc531c9990592f64475f3b8825f29cecf83b3ed836a568c4c9198"
+}
