@@ -19,6 +19,11 @@ CRITERIA = [
     Criterion("auc_peak", ">=", 0.90, 0.70,
               "Auditory vs visual evoked fields differ strongly in sensor topography; >0.9 is expected."),
     Criterion("prestim_auc_abs_dev", "<=", 0.10, 0.20, "Pre-stimulus decoding must stay near chance (0.5)."),
+    Criterion("bad_channel_flag_fraction", "<=", 0.05, 0.10,
+              "POST HOC (added after the first run flagged 29/306 channels because magnetometers and gradiometers "
+              "were pooled): a usable detector flags few channels in a curated dataset."),
+    Criterion("annotated_bad_missed", "<=", 0, 0, "POST HOC: the channel the dataset authors marked bad must be "
+                                                   "flagged."),
 ]
 
 
@@ -35,7 +40,8 @@ def run(root: Path) -> GateResult:
     offset = int(np.max(np.abs(ours[:, 0] - ref[:, 0]))) if count_mismatch == 0 else None
     meg_picks = mne.pick_types(raw.info, meg=True, exclude=[])
     names = [raw.ch_names[i] for i in meg_picks]
-    detected_bads = meg.detect_bad_channels(raw.get_data(picks=meg_picks), names)
+    detected_bads = meg.detect_bad_channels(raw.get_data(picks=meg_picks), names,
+                                            ch_types=raw.get_channel_types(picks=meg_picks))
     annotated_bads = [b for b in raw.info["bads"] if b.startswith("MEG")]
     event_id = {"auditory": 1, "auditory_r": 2, "visual": 3, "visual_r": 4}
     with mne.utils.use_log_level("error"):
@@ -67,8 +73,12 @@ def run(root: Path) -> GateResult:
                  "auc_timecourse": {"times": times[::5].round(3).tolist(), "auc": auc[::5].round(3).tolist()}},
         negative_controls={"prestimulus_auc_mean": pre, "label_permutation_auc_max": float(perm.max())},
         generalization={"subject_independent": "BLOCKED: single participant"},
-        limitations=["Single participant; perception only; source space not attempted (requires MRI/BEM)."],
+        limitations=["Single participant; perception only; source space not attempted (requires MRI/BEM).",
+                     "First run pooled magnetometers and gradiometers in bad-channel detection (29 channels "
+                     "flagged); fixed to per-type scoring and re-run. The two bad-channel criteria are post hoc."],
     )
     g.decide({"event_count_mismatch": count_mismatch, "event_sample_max_abs_offset": offset,
-              "auc_peak": float(auc[peak]), "prestim_auc_abs_dev": abs(pre - 0.5)})
+              "auc_peak": float(auc[peak]), "prestim_auc_abs_dev": abs(pre - 0.5),
+              "bad_channel_flag_fraction": len(detected_bads) / len(names),
+              "annotated_bad_missed": len([b for b in annotated_bads if b not in detected_bads])})
     return g

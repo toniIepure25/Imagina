@@ -23,13 +23,23 @@ class MegEpochs:
     sfreq: float
 
 
-def detect_bad_channels(data: np.ndarray, ch_names: list[str], z_thresh: float = 5.0) -> list[str]:
-    var = np.log(np.var(data, axis=1) + 1e-40)
-    med = np.median(var)
-    mad = np.median(np.abs(var - med)) * 1.4826 + 1e-12
-    z = (var - med) / mad
-    flat = np.var(data, axis=1) < 1e-34
-    return [n for n, zz, f in zip(ch_names, z, flat) if abs(zz) > z_thresh or f]
+def detect_bad_channels(data: np.ndarray, ch_names: list[str], z_thresh: float = 5.0,
+                        ch_types: list[str] | None = None) -> list[str]:
+    """Robust log-variance outliers and flat channels, scored separately per sensor type (magnetometers and
+    gradiometers have different units and scales and must not share one distribution)."""
+    types = np.array(ch_types if ch_types is not None else ["meg"] * len(ch_names))
+    var = np.var(data, axis=1)
+    bad = []
+    for t in np.unique(types):
+        m = types == t
+        lv = np.log(var[m] + 1e-40)
+        med = np.median(lv)
+        mad = np.median(np.abs(lv - med)) * 1.4826 + 1e-12
+        z = (lv - med) / mad
+        for n, zz, v in zip(np.array(ch_names)[m], z, var[m]):
+            if abs(zz) > z_thresh or v < 1e-34:
+                bad.append(str(n))
+    return [n for n in ch_names if n in set(bad)]
 
 
 def load_epochs(path: Path, event_id: dict[str, int], tmin: float = -0.2, tmax: float = 0.8,
@@ -41,7 +51,7 @@ def load_epochs(path: Path, event_id: dict[str, int], tmin: float = -0.2, tmax: 
         raw.filter(l_freq, h_freq, picks="meg")
         picks = mne.pick_types(raw.info, meg=True)
         names = [raw.ch_names[p] for p in picks]
-        bads = detect_bad_channels(raw.get_data(picks=picks), names)
+        bads = detect_bad_channels(raw.get_data(picks=picks), names, ch_types=raw.get_channel_types(picks=picks))
         raw.info["bads"] = bads
         events = mne.find_events(raw)
         ep = mne.Epochs(raw, events, event_id=event_id, tmin=tmin, tmax=tmax, baseline=(None, 0), picks="meg",
