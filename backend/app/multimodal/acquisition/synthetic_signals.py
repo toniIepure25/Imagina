@@ -166,7 +166,7 @@ def synth_respiration(
     return sig, truth
 
 
-EEG_MONTAGE_16 = ["Fp1", "Fp2", "F3", "F4", "Fz", "C3", "C4", "Cz", "P3", "P4", "Pz", "O1", "O2", "Oz", "T7", "T8"]
+EEG_MONTAGE_16 = ["Fp1", "Fp2", "C3", "C4", "P3", "P4", "O1", "O2", "F3", "F4", "Fz", "Cz", "Pz", "Oz", "T7", "T8"]
 
 
 def synth_eeg(
@@ -186,7 +186,7 @@ def synth_eeg(
         alpha = (6.0 if posterior else 2.0) * alpha_env * np.sin(2 * np.pi * 10.0 * t + rng.uniform(0, 2 * np.pi))
         data[:, c] = bg + alpha + 1.5 * np.sin(2 * np.pi * line_hz * t)
     for bt in blink_times_s:
-        blink = 120.0 * np.exp(-0.5 * ((t - bt) / 0.08) ** 2)
+        blink = 250.0 * np.exp(-0.5 * ((t - bt) / 0.1) ** 2)
         for c, name in enumerate(names):
             if name.startswith("Fp"):
                 data[:, c] += blink
@@ -251,3 +251,33 @@ def synth_fnirs_raw(
         "evoked": evoked, "ppf": ppf, "motion_times_s": list(motion_times_s),
     })
     return np.array(cols).T, layout, truth
+
+
+def synth_eeg_epochs(n_subjects: int = 6, n_trials_per_class: int = 40, n_channels: int = 8, fs: float = 128.0,
+                     epoch_s: float = 2.0, effect: float = 1.0, seed: int = 0,
+                     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """SYNTHETIC two-class epochs ("perception"=0 vs "imagery"=1).
+
+    Class 1 attenuates a posterior 10 Hz source and adds a weak 20 Hz source with a different topography. ``effect``
+    scales the difference; ``effect=0`` yields classes that are identically distributed (negative control).
+    """
+    rng = np.random.default_rng(seed)
+    names = EEG_MONTAGE_16[:n_channels]
+    n_t = int(epoch_s * fs)
+    t = np.arange(n_t) / fs
+    post = np.array([1.0 if n[0] in "PO" else 0.2 for n in names])
+    beta_topo = rng.normal(0, 1, n_channels)
+    xs, ys, gs = [], [], []
+    for s in range(n_subjects):
+        gain = rng.uniform(0.7, 1.3, n_channels)
+        mix = np.eye(n_channels) + 0.1 * rng.normal(0, 1, (n_channels, n_channels))
+        for cls in (0, 1):
+            for _ in range(n_trials_per_class):
+                bg = np.array([_pink(n_t, rng) for _ in range(n_channels)]) * 5.0
+                alpha_amp = 4.0 * (1.0 - 0.5 * effect * cls)
+                alpha = alpha_amp * np.outer(post, np.sin(2 * np.pi * 10 * t + rng.uniform(0, 2 * np.pi)))
+                beta = 2.0 * effect * cls * np.outer(beta_topo, np.sin(2 * np.pi * 20 * t + rng.uniform(0, 6.28)))
+                xs.append((mix @ (bg + alpha + beta)) * gain[:, None])
+                ys.append(cls)
+                gs.append(s)
+    return np.array(xs), np.array(ys), np.array(gs)
