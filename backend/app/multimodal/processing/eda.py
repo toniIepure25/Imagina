@@ -4,6 +4,11 @@ Tonic = 0.05 Hz low-pass of the cleaned signal; phasic = residual. SCRs are dete
 derivative zero-crossing; its onset is the last sample before the steepest rise (within 5 s) whose slope is
 below max(0.01 uS/s, 10% of the peak slope). Responses
 need amplitude >= 0.01 uS (common minimum-amplitude criterion) and a 0.3-5 s rise time.
+
+``method="tangent"`` (default) refines the onset to where the tangent at the steepest rise meets the pre-response
+level (reduces the early bias caused by zero-phase smoothing) and measures amplitude against the 2 s pre-onset trend
+extrapolated to the peak, so slow tonic drift is not counted as a response. ``method="threshold"`` is the earlier
+behaviour, kept for comparison.
 """
 from __future__ import annotations
 
@@ -20,6 +25,7 @@ MAX_SLOPE_US_PER_S = 10.0
 ONSET_SLOPE_US_PER_S = 0.01
 ONSET_FRACTION_OF_PEAK_SLOPE = 0.1
 MIN_RISE_S, MAX_RISE_S = 0.3, 5.0
+PRE_TREND_S = 2.0
 
 
 @dataclass
@@ -63,7 +69,8 @@ def decompose(x: np.ndarray, fs: float) -> EDADecomposition:
     return EDADecomposition(cleaned, tonic, phasic, mask, detect_scrs(cleaned, fs, mask))
 
 
-def detect_scrs(cleaned: np.ndarray, fs: float, mask: np.ndarray | None = None) -> list[SCR]:
+def detect_scrs(cleaned: np.ndarray, fs: float, mask: np.ndarray | None = None,
+                method: str = "tangent") -> list[SCR]:
     smooth = butter_filter(cleaned, fs, None, min(0.5, fs / 2.5)) if fs > 2.5 else cleaned
     d = np.gradient(smooth) * fs
     d_fine = np.gradient(cleaned) * fs
@@ -86,8 +93,17 @@ def detect_scrs(cleaned: np.ndarray, fs: float, mask: np.ndarray | None = None) 
                                                            ONSET_FRACTION_OF_PEAK_SLOPE * d_fine[fine_steep]))[0]
         if fine_below.size:
             o = o + int(fine_below[-1])
-        rise = (p - o) / fs
         amp = float(smooth[p] - smooth[o])
+        if method == "tangent":
+            fs_i = o + int(np.argmax(d_fine[o:p + 1]))
+            if d_fine[fs_i] > 0:
+                o_t = fs_i - (cleaned[fs_i] - cleaned[o]) / d_fine[fs_i] * fs
+                o = int(np.clip(round(o_t), o, fs_i))
+            pre = max(0, o - int(PRE_TREND_S * fs))
+            if o - pre >= 3:
+                slope, icpt = np.polyfit(np.arange(pre, o), smooth[pre:o], 1)
+                amp = min(amp, float(smooth[p] - (icpt + slope * p)))
+        rise = (p - o) / fs
         if amp < MIN_SCR_AMPLITUDE_US or not MIN_RISE_S <= rise <= MAX_RISE_S:
             continue
         if mask is not None and mask[o:p + 1].any():
