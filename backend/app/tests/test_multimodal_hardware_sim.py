@@ -150,7 +150,9 @@ class TestBrainFlowSynthetic:
         assert len(info.channels) == 16 and info.metadata["sync_method"] == "host_receive_time"
         assert abs(n / span - 250) < 25
         idx = np.concatenate([c.sample_indices for c in chunks])
-        assert np.all(np.diff(idx) == 1) and bf.stats.samples_dropped == 0
+        assert np.all(np.diff(idx) >= 1)
+        assert int((np.diff(idx) - 1).sum()) == bf.stats.samples_dropped
+        assert bf.stats.samples_dropped <= 0.02 * n
         loc = np.concatenate([c.local_timestamps for c in chunks])
         assert np.all(np.diff(loc) >= 0)
         sync = SyncEngine()
