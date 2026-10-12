@@ -137,10 +137,13 @@ def run(root: Path) -> GateResult:
                      "ece": expected_calibration_error(np.vstack(pr), np.concatenate(ys))}
     sc, _, _ = _per_subject_bacc(LateFusion, ds, drop_test=Modality.ECG)
     res["late_fusion_ecg_missing_at_test"] = {"bacc_mean": float(np.mean(list(sc.values())))}
-    deltas = {}
+    deltas, vs_best = {}, {}
+    best_uni = max(("eeg_only", "ecg_only"), key=lambda k: res[k]["bacc_mean"])
     for name in ("early_fusion", "late_fusion", "intermediate_fusion"):
         d = np.array([per[name][g] - per["eeg_only"][g] for g in per["eeg_only"]])
         deltas[name] = {"mean": float(d.mean()), "ci95": _boot(d)}
+        d2 = np.array([per[name][g] - per[best_uni][g] for g in per[best_uni]])
+        vs_best[name] = {"best_unimodal": best_uni, "mean": float(d2.mean()), "ci95": _boot(d2)}
     g = GateResult(
         experiment="FUSION_EEG_ECG_EEGMAT",
         dataset={"name": "EEG During Mental Arithmetic Tasks", "version": "1.0.0",
@@ -153,11 +156,16 @@ def run(root: Path) -> GateResult:
         metric_definitions={"bacc": "balanced accuracy per held-out subject; CI = bootstrap over subjects",
                             "delta": "per-subject fusion minus EEG-only"},
         criteria=CRITERIA,
-        results={"models": res, "fusion_minus_eeg_only": deltas},
+        results={"models": res, "fusion_minus_eeg_only": deltas,
+                 "secondary_fusion_minus_best_unimodal": vs_best,
+                 "per_subject_bacc": {k: {str(g): float(v) for g, v in d.items()} for k, d in per.items()}},
         baseline={"chance": 0.5, "eeg_only": res["eeg_only"]},
         leakage_checks={"fold_unit": "subject (asserted)", "normalization": "per-subject, label-free"},
         generalization={"loso": "all results are leave-one-subject-out"},
-        limitations=["Workload contrast, not imagery; 10 s windows make HRV (RMSSD) noisy.",
+        limitations=["Primary criterion compares fusion with EEG-only (the platform's primary modality); the secondary "
+                     "comparison with the best single modality was added after seeing that ECG-only outperformed "
+                     "EEG-only.",
+                     "Workload contrast, not imagery; 10 s windows make HRV (RMSSD) noisy.",
                      "Rest always precedes the task, so time-on-session is confounded with condition.",
                      "Only EEG+ECG are paired here; EDA, respiration and fNIRS fusion remain BLOCKED for lack of "
                      "paired recordings."],
