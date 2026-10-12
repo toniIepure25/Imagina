@@ -326,6 +326,10 @@ class ClosedLoopSession:
             "mode": self.cfg.mode, "policy": self.cfg.policy, "n_ticks": len(self.log),
             "final_state": self.controller.state.value, "transitions": self.controller.transitions,
             "n_delivered": sum(d.delivered for d in trace),
+            "n_adaptive_feedback_delivered": sum(d.delivered and d.controller_state == ControllerState.FEEDBACK_RESEARCH
+                                                 for d in trace),
+            "n_fallback_rest_ticks": sum(d.delivered and d.controller_state == ControllerState.SAFE_FALLBACK
+                                         for d in trace),
             "n_holds": sum(bool(d.hold_reason) for d in trace),
             "safety_codes": sorted({f["code"] for d in trace for f in d.safety_findings}),
             "trace_valid": verify_trace(trace), "decision_hash": trace[-1].hash if trace else None,

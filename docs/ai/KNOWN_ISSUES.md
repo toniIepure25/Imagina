@@ -328,4 +328,48 @@
 
 ---
 
-*Last updated: 2026-07-15 — Scientific Gate C0.2 Final Persistent Evidence Closure*
+## RISK-033: Multimodal pipelines validated only on synthetic ground truth
+
+**Risk:** ECG/EDA/respiration/fNIRS/EEG pipelines pass tests against generators written in the same package.
+**Impact:** High for any physiological interpretation; shared assumptions between generator and detector go unnoticed.
+**Mitigation:** Validate on annotated public datasets (PhysioNet ECG/EDA/respiration, public SNIRF data) before use.
+**Owner:** TBD
+**Status:** Active.
+
+---
+
+## RISK-034: Device adapters untested against real streams
+
+**Risk:** `LSLInletProvider` and `BrainFlowProvider` are written against documented APIs, but pylsl/brainflow are not
+installed here; the ADS1299 frame protocol has only been tested with encoded byte streams.
+**Impact:** Medium; first hardware contact may surface API/timing issues.
+**Mitigation:** Test with an LSL replay outlet and the BrainFlow synthetic board; complete
+`docs/hardware_validation_checklist.json` before any human connection.
+**Owner:** TBD
+**Status:** Active (HARDWARE REQUIRED).
+
+---
+
+## RISK-035: EDA SCR onset bias and near-threshold spurious responses
+
+**Risk:** Zero-phase smoothing biases detected SCR onsets ~0.3 s early; slow tonic drift can yield ~0.01 uS
+spurious SCRs.
+**Impact:** Low to medium for event-related SCR windows and SCR rate.
+**Mitigation:** Event windows are 1-4 s; consider deconvolution (cvxEDA/Ledalab-style) once validated.
+**Owner:** TBD
+**Status:** Active.
+
+---
+
+## RISK-036: Multimodal sessions are in-memory; command center not inspected in a browser
+
+**Risk:** `/api/multimodal` keeps up to 20 sessions in process memory; the UI was verified by build, typecheck, unit
+tests and an HTTP smoke test but not visually in a browser.
+**Impact:** Low; restart loses demo sessions; layout issues possible.
+**Mitigation:** Persist manifests (SessionStore/SQLite); add a Playwright check for `/multimodal`.
+**Owner:** TBD
+**Status:** Active.
+
+---
+
+*Last updated: 2026-10-12 — RISK-033..036 multimodal platform*

@@ -11,6 +11,14 @@
 
 ---
 
+## Multimodal acquisition / closed-loop work
+
+1. `docs/multimodal_platform.md` — architecture, status table, limitations
+2. `docs/ai/DECISIONS.md` — ADR-040 (shadow-first controller, evidence classes, offline MEG/fMRI)
+3. `docs/hardware_validation_checklist.json` — required before any hardware touches a person
+
+---
+
 ## Bug Fix
 
 1. `AGENTS.md` — coding rules

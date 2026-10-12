@@ -4409,3 +4409,28 @@ remain UNAUTHORIZED; C3XAG unauthorized; no P3.
 
 **Remaining risks:** validated on 2/6 NOD subjects — needs independent replication before any external
 perception claim; the bridge gain is real but modest and does not reduce iterations-to-threshold.
+
+---
+
+## Multimodal research platform (2026-10-12)
+
+**Branch:** `product/multimodal-research-platform` (from `b879a23`; the ANIMUS-P2XR branch and its uncommitted
+`results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json` change were left untouched).
+
+**What was done:** new `backend/app/multimodal/` package: 7-modality provider registry (synthetic, replay, device
+interfaces incl. LSL/BrainFlow/ADS1299 frame protocol), sync engine with drift/offset/uncertainty, ECG/HRV, EDA,
+respiration, EEG (+ICA, CSP/FBCSP/tangent-space/ShallowNet), fNIRS (MNE mBLL with metadata refusal), offline MEG and
+BIDS fMRI pipelines, fusion (early/late/intermediate) with ablation/registry/latency, imagery state estimator with
+evidence classes, shadow-first feedback controller with safety gates and a hash-chained replayable trace, Dream
+Corridor bridge, training curriculum, protocols A-G, local HDF5 storage. `/api/multimodal` router, Research Command
+Center page (`/multimodal`), hardware validation checklist, demo CLI and
+`reports/multimodal/SYNTHETIC_DEMO_REPORT.json`. Details and status table: `docs/multimodal_platform.md`.
+
+**Tests:** backend gate (`-m "core or research"`) 884 passed (baseline 750 + 134 new); ruff clean; frontend lint 0
+errors (30 pre-existing warnings), typecheck clean, vitest 16/16, `next build` OK; HTTP smoke test of `/multimodal`
+and the API. `scripts/verify.sh` could not run as-is: `python3` resolves to the Windows Store stub and `npm` is not on
+PATH (Node lives in `C:\nvm4w\nodejs`); its commands were run individually.
+
+**Decisions:** ADR-040.
+
+**Remaining risks:** RISK-033..036. No real data, hardware, or validated model; all results are synthetic.

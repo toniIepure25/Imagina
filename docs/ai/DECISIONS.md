@@ -883,4 +883,34 @@ must legitimately advance — but the P2E historical block and its guards/tests 
 
 ---
 
-*Last updated: 2026-09-26 — ANIMUS-P2-R real confirmatory VALIDATED*
+## ADR-040: Multimodal research platform as a separate package with a shadow-first controller
+
+**Context:** The platform must add ECG/HRV, EDA, respiration, fNIRS, MEG and fMRI next to EEG, synchronize streams,
+fuse them, and close the loop with Dream Corridor, without breaking the existing FeatureVector-based session stack,
+the ANIMUS research tree, or the NeuroVerse export.
+
+**Decision:**
+- New package `backend/app/multimodal/` with raw-sample providers (`SampleChunk`), a per-stream clock model
+  (`sync.py`), per-modality pipelines emitting `FeatureSet`s whose every value carries an `EvidenceClass`, a
+  calibrated `ImageryStateEstimator`, and a `FeedbackController` state machine. Existing modules are reused, not
+  modified (safety keywords, prompts, `FeedbackAction`, Holm, bootstrap).
+- `ACTIVE_SHADOW` is the default mode. `FEEDBACK_RESEARCH` with any REAL_SENSOR stream requires a complete
+  `FeedbackAuthorization`; synthetic/replay sessions may use it to exercise the control path.
+- Safety gates precede the policy and can only make feedback more conservative. Unknown alignment uncertainty
+  (host-receive timestamps) holds adaptation by default.
+- Vividness is never inferred from physiology unless a registered predictor card says `VALIDATED`; the
+  perception-imagination distance is a research metric with `objective_allowed=False`, and policies declaring it
+  (or arousal maximization, reality confusion, dissociation) as an objective are rejected.
+- Decisions are hash-chained; `replay_controller` re-executes logged inputs and must reproduce every hash.
+- MEG/fMRI are offline-only (`StreamInfo` rejects real-time synthetic/replay MEG/fMRI).
+- Biosignals are stored as chunked HDF5 per stream with a JSON manifest; review bundles exclude raw arrays unless
+  the consent record allows it.
+
+**Consequences:**
+- The legacy session/WebSocket stack is untouched; integration with it (and SQLite persistence of multimodal
+  manifests) is follow-up work.
+- All current results are synthetic and labeled as such in the API, UI and reports.
+
+---
+
+*Last updated: 2026-10-12 — ADR-040 multimodal research platform*

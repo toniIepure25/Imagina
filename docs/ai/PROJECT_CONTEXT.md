@@ -78,6 +78,8 @@ Planned evolution (aligned with `docs/roadmap.md`):
 | Task Service | `backend/app/services/task_service.py` | Task definitions and management |
 | Export Service | `backend/app/services/export_service.py` | JSONL/CSV research exports |
 | Replay Service | `backend/app/services/replay_service.py` | Deterministic seeded demo replay |
+| Multimodal platform | `backend/app/multimodal/` | 7-modality acquisition, sync, physiology/neural pipelines, fusion, evidence-labelled estimator, shadow-first controller, Dream Corridor bridge (see `docs/multimodal_platform.md`, ADR-040) |
+| Multimodal API / UI | `backend/app/api/multimodal.py`, `frontend/app/multimodal/` | `/api/multimodal/*` and the Research Command Center |
 | Personalization | `backend/app/services/personalization_service.py` | Local user profiles and progress tracking |
 | Experiment Service | `backend/app/services/experiment_service.py` | Experiment protocol management |
 | Storage | `backend/app/storage/` | SQLite event store (sessions + events tables) |
