@@ -2,8 +2,8 @@
 
 Reference: manual breath annotations by two independent annotators on the impedance respiration signal. The
 annotation convention (which phase point is marked) is not specified precisely enough to validate inspiratory
-onset timing or Ti/Te, so breath *detection* is scored against both our peak and our trough markers (one convention for all
-records, both reported), and Ti/Te is reported as BLOCKED (no reference).
+onset timing or Ti/Te, so breath *detection* is scored against both our peak and our trough markers (one
+convention for all records, both reported), and Ti/Te is reported as BLOCKED (no reference).
 """
 from __future__ import annotations
 
