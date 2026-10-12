@@ -40,15 +40,53 @@ class ClockModel:
         return self.intercept + self.slope * device_t
 
 
+class _Store:
+    """Amortized O(chunk) append with front trimming (capacity doubling, compaction on demand)."""
+
+    def __init__(self, n_ch: int, cap: int = 4096) -> None:
+        self._d = np.empty((cap, n_ch))
+        self._a = np.empty(cap)
+        self._i = np.empty(cap, dtype=np.int64)
+        self.head = self.tail = 0
+
+    def append(self, d: np.ndarray, a: np.ndarray, i: np.ndarray) -> None:
+        k = d.shape[0]
+        if self.tail + k > self._a.size:
+            n = self.tail - self.head
+            cap = self._a.size
+            while n + k > cap // 2:
+                cap *= 2
+            nd, na, ni = np.empty((cap, self._d.shape[1])), np.empty(cap), np.empty(cap, dtype=np.int64)
+            nd[:n], na[:n], ni[:n] = self._d[self.head:self.tail], self._a[self.head:self.tail],                 self._i[self.head:self.tail]
+            self._d, self._a, self._i, self.head, self.tail = nd, na, ni, 0, n
+        self._d[self.tail:self.tail + k] = d
+        self._a[self.tail:self.tail + k] = a
+        self._i[self.tail:self.tail + k] = i
+        self.tail += k
+
+    def trim_before(self, t_min: float) -> None:
+        self.head += int(np.searchsorted(self._a[self.head:self.tail], t_min))
+
+    @property
+    def data(self) -> np.ndarray:
+        return self._d[self.head:self.tail]
+
+    @property
+    def aligned(self) -> np.ndarray:
+        return self._a[self.head:self.tail]
+
+    @property
+    def indices(self) -> np.ndarray:
+        return self._i[self.head:self.tail]
+
+
 @dataclass
 class _Buffer:
     info: StreamInfo
     method: str
     stale_s: float
     declared_latency_uncertainty_s: float
-    data: np.ndarray
-    aligned: np.ndarray
-    indices: np.ndarray
+    store: _Store
     pairs_dev: list[np.ndarray] = field(default_factory=list)
     pairs_loc: list[np.ndarray] = field(default_factory=list)
     clock: ClockModel = field(default_factory=ClockModel)
@@ -59,6 +97,18 @@ class _Buffer:
     total_samples: int = 0
     emitted_until: float = -np.inf
     disconnect_events: int = 0
+
+    @property
+    def data(self) -> np.ndarray:
+        return self.store.data
+
+    @property
+    def aligned(self) -> np.ndarray:
+        return self.store.aligned
+
+    @property
+    def indices(self) -> np.ndarray:
+        return self.store.indices
 
 
 @dataclass
@@ -109,7 +159,7 @@ class SyncEngine:
             info=info, method=str(info.metadata.get("sync_method", "host_receive_time")),
             stale_s=stale_s if stale_s is not None else DEFAULT_STALE_S[info.modality],
             declared_latency_uncertainty_s=declared_latency_uncertainty_s,
-            data=np.empty((0, n_ch)), aligned=np.empty(0), indices=np.empty(0, dtype=np.int64),
+            store=_Store(n_ch),
         )
 
     @property
@@ -129,22 +179,21 @@ class SyncEngine:
         b = self._streams[chunk.stream_id]
         if chunk.n_samples == 0:
             return
-        b.pairs_dev.append(chunk.device_timestamps)
-        b.pairs_loc.append(chunk.local_timestamps)
+        dev_c, loc_c = chunk.device_timestamps, chunk.local_timestamps
+        sel = np.unique(np.concatenate([np.linspace(0, dev_c.size - 1, min(dev_c.size, 8)).astype(int),
+                                        [int(np.argmin(loc_c - dev_c))]]))
+        b.pairs_dev.append(dev_c[sel])
+        b.pairs_loc.append(loc_c[sel])
         self._fit(b)
         aligned = b.clock.to_local(chunk.device_timestamps)
         if b.indices.size:
             gaps = np.diff(np.concatenate([[b.indices[-1]], chunk.sample_indices])) - 1
             b.gap_samples += int(np.clip(gaps, 0, None).sum())
         b.late_samples += int(np.sum(aligned < b.emitted_until))
-        b.data = np.vstack([b.data, chunk.data])
-        b.aligned = np.concatenate([b.aligned, aligned])
-        b.indices = np.concatenate([b.indices, chunk.sample_indices])
+        b.store.append(chunk.data, aligned, chunk.sample_indices)
         b.total_samples += chunk.n_samples
         b.last_arrival = float(chunk.local_timestamps[-1])
-        keep = b.aligned >= b.aligned[-1] - self.max_buffer_s
-        if not keep.all():
-            b.data, b.aligned, b.indices = b.data[keep], b.aligned[keep], b.indices[keep]
+        b.store.trim_before(float(aligned[-1]) - self.max_buffer_s)
 
     def _fit(self, b: _Buffer) -> None:
         dev = np.concatenate(b.pairs_dev)
