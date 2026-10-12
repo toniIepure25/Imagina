@@ -14,7 +14,8 @@ from pathlib import Path
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("task", choices=["ecg", "ecg_incart", "resp", "eda", "eda_bias", "fnirs", "eeg", "meg", "fmri", "fusion", "latency"])
+    ap.add_argument("task", choices=["ecg", "ecg_incart", "resp", "eda", "eda_bias", "fnirs", "eeg", "meg", "fmri",
+                                     "fusion", "latency"])
     ap.add_argument("--root", default="")
     ap.add_argument("--out", default="../results/phase2")
     ap.add_argument("--cache", default="")
