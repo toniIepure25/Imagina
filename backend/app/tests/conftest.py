@@ -108,6 +108,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_multimodal_closed_loop": ["research"],
     "test_multimodal_api": ["research", "integration"],
     "test_multimodal_hardware_sim": ["hardware"],
+    "test_multimodal_phase2": ["research"],
 }
 
 
