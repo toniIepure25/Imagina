@@ -38,6 +38,7 @@ class LSLInletProvider(ModalityProvider):
         self.provider_id = f"lsl.{modality.value}"
         self._inlet = None
         self._index = 0
+        self._last_stamp: float | None = None
         self.last_time_correction: float | None = None
 
     def capabilities(self) -> Capabilities:
@@ -57,7 +58,7 @@ class LSLInletProvider(ModalityProvider):
         found = pylsl.resolve_bypred(pred, 1, self.timeout_s)
         if not found:
             raise ProviderUnavailable(f"no LSL stream matching {pred}")
-        self._inlet = pylsl.StreamInlet(found[0], max_buflen=60)
+        self._inlet = pylsl.StreamInlet(found[0], max_buflen=60, recover=True)
         info = self._inlet.info()
         names = []
         ch = info.desc().child("channels").child("channel")
@@ -76,6 +77,8 @@ class LSLInletProvider(ModalityProvider):
         return self._info
 
     def read(self, until_local_time: float) -> SampleChunk | None:
+        """Pull available samples. LSL has no sample counter, so gaps are inferred from timestamp jumps
+        larger than 1.5 nominal sample periods and reflected in ``sample_indices``."""
         if self._inlet is None:
             raise RuntimeError("not connected")
         samples, stamps = self._inlet.pull_chunk(timeout=0.0)
@@ -84,19 +87,33 @@ class LSLInletProvider(ModalityProvider):
         self.last_time_correction = self._inlet.time_correction()
         device = np.asarray(stamps, dtype=float)
         local = device + self.last_time_correction
-        idx = np.arange(self._index, self._index + len(stamps))
-        self._index += len(stamps)
+        fs = self.info.nominal_rate_hz
+        prev = self._last_stamp if self._last_stamp is not None else device[0] - 1.0 / fs
+        steps = np.maximum(1, np.round(np.diff(np.concatenate([[prev], device])) * fs).astype(np.int64))
+        idx = self._index - 1 + np.cumsum(steps)
+        self.stats.samples_dropped += int((steps - 1).sum())
+        self._index = int(idx[-1]) + 1
+        self._last_stamp = float(device[-1])
         self.stats.samples_delivered += len(stamps)
         return SampleChunk(stream_id=self.info.stream_id, data=np.asarray(samples, dtype=float),
                            device_timestamps=device, local_timestamps=np.maximum.accumulate(local),
-                           sample_indices=idx)
+                           sample_indices=idx, dropped_before=max(int(steps[0]) - 1, 0))
+
+    def disconnect(self, local_time: float = 0.0) -> None:
+        if self._inlet is not None:
+            self._inlet.close_stream()
+            self._inlet = None
+        super().disconnect(local_time)
 
 
 class BrainFlowProvider(ModalityProvider):
     source_kind = SourceKind.REAL_SENSOR
 
-    def __init__(self, board_id: int, serial_port: str = "", modality: Modality = Modality.EEG) -> None:
+    def __init__(self, board_id: int, serial_port: str = "", modality: Modality = Modality.EEG,
+                 clock=time.monotonic) -> None:
         super().__init__()
+        self.clock = clock
+        self._last_pkg: int | None = None
         self.board_id = board_id
         self.serial_port = serial_port
         self.modality = modality
@@ -122,36 +139,61 @@ class BrainFlowProvider(ModalityProvider):
         self._board = BoardShim(self.board_id, params)
         self._board.prepare_session()
         self._board.start_stream()
-        rows = BoardShim.get_eeg_channels(self.board_id)
-        self._rows = rows
+        self._rows = BoardShim.get_eeg_channels(self.board_id)
         self._ts_row = BoardShim.get_timestamp_channel(self.board_id)
-        self._info = StreamInfo(
-            stream_id=self.provider_id, modality=self.modality,
-            nominal_rate_hz=BoardShim.get_sampling_rate(self.board_id),
-            channels=[ChannelSpec(name=f"ch{r}", unit="uV") for r in rows],
-            provenance=Provenance(source_kind=self.source_kind, provider_id=self.provider_id,
-                                  provider_version="brainflow", device_model=str(self.board_id)),
-            metadata={"sync_method": "host_receive_time"},
-        )
+        self._pkg_row = BoardShim.get_package_num_channel(self.board_id)
+        if self._info is None:
+            self._info = StreamInfo(
+                stream_id=self.provider_id, modality=self.modality,
+                nominal_rate_hz=BoardShim.get_sampling_rate(self.board_id),
+                channels=[ChannelSpec(name=f"ch{r}", unit="uV") for r in self._rows],
+                provenance=Provenance(source_kind=self.source_kind, provider_id=self.provider_id,
+                                      provider_version="brainflow", device_model=str(self.board_id)),
+                metadata={"sync_method": "host_receive_time", "package_counter_modulo": 256},
+            )
         self.state = LifecycleState.CONNECTED
+        self._log(local_time, "connected")
         return self._info
 
     def read(self, until_local_time: float) -> SampleChunk | None:
+        """Board timestamps are Unix wall-clock seconds; they are kept as device timestamps and mapped onto the
+        local monotonic clock using the receive time of the newest sample. The 0-255 package counter gives
+        true sample gaps."""
         assert self._board is not None
         buf = self._board.get_board_data()
         if buf.shape[1] == 0:
             return None
-        n = buf.shape[1]
-        idx = np.arange(self._index, self._index + n)
-        self._index += n
+        now = self.clock()
         stamps = buf[self._ts_row]
+        pkg = buf[self._pkg_row].astype(np.int64)
+        prev = self._last_pkg if self._last_pkg is not None else pkg[0] - 1
+        steps = np.mod(np.diff(np.concatenate([[prev], pkg])), 256)
+        steps[steps == 0] = 256
+        idx = self._index - 1 + np.cumsum(steps)
+        self.stats.samples_dropped += int(steps.sum() - len(steps))
+        self._index = int(idx[-1]) + 1
+        self._last_pkg = int(pkg[-1])
+        self.stats.samples_delivered += buf.shape[1]
+        local = now - (stamps[-1] - stamps)
         return SampleChunk(stream_id=self.info.stream_id, data=buf[self._rows].T, device_timestamps=stamps,
-                           local_timestamps=np.maximum.accumulate(stamps), sample_indices=idx)
+                           local_timestamps=np.maximum.accumulate(local), sample_indices=idx,
+                           dropped_before=int(steps[0] - 1))
+
+    def try_reconnect(self, local_time: float) -> bool:
+        try:
+            if self._board is not None:
+                self._board.release_session()
+            self.connect(local_time)
+            self.stats.reconnects += 1
+            return True
+        except Exception:  # noqa: BLE001
+            return False
 
     def disconnect(self, local_time: float = 0.0) -> None:
         if self._board is not None:
             self._board.stop_stream()
             self._board.release_session()
+            self._board = None
         super().disconnect(local_time)
 
 
