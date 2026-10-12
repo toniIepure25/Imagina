@@ -2,6 +2,7 @@ import Link from "next/link";
 import Badge from "../common/Badge";
 
 const NAV = [
+  ["Command Center", "/multimodal"],
   ["Animus", "/imagina/animus"],
   ["Session", "/session"],
   ["Replay", "/replay"],
