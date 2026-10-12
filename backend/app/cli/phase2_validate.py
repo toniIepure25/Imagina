@@ -14,7 +14,7 @@ from pathlib import Path
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("task", choices=["ecg", "ecg_incart", "resp", "eda", "eda_bias", "fnirs", "eeg", "meg", "fusion", "latency"])
+    ap.add_argument("task", choices=["ecg", "ecg_incart", "resp", "eda", "eda_bias", "fnirs", "eeg", "meg", "fmri", "fusion", "latency"])
     ap.add_argument("--root", default="")
     ap.add_argument("--out", default="../results/phase2")
     ap.add_argument("--cache", default="")
@@ -29,6 +29,9 @@ def main() -> None:
     if args.task == "ecg":
         from app.multimodal.validation.ecg_mitdb import run
         print(run(root).write(out / "ecg_mitdb.json"))
+    elif args.task == "fmri":
+        from app.multimodal.validation.fmri_haxby import run as run_fmri
+        print(run_fmri(root).write(out / "fmri_haxby.json"))
     elif args.task == "ecg_incart":
         from app.multimodal.validation.ecg_mitdb import run_incart
         print(run_incart(root).write(out / "ecg_incart_heldout.json"))
