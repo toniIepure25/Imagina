@@ -8,8 +8,8 @@ need amplitude >= 0.01 uS (common minimum-amplitude criterion) and a 0.3-5 s ris
 ``method="tangent"`` (default) refines the onset to where the tangent at the steepest rise meets the pre-response
 level (reduces the early bias caused by zero-phase smoothing) and measures amplitude against the 2 s pre-onset trend
 extrapolated to the peak, so slow tonic drift is not counted as a response. Peaks and onsets are found on the
-derivative minus its 20 s running median, so responses riding on a steadily rising baseline are not missed. ``method="threshold"`` is the earlier
-behaviour, kept for comparison.
+derivative minus its 20 s running median, so responses riding on a steadily rising baseline are not missed.
+``method="threshold"`` is the earlier behaviour, kept for comparison.
 """
 from __future__ import annotations
 
