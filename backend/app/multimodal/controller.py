@@ -357,7 +357,7 @@ class FeedbackController:
             out.append(SafetyFinding("low_signal_quality", "hold", f"{g.mean_quality:.2f}"))
         if g.max_alignment_uncertainty_s is None and c.require_known_alignment:
             out.append(SafetyFinding("alignment_unknown", "hold", "sync uncertainty not observable"))
-        elif g.max_alignment_uncertainty_s is not None and g.max_alignment_uncertainty_s > c.max_alignment_uncertainty_s:
+        elif (g.max_alignment_uncertainty_s or 0.0) > c.max_alignment_uncertainty_s:
             out.append(SafetyFinding("alignment_uncertain", "hold", f"{g.max_alignment_uncertainty_s * 1e3:.1f} ms"))
         if st.overall_confidence < c.confidence_threshold:
             out.append(SafetyFinding("low_confidence", "hold", f"{st.overall_confidence:.2f}"))
@@ -388,7 +388,8 @@ class FeedbackController:
         hold = ""
         note = ""
         if self.state != S.TERMINATED and "stop" in sev:
-            self.transition(S.TERMINATED, t, "safety stop: " + ",".join(f.code for f in findings if f.severity == "stop"))
+            codes = ",".join(f.code for f in findings if f.severity == "stop")
+            self.transition(S.TERMINATED, t, f"safety stop: {codes}")
             self._applied = REST.model_copy()
         elif self.state in ADAPTIVE_STATES | {S.PAUSED} and "fallback" in sev:
             self.transition(S.SAFE_FALLBACK, t, ",".join(f.code for f in findings if f.severity == "fallback"))

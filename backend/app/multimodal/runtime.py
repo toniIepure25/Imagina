@@ -46,7 +46,7 @@ from app.multimodal.processing.fnirs import FnirsMetadataError, to_hemoglobin
 from app.multimodal.processing.respiration import respiration_features
 from app.multimodal.schemas import Marker, Modality, stable_hash
 from app.multimodal.storage import ConsentRecord, SessionStore
-from app.multimodal.sync import SyncEngine, SyncedWindow
+from app.multimodal.sync import SyncedWindow, SyncEngine
 
 WINDOW_S = {Modality.EEG: 4.0, Modality.ECG: 30.0, Modality.EDA: 20.0, Modality.RESPIRATION: 30.0,
             Modality.FNIRS: 60.0}

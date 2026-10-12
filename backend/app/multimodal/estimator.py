@@ -286,5 +286,6 @@ class ImageryStateEstimator:
         return ImageryState(
             t=t, dimensions=dims, iqi=iqi, iqi_confidence=min(iqi_conf, 1.0),
             overall_confidence=float(np.mean(confs)) * (1.0 if calibrated else 0.5) if confs else 0.0,
-            modalities_used=sorted(m.value for m in fs), source_kinds=sorted({f.source_kind.value for f in fs.values()}),
+            modalities_used=sorted(m.value for m in fs),
+            source_kinds=sorted({f.source_kind.value for f in fs.values()}),
         )
