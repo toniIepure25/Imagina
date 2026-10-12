@@ -69,6 +69,11 @@ def validate_subject(path: str) -> dict:
                     "median_onset_offset_vs_neurokit_s": float(np.median(offs)) if offs else None,
                     "n_scr": len(scrs)}
     tonic_r = float(np.corrcoef(dec.tonic, sig["EDA_Tonic"].to_numpy())[0, 1])
+    amps = np.array([s.amplitude_us for s in ours["tangent"]])
+    rel = [s for s in ours["tangent"] if amps.size and s.amplitude_us >= 0.1 * amps.max()]
+    tp, fp, fn = match(np.array([s.peak_s for s in rel]), nk_peaks, 1.0)
+    agree["tangent_relative10pct_post_hoc"] = {"tp": tp, "fp": fp, "fn": fn, "f1": 2 * tp / max(2 * tp + fp + fn, 1),
+                                               "n_scr": len(rel), "n_neurokit": int(nk_peaks.size)}
     stages = []
     for label, a, b in _stages(ann, fs, eda.size):
         dur_min = (b - a) / fs / 60.0
@@ -117,8 +122,15 @@ def run(root: Path) -> GateResult:
         }
     agree = {m: {"f1": float(np.mean([p["scr_agreement"][m]["f1"] for p in per])),
                  "median_onset_offset_vs_neurokit_s": float(np.nanmedian(
-                     [p["scr_agreement"][m]["median_onset_offset_vs_neurokit_s"] or np.nan for p in per]))}
+                     [p["scr_agreement"][m]["median_onset_offset_vs_neurokit_s"] or np.nan for p in per])),
+                 "total_scr": int(sum(p["scr_agreement"][m]["n_scr"] for p in per))}
              for m in ("tangent", "threshold")}
+    ph = [p["scr_agreement"]["tangent_relative10pct_post_hoc"] for p in per]
+    agree["post_hoc_relative_threshold"] = {
+        "f1": float(np.mean([x["f1"] for x in ph])), "total_scr": int(sum(x["n_scr"] for x in ph)),
+        "total_neurokit": int(sum(x["n_neurokit"] for x in ph)),
+        "note": "POST HOC diagnostic: our SCRs restricted to >= 10% of each recording's largest response, matching "
+                "NeuroKit2's relative amplitude_min. Does not change the predeclared verdict."}
     tonic_r = float(np.median([p["tonic_corr_vs_neurokit"] for p in per]))
     g = GateResult(
         experiment="EDA_NONEEG_AGREEMENT_AND_KNOWN_GROUPS",
@@ -138,6 +150,12 @@ def run(root: Path) -> GateResult:
         baseline={"comparator": "NeuroKit2 eda_process (default method)"},
         limitations=["NeuroKit2 is an independent implementation, not ground truth; onset offsets vs NeuroKit2 "
                      "describe method differences, not bias.",
+                     "Tonic agreement is not informative: NeuroKit2's default decomposition also uses a 0.05 Hz "
+                     "high-pass split, so r ~= 1 is expected by construction.",
+                     "SCR disagreement is driven by the response definition: absolute 0.01 uS minimum (ours) vs "
+                     "10% of the recording's largest response (NeuroKit2).",
+                     "Motion artifacts: the EDA-only artifact detector flagged nothing during treadmill walking "
+                     "although accelerometry shows motion; without artifact labels its validity is untested.",
                      "Stage contrasts are confounded by speech, posture and anticipation.",
                      "Unit not documented; amplitude thresholds assume microsiemens."],
     )
