@@ -154,6 +154,7 @@ class ClosedLoopSession:
         self.profile: CalibrationProfile | None = None
         self.log: list[dict] = []
         self.latencies_ms: list[float] = []
+        self.stage_ms: list[dict] = []
         self.sync_snapshots: list[dict] = []
         self.store = SessionStore(Path(cfg.store_root)) if cfg.store_root else None
         self.recorders = {}
@@ -162,6 +163,7 @@ class ClosedLoopSession:
         return next((b.label for b in self.blocks if b.start_s <= t < b.start_s + b.duration_s), "rest")
 
     def _acquire(self, t: float) -> None:
+        self._t_read = self._t_ingest = 0.0
         for m, p in self.providers.items():
             sid = p.info.stream_id
             if p.state == LifecycleState.LOST:
@@ -169,11 +171,15 @@ class ClosedLoopSession:
                     self.sync.set_connected(sid, True)
                 else:
                     continue
+            a = time.perf_counter()
             chunk = p.read(t)
+            self._t_read += time.perf_counter() - a
             if p.state == LifecycleState.LOST:
                 self.sync.set_connected(sid, False)
             if chunk is not None:
+                a = time.perf_counter()
                 self.sync.ingest(chunk)
+                self._t_ingest += time.perf_counter() - a
                 if sid in self.recorders:
                     self.recorders[sid].append(chunk)
 
@@ -236,15 +242,22 @@ class ClosedLoopSession:
         if ctrl.state == ControllerState.TERMINATED:
             return None
         self._acquire(t)
+        stage = {"acquisition_read_ms": self._t_read * 1e3, "sync_ingest_ms": self._t_ingest * 1e3,
+                 "windowing_ms": 0.0}
         windows: dict[float, SyncedWindow] = {}
         fsets: dict[Modality, FeatureSet] = {}
         for m, p in self.providers.items():
             dur = WINDOW_S[m]
             if dur not in windows:
+                a = time.perf_counter()
                 windows[dur] = self.sync.window(t, dur)
+                stage["windowing_ms"] += (time.perf_counter() - a) * 1e3
             sw = windows[dur].streams[p.info.stream_id]
+            stage[f"data_age_{m.value}_s"] = sw.data_age_s
             if sw.usable:
+                a = time.perf_counter()
                 f = _features(m, sw, p.info, cfg.fnirs_ppf)
+                stage[f"features_{m.value}_ms"] = (time.perf_counter() - a) * 1e3
                 if f is not None:
                     fsets[m] = f
         block = self._block(t)
@@ -266,17 +279,25 @@ class ClosedLoopSession:
         if k % cfg.report_every_ticks == 0 or self._pending_text or self._discomfort is not None:
             self._report = self.responder.report(t, (last_cue - 0.3) / 0.6, self._discomfort, self._pending_text)
         report = self._report
+        a = time.perf_counter()
         state: ImageryState = self.estimator.estimate(t, fsets, report)
+        stage["estimation_ms"] = (time.perf_counter() - a) * 1e3
         fresh = report is not None and report.time == t
         gate = self._gates(t, windows, fsets, self.source_kinds, report.free_text if fresh else "",
                            report.discomfort if fresh else None)
         main = windows[min(windows)] if windows else None
         pre_state = ctrl.state.value
         dec: Decision = ctrl.tick(t, state, gate, {"cue_cap": 1.0})
+        stage.update(ctrl.last_timing_ms)
         self._pending_text, self._discomfort = "", None
+        a = time.perf_counter()
         act = corridor_action(cfg.session_id, dec)
+        stage["feedback_dispatch_build_ms"] = (time.perf_counter() - a) * 1e3
         pid = perception_imagination_distance(fsets, self.profile) if self.profile else {"value": None}
         self.latencies_ms.append((time.perf_counter() - t0) * 1e3)
+        stage["tick_total_ms"] = self.latencies_ms[-1]
+        stage["controller_state"] = dec.controller_state.value
+        self.stage_ms.append(stage)
         if k % 5 == 0:
             self.sync_snapshots.append({"t": t, **self.sync.health(t)})
         entry = {
@@ -290,8 +311,10 @@ class ClosedLoopSession:
         }
         self.log.append(entry)
         if self.repo is not None:
+            a = time.perf_counter()
             self.repo.record_tick(cfg.session_id, entry, {"tick": k, "t": t, "controller_state": ctrl.state.value,
                                                           "decision_hash": dec.hash})
+            stage["persistence_ms"] = (time.perf_counter() - a) * 1e3
         return entry
 
     def finish(self) -> dict:

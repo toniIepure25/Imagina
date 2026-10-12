@@ -10,6 +10,7 @@ optimizes the perception-imagination distance, arousal, or any measure of realit
 """
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Protocol
@@ -294,6 +295,7 @@ class FeedbackController:
         self._estop = False
         self._prev_hash = "0" * 64
         self._delivering = False
+        self.last_timing_ms: dict = {}
 
     def transition(self, new: ControllerState, t: float, reason: str, source_kinds: set[str] | None = None) -> None:
         if new not in TRANSITIONS[self.state]:
@@ -382,7 +384,9 @@ class FeedbackController:
     def tick(self, t: float, st: ImageryState, g: GateInputs, ctx: dict | None = None) -> Decision:
         ctx = ctx or {}
         self._tick += 1
+        a = time.perf_counter()
         findings = self._safety(t, st, g) if self.state != S.TERMINATED else []
+        self.last_timing_ms = {"safety_ms": (time.perf_counter() - a) * 1e3, "policy_ms": 0.0}
         sev = {f.severity for f in findings}
         proposed = None
         hold = ""
@@ -403,10 +407,12 @@ class FeedbackController:
                     self._applied = REST.model_copy()
             else:
                 self._hold_run = 0
+                a = time.perf_counter()
                 proposed = self.policy.propose(st, ctx)
                 if getattr(proposed, "prompt_key", None) is None:
                     proposed.prompt_key = "default"
                 self._applied, note = self._bounded(proposed, t)
+                self.last_timing_ms["policy_ms"] = (time.perf_counter() - a) * 1e3
         delivered = self.state == S.FEEDBACK_RESEARCH and not hold and proposed is not None and not note
         if self.state == S.SAFE_FALLBACK:
             delivered = self._delivering
