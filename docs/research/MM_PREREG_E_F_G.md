@@ -70,7 +70,15 @@ Design simulation (`results/phase2/prereg_power_simulation.json`, `app.multimoda
 1000 simulations per cell, assumed between-participant SD 0.15 and session noise SD 0.10 on the 0–1 scale — these SDs are
 assumptions to be replaced by pilot estimates):
 
-POWER_TABLE_PLACEHOLDER
+| n per arm | type-I (effect 0) | power, effect 0.05 | power, effect 0.10 (SESOI) | power, effect 0.15 |
+|---|---|---|---|---|
+| 20 | 0.047 | 0.18 | 0.53 | 0.85 |
+| 30 | 0.048 | 0.25 | 0.73 | 0.97 |
+| 40 | 0.042 | 0.32 | 0.85 | 0.99 |
+| 60 | 0.060 | 0.44 | 0.95 | 1.00 |
+
+Under these assumptions, **40 completers per arm** give ~85% power at the SESOI (two-sided α = 0.05, Welch test on
+change scores); allowing 15% attrition, enrol 47 per arm. Type-I error stays near nominal (0.042–0.060, Monte Carlo).
 
 Registration requires a pilot (n ≈ 10, not analysed for efficacy) to estimate the SDs, then re-running this simulation.
 
