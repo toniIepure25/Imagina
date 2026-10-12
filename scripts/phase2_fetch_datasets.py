@@ -17,6 +17,8 @@ from pathlib import Path
 PHYSIONET = {
     "mitdb": {"version": "1.0.0", "title": "MIT-BIH Arrhythmia Database", "modality": "ECG",
               "annotations": "beat-by-beat cardiologist annotations"},
+    "incartdb": {"version": "1.0.0", "title": "St Petersburg INCART 12-lead Arrhythmia Database", "modality": "ECG",
+                 "annotations": "beat annotations (held-out ECG detector check)"},
     "bidmc": {"version": "1.0.0", "title": "BIDMC PPG and Respiration Dataset", "modality": "respiration",
               "annotations": "manual breath annotations by two independent annotators"},
     "noneeg": {"version": "1.0.0", "title": "Non-EEG Dataset for Assessment of Neurological Status",

@@ -28,19 +28,61 @@ class RPeakResult:
     template_corr: float
 
 
+REFRACTORY_S, T_WAVE_S, SEARCHBACK_RR = 0.2, 0.36, 1.66
+
+
+def _adaptive_select(integ: np.ndarray, deriv: np.ndarray, cand: np.ndarray, fs: float) -> list[int]:
+    learn = integ[: int(2 * fs)] if integ.size > 2 * fs else integ
+    spk, npk = 0.25 * float(learn.max()), 0.5 * float(learn.mean())
+    win = max(int(0.075 * fs), 1)
+    slope = np.array([np.abs(deriv[max(0, c - win):c + 1]).max() for c in cand])
+    beats: list[int] = []
+    rrs: list[int] = []
+    last_i = -1
+    for i, c in enumerate(cand):
+        v = integ[c]
+        thr = npk + 0.25 * (spk - npk)
+        if beats and len(rrs) >= 2:
+            limit = SEARCHBACK_RR * np.mean(rrs[-8:])
+            if c - beats[-1] > limit:
+                between = [j for j in range(last_i + 1, i)
+                           if cand[j] - beats[-1] > REFRACTORY_S * fs and integ[cand[j]] > 0.5 * thr]
+                if between:
+                    j = max(between, key=lambda k: integ[cand[k]])
+                    rrs.append(int(cand[j] - beats[-1]))
+                    beats.append(int(cand[j]))
+                    last_i = j
+                    spk = 0.25 * integ[cand[j]] + 0.75 * spk
+                    thr = npk + 0.25 * (spk - npk)
+        if v <= thr:
+            npk = 0.125 * v + 0.875 * npk
+            continue
+        if beats and c - beats[-1] < T_WAVE_S * fs and slope[i] < 0.5 * slope[last_i]:
+            npk = 0.125 * v + 0.875 * npk
+            continue
+        if beats:
+            rrs.append(int(c - beats[-1]))
+        beats.append(int(c))
+        last_i = i
+        spk = 0.125 * v + 0.875 * spk
+    return beats
+
+
 def detect_r_peaks(ecg: np.ndarray, fs: float) -> np.ndarray:
     filt = butter_filter(ecg, fs, 5.0, 15.0)
     if np.abs(np.percentile(filt, 0.5)) > np.abs(np.percentile(filt, 99.5)):
         filt = -filt
     deriv = np.gradient(filt)
     integ = np.convolve(deriv ** 2, np.ones(max(int(0.15 * fs), 1)) / max(int(0.15 * fs), 1), mode="same")
-    thr = 0.3 * np.percentile(integ, 99)
-    cand, _ = sps.find_peaks(integ, height=thr, distance=int(MIN_RR_S * fs))
+    cand, _ = sps.find_peaks(integ, distance=max(int(REFRACTORY_S * fs), 1))
+    if cand.size == 0:
+        return np.zeros(0, dtype=int)
     half = int(0.1 * fs)
     peaks = []
-    for c in cand:
+    for c in _adaptive_select(integ, deriv, cand, fs):
         lo, hi = max(0, c - half), min(len(filt), c + half)
-        peaks.append(lo + int(np.argmax(filt[lo:hi])))
+        seg = filt[lo:hi]
+        peaks.append(lo + int(np.argmax(np.abs(seg))))
     return np.unique(np.array(peaks, dtype=int))
 
 

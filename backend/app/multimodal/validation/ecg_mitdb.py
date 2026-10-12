@@ -66,10 +66,11 @@ def _hrv(rr: np.ndarray, normal: np.ndarray, beat_t: np.ndarray, dur: float) -> 
     return out
 
 
-def validate_record(rec_path: str) -> dict:
+def validate_record(rec_path: str, lead: str | None = None) -> dict:
     import wfdb
 
-    rec = wfdb.rdrecord(rec_path, channels=[0])
+    names = [n.strip() for n in wfdb.rdheader(rec_path).sig_name]
+    rec = wfdb.rdrecord(rec_path, channels=[names.index(lead) if lead in names else 0])
     ann = wfdb.rdann(rec_path, "atr")
     fs = float(rec.fs)
     sig = rec.p_signal[:, 0]
@@ -113,6 +114,64 @@ def validate_record(rec_path: str) -> dict:
                         "ectopic_flag_false_rate": float(flagged[norm_ref].mean()) if norm_ref.any() else None})
     out["windows"] = windows
     return out
+
+
+INCART_CRITERIA = [
+    Criterion("gross_sensitivity", ">=", 0.99, 0.97,
+              "Declared before INCART was downloaded, after the detector was revised on MITDB: the MITDB bar applied "
+              "to data the revision never saw."),
+    Criterion("gross_ppv", ">=", 0.99, 0.97, "As sensitivity."),
+    Criterion("hr_median_abs_rel_error", "<=", 0.01, 0.03, "As MITDB."),
+    Criterion("rmssd_median_abs_rel_error", "<=", 0.10, 0.25, "As MITDB."),
+]
+
+
+def _gross(per: list[dict], key: str) -> dict:
+    ok = [p[key] for p in per if "tp" in p[key]]
+    tp, fp, fn = (sum(o[k] for o in ok) for k in ("tp", "fp", "fn"))
+    return {"se": tp / max(tp + fn, 1), "ppv": tp / max(tp + fp, 1), "tp": tp, "fp": fp, "fn": fn}
+
+
+def _rel_err(per: list[dict], metric: str) -> dict:
+    errs = [abs(w["ours"][metric] - w["ref"][metric]) / abs(w["ref"][metric]) for p in per for w in p["windows"]
+            if np.isfinite(w["ours"][metric]) and np.isfinite(w["ref"][metric]) and w["ref"][metric] != 0]
+    return {"median_abs_rel_error": float(np.median(errs)) if errs else None, "n_windows": len(errs)}
+
+
+def run_incart(root: Path) -> GateResult:
+    import wfdb
+
+    base = root / "incartdb"
+    records = sorted({p.stem for p in base.rglob("*.hea")})
+    per = [validate_record(str(next(base.rglob(f"{r}.hea")).with_suffix("")), lead="II") for r in records]
+    det = {k: _gross(per, k) for k in ("ours", "neurokit2", "wfdb_xqrs")}
+    hrv = {m: _rel_err(per, m) for m in ("hr", "rmssd", "sdnn")}
+    g = GateResult(
+        experiment="ECG_RPEAK_HRV_INCART_HELDOUT",
+        dataset={"name": "St Petersburg INCART 12-lead Arrhythmia Database", "version": "1.0.0",
+                 "source": "physionet.org/content/incartdb", "wfdb_version": wfdb.__version__,
+                 "n_records": len(per)},
+        participants={"n_records": len(per), "note": "32 Holter patients, 75 half-hour 12-lead recordings at 257 Hz"},
+        task_and_labels="Holter ECG; reference = beat annotations (beat symbols only); lead II.",
+        design="Held-out check of the R-peak detector revised on MITDB (adaptive thresholds, search-back). No "
+               "parameter was changed after INCART was downloaded.",
+        metric_definitions={"Se": "TP/(TP+FN), 150 ms window (EC57)", "PPV": "TP/(TP+FP)",
+                            "HRV error": "as ECG_RPEAK_HRV_MITDB"},
+        criteria=INCART_CRITERIA,
+        results={"detection": det, "hrv": hrv,
+                 "per_record": [{k: v for k, v in p.items() if k != "windows"} for p in per]},
+        baseline={"neurokit2": det["neurokit2"], "wfdb_xqrs": det["wfdb_xqrs"]},
+        leakage_checks={"note": "Detector frozen before download; no fitting on INCART."},
+        negative_controls={},
+        generalization={"role": "held-out database for the MITDB-revised detector"},
+        limitations=["Annotations were produced by an automatic algorithm corrected manually; reference timing may "
+                     "differ systematically from MITDB.",
+                     "Arrhythmia patients; not representative of imagery-study participants."],
+    )
+    g.decide({"gross_sensitivity": det["ours"]["se"], "gross_ppv": det["ours"]["ppv"],
+              "hr_median_abs_rel_error": hrv["hr"]["median_abs_rel_error"],
+              "rmssd_median_abs_rel_error": hrv["rmssd"]["median_abs_rel_error"]})
+    return g
 
 
 def run(root: Path) -> GateResult:
