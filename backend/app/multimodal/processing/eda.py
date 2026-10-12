@@ -7,7 +7,8 @@ need amplitude >= 0.01 uS (common minimum-amplitude criterion) and a 0.3-5 s ris
 
 ``method="tangent"`` (default) refines the onset to where the tangent at the steepest rise meets the pre-response
 level (reduces the early bias caused by zero-phase smoothing) and measures amplitude against the 2 s pre-onset trend
-extrapolated to the peak, so slow tonic drift is not counted as a response. ``method="threshold"`` is the earlier
+extrapolated to the peak, so slow tonic drift is not counted as a response. Peaks and onsets are found on the
+derivative minus its 20 s running median, so responses riding on a steadily rising baseline are not missed. ``method="threshold"`` is the earlier
 behaviour, kept for comparison.
 """
 from __future__ import annotations
@@ -26,6 +27,7 @@ ONSET_SLOPE_US_PER_S = 0.01
 ONSET_FRACTION_OF_PEAK_SLOPE = 0.1
 MIN_RISE_S, MAX_RISE_S = 0.3, 5.0
 PRE_TREND_S = 2.0
+DRIFT_WINDOW_S = 20.0
 
 
 @dataclass
@@ -74,6 +76,12 @@ def detect_scrs(cleaned: np.ndarray, fs: float, mask: np.ndarray | None = None,
     smooth = butter_filter(cleaned, fs, None, min(0.5, fs / 2.5)) if fs > 2.5 else cleaned
     d = np.gradient(smooth) * fs
     d_fine = np.gradient(cleaned) * fs
+    if method == "tangent":
+        from scipy.ndimage import median_filter
+
+        drift = median_filter(d, size=max(3, int(DRIFT_WINDOW_S * fs)) | 1, mode="nearest")
+        d = d - drift
+        d_fine = d_fine - drift
     peaks = np.where((d[:-1] > 0) & (d[1:] <= 0))[0] + 1
     max_rise = int(MAX_RISE_S * fs)
     out = []
