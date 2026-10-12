@@ -105,6 +105,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_multimodal_acquisition": ["research"],
     "test_multimodal_physio": ["research"],
     "test_multimodal_neural": ["research"],
+    "test_multimodal_closed_loop": ["research"],
 }
 
 
