@@ -36,14 +36,38 @@ def sha256(p: Path) -> str:
 
 
 def fetch_physionet(name: str, root: Path) -> dict:
-    import wfdb
+    """Download every file listed in the dataset's published SHA256SUMS.txt and verify each hash."""
+    import urllib.request
+    from concurrent.futures import ThreadPoolExecutor
 
     out = root / name
     out.mkdir(parents=True, exist_ok=True)
     meta = PHYSIONET[name]
-    if not any(out.iterdir()):
-        wfdb.dl_database(name, dl_dir=str(out), keep_subdirs=True, overwrite=False)
-    return {**meta, "source": f"https://physionet.org/content/{name}/{meta['version']}/", "path": str(out)}
+    base = f"https://physionet.org/files/{name}/{meta['version']}/"
+    sums = urllib.request.urlopen(base + "SHA256SUMS.txt", timeout=60).read().decode()
+    (out / "SHA256SUMS.txt").write_text(sums)
+    expected = dict(reversed(line.split(maxsplit=1)) for line in sums.splitlines() if line.strip())
+    expected = {k.strip(): v for k, v in expected.items()}
+
+    def get(rel: str) -> tuple[str, str]:
+        dst = out / rel
+        if dst.exists() and sha256(dst) == expected[rel]:
+            return rel, "verified_existing"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        for _ in range(3):
+            try:
+                urllib.request.urlretrieve(base + rel, dst)
+                if sha256(dst) == expected[rel]:
+                    return rel, "downloaded_verified"
+            except Exception:  # noqa: BLE001
+                time.sleep(2)
+        return rel, "FAILED"
+
+    with ThreadPoolExecutor(8) as ex:
+        status = dict(ex.map(get, sorted(expected)))
+    failed = [k for k, v in status.items() if v == "FAILED"]
+    return {**meta, "source": f"https://physionet.org/content/{name}/{meta['version']}/", "path": str(out),
+            "n_listed": len(expected), "hash_verified": len(expected) - len(failed), "failed": failed}
 
 
 def fetch_mne(name: str, root: Path) -> dict:
