@@ -24,9 +24,10 @@ class MegEpochs:
 
 
 def detect_bad_channels(data: np.ndarray, ch_names: list[str], z_thresh: float = 5.0,
-                        ch_types: list[str] | None = None) -> list[str]:
+                        ch_types: list[str] | None = None, min_ratio: float = 4.0) -> list[str]:
     """Robust log-variance outliers and flat channels, scored separately per sensor type (magnetometers and
-    gradiometers have different units and scales and must not share one distribution)."""
+    gradiometers have different units and scales and must not share one distribution). A channel must exceed the
+    robust z threshold AND differ from the median variance by ``min_ratio`` (guards against tiny MADs)."""
     types = np.array(ch_types if ch_types is not None else ["meg"] * len(ch_names))
     var = np.var(data, axis=1)
     bad = []
@@ -37,7 +38,7 @@ def detect_bad_channels(data: np.ndarray, ch_names: list[str], z_thresh: float =
         mad = np.median(np.abs(lv - med)) * 1.4826 + 1e-12
         z = (lv - med) / mad
         for n, zz, v in zip(np.array(ch_names)[m], z, var[m]):
-            if abs(zz) > z_thresh or v < 1e-34:
+            if (abs(zz) > z_thresh and abs(np.log(v + 1e-40) - med) > np.log(min_ratio)) or v < 1e-34:
                 bad.append(str(n))
     return [n for n in ch_names if n in set(bad)]
 
