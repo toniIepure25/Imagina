@@ -29,6 +29,7 @@ SFREQ = 250.0
 REJECT_PTP_UV = 200.0
 BANDS = [(4, 8), (8, 13), (13, 20), (20, 30), (30, 40)]
 PSEUDO_SALT = b"imagina-phase2-ds005815"
+MIN_TRIALS_PER_RECORDING = 10
 
 
 def pseudo(sub: str) -> str:
@@ -48,6 +49,9 @@ class EpochSet:
             vals = np.array([r[k] for r in self.meta])
             m &= np.isin(vals, v if isinstance(v, (list, tuple, set)) else [v])
         return m
+
+    def subset(self, mask: np.ndarray) -> EpochSet:
+        return EpochSet(self.x[mask], [m for m, k in zip(self.meta, mask) if k], self.ch_names, self.report)
 
     def col(self, key: str, mask=None) -> np.ndarray:
         arr = np.array([r[key] for r in self.meta])
@@ -266,6 +270,18 @@ CRITERIA_CONTENT = [
               "Imagery content (face vs square) is a weak signal in EEG; a CI lower bound above 0.52 is required "
               "to claim decodability; a bound below 0.48 with mean near 0.5 is a null result."),
 ]
+
+
+def apply_exclusions(es: EpochSet) -> tuple[EpochSet, dict]:
+    """Exclusion rule (declared after artifact rejection counts were known, before any decoding was run):
+    a recording needs >= MIN_TRIALS_PER_RECORDING clean visual trials."""
+    rec = es.col("recording")
+    trials = es.col("trial")
+    n = {r: len(np.unique(trials[rec == r])) for r in np.unique(rec)}
+    keep = {r for r, k in n.items() if k >= MIN_TRIALS_PER_RECORDING}
+    return es.subset(np.isin(rec, list(keep))), {"rule": f">= {MIN_TRIALS_PER_RECORDING} clean visual trials",
+                                                 "excluded": {r: k for r, k in n.items() if r not in keep},
+                                                 "kept_recordings": len(keep)}
 
 
 def run_protocols(es: EpochSet, n_perm: int = 100, include_slow: bool = True) -> dict:

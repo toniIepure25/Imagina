@@ -54,7 +54,9 @@ def main() -> None:
         from app.multimodal.validation import eeg_yoto as ey
 
         es = ey.build_epochs(root / "ds005815", Path(args.cache) if args.cache else None)
-        print("epochs", es.x.shape, flush=True)
+        es, exclusions = ey.apply_exclusions(es)
+        es.report["exclusions"] = exclusions
+        print("epochs", es.x.shape, exclusions, flush=True)
         dataset = {"name": "OpenNeuro ds005815 (YOTO)", "version": "2.0.1",
                    "source": "https://openneuro.org/datasets/ds005815", "license": "CC0",
                    "preprocessing": "1-40 Hz FIR, average reference, 250 Hz, 200 uV ptp rejection",
