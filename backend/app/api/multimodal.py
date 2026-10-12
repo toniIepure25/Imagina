@@ -14,8 +14,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.multimodal.acquisition.registry import list_descriptors
-from app.multimodal.persistence import MultimodalSessionRepository, recover_session
 from app.multimodal.controller import AuthorizationError, ControllerState
+from app.multimodal.persistence import MultimodalSessionRepository, recover_session
 from app.multimodal.protocols import (
     PROTOCOLS,
     run_protocol_a,
