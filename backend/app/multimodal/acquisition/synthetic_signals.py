@@ -160,7 +160,7 @@ def synth_respiration(
     truth = SyntheticTruth({
         "inspiration_onsets_s": np.array(onsets),
         "inspiration_peaks_s": np.array(peaks),
-        "rate_bpm": 60.0 / float(np.mean(periods_arr)),
+        "rate_bpm": 60.0 / float(np.mean(periods_arr)) if periods_arr.size else float("nan"),
         "ti_te_ratio": ie_ratio,
     })
     return sig, truth

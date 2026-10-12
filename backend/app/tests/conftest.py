@@ -103,6 +103,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_v3_final_real_data": ["legacy", "external_dataset"],
     "test_animus_p2xr": ["research"],
     "test_multimodal_acquisition": ["research"],
+    "test_multimodal_physio": ["research"],
 }
 
 
