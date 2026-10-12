@@ -40,7 +40,7 @@ def validate_record(path: str) -> dict:
 
     rec = wfdb.rdrecord(path)
     fs = float(rec.fs)
-    names = [n.strip().upper() for n in rec.sig_name]
+    names = [n.strip().strip(",").strip().upper() for n in rec.sig_name]
     resp = rec.p_signal[:, names.index("RESP")]
     ann = wfdb.rdann(path, "breath")
     aux = np.array([a.strip() for a in ann.aux_note])
