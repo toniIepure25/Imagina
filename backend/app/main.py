@@ -41,6 +41,8 @@ async def lifespan(app: FastAPI):
     await init_db()
     from app.api.synthetic_runtime import recover_interrupted_runs
     await recover_interrupted_runs()
+    from app.api.multimodal import mark_interrupted_on_startup
+    mark_interrupted_on_startup()
     yield
 
 

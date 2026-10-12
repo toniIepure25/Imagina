@@ -11,6 +11,11 @@ from app.multimodal.protocols import (
 )
 
 
+@pytest.fixture(autouse=True)
+def isolated_db(tmp_path, monkeypatch):
+    monkeypatch.setattr("app.storage.database.DB_PATH", str(tmp_path / "mm.db"))
+
+
 @pytest.fixture
 async def client():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
@@ -54,6 +59,31 @@ async def test_live_stepping_and_emergency_stop(client):
     stop = (await client.post("/api/multimodal/sessions/api-live/command", json={"action": "emergency_stop"})).json()
     assert stop["controller_state"] == "TERMINATED" and stop["done"]
     assert (await client.post("/api/multimodal/sessions/api-live/step")).json()["ticks"] == []
+
+
+async def test_sessions_persist_and_recover_paused(client):
+    import app.api.multimodal as mm
+
+    r = await client.post("/api/multimodal/sessions", json={"session_id": "api-p", "duration_s": 120,
+                                                             "run_to_end": False, "mode": "feedback_research"})
+    assert r.status_code == 200
+    await client.post("/api/multimodal/sessions/api-p/step?n=40")
+    row = (await client.get("/api/multimodal/persisted/api-p")).json()
+    assert row["status"] == "RUNNING" and row["last_tick"] == 40 and row["n_decisions"] == 40
+    assert row["calibration_version"] == 1 and row["model_versions"]["estimator"]
+    mm._sessions.clear()
+    assert mm.mark_interrupted_on_startup() == ["api-p"]
+    rec = (await client.post("/api/multimodal/sessions/api-p/recover")).json()
+    assert rec["hash_chain_verified"] and rec["controller_state"] == "PAUSED" and rec["resumed_mode"] == "shadow"
+    assert rec["original_mode"] == "feedback_research"
+    st = (await client.post("/api/multimodal/sessions/api-p/step")).json()
+    assert st["status"]["controller_state"] == "PAUSED" and not st["ticks"][0]["delivered"]
+    await client.post("/api/multimodal/sessions/api-p/command", json={"action": "resume"})
+    st = (await client.post("/api/multimodal/sessions/api-p/step?n=3")).json()
+    assert st["status"]["controller_state"] in {"ACTIVE_SHADOW", "SAFE_FALLBACK"}
+    assert not any(t["delivered"] and t["controller_state"] == "FEEDBACK_RESEARCH" for t in st["ticks"])
+    done = (await client.post("/api/multimodal/sessions/api-p/recover"))
+    assert done.status_code in (200, 409)
 
 
 async def test_validation_and_not_found(client):

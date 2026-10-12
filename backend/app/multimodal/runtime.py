@@ -130,8 +130,9 @@ def _features(m: Modality, sw, info, ppf: float) -> FeatureSet | None:
 
 
 class ClosedLoopSession:
-    def __init__(self, cfg: SessionConfig) -> None:
+    def __init__(self, cfg: SessionConfig, repo=None) -> None:
         self.cfg = cfg
+        self.repo = repo
         self.blocks = ss.default_blocks(cfg.duration_s + 120.0)
         self.providers: dict[Modality, ArrayStreamProvider] = {}
         for m in cfg.modalities:
@@ -192,6 +193,11 @@ class ClosedLoopSession:
                 self.sync.add_marker(Marker(label=b.label, local_time=b.start_s, duration_s=b.duration_s))
         self.source_kinds = {p.info.source_kind.value for p in self.providers.values()}
         self.controller.transition(ControllerState.CALIBRATION, 0.0, "session start", self.source_kinds)
+        if self.repo is not None:
+            self.repo.create_session(cfg, sorted(self.source_kinds))
+            self.repo.set_model_versions(cfg.session_id, {
+                "estimator": "mm-estimator-1.0", "policy": f"{self.controller.policy.name}@"
+                f"{self.controller.policy.version}", "pipelines": "multimodal.processing 1.0"})
         self._calib, self._perc = [], []
         self._report: SelfReport | None = None
         self._events = sorted(cfg.events, key=lambda e: e.t)
@@ -249,6 +255,8 @@ class ClosedLoopSession:
             if t >= cfg.calibration_s:
                 self.profile = calibrate(cfg.participant_pseudo_id, self._calib, self._perc)
                 self.estimator = ImageryStateEstimator(self.profile)
+                if self.repo is not None:
+                    self.repo.record_calibration(cfg.session_id, self.profile.to_dict())
                 ctrl.transition(ControllerState.BASELINE, t, f"calibrated on {len(self._calib)} windows")
         elif ctrl.state == ControllerState.BASELINE and t >= cfg.calibration_s + cfg.baseline_s:
             target = (ControllerState.FEEDBACK_RESEARCH if cfg.mode == "feedback_research"
@@ -281,6 +289,9 @@ class ClosedLoopSession:
             "window_alignment_uncertainty_s": main.max_alignment_uncertainty_s if main else None,
         }
         self.log.append(entry)
+        if self.repo is not None:
+            self.repo.record_tick(cfg.session_id, entry, {"tick": k, "t": t, "controller_state": ctrl.state.value,
+                                                          "decision_hash": dec.hash})
         return entry
 
     def finish(self) -> dict:
@@ -288,6 +299,9 @@ class ClosedLoopSession:
             for r in self.recorders.values():
                 r.close()
             self.finished = True
+            if self.repo is not None:
+                self.repo.set_status(self.cfg.session_id, "TERMINATED"
+                                     if self.controller.state == ControllerState.TERMINATED else "COMPLETED")
         return self.summary()
 
     def run(self) -> dict:

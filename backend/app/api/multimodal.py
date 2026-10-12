@@ -14,6 +14,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.multimodal.acquisition.registry import list_descriptors
+from app.multimodal.persistence import MultimodalSessionRepository, recover_session
 from app.multimodal.controller import AuthorizationError, ControllerState
 from app.multimodal.protocols import (
     PROTOCOLS,
@@ -55,6 +56,22 @@ class Command(BaseModel):
     value: str | float = ""
 
 
+_repos: dict[str, MultimodalSessionRepository] = {}
+
+
+def repo() -> MultimodalSessionRepository:
+    from app.storage import database
+
+    path = database.DB_PATH
+    if path not in _repos:
+        _repos[path] = MultimodalSessionRepository(path)
+    return _repos[path]
+
+
+def mark_interrupted_on_startup() -> list[str]:
+    return repo().mark_interrupted()
+
+
 def _get(session_id: str) -> ClosedLoopSession:
     s = _sessions.get(session_id)
     if s is None:
@@ -77,7 +94,7 @@ async def modalities():
 async def create_session(req: CreateSession):
     cfg = SessionConfig(session_id=req.session_id, modalities=req.modalities, duration_s=req.duration_s,
                         seed=req.seed, mode=req.mode, policy=req.policy, events=req.events)
-    s = ClosedLoopSession(cfg)
+    s = ClosedLoopSession(cfg, repo=repo())
     try:
         s.start()
         if req.run_to_end:
@@ -184,6 +201,32 @@ async def replay_verify(session_id: str):
     trace = s.controller.trace
     return r | {"original_final_hash": trace[-1].hash if trace else None,
                 "terminated_by_operator": s.controller.state == ControllerState.TERMINATED}
+
+
+@router.get("/persisted")
+async def persisted_sessions():
+    return repo().list_sessions()
+
+
+@router.get("/persisted/{session_id}")
+async def persisted_session(session_id: str):
+    row = repo().session(session_id)
+    if row is None:
+        raise HTTPException(404, "session not found")
+    return row | {"safety_events": repo().safety_events(session_id), "n_decisions": len(repo().decisions(session_id))}
+
+
+@router.post("/sessions/{session_id}/recover")
+async def recover(session_id: str):
+    try:
+        s, report = recover_session(repo(), session_id)
+    except KeyError as e:
+        raise HTTPException(404, "session not found") from e
+    except ValueError as e:
+        raise HTTPException(409, str(e)) from e
+    if s is not None:
+        _sessions[session_id] = s
+    return report
 
 
 @router.get("/protocols")
