@@ -11,6 +11,7 @@ from app.api.exports import router as exports_router
 from app.api.feedback import router as feedback_router
 from app.api.health import router as health_router
 from app.api.imagina.routes import router as imagina_router
+from app.api.multimodal import router as multimodal_router
 from app.api.replay import router as replay_router
 from app.api.reports import router as reports_router
 from app.api.research_protocol import router as research_protocol_router
@@ -81,6 +82,7 @@ app.include_router(research_protocol_router)
 app.include_router(synthetic_runtime_router)
 app.include_router(research_science_router)
 app.include_router(animus_router)
+app.include_router(multimodal_router)
 
 
 @app.websocket("/ws/sessions/{session_id}")

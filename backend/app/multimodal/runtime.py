@@ -176,13 +176,13 @@ class ClosedLoopSession:
                 if sid in self.recorders:
                     self.recorders[sid].append(chunk)
 
-    def run(self) -> dict:
+    def start(self) -> None:
         cfg = self.cfg
         if self.store:
             self.store.create_session(cfg.session_id, cfg.participant_pseudo_id,
                                       ConsentRecord(protocol_id="SIMULATION", consent_version="n/a"),
                                       extra={"mode": cfg.mode, "source": cfg.source})
-        for m, p in self.providers.items():
+        for p in self.providers.values():
             info = p.connect(0.0)
             self.sync.add_stream(info)
             if self.store:
@@ -190,88 +190,111 @@ class ClosedLoopSession:
         for b in self.blocks:
             if b.start_s < cfg.duration_s:
                 self.sync.add_marker(Marker(label=b.label, local_time=b.start_s, duration_s=b.duration_s))
-        source_kinds = {p.info.source_kind.value for p in self.providers.values()}
-        ctrl = self.controller
-        ctrl.transition(ControllerState.CALIBRATION, 0.0, "session start", source_kinds)
-        calib_windows, perc_windows = [], []
-        report: SelfReport | None = None
-        events = sorted(cfg.events, key=lambda e: e.t)
-        pending_text, discomfort = "", None
-        t, k = 0.0, 0
-        while t < cfg.duration_s - 1e-9 and ctrl.state != ControllerState.TERMINATED:
-            t = round(t + cfg.tick_s, 6)
-            k += 1
-            t0 = time.perf_counter()
-            for ev in [e for e in events if e.t <= t]:
-                events.remove(ev)
-                if ev.kind == "emergency_stop":
-                    ctrl.emergency_stop(t)
-                elif ev.kind == "pause":
-                    ctrl.pause(t)
-                elif ev.kind == "resume" and ctrl.state == ControllerState.PAUSED:
-                    ctrl.transition(ControllerState.ACTIVE_SHADOW, t, "manual resume", source_kinds)
-                elif ev.kind == "report_text":
-                    pending_text = str(ev.value)
-                elif ev.kind == "discomfort":
-                    discomfort = float(ev.value)
-            if ctrl.state == ControllerState.TERMINATED:
-                break
-            self._acquire(t)
-            windows: dict[float, SyncedWindow] = {}
-            fsets: dict[Modality, FeatureSet] = {}
-            for m, p in self.providers.items():
-                dur = WINDOW_S[m]
-                if dur not in windows:
-                    windows[dur] = self.sync.window(t, dur)
-                sw = windows[dur].streams[p.info.stream_id]
-                if sw.usable:
-                    f = _features(m, sw, p.info, cfg.fnirs_ppf)
-                    if f is not None:
-                        fsets[m] = f
-            block = self._block(t)
-            if ctrl.state == ControllerState.CALIBRATION:
-                calib_windows.append(fsets)
-                if block == "perception":
-                    perc_windows.append(fsets)
-                if t >= cfg.calibration_s:
-                    self.profile = calibrate(cfg.participant_pseudo_id, calib_windows, perc_windows)
-                    self.estimator = ImageryStateEstimator(self.profile)
-                    ctrl.transition(ControllerState.BASELINE, t, f"calibrated on {len(calib_windows)} windows")
-            elif ctrl.state == ControllerState.BASELINE and t >= cfg.calibration_s + cfg.baseline_s:
-                target = ControllerState.FEEDBACK_RESEARCH if cfg.mode == "feedback_research" else \
-                    ControllerState.ACTIVE_SHADOW
-                ctrl.transition(target, t, f"mode={cfg.mode}", source_kinds)
-            last_cue = self.log[-1]["corridor"]["scene"]["scene_clarity"] if self.log else 0.3
-            if k % cfg.report_every_ticks == 0 or pending_text or discomfort is not None:
-                report = self.responder.report(t, (last_cue - 0.3) / 0.6, discomfort, pending_text)
-            state: ImageryState = self.estimator.estimate(t, fsets, report)
-            if report is not None and report.time != t:
-                report_text, report_discomfort = "", None
-            else:
-                report_text = report.free_text if report else ""
-                report_discomfort = report.discomfort if report else None
-            main = windows[min(windows)] if windows else None
-            gate = self._gates(t, windows, fsets, source_kinds, report_text, report_discomfort)
-            pre_state = ctrl.state.value
-            dec: Decision = ctrl.tick(t, state, gate, {"cue_cap": 1.0})
-            pending_text, discomfort = "", None
-            act = corridor_action(cfg.session_id, dec)
-            pid = perception_imagination_distance(fsets, self.profile) if self.profile else {"value": None}
-            self.latencies_ms.append((time.perf_counter() - t0) * 1e3)
-            if k % 5 == 0:
-                self.sync_snapshots.append({"t": t, **self.sync.health(t)})
-            self.log.append({
-                "tick": k, "t": t, "block": block, "pre_tick_state": pre_state, "state": state.model_dump(mode="json"),
-                "gates": gate.model_dump(mode="json"), "decision": dec.model_dump(mode="json"),
-                "corridor": act.model_dump(mode="json", exclude={"scene": {"timestamp"}}),
-                "features": {m.value: {n: f.value for n, f in fs.features.items()} | {"_quality": fs.quality}
-                             for m, fs in fsets.items()},
-                "pid_research_metric": pid, "self_report": report.model_dump() if report and report.time == t else None,
-                "window_alignment_uncertainty_s": main.max_alignment_uncertainty_s if main else None,
-            })
-        for r in self.recorders.values():
-            r.close()
+        self.source_kinds = {p.info.source_kind.value for p in self.providers.values()}
+        self.controller.transition(ControllerState.CALIBRATION, 0.0, "session start", self.source_kinds)
+        self._calib, self._perc = [], []
+        self._report: SelfReport | None = None
+        self._events = sorted(cfg.events, key=lambda e: e.t)
+        self._pending_text, self._discomfort = "", None
+        self.t, self.k = 0.0, 0
+        self.finished = False
+
+    def command(self, kind: str, value: str | float = "") -> None:
+        self._events.insert(0, ScriptedEvent(t=self.t, kind=kind, value=value))
+
+    @property
+    def done(self) -> bool:
+        return (self.finished or self.t >= self.cfg.duration_s - 1e-9
+                or self.controller.state == ControllerState.TERMINATED)
+
+    def step(self) -> dict | None:
+        cfg, ctrl = self.cfg, self.controller
+        if self.done:
+            return None
+        t = self.t = round(self.t + cfg.tick_s, 6)
+        self.k += 1
+        k = self.k
+        t0 = time.perf_counter()
+        for ev in [e for e in self._events if e.t <= t]:
+            self._events.remove(ev)
+            if ev.kind == "emergency_stop":
+                ctrl.emergency_stop(t)
+            elif ev.kind == "pause":
+                ctrl.pause(t)
+            elif ev.kind == "resume" and ctrl.state == ControllerState.PAUSED:
+                ctrl.transition(ControllerState.ACTIVE_SHADOW, t, "manual resume", self.source_kinds)
+            elif ev.kind == "report_text":
+                self._pending_text = str(ev.value)
+            elif ev.kind == "discomfort":
+                self._discomfort = float(ev.value)
+        if ctrl.state == ControllerState.TERMINATED:
+            return None
+        self._acquire(t)
+        windows: dict[float, SyncedWindow] = {}
+        fsets: dict[Modality, FeatureSet] = {}
+        for m, p in self.providers.items():
+            dur = WINDOW_S[m]
+            if dur not in windows:
+                windows[dur] = self.sync.window(t, dur)
+            sw = windows[dur].streams[p.info.stream_id]
+            if sw.usable:
+                f = _features(m, sw, p.info, cfg.fnirs_ppf)
+                if f is not None:
+                    fsets[m] = f
+        block = self._block(t)
+        if ctrl.state == ControllerState.CALIBRATION:
+            self._calib.append(fsets)
+            if block == "perception":
+                self._perc.append(fsets)
+            if t >= cfg.calibration_s:
+                self.profile = calibrate(cfg.participant_pseudo_id, self._calib, self._perc)
+                self.estimator = ImageryStateEstimator(self.profile)
+                ctrl.transition(ControllerState.BASELINE, t, f"calibrated on {len(self._calib)} windows")
+        elif ctrl.state == ControllerState.BASELINE and t >= cfg.calibration_s + cfg.baseline_s:
+            target = (ControllerState.FEEDBACK_RESEARCH if cfg.mode == "feedback_research"
+                      else ControllerState.ACTIVE_SHADOW)
+            ctrl.transition(target, t, f"mode={cfg.mode}", self.source_kinds)
+        last_cue = self.log[-1]["corridor"]["scene"]["scene_clarity"] if self.log else 0.3
+        if k % cfg.report_every_ticks == 0 or self._pending_text or self._discomfort is not None:
+            self._report = self.responder.report(t, (last_cue - 0.3) / 0.6, self._discomfort, self._pending_text)
+        report = self._report
+        state: ImageryState = self.estimator.estimate(t, fsets, report)
+        fresh = report is not None and report.time == t
+        gate = self._gates(t, windows, fsets, self.source_kinds, report.free_text if fresh else "",
+                           report.discomfort if fresh else None)
+        main = windows[min(windows)] if windows else None
+        pre_state = ctrl.state.value
+        dec: Decision = ctrl.tick(t, state, gate, {"cue_cap": 1.0})
+        self._pending_text, self._discomfort = "", None
+        act = corridor_action(cfg.session_id, dec)
+        pid = perception_imagination_distance(fsets, self.profile) if self.profile else {"value": None}
+        self.latencies_ms.append((time.perf_counter() - t0) * 1e3)
+        if k % 5 == 0:
+            self.sync_snapshots.append({"t": t, **self.sync.health(t)})
+        entry = {
+            "tick": k, "t": t, "block": block, "pre_tick_state": pre_state, "state": state.model_dump(mode="json"),
+            "gates": gate.model_dump(mode="json"), "decision": dec.model_dump(mode="json"),
+            "corridor": act.model_dump(mode="json", exclude={"scene": {"timestamp"}}),
+            "features": {m.value: {n: f.value for n, f in fs.features.items()} | {"_quality": fs.quality}
+                         for m, fs in fsets.items()},
+            "pid_research_metric": pid, "self_report": report.model_dump() if fresh else None,
+            "window_alignment_uncertainty_s": main.max_alignment_uncertainty_s if main else None,
+        }
+        self.log.append(entry)
+        return entry
+
+    def finish(self) -> dict:
+        if not self.finished:
+            for r in self.recorders.values():
+                r.close()
+            self.finished = True
         return self.summary()
+
+    def run(self) -> dict:
+        self.start()
+        while self.step() is not None:
+            pass
+        return self.finish()
 
     def _gates(self, t, windows, fsets, source_kinds, text, discomfort) -> GateInputs:
         stale, disc, usable, unc = [], [], 0, []

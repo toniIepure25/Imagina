@@ -1,0 +1,56 @@
+{
+  "title": "IMAGINA DIY biosignal hardware validation checklist",
+  "status": "NO HARDWARE VALIDATED",
+  "scope": "Future ADS1299-based EEG (8-16 ch), ECG/HRV, EDA, respiration and experimental fNIRS boards. Software adapters exist; no device may be connected to a person until every gating item below is completed and signed off by a qualified, independent reviewer.",
+  "prohibited": [
+    "Electrical stimulation of any kind (tDCS, tACS, TMS, electrical feedback)",
+    "Mains-powered equipment in galvanic contact with a person without certified medical-grade isolation",
+    "Connecting unvalidated home-built electronics to a person",
+    "Presenting the system as an approved medical device"
+  ],
+  "sections": [
+    {
+      "name": "Electrical safety (gating)",
+      "items": [
+        {"id": "ES-1", "check": "Battery-only operation during human connection, or certified medical-grade isolation (IEC 60601-1 2xMOPP) for any mains-connected path", "gating": true},
+        {"id": "ES-2", "check": "Patient leakage current measured under normal and single-fault conditions against IEC 60601-1 limits for type BF applied parts", "gating": true},
+        {"id": "ES-3", "check": "Data link isolation verified (optical/wireless or certified digital isolator) between participant-side electronics and any PC", "gating": true},
+        {"id": "ES-4", "check": "Single-fault analysis: shorted electrode, reversed battery, failed isolator, firmware lock-up", "gating": true},
+        {"id": "ES-5", "check": "Current-limiting on every applied electrode / bias drive (ADS1299 BIAS/RLD) verified", "gating": true},
+        {"id": "ES-6", "check": "Independent biomedical electrical-safety review and written sign-off", "gating": true}
+      ]
+    },
+    {
+      "name": "Signal quality and calibration",
+      "items": [
+        {"id": "SQ-1", "check": "Input-referred noise with shorted inputs (uVrms, 0.5-45 Hz) per channel"},
+        {"id": "SQ-2", "check": "Gain and ADC scaling verified with a calibrated signal generator (LSB matches ADS1299Config.lsb_uv)"},
+        {"id": "SQ-3", "check": "CMRR and 50/60 Hz rejection measured"},
+        {"id": "SQ-4", "check": "Sample-rate accuracy and clock drift (ppm) measured against a reference; compare with SyncEngine estimates"},
+        {"id": "SQ-5", "check": "Frame loss / CRC error rate over 1 h continuous streaming on each transport"},
+        {"id": "SQ-6", "check": "End-to-end latency measured with a hardware marker (photodiode or TTL) to bound constant transport latency"},
+        {"id": "SQ-7", "check": "ECG R-peak timing, EDA, respiration and fNIRS outputs compared with a reference device"},
+        {"id": "SQ-8", "check": "fNIRS: emitter wavelengths measured, optode geometry recorded, source safety (optical power/thermal) verified"}
+      ]
+    },
+    {
+      "name": "Software readiness",
+      "items": [
+        {"id": "SW-1", "check": "Provider passes replay/synthetic test suite with recorded bench data"},
+        {"id": "SW-2", "check": "Disconnect, dropout and stale-data handling verified on the physical link"},
+        {"id": "SW-3", "check": "Controller remains in ACTIVE_SHADOW; FeedbackAuthorization fields completed before any FEEDBACK_RESEARCH session"},
+        {"id": "SW-4", "check": "Emergency stop and session time limit tested with the device connected to a phantom"}
+      ]
+    },
+    {
+      "name": "Research governance",
+      "items": [
+        {"id": "RG-1", "check": "Ethics/IRB approval for the specific protocol", "gating": true},
+        {"id": "RG-2", "check": "Informed consent covering biosignal storage, retention and sharing", "gating": true},
+        {"id": "RG-3", "check": "Trained supervisor present for every session", "gating": true},
+        {"id": "RG-4", "check": "Adverse-event reporting procedure and stopping rules documented", "gating": true}
+      ]
+    }
+  ],
+  "item_status_template": {"status": "NOT_STARTED", "owner": null, "evidence_ref": null, "signed_off_by": null, "date": null}
+}
