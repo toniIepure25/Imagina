@@ -57,7 +57,8 @@ class _Store:
             while n + k > cap // 2:
                 cap *= 2
             nd, na, ni = np.empty((cap, self._d.shape[1])), np.empty(cap), np.empty(cap, dtype=np.int64)
-            nd[:n], na[:n], ni[:n] = self._d[self.head:self.tail], self._a[self.head:self.tail],                 self._i[self.head:self.tail]
+            h, t = self.head, self.tail
+            nd[:n], na[:n], ni[:n] = self._d[h:t], self._a[h:t], self._i[h:t]
             self._d, self._a, self._i, self.head, self.tail = nd, na, ni, 0, n
         self._d[self.tail:self.tail + k] = d
         self._a[self.tail:self.tail + k] = a
