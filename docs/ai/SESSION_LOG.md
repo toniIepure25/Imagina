@@ -2,6 +2,205 @@
 
 ---
 
+## 2026-10-23 -- ANIMUS Studio: pre-migration backups, gap-aware live events, abortable mutations
+
+**Objective:** make the two remaining local failure modes explicit: an interrupted schema upgrade and a
+live channel that can duplicate or miss a notification. No claim, privacy, or storage boundary changed.
+
+**Delivered (code complete; not executed)**
+- `migration_runner.py` now discovers the latest declared version, detects a non-empty database, and runs
+  `VACUUM INTO` into `<db_dir>/backups/pre-migration-v###-to-v###-<UTC>.db`, verifies the copy with
+  `PRAGMA quick_check`, and retains the five newest backups. A failed copy or verification aborts startup
+  instead of migrating without a recovery point. Empty/new databases skip the copy. `current_version`
+  remains async and the runner still reports the final version.
+- Studio event writes now return their durable SQLite `seq` from every bundle (create, commit/select,
+  head update, candidates, world save). The service tracks `last_event_seq`, snapshots expose it, and
+  `session_created`, candidate, branch, head, and scene events include `seq`.
+- The response contract (`StudioSnapshotModel`) and frontend `StudioSnapshot`/WS event types declare the
+  additive sequence fields. The hook ignores duplicate/older events, refreshes immediately on a gap,
+  resets sequence state per session, treats 60 s without any frame as a dead socket (25 s ping cadence),
+  and aborts an in-flight mutation when a newer mutation starts or the view unmounts. `saveStudioWorld`
+  accepts the same request options and participates in the same abort lifecycle.
+- New tests cover backup contents, empty-database skip, backup-failure abort, monotonic snapshot/event
+  sequence, WS sequence propagation, duplicate/gap refreshes, and unmount abort. `FakeWebSocket.close`
+  now fires `onclose` so cleanup/reconnect behavior is observable.
+- Docs updated: ADR-047, architecture, API contract, README, project context, known issues (RISK-044/045).
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, migrations, or
+installs were authorized. This entry does not claim a passing suite or build. Runtime behavior, including
+`VACUUM INTO` on this host and WS liveness timing, remains unverified until an authorized environment runs
+the suites and the Playwright loop. `RISK-041` remains active.
+
+**Claim boundary:** unchanged. `L1_BEHAVIORAL_ASSISTED`, image generation DISABLED, neural/dream/
+reconstruction UNAUTHORIZED, privacy `local_only`, no external calls, no new dependency.
+
+---
+
+## 2026-10-23 -- ANIMUS Studio: durable redo, resumable live channel, deeper diagnostics
+
+**Objective:** close the remaining recovery/realtime gaps found by static review without changing the
+local-first, single-process, claim-safe product boundary.
+
+**Delivered (code complete; not executed)**
+- Additive migration **v017** (`redo_json` on `animus_studio_branches`), idempotent upgrade, branch-scoped
+  redo persistence on commit/undo/redo/branch/switch, and restart-safe load. A new commit clears the
+  redo stack durably.
+- Strict stored-JSON decoding for scene, diff, commands, notes, branch redo, and event payloads. Undecodable
+  state raises `StudioCorruptState` and maps to `503 corrupt_local_state` on HTTP and WS.
+- Per-connection SQLite `synchronous=FULL`, WAL autocheckpoint, foreign keys, busy timeout, and read-only
+  diagnostics (`journal_mode`, `synchronous`, `foreign_keys`, event count; deep `quick_check` + FK check).
+- WebSocket handler extracted to `backend/app/api/animus_studio_ws.py`; it subscribes before reading the
+  snapshot, maps archived/stale/not-found/validation/persistence/corruption to stable codes, validates
+  session ids, awaits forward-task cleanup, and maps bus overflow to `resync_required`.
+- Read-only event audit: `GET /animus/studio/sessions/{id}/events?after_seq=&limit=` with
+  `EventRecordModel` / `StudioEventsResponseModel`.
+- OpenAPI declarations for common 400/404/409/503 Studio errors and the `X-Studio-Error-Code` header.
+- Frontend `loadError` with distinct 404/503/timeout copy, unified abortable initial load, runtime WS
+  envelope validation, `resync_required` refresh, URL-encoded session id, `getStudioEvents`, and typed
+  diagnostics/events.
+- New/updated tests: WS snapshot/gap/events/errors/origin/oversize/ping, bus overflow, concurrent
+  expected-version winner, corrupt scene, SQLite pragmas, deep diagnostics, v015 repair + v017 idempotency,
+  redo restart and cleared-redo restart, event cursor, OpenAPI error contract, frontend API/WS parser,
+  hook load/resync/malformed-frame behavior, untrusted Host rejection, and Studio no-store headers.
+- E2E script now checks candidate persistence after reload, confirmed world deletion, and the typed
+  missing-studio state.
+- Local exposure hardening: `settings.backend_host` defaults to `127.0.0.1`, `TrustedHostMiddleware`
+  enforces an explicit `ALLOWED_HOSTS` allowlist, Studio responses are `Cache-Control: no-store` with
+  `X-Content-Type-Options: nosniff`, and the Studio route has a Next.js 16 `error.tsx` boundary using
+  `unstable_retry`.
+- Docs updated: architecture, API contract, README, ADR-044/045/046, project context, known issues.
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, or installs were
+authorized. This entry does not claim a passing suite or build. `RISK-041` remains active until the
+Playwright loop and backend suites are run in an authorized environment.
+
+**Claim boundary:** unchanged. `L1_BEHAVIORAL_ASSISTED`, image generation DISABLED, neural/dream/
+reconstruction UNAUTHORIZED, privacy `local_only`, no external calls, no new dependency.
+
+---
+
+## 2026-10-23 -- ANIMUS Studio: complete typed wire contract
+
+**Objective:** make every Studio data shape explicit on both sides of the local API, so the service,
+repository, OpenAPI schema, frontend client, and tests describe the same records.
+
+**Delivered (code complete; not executed)**
+- Backend response models in `backend/app/schemas/animus_studio_responses.py`, attached to every
+  successful route: scene graph/entity/attribute/transform, relations, constraints, camera/lighting/
+  atmosphere/dynamics, diff changes, version summary/detail, branch summary, candidate, capability,
+  full snapshot, intent/commands/regenerate variants, history, sessions, worlds/items, delete, health,
+  and capabilities.
+- Internal record types in `backend/app/core/animus/studio/types.py`: session, branch (persisted and
+  summary), version summary/detail, candidate, world/item, session summary, and event envelope.
+- Contract-completing service fields: `entity_count` on the immutable version response and `world_id`
+  on newly saved world items.
+- Frontend types in `frontend/lib/animusStudioApi.ts`: intent/commands/regenerate snapshots, version
+  detail, history, health/capabilities envelopes, session/world lists, delete/world-save results,
+  create/regenerate/branch/world inputs, the complete `StudioSceneCommand` union, and
+  `StudioWebSocketMessage`; the hook now consumes the typed WS envelope.
+- Tests: `test_typed_response_contract_matches_published_payloads` validates real API payloads against
+  the published response models. `API_CONTRACT.md` documents the typed boundary.
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, or installs were
+authorized. This entry does not claim a passing suite or build.
+
+**Claim boundary:** unchanged. `L1_BEHAVIORAL_ASSISTED`, image generation DISABLED, neural/dream/
+reconstruction UNAUTHORIZED, privacy `local_only`, no external calls.
+
+---
+
+## 2026-10-22 -- ANIMUS Studio hardening: atomic state, typed conflicts, resilient client
+
+**Objective:** raise the Studio from a working vertical slice to a production-quality local product
+without changing its claim boundary: serialized writes, crash-safe commits, scoped candidates, optimistic
+concurrency, a bounded/typed API, a resilient transport, and accessible UI states.
+
+**Delivered (code complete; not executed in this session)**
+- Backend integrity: per-session locks, typed `studio/errors.py`, atomic repository bundles (create,
+  commit, head, candidate select, candidates, world), WAL + schema lock, strict version inserts,
+  `source_version_id`-scoped candidate lifecycle, selected-candidate hiding, archive checks, optional
+  `X-Expected-Version` → `409 stale_version`, v015 missing-table guard, index-only v016.
+- API/WS: strict request models with bounds and `extra="forbid"`, typed 400/404/409/503 codes in
+  `X-Studio-Error-Code`, path/query constraints, health schema version, WS Origin check, 64 KiB message
+  cap, stable event envelope, typed WS errors.
+- Frontend: 20 s request timeout/abort, error codes, expected-version headers, stale mutation guard,
+  event-driven refresh, WS backoff/jitter/heartbeat, prompt text retained on failure, candidate
+  loading/empty states, world delete confirmation, tab semantics/keyboard navigation, canvas text
+  alternative, reduced-motion handling.
+- Tests: new integrity suite (schema v016, optimistic conflict, archive, candidate scoping/hiding) and
+  API/Vitest additions. Documentation: `API_CONTRACT.md`, ADR-042, architecture/README/known-issues.
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, or installs were
+authorized. Prior 105-test, lint/typecheck/build, and browser results refer to the preceding slice and must
+not be presented as verification of this hardening. Deferred checks are listed in `KNOWN_ISSUES.md`
+RISK-041 and the ANIMUS README.
+
+**Claim boundary:** unchanged. `L1_BEHAVIORAL_ASSISTED`, image generation DISABLED, neural/dream/
+reconstruction UNAUTHORIZED, privacy `local_only`, no external calls.
+
+---
+
+## 2026-10-22 -- ANIMUS Studio: closed-loop imagination product
+
+**Objective:** turn the existing P1 ANIMUS engine into a usable local product rather than another
+research dashboard: intention → visible procedural candidate → correction → lock → regenerate → converge
+→ save/reopen.
+
+**Delivered**
+- `backend/app/core/animus/scene/`: ANIMUS-SG-v1 symbolic scene graph, library, deterministic
+  composition, bounded intent parser, 8 typed commands, diff, immutable revisions/undo/redo/branches,
+  seeded regeneration that preserves locks and `USER_EXPLICIT` edits, and the IBS-v1 belief bridge.
+- `backend/app/core/animus/studio/`: SQLite repository, async product service, claim/capability envelope,
+  in-process event bus. Migration `v014_animus_studio.py` is additive (8 new tables).
+- `backend/app/api/animus_studio.py` + request schemas: `/animus/studio/*` snapshot API; WS
+  `/ws/animus/{session_id}`; router included in `main.py`.
+- Frontend product surfaces: `/animus`, `/animus/studio/[sessionId]`, `/animus/worlds`,
+  `/animus/about`; legacy `/imagina/animus` redirects; header nav updated. Procedural React Three Fiber
+  renderer, prompt bar, candidate strip, element inspector with locks, history/branches, world library.
+- Browser harness `frontend/scripts/verify-animus-ui.cjs`; documentation under `docs/animus/`.
+
+**Verification (executed)**
+- New backend Studio suite: **80 passed** (scene model 13, commands 12, revisions 10, intent 9,
+  persistence 11, API 11, claims 14) with a writable `--basetemp`.
+- Combined final backend run (Studio + P1): **105 passed**.
+- P1 suite `test_animus_p1.py`: 25 passed.
+- `ruff check --no-cache` on all new backend files: passed.
+- Frontend `tsc --noEmit --incremental false`, ESLint on all new frontend files: passed.
+- Next production build: 26 routes, including `/animus`, `/animus/about`, `/animus/worlds`,
+  `/animus/studio/[sessionId]`.
+- Frontend unit tests: **23 passed / 8 files** (including 7 Studio client tests).
+- Full frontend ESLint (`eslint .`): 0 errors, 30 pre-existing warnings; full backend
+  `ruff check --no-cache app`: passed.
+- Playwright harness against live servers: intention v1 → correction v2 → element lock v3 → 3 candidates
+  with preserved locks → keep v4 → undo v3 → create branch `variation` → switch back to `Main` → save
+  world → reload v3; saved world opened at v1; legacy redirect `/animus`; about capability table;
+  mobile overflow 0 px; browser console errors 0.
+- Backend restart: branched session resumed at `v3` with `Main` + `variation` intact and history 3; the
+  earlier restart check resumed at the undone head (`v3`, hash `ca5534…`). This exposed and fixed a real
+  persistence bug: the v014 branch table used a global `branch_id` primary key, so each session's `main`
+  branch overwrote the previous session's branch row.
+  Migration v015 scopes branches by `(session_id, branch_id)` and reconstructs missing rows; the service
+  reconciles the branch head with the session's durable active version on load. Regression tests cover
+  two sessions in one database and a stale branch head.
+- Rendered canvas sampled from screenshot: 2,691 samples, mean luminance 62.85, SD 37.12 (non-blank).
+
+**Known limitations / not executed**
+- The **full** backend suite was not completed. An initial run hit the pre-existing
+  `pytest-of-ComputaCenter` temp ACL error; rerunning with a writable `--basetemp` reached 24% with no
+  failures before it was stopped for runtime. This is **not** a full-suite pass. The 80-test Studio suite,
+  25 P1 tests, and `ruff check --no-cache app` cover all changed backend modules.
+- `scripts/verify.sh` was not used directly (it assumes `python3` and runs the full suite plus npm
+  wrappers); its frontend equivalents (`tsc`, ESLint, Vitest, production build) and the targeted backend
+  commands were run directly.
+- Parser vocabulary is bounded; unknown nouns intentionally become abstract forms with warnings.
+- Procedural renderer is an approximation, not physically accurate.
+- Verification sessions/worlds remain in the local demo SQLite database.
+
+**Claim boundary:** unchanged. L1_BEHAVIORAL_ASSISTED; image generation DISABLED; neural/dream/reconstruction
+UNAUTHORIZED; network/uploads DISABLED; local only.
+
+---
+
 ## 2026-08-31 -- Scientific Gate C3XA (DIR Target-Contract Correction and Requalification)
 
 Corrective gate `research/c3x-dir-target-contract-c3xa` from C3X final SHA `d1a482e` (NOT C4; no

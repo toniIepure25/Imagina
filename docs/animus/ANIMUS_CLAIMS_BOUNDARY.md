@@ -37,3 +37,40 @@ stability across re-imagination.
 
 No frozen C3XAT/C3XRP/C3XRA result is modified or reinterpreted by ANIMUS. C3XAT reliability values are
 measurement evidence only and are never converted into content information.
+
+---
+
+# Studio (P1.5) — enforced product envelope
+
+The Studio is an authoring loop over a **symbolic scene**. It does not add neural input, an image model,
+or a new claim level.
+
+## Enforced capabilities (`studio/claims.py`, returned by `/animus/studio/capabilities`)
+| Capability | Value |
+|---|---|
+| Scene graph | `ANIMUS-SG-v1` |
+| Renderer | `procedural-local` (React Three Fiber, no textures/downloads) |
+| Image generation | `DISABLED` |
+| Neural content | `UNAUTHORIZED` |
+| Dream content | `UNAUTHORIZED` |
+| Neural reconstruction | `UNAUTHORIZED` |
+| Network calls during studio use | `DISABLED` |
+| Uploads | `DISABLED` |
+| Privacy scope | `local_only` |
+| Claim ceiling | `L1_BEHAVIORAL_ASSISTED` |
+
+## Copy guard
+`enforce_studio_text` runs on session title, intention, world name, and correction text. It normalises
+case/whitespace and rejects phrases that assert mind-reading, dream decoding, neural reconstruction,
+clinical validity, or consciousness measurement. The parser also rejects unknown operations and values,
+so the UI cannot smuggle a stronger claim through an attribute.
+
+## What the Studio may say
+- "Describe a scene, see a procedural candidate, correct it, lock what is right, and keep or explore."
+- "Behavioural-assisted imagery scaffold; claim ceiling L1."
+- "Every candidate is a symbolic, editable preview — not a reconstruction."
+
+## What it must never say
+- That a candidate shows, reads, decodes, or reconstructs the user's imagined content.
+- That the system validates or treats a clinical condition.
+- That image generation or neural content is active.

@@ -5,7 +5,8 @@ is not yet in hand; ANIMUS never advances a claim level on product effort alone.
 
 | Stage | Description | Claim level | Scientific authorization required |
 |---|---|---|---|
-| **P1** | Closed-loop amplification engine (this milestone) | L0 / L1 | none (simulated / behavioral) |
+| **P1** | Closed-loop amplification engine | L0 / L1 | none (simulated / behavioral) |
+| **P1.5** | **ANIMUS Studio** — local symbolic scene product loop (shipped) | L1 | none; no neural or image-model content |
 | P2 | Validated **perception**-content adapter | L2→L3 | validated perception decoder on independent data |
 | P3 | Validated **imagery**-content adapter | L3 | **C3XRP independent replication QUALIFIED** + validated imagery decoder |
 | P4 | Neural + behavioral multimodal fusion | L3 | validated multimodal decoder + calibration protocol |
@@ -16,12 +17,20 @@ is not yet in hand; ANIMUS never advances a claim level on product effort alone.
 | P9 | Spontaneous imagery | L3 | validated spontaneous-imagery detection |
 | P10 | Dream-interface research | L3 | dedicated ethics + validated sleep-imagery science |
 
+## P1.5 — Studio product surface (shipped locally)
+The Studio turns the P1 loop into a usable product: `/animus` intention composer, symbolic scene graph,
+procedural candidate variants, typed corrections, locks, immutable versions, undo/redo, branches, saved
+worlds, and restart-safe SQLite persistence. It deliberately adds **no** new scientific capability:
+`image_generation = DISABLED`, `neural_content = UNAUTHORIZED`, `dream_content = UNAUTHORIZED`,
+`neural_reconstruction = UNAUTHORIZED`, `network_calls = DISABLED`, `uploads = DISABLED`, privacy
+`local_only`. The claim ceiling remains L1.
+
 ## P1 → P2/P3 bridge
 The single interface that unlocks the ladder is `NeuralContentDecoder` / `FutureNeuralDecoderProvider`. When
 a validated decoder exists **and** a scientific gate authorizes the corresponding claim level, it is injected
 as an observation source. The controller, belief model, generation, feedback, personalization, and UI do not
 change — only the evidence source and the authorized claim ceiling.
 
-## Non-goals for P1 (explicit)
+## Non-goals for P1/P1.5 (explicit)
 No decoding validation, no reconstruction, no geometry (C3XAG), no dream decoding, no use of real
-participant data, no human neural data collection.
+participant data, no human neural data collection, no external image model.

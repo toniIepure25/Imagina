@@ -373,3 +373,126 @@ tests and an HTTP smoke test but not visually in a browser.
 ---
 
 *Last updated: 2026-10-12 — RISK-033..036 multimodal platform*
+
+---
+
+## RISK-037: Studio parser and renderer are bounded approximations
+
+**Risk:** The intention parser covers a finite vocabulary of objects, colours, styles, times, moods, and spatial
+relations. Unknown nouns become abstract forms; the procedural renderer is a stylised approximation rather than a
+physically accurate world. A correction may therefore be represented differently from what the user pictured.
+**Impact:** Medium for product fidelity; none for the claim ceiling, because the scene is explicitly symbolic.
+**Mitigation:** Unknown nouns and unsupported requests surface warnings/resolutions; the element inspector exposes
+exact attributes and locks; every version is diffable; regenerate is seeded and reversible.
+**Owner:** TBD
+**Status:** Accepted product limitation. Parser vocabulary and renderer fidelity are follow-up work, not validated
+imagery measurement.
+
+---
+
+## RISK-038: Browser verification depends on a system Chrome/Edge
+
+**Risk:** The Playwright package is present but its bundled Chromium is not installed in this environment. The
+verification harness therefore launches a locally installed Chrome/Edge. On a machine without either browser, the
+end-to-end check cannot run.
+**Impact:** Low; backend, unit, typecheck, lint and production-build checks remain independent.
+**Mitigation:** `frontend/scripts/verify-animus-ui.cjs` accepts `CHROME_PATH` and probes standard Chrome/Edge paths.
+**Status:** Active; harness passed against local Chrome on 2026-10-22 (0 console errors, 0 px mobile overflow).
+
+---
+
+*Last updated: 2026-10-22 - RISK-037..039 ANIMUS Studio and test environment*
+
+---
+
+## RISK-039: pytest temp-directory ACL blocks the default full suite on this host
+
+**Risk:** `pytest`'s default `tmp_path` root (`%LOCALAPPDATA%\Temp\pytest-of-ComputaCenter`) is not writable by
+the current account. A plain `pytest app/tests` aborts collection/fixtures with `PermissionError: [WinError 5]`.
+**Impact:** Low for product code; it obscures the full-suite signal in this environment.
+**Mitigation:** Pass a writable base temp directory, e.g.
+`python -m pytest app/tests -q -p no:cacheprovider --basetemp=D:\ComputaCenter\Imagina\.pytest-tmp` with
+`TEMP`/`TMP` set to the same path. New Studio persistence/API tests also avoid `tmp_path` by using
+`tempfile.mkdtemp`.
+**Status:** Active environment issue; targeted Studio (80) and P1 (25) suites pass with the workaround.
+
+---
+
+## RISK-040: Studio serialization assumes a single local process
+
+**Risk:** Per-session mutation serialization uses an in-process `asyncio.Lock`. Two backend processes
+pointed at the same SQLite file would not share that lock, so a rare concurrent write could still race.
+**Impact:** Low for the shipped local product (one `uvicorn` process, one user); high for any future
+multi-process or hosted deployment.
+**Mitigation:** Documented as an explicit assumption in ADR-042 and the API contract. SQLite still provides
+atomic transactions, strict version inserts, branch-key uniqueness, and `busy_timeout`, so failed races
+surface as errors rather than silent corruption. A future hosted mode needs a durable lock or revision
+column check.
+**Status:** Accepted product limitation; no hosted mode exists.
+
+---
+
+## RISK-041: Browser checks still require a live backend + system Chrome/Edge
+
+**Risk:** The hardening changes add optimistic-concurrency and WebSocket behavior that unit tests can
+simulate but not fully exercise without running the local stack and a browser. This environment does not
+run servers or installs on request.
+**Impact:** Medium; a transport regression could survive static review even with unit/contract tests.
+**Mitigation:** `frontend/scripts/verify-animus-ui.cjs` already drives the real loop; it now also checks
+candidate persistence after reload, confirmed world deletion, the typed missing-studio state, and schema
+v017. The backend suites cover WS ordering/overflow/error mapping, migration repair, concurrent expected
+versions, redo restart, and corrupt-state decoding.
+**Status:** Verification deferred by explicit instruction; do not report the hardening as runtime-verified.
+
+---
+
+## RISK-042: `synchronous=FULL` makes local commits slower than the previous connection default
+
+**Risk:** Durable SQLite mode forces an fsync per commit; the UI may feel slower on slow disks.
+**Impact:** Low; commits are small and local, and correctness/recovery is the priority.
+**Mitigation:** The mode is explicit on every connection, documented in architecture and ADR-044, and
+covered by a diagnostics test. It can be revisited only as a deliberate product tradeoff.
+**Status:** Accepted.
+
+---
+
+## RISK-043: A custom hostname needs an explicit Host allowlist
+
+**Risk:** The local API rejects unknown `Host` headers. A user who exposes the backend through a custom
+hostname, reverse proxy, or container network name must set `ALLOWED_HOSTS`; otherwise requests return 400.
+**Impact:** Medium for custom deployments; intended for the default loopback product.
+**Mitigation:** `ALLOWED_HOSTS` is environment-configurable, documented in the README/architecture, and the
+Docker network name `backend` is included in the default list. Public exposure still requires authentication,
+which is deliberately out of scope.
+**Status:** Accepted; do not widen the allowlist without an explicit deployment decision.
+
+---
+
+## RISK-044: A migration can be blocked by backup disk space or permissions
+
+**Risk:** Before a non-empty database is upgraded, the runner writes a full `VACUUM INTO` copy under
+`<db_dir>/backups/`, verifies it with `PRAGMA quick_check`, and retains five backups. If the disk is full,
+the directory is read-only, or the copy fails verification, migration aborts and the backend does not start
+with a partially upgraded database.
+**Impact:** Medium for startup availability on a full or read-only disk; intended for data safety.
+**Mitigation:** The failure is explicit and logged, the destination is unique per attempt, a failed partial
+file is removed, old backups are pruned to five, and empty/new databases skip the copy. Operators can move
+or delete backups manually; nothing is uploaded.
+**Status:** Accepted fail-closed tradeoff; no automatic remote backup exists.
+
+---
+
+## RISK-045: Event gaps are repaired by a full snapshot, not partial replay
+
+**Risk:** The live channel now tags events with durable `seq` and the client refreshes on a gap or overflow.
+The refresh is a full snapshot; a very large scene or history can make recovery slower than a delta replay.
+The event cursor exists for audit but the product does not stream a bounded catch-up log.
+**Impact:** Low for local scene sizes; a future very large history could make reconnect recovery expensive.
+**Mitigation:** Debounce normal events, refresh immediately on a detected gap, cap the bus backlog with an
+explicit `resync_required`, and keep the durable cursor available for diagnostics. A delta protocol would
+be a deliberate contract change.
+**Status:** Accepted; full-snapshot recovery is the current product boundary.
+
+---
+
+*Last updated: 2026-10-23 - RISK-044 pre-migration backup failure, RISK-045 full-snapshot gap recovery*

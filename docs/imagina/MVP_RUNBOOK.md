@@ -5,7 +5,7 @@
 ```bash
 # 1. Start the backend
 cd backend
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 # 2. Demo session via curl
 curl -s -X POST http://localhost:8000/api/imagina/session/start \

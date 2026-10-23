@@ -214,3 +214,37 @@ Interpretation thresholds:
 ---
 
 *Last updated: 2026-05-07 — AI development context system initialization.*
+
+---
+
+## ANIMUS Studio product layer (2026-10-23)
+
+| Path | Responsibility |
+|------|----------------|
+| `backend/app/core/animus/scene/` | ANIMUS-SG-v1 scene graph, library, compose, intent parser, typed commands, diff, revisions, regeneration |
+| `backend/app/core/animus/studio/` | Atomic SQLite repository, serialized async Studio service, typed records/errors/locks, event bus, claim/capability guard |
+| `backend/app/core/animus/studio/types.py` | Runtime-free typed records for sessions, branches, versions, candidates, worlds, summaries, and events |
+| `backend/app/api/animus_studio.py` | `/animus/studio/*` snapshot API with response models, OpenAPI errors, optimistic concurrency, and stable error codes |
+| `backend/app/api/animus_studio_ws.py` | Live channel with Origin validation, subscribe-before-snapshot, typed errors, and intent |
+| `backend/app/storage/migrations/v014_animus_studio.py` | Additive Studio tables (sessions, versions, branches, events, candidates, commands, worlds) |
+| `backend/app/storage/migrations/v015_animus_studio_branch_scope.py` | Session-scoped branch key + lost-branch repair |
+| `backend/app/storage/migrations/v016_animus_studio_integrity.py` | Index-only candidate/list integrity support |
+| `backend/app/storage/migrations/v017_animus_studio_branch_redo.py` | Additive branch redo-stack column |
+| `backend/app/schemas/animus_studio.py` | Strict bounded request schemas for the Studio API |
+| `backend/app/schemas/animus_studio_responses.py` | Typed response contract for every successful Studio route |
+| `frontend/app/animus/` | Product routes: landing, studio, worlds, about; route-level Studio error boundary |
+| `frontend/components/animus/` | Procedural R3F scene, candidate strip, prompt bar, inspector, history, studio shell |
+| `frontend/lib/animusStudioApi.ts`, `useAnimusStudio.ts` | Typed client, response/command/WS types, and product state hook |
+| `frontend/scripts/verify-animus-ui.cjs` | Playwright end-to-end loop + screenshots |
+| `docs/animus/` | Vision, architecture, API contract, claims boundary, roadmap, demo, README |
+
+The Studio is additive: it does not replace the IMAGINA session stack or the P1 ANIMUS research API. The claim
+ceiling remains L1; image generation, uploads, neural content, dream content, and neural reconstruction are
+disabled/unauthorized.
+
+Schema v017 persists branch redo stacks; Studio connections use `synchronous=FULL`, strict stored-JSON
+decoding, deep health diagnostics, and a durable event cursor. Before a non-empty database is migrated, the
+runner writes and integrity-checks a `VACUUM INTO` backup and refuses to continue if it fails. The WebSocket joins before
+snapshotting, forwards durable `seq` values, and signals `resync_required` on subscriber overflow; snapshots
+expose `last_event_seq` so the client can discard duplicates and resync on a gap. The backend is
+loopback-first and enforces an explicit Host allowlist; Studio HTTP responses are marked `no-store`.

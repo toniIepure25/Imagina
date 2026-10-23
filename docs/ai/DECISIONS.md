@@ -914,3 +914,190 @@ the ANIMUS research tree, or the NeuroVerse export.
 ---
 
 *Last updated: 2026-10-12 — ADR-040 multimodal research platform*
+
+---
+
+## ADR-041: ANIMUS Studio uses a symbolic scene graph as canonical product state
+
+**Status:** Accepted
+**Date:** 2026-10-22
+**Context:** The P1 engine produces belief/candidate envelopes but had no durable, editable product object.
+A photoreal image model would hide provenance, add network/privacy risk, and invite unsupported imagery-content
+claims. The product needs a visible candidate that can be corrected precisely, locked, diffed, versioned,
+branched, and reopened.
+
+**Decision:** The Studio's canonical state is the versioned **ANIMUS-SG-v1** symbolic `SceneGraph`. All edits are
+typed commands, all versions are immutable and content-hashed, and regeneration is a seeded perturbation that
+preserves locked paths and `USER_EXPLICIT` values. Rendering is local procedural React Three Fiber; candidate
+thumbnails are CSS palettes. Persistence is additive SQLite migrations v014–v015. The Studio claim ceiling is
+`L1_BEHAVIORAL_ASSISTED`; image generation is DISABLED and neural/dream/reconstruction content is UNAUTHORIZED.
+
+**Consequences:**
+- Every candidate is explainable and diffable; locks are enforceable rather than a UI convention.
+- The renderer approximates rather than reconstructs; unknown parser nouns become abstract forms.
+- No image model, upload, external inference, or new scientific claim is introduced.
+- P1 APIs/tables and the frozen research artifacts are untouched; the old `/imagina/animus` route redirects.
+
+---
+
+*Last updated: 2026-10-22 - ADR-041 ANIMUS Studio*
+
+---
+
+## ADR-042: ANIMUS Studio writes are serialized, atomic, and optimistically checked
+
+**Status:** Accepted
+**Date:** 2026-10-22
+**Context:** The first vertical slice persisted a commit through several independent SQLite calls
+(version, branch, session, event). A crash or a concurrent request could leave a version the session did
+not point at, two requests could commit from the same head, and a selected candidate could remain visible
+as a stale candidate. The client also had no way to distinguish a stale view from a validation error.
+
+**Decision:** Run one local process with a per-session `asyncio.Lock`. Persist each product mutation as a
+single SQLite transaction (session head + version + branch + event, plus candidate selection where
+relevant). Publish bus events only after commit; if the write fails, evict the runtime so the next request
+reloads durable state. Scope candidates to `source_version_id`, hide selected candidates, reject stale
+selection, and add an optional `X-Expected-Version` request header that returns `409 stale_version`.
+Versions use strict inserts; branches/candidates use keyed upserts. v016 adds only the supporting indexes.
+
+**Consequences:**
+- A crash cannot expose a version that is not the session/branch head.
+- Concurrent requests can no longer fork one branch silently; stale clients receive a typed conflict.
+- Single-process is now an explicit product assumption; horizontal scaling would require a durable lock
+  or a database-level optimistic check, which is out of scope for the local product.
+- Existing clients remain compatible: omitting the header keeps last-write-wins, and error bodies keep
+  their string `detail`; the stable code travels in `X-Studio-Error-Code`.
+- No new dependency, external call, neural data path, or claim surface is introduced.
+
+---
+
+## ADR-043: ANIMUS Studio has one explicit typed wire contract
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** The Studio service returns JSON-compatible dictionaries and the first client duplicated
+their shape inline. That made additive scene fields easy to add but made required fields, optional
+clarification fields, and frontend command/WS unions easy to drift apart. OpenAPI described almost
+nothing beyond request bodies.
+
+**Decision:** Declare a Pydantic response model for every successful Studio route in
+`backend/app/schemas/animus_studio_responses.py`, with `extra="allow"` so additive renderer metadata
+does not break older clients. Keep internal persisted shapes in runtime-free `TypedDict`s under
+`backend/app/core/animus/studio/types.py`. Mirror the same contract in `frontend/lib/animusStudioApi.ts`,
+including intent/commands/regenerate snapshot variants, version detail, history, health, worlds,
+the complete command union, and the WS message envelope. The service remains framework-independent;
+FastAPI is only the serialization boundary.
+
+**Consequences:**
+- OpenAPI and the client now describe the same snapshot fields, including `entity_count` and world
+  item `world_id`.
+- A response model mismatch fails the contract test rather than silently changing the wire format.
+- Additive fields remain compatible by design; removing or renaming a required field is now a visible
+  contract change.
+- No new dependency, external call, neural data path, or claim surface is introduced.
+
+---
+
+## ADR-044: Studio redo is branch-scoped and durable
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** Undo/redo was held only in the in-memory `RevisionStore`. The branch head was durable, but a
+restart after undo lost the redo stack. Reconstructing it from version parents is unsafe: a new commit
+after undo creates a sibling, and guessing which siblings were redo targets would resurrect stale history.
+
+**Decision:** Add `redo_json` to `animus_studio_branches` in additive migration v017. Persist a branch's
+redo ids in the same atomic bundle as its head (commit, undo, redo, branch, switch). Clear redo on every
+new commit and persist the cleared list. Load the stack per branch into `RevisionStore.from_snapshot`;
+expose `redo_ids()` for the persistence helper. Strictly decode stored branch/redo JSON and surface a
+typed `corrupt_local_state` 503 rather than silently loading an empty scene.
+
+**Consequences:**
+- Undo → restart → redo works; undo → new commit → restart does not resurrect stale redo.
+- The database remains the only source of truth; no extra process, cache, or dependency is added.
+- A corrupt record is visible and actionable instead of being hidden by defaults.
+- Existing v014–v016 databases upgrade in place; v017 is idempotent.
+
+---
+
+## ADR-045: The Studio live channel joins before snapshotting and signals resync
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** The WebSocket handler read the snapshot before subscribing to the in-process bus. A commit
+between those two operations was durable but invisible to the connected client. A full queue silently
+dropped the oldest event, leaving the client permanently behind.
+
+**Decision:** Subscribe to the bus before reading the snapshot, send the snapshot first, then forward
+queued events. Every event carries a stable `type: "event"` envelope with the original type in
+`event_type`. When a subscriber queue overflows, drain it and insert
+`{"type":"resync_required","reason":"queue_overflow"}`; the client refreshes the full snapshot. Add a
+read-only `GET /sessions/{id}/events?after_seq=&limit=` cursor over the existing durable event table for
+audit and reconnect recovery. Centralize Studio error-to-code mapping for HTTP and WS.
+
+**Consequences:**
+- No event committed during connection setup is lost.
+- A slow client is told to resync instead of silently diverging.
+- Event history is no longer write-only.
+- The single-process, local-only model is unchanged; no distributed fan-out or external broker is added.
+
+---
+
+## ADR-046: The local API is loopback-first with an explicit Host allowlist
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** The product is unauthenticated by design and stores personal scene history in local SQLite.
+The previous default `backend_host` was `0.0.0.0`, and the API accepted any `Host` header. A user who
+started the backend on a LAN interface, or visited a malicious page while it was running, could expose the
+local API beyond the intended machine. Browser CORS is not a sufficient boundary because DNS rebinding
+makes the attacker page same-origin from the browser's perspective.
+
+**Decision:** Default `backend_host` to `127.0.0.1`. Install Starlette `TrustedHostMiddleware` with an
+explicit allowlist (`127.0.0.1`, `localhost`, `testserver`, `test`, `backend`), configurable through
+`ALLOWED_HOSTS`. Add `Cache-Control: no-store` and `X-Content-Type-Options: nosniff` to `/animus/studio`
+responses. Container images may still listen on `0.0.0.0` internally, but host port publication must be
+restricted to loopback unless authentication is added.
+
+**Consequences:**
+- A default local run is not reachable from another machine.
+- DNS rebinding and browser caching of scene history are blocked at the transport boundary.
+- A custom hostname needs an explicit `ALLOWED_HOSTS` entry; this is intentional and documented.
+- No dependency, external call, or claim change is introduced.
+
+---
+
+## ADR-047: Migrations are backed up first and live events carry a durable sequence
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** A versioned migration is the one operation that can rewrite every local Studio record at
+once. The previous runner had no recovery copy if an upgrade failed mid-way. Separately, the live channel
+could deliver a duplicate or could miss a low-level publish during a reconnect; clients refreshed on every
+event but could not tell whether their view was already current.
+
+**Decision:** Before a non-empty database is upgraded, run `VACUUM INTO` to a file under
+`<db_dir>/backups/pre-migration-v###-to-v###-<UTC>.db`, verify it with `PRAGMA quick_check`, and retain
+the five newest backups. `VACUUM INTO` is used instead of copying the main file because WAL content may
+not have been checkpointed. A backup or verification failure is fatal: the runner raises and refuses to
+migrate. Empty/new databases skip the copy.
+
+Every Studio event already has a durable SQLite `seq`; repository bundles now return the inserted `seq`,
+the service tracks `last_event_seq`, snapshots expose it, and bus/WS events include `seq`. Clients ignore
+events at or below their last seen sequence, treat a jump greater than one as a gap, and refresh the full
+snapshot immediately (duplicates are ignored, normal events keep the short debounce). Additive fields keep
+older clients and servers compatible. The client also treats 60 s without any message as a dead channel
+and reconnects, and aborts an in-flight mutation when a new mutation starts or the view unmounts.
+
+**Consequences:**
+- A failed upgrade leaves a consistent pre-upgrade database next to the live one; startup fails closed
+  rather than continuing without a recovery point.
+- Backup disk use is bounded by five files; operators can copy them elsewhere, but nothing is uploaded.
+- Duplicate events no longer trigger redundant refreshes, and a dropped event produces an immediate
+  resync rather than a silent divergence.
+- Sequence gaps still rely on a full snapshot refresh; there is no partial replay protocol.
+- No dependency, external call, neural data path, or claim change is introduced.
+
+---
+
+*Last updated: 2026-10-23 - ADR-047 pre-migration backups and durable event sequencing*

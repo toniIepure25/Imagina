@@ -3,7 +3,8 @@ import Badge from "../common/Badge";
 
 const NAV = [
   ["Command Center", "/multimodal"],
-  ["Animus", "/imagina/animus"],
+  ["Animus", "/animus"],
+  ["Worlds", "/animus/worlds"],
   ["Session", "/session"],
   ["Replay", "/replay"],
   ["Profile", "/profile"],

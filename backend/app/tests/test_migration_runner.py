@@ -1,11 +1,17 @@
 """Tests for the versioned migration runner and FK enforcement."""
 import os
 import tempfile
+from pathlib import Path
 
 import aiosqlite
 import pytest
 
-from app.storage.migration_runner import _current_version, _ensure_version_table, run_migrations
+from app.storage.migration_runner import (
+    _current_version,
+    _ensure_version_table,
+    backup_before_migration,
+    run_migrations,
+)
 
 
 @pytest.fixture
@@ -51,16 +57,74 @@ async def legacy_db():
         await db.close()
 
 
+@pytest.fixture
+def migration_dir():
+    with tempfile.TemporaryDirectory(prefix="animus-migrate-") as path:
+        yield Path(path)
+
+
+async def test_backup_before_migration_preserves_rows(migration_dir):
+    path = migration_dir / "legacy.db"
+    db = await aiosqlite.connect(path)
+    try:
+        await db.execute("CREATE TABLE payload (value TEXT NOT NULL)")
+        await db.execute("INSERT INTO payload (value) VALUES ('kept')")
+        await db.commit()
+
+        backup_path = await backup_before_migration(db, current=16, target=17)
+        assert backup_path is not None
+        assert Path(backup_path).parent == migration_dir / "backups"
+
+        restored = await aiosqlite.connect(backup_path)
+        try:
+            cursor = await restored.execute("SELECT value FROM payload")
+            row = await cursor.fetchone()
+        finally:
+            await restored.close()
+        assert row == ("kept",)
+    finally:
+        await db.close()
+
+
+async def test_empty_database_does_not_create_backup(migration_dir):
+    path = migration_dir / "new.db"
+    db = await aiosqlite.connect(path)
+    try:
+        await run_migrations(db)
+    finally:
+        await db.close()
+    assert not (migration_dir / "backups").exists()
+
+
+async def test_backup_failure_aborts_before_migration(migration_dir, monkeypatch):
+    path = migration_dir / "legacy.db"
+    db = await aiosqlite.connect(path)
+    try:
+        await db.execute("CREATE TABLE payload (value TEXT NOT NULL)")
+        await db.commit()
+        await _ensure_version_table(db)
+
+        async def fail_backup(*args, **kwargs):
+            raise RuntimeError("pre-migration backup failed; refusing to migrate")
+
+        monkeypatch.setattr("app.storage.migration_runner.backup_before_migration", fail_backup)
+        with pytest.raises(RuntimeError, match="refusing to migrate"):
+            await run_migrations(db)
+        assert await _current_version(db) == 0
+    finally:
+        await db.close()
+
+
 class TestEmptyDatabaseUpgrade:
     async def test_migrations_run_from_empty(self, empty_db):
         version = await run_migrations(empty_db)
-        assert version == 13
+        assert version == 17
 
     async def test_version_table_created(self, empty_db):
         await run_migrations(empty_db)
         cursor = await empty_db.execute("SELECT COUNT(*) FROM schema_version")
         row = await cursor.fetchone()
-        assert row[0] == 13
+        assert row[0] == 17
 
     async def test_studies_table_exists(self, empty_db):
         await run_migrations(empty_db)
@@ -86,6 +150,12 @@ class TestEmptyDatabaseUpgrade:
                 "VALUES ('p2', 's1', 'ALICE', '2026-01-01')"
             )
 
+    async def test_studio_branches_have_persistent_redo_stack(self, empty_db):
+        await run_migrations(empty_db)
+        cursor = await empty_db.execute("PRAGMA table_info(animus_studio_branches)")
+        columns = {row["name"] for row in await cursor.fetchall()}
+        assert "redo_json" in columns
+
 
 class TestLegacyDatabaseUpgrade:
     async def test_legacy_data_preserved(self, legacy_db):
@@ -106,7 +176,7 @@ class TestIdempotentStartup:
     async def test_second_run_is_noop(self, empty_db):
         v1 = await run_migrations(empty_db)
         v2 = await run_migrations(empty_db)
-        assert v1 == v2 == 13
+        assert v1 == v2 == 17
 
 
 class TestV003RuntimeSchema:

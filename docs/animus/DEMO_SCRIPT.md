@@ -1,6 +1,24 @@
-# ANIMUS-P1 — Demo Script (understand the product in < 5 minutes)
+# ANIMUS — Demo Script (understand the product in < 5 minutes)
 
 Everything below is deterministic and uses **no human or neural data**.
+
+## 0. Studio product loop (the primary product experience)
+Start the local backend and frontend, then open `http://localhost:3000/animus`.
+
+1. Enter: *"a white castle above a dark ocean at dusk"* → **Enter the studio**.
+2. The studio shows a procedural candidate, a version (`v1`), and an editable element list.
+3. Type: *"make the sky deep violet"* → **Apply** (`v2`, with resolutions listed).
+4. Select the castle row → **Lock element**. Locking is a real versioned command (`v3`).
+5. **Explore 3 variations** → three candidates. Their cards report how many locked paths were kept.
+6. **Keep this** on a candidate (`v4`); **Undo** returns to `v3`. Open **history** → create branch
+   `variation` → switch back to `Main`; reload the page and the version/branches persist.
+7. **Save world** → open `/animus/worlds` → **Open studio** creates a new session rooted at that world.
+8. `/animus/about` shows the capability envelope: image generation disabled, neural/dream content
+   unauthorized, local only, claim ceiling L1.
+
+The automated browser check for this exact loop is
+`frontend/scripts/verify-animus-ui.cjs` (uses the existing Playwright dependency and local Chrome/Edge).
+It writes screenshots to `docs/animus/01–06-*.png` and fails on any browser console error.
 
 ## 1. CLI demo (backend)
 ```bash
@@ -36,13 +54,17 @@ curl -s -X POST localhost:8000/animus/sessions -d '{"mode":"amplifier"}' -H 'con
 curl -s localhost:8000/animus/scientific-registry
 ```
 
-## 4. Frontend workspace
-Open `/imagina/animus`. Start a session, generate a candidate, apply corrections (closer/farther,
-attribute/object edits), and watch the belief, uncertainty, iteration timeline, controller action, evidence
-sources, amplification progress, and the claim-level provenance badge update live.
+## 4. Frontend surfaces
+- **Studio:** `/animus` → `/animus/studio/{session_id}`. Describe, correct, inspect the element list,
+  lock, regenerate, keep, undo/redo, branch, save.
+- **Worlds:** `/animus/worlds` — reopen a saved world as a new session or delete it locally.
+- **Boundaries:** `/animus/about` — what is active, disabled, or unauthorized.
+- **P1 research workspace:** `/imagina/animus` redirects to `/animus`; the original P1 API remains at
+  `/animus/*` for research tooling.
 
 ## What to look for
-- The loop is the product: candidate → correct → re-imagine → amplify.
-- Every candidate is versioned/immutable; you can compare and restore previous versions.
-- The provenance badge always shows the claim level (L0/L1) — never "decoded thoughts."
+- The loop is the product: candidate → correct → lock → regenerate → keep or explore.
+- Every version is immutable and hash-identified; undo/redo and branches are explicit.
+- Locked content cannot be changed by regeneration or ordinary commands; unlock is explicit.
+- The provenance badge always shows the claim level (L0/L1) — never a neural-content claim.
 - A fixed seed reproduces the exact same session (replay hash).

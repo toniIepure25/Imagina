@@ -26,6 +26,20 @@ async def test_health(client: AsyncClient):
     assert data["status"] == "ok"
 
 
+async def test_untrusted_host_is_rejected():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://evil.test") as c:
+        r = await c.get("/api/health")
+    assert r.status_code == 400
+
+
+async def test_studio_responses_are_not_browser_cached(client: AsyncClient):
+    r = await client.get("/animus/studio/does-not-exist")
+    assert r.status_code == 404
+    assert r.headers["cache-control"] == "no-store"
+    assert r.headers["x-content-type-options"] == "nosniff"
+
+
 async def test_tasks(client: AsyncClient):
     r = await client.get("/api/tasks")
     assert r.status_code == 200

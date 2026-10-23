@@ -3,8 +3,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.animus import router as animus_router
+from app.api.animus_studio import router as animus_studio_router
+from app.api.animus_studio_ws import router as animus_studio_ws_router
 from app.api.calibration import router as calibration_router
 from app.api.experiments import router as experiments_router
 from app.api.exports import router as exports_router
@@ -59,11 +62,27 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins.split(","),
+    allow_origins=[origin.strip() for origin in settings.cors_origins.split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Studio-Error-Code"],
 )
+
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=[host.strip() for host in settings.allowed_hosts.split(",") if host.strip()],
+)
+
+
+@app.middleware("http")
+async def studio_response_headers(request, call_next):
+    """Keep local scene responses out of browser caches and MIME-sniffing paths."""
+    response = await call_next(request)
+    if request.url.path.startswith("/animus/studio"):
+        response.headers.setdefault("Cache-Control", "no-store")
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    return response
 
 app.include_router(calibration_router)
 app.include_router(datasets_router)
@@ -84,6 +103,8 @@ app.include_router(research_protocol_router)
 app.include_router(synthetic_runtime_router)
 app.include_router(research_science_router)
 app.include_router(animus_router)
+app.include_router(animus_studio_router)
+app.include_router(animus_studio_ws_router)
 app.include_router(multimodal_router)
 
 

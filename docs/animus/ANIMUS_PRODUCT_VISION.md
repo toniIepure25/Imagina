@@ -15,13 +15,17 @@ re-imagine / correct / stabilize → new observation → belief update → bette
 
 The loop — not one-shot reconstruction — is the core product.
 
-## What is CURRENTLY REAL (ANIMUS-P1)
+## What is CURRENTLY REAL (ANIMUS-P1 + Studio)
+- A usable **Studio** at `/animus`: describe → see a procedural candidate → correct → lock → regenerate →
+  keep / undo / branch → save a world → reopen after restart.
+- A versioned, hashable **symbolic scene graph** (ANIMUS-SG-v1) with explicit provenance and locks.
+- Deterministic intention parsing and typed scene commands; no hidden target and no external model.
+- Procedural React Three Fiber rendering of that state (castle, ocean, sky, weather, creatures, portals).
+- Local SQLite persistence for sessions, versions, branches, candidates, and worlds.
 - Behavioral feedback (closer/farther, pairwise, attribute/object corrections, free-text, confidence,
   re-imagination).
-- Symbolic / adaptive feedback surfaces (the Dream Corridor becomes one surface, not the center).
 - Deterministic, replayable loop control (typed state machine).
 - Local-first user-preference learning.
-- Generative candidate iteration (deterministic + mock/local adapters).
 - **Simulated** neural observations (a synthetic digital twin), used to build and validate the loop.
 
 ## What is FUTURE / PLUGGABLE
@@ -31,8 +35,11 @@ The loop — not one-shot reconstruction — is the core product.
 
 ## Honesty guarantees
 - The UI never implies that synthetic or behavioral observations are decoded thoughts.
+- The Studio makes **no image-generation claim**: every candidate is a symbolic, editable procedural
+  preview. Its capability envelope is returned by the backend and displayed in the UI.
 - A machine-readable **claim level** (L0 simulated / L1 behavioral-assisted) gates every label and export;
-  ANIMUS-P1 operates only at L0/L1. Higher levels require a future scientific gate — no manual bypass.
+  ANIMUS-P1 and Studio operate only at L0/L1. Higher levels require a future scientific gate — no manual
+  bypass.
 - Product code consults a **scientific evidence registry** that references the immutable C3XAT-R1 / C3XRP /
   C3XRA results **without reinterpreting them**, so the product can never outrun the science.
 
