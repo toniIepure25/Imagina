@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -179,27 +179,34 @@ export default function AnimusScene({
   selectedId,
   onSelect,
   className = "",
+  showOverlay = true,
+  interactive = true,
 }: {
   scene: SceneGraph;
   selectedId: string | null;
   onSelect: (entityId: string | null) => void;
   className?: string;
+  showOverlay?: boolean;
+  interactive?: boolean;
 }) {
   const camera = scene.camera;
   const reducedMotion = useReducedMotion();
+  const descriptionId = useId();
   const entityLabels = scene.entities.map((entity) => `${entity.label} (${entityKindLabel(entity.kind)})`);
   return (
     <div
       role="region"
-      aria-label="Interactive 3D scene preview"
-      aria-describedby="animus-scene-description"
+      aria-label={interactive ? "Interactive 3D scene preview" : "3D scene preview"}
+      aria-describedby={descriptionId}
       className={`relative overflow-hidden bg-[#050711] ${className}`}
       data-testid="animus-scene"
     >
-      <p id="animus-scene-description" className="sr-only" aria-live="polite">
-        {scene.title}, {scene.style} style, {scene.atmosphere.time_of_day}, {scene.atmosphere.weather}.{" "}
-        {entityLabels.length ? `Elements: ${entityLabels.join(", ")}.` : "The scene has no elements yet."}{" "}
-        Drag to orbit, scroll to zoom, and select an element in the inspector to edit it.
+      <p id={descriptionId} className="sr-only" aria-live="polite">
+        {showOverlay
+          ? `${scene.title}, ${scene.style} style, ${scene.atmosphere.time_of_day}, ${scene.atmosphere.weather}. ${
+              entityLabels.length ? `Elements: ${entityLabels.join(", ")}.` : "The scene has no elements yet."
+            } Drag to orbit, scroll to zoom, and select an element in the inspector to edit it.`
+          : "Scene preview. Visual details are intentionally not described."}
       </p>
       <Canvas
         dpr={[1, 1.7]}
@@ -225,48 +232,53 @@ export default function AnimusScene({
         <Weather scene={scene} animate={!reducedMotion} />
         <OrbitControls
           makeDefault
+          enabled={interactive}
           target={camera.target}
           enablePan={false}
           minDistance={3}
           maxDistance={34}
           maxPolarAngle={Math.PI / 2.02}
-          autoRotate={camera.motion === "orbit" && !reducedMotion}
+          autoRotate={interactive && camera.motion === "orbit" && !reducedMotion}
           autoRotateSpeed={0.35 + camera.speed * 2}
         />
       </Canvas>
 
-      <div className="pointer-events-none absolute left-4 top-4 z-10 max-w-[62%]">
-        <div className="text-[10px] uppercase tracking-[0.24em] text-accent-glow/70">
-          {scene.style} · {scene.atmosphere.time_of_day} · {scene.atmosphere.weather}
-        </div>
-        <h2 className="mt-1 truncate text-sm font-semibold text-foreground/90">{scene.title}</h2>
-        <div className="mt-1 text-[10px] text-foreground/40">
-          {scene.entities.length} element{scene.entities.length === 1 ? "" : "s"} · v{scene.version} · local
-          procedural preview
-        </div>
-      </div>
-      <div className="pointer-events-none absolute right-4 top-4 z-10 flex items-center gap-2">
-        <span className="rounded-full border border-white/10 bg-background/65 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-foreground/45 backdrop-blur">
-          L1 · behavioral
-        </span>
-        <span className="rounded-full border border-white/10 bg-background/65 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-foreground/45 backdrop-blur">
-          no image model
-        </span>
-      </div>
-      <div className="pointer-events-none absolute bottom-3 left-4 z-10 text-[10px] text-foreground/35">
-        Drag to orbit · scroll to zoom · click an element to edit or lock it
-      </div>
-      {scene.entities.length === 0 && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <div className="rounded-xl border border-white/10 bg-background/70 px-4 py-3 text-xs text-foreground/55 backdrop-blur">
-            This scene has no elements yet. Add one from the inspector.
+      {showOverlay ? (
+        <>
+          <div className="pointer-events-none absolute left-4 top-4 z-10 max-w-[62%]">
+            <div className="text-[10px] uppercase tracking-[0.24em] text-accent-glow/70">
+              {scene.style} · {scene.atmosphere.time_of_day} · {scene.atmosphere.weather}
+            </div>
+            <h2 className="mt-1 truncate text-sm font-semibold text-foreground/90">{scene.title}</h2>
+            <div className="mt-1 text-[10px] text-foreground/40">
+              {scene.entities.length} element{scene.entities.length === 1 ? "" : "s"} · v{scene.version} · local
+              procedural preview
+            </div>
           </div>
-        </div>
-      )}
-      <div className="pointer-events-none absolute bottom-3 right-4 z-10 text-[10px] text-foreground/30">
-        {scene.entities.filter((entity) => entity.role === "subject").map((entity) => entityKindLabel(entity.kind)).join(" · ") ||
-          "empty stage"}
-      </div>
+          <div className="pointer-events-none absolute right-4 top-4 z-10 flex items-center gap-2">
+            <span className="rounded-full border border-white/10 bg-background/65 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-foreground/45 backdrop-blur">
+              L1 · behavioral
+            </span>
+            <span className="rounded-full border border-white/10 bg-background/65 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-foreground/45 backdrop-blur">
+              no image model
+            </span>
+          </div>
+          <div className="pointer-events-none absolute bottom-3 left-4 z-10 text-[10px] text-foreground/35">
+            Drag to orbit · scroll to zoom · click an element to edit or lock it
+          </div>
+          {scene.entities.length === 0 && (
+            <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+              <div className="rounded-xl border border-white/10 bg-background/70 px-4 py-3 text-xs text-foreground/55 backdrop-blur">
+                This scene has no elements yet. Add one from the inspector.
+              </div>
+            </div>
+          )}
+          <div className="pointer-events-none absolute bottom-3 right-4 z-10 text-[10px] text-foreground/30">
+            {scene.entities.filter((entity) => entity.role === "subject").map((entity) => entityKindLabel(entity.kind)).join(" · ") ||
+              "empty stage"}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

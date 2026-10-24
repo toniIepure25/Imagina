@@ -29,8 +29,8 @@ async def _create(service: AnimusStudioService) -> dict:
         title="Integrity", intention="a white castle above a dark ocean at dusk", seed=29)
 
 
-async def test_schema_reaches_v017(service):
-    assert await service.repository.schema_version() == 17
+async def test_schema_reaches_v021(service):
+    assert await service.repository.schema_version() == 21
 
 
 async def test_expected_version_is_optimistic_and_atomic(service):

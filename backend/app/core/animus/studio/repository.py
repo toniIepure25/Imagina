@@ -10,6 +10,7 @@ import asyncio
 import json
 import os
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from typing import Any, AsyncIterator
 
 import aiosqlite
@@ -553,6 +554,544 @@ class StudioRepository:
             "stored candidate notes are invalid")
         payload["selected"] = bool(payload.get("selected"))
         return payload
+
+    # --- behavioural profile --------------------------------------------------
+    async def ensure_profile(self, profile_id: str) -> dict:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            await db.execute(
+                """INSERT INTO animus_studio_profiles (profile_id, profile_version, consent_json)
+                   VALUES (?, 'ANIMUS-PROFILE-v1', '{}')
+                   ON CONFLICT(profile_id) DO NOTHING""",
+                (profile_id,),
+            )
+            await db.commit()
+            cursor = await db.execute(
+                "SELECT * FROM animus_studio_profiles WHERE profile_id = ?", (profile_id,))
+            row = await cursor.fetchone()
+            if row is None:
+                raise ValueError("profile could not be created")
+            return self._profile_row(row)
+        finally:
+            await db.close()
+
+    async def get_profile(self, profile_id: str) -> dict | None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                "SELECT * FROM animus_studio_profiles WHERE profile_id = ?", (profile_id,))
+            row = await cursor.fetchone()
+            return self._profile_row(row) if row else None
+        finally:
+            await db.close()
+
+    @staticmethod
+    def _profile_row(row: aiosqlite.Row) -> dict:
+        payload = dict(row)
+        payload["consent"] = _require_type(
+            _load(payload.pop("consent_json", None), {}, required=True), dict,
+            "stored profile consent is invalid")
+        return payload
+
+    async def load_profile_estimates(self, profile_id: str) -> dict[str, dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                "SELECT * FROM animus_studio_profile_estimates WHERE profile_id = ?", (profile_id,))
+            estimates: dict[str, dict] = {}
+            for row in await cursor.fetchall():
+                item = dict(row)
+                item["stats"] = _require_type(
+                    _load(item.pop("stats_json", None), {}, required=True), dict,
+                    "stored profile stats are invalid")
+                estimates[item["dimension"]] = item
+            return estimates
+        finally:
+            await db.close()
+
+    async def profile_trial_count(self, profile_id: str,
+                                  exclude_family: str | None = None) -> int:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            if exclude_family is None:
+                cursor = await db.execute(
+                    "SELECT COUNT(*) FROM animus_studio_trials WHERE profile_id = ?",
+                    (profile_id,))
+            else:
+                cursor = await db.execute(
+                    """SELECT COUNT(*) FROM animus_studio_trials
+                       WHERE profile_id = ? AND task_family != ?""",
+                    (profile_id, exclude_family))
+            row = await cursor.fetchone()
+            return int(row[0]) if row else 0
+        finally:
+            await db.close()
+
+    async def get_trial_by_client_id(self, session_id: str, client_trial_id: str) -> dict | None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_trials
+                   WHERE session_id = ? AND client_trial_id = ?""",
+                (session_id, client_trial_id),
+            )
+            row = await cursor.fetchone()
+            return self._trial_row(row) if row else None
+        finally:
+            await db.close()
+
+    async def list_recent_trials(self, profile_id: str, limit: int = 20) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_trials WHERE profile_id = ?
+                   ORDER BY created_at DESC LIMIT ?""",
+                (profile_id, max(1, min(int(limit), 100))),
+            )
+            rows = await cursor.fetchall()
+            return [self._trial_row(row) for row in reversed(rows)]
+        finally:
+            await db.close()
+
+    async def list_trials(self, session_id: str, limit: int = 50) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_trials WHERE session_id = ?
+                   ORDER BY created_at DESC LIMIT ?""",
+                (session_id, max(1, min(int(limit), 200))),
+            )
+            rows = await cursor.fetchall()
+            return [self._trial_row(row) for row in reversed(rows)]
+        finally:
+            await db.close()
+
+    async def record_event(self, session_id: str, event_type: str, payload: dict) -> int:
+        async with self.write_transaction() as db:
+            return await self._insert_event_tx(db, session_id, event_type, payload)
+
+    async def create_interview(self, record: dict) -> dict:
+        async with self.write_transaction() as db:
+            await db.execute(
+                """INSERT INTO animus_studio_interviews
+                   (interview_id, session_id, source_version_id, scene_hash, protocol_version,
+                    form_id, seed, difficulty, max_probes, status, created_at, completed_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (record["interview_id"], record["session_id"], record["source_version_id"],
+                 record["scene_hash"], record["protocol_version"], record["form_id"],
+                 int(record["seed"]), float(record.get("difficulty") or 0.45),
+                 int(record["max_probes"]),
+                 record.get("status", "active"), record["created_at"],
+                 record.get("completed_at")),
+            )
+            return dict(record)
+
+    async def create_interview_bundle(self, record: dict, *, event_payload: dict) -> int:
+        async with self.write_transaction() as db:
+            await db.execute(
+                """INSERT INTO animus_studio_interviews
+                   (interview_id, session_id, source_version_id, scene_hash, protocol_version,
+                    form_id, seed, difficulty, max_probes, status, created_at, completed_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (record["interview_id"], record["session_id"], record["source_version_id"],
+                 record["scene_hash"], record["protocol_version"], record["form_id"],
+                 int(record["seed"]), float(record.get("difficulty") or 0.45),
+                 int(record["max_probes"]),
+                 record.get("status", "active"), record["created_at"],
+                 record.get("completed_at")),
+            )
+            return await self._insert_event_tx(
+                db, record["session_id"], "studio.interview.started", event_payload)
+
+    async def get_interview(self, interview_id: str) -> dict | None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                "SELECT * FROM animus_studio_interviews WHERE interview_id = ?", (interview_id,))
+            row = await cursor.fetchone()
+            return dict(row) if row else None
+        finally:
+            await db.close()
+
+    async def list_interviews(self, session_id: str, limit: int = 50) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_interviews WHERE session_id = ?
+                   ORDER BY created_at DESC LIMIT ?""",
+                (session_id, max(1, min(int(limit), 100))),
+            )
+            rows = await cursor.fetchall()
+            return [dict(row) for row in reversed(rows)]
+        finally:
+            await db.close()
+
+    async def list_completed_interviews(self, limit: int = 50) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_interviews
+                   WHERE status = 'completed' ORDER BY created_at DESC LIMIT ?""",
+                (max(1, min(int(limit), 200)),),
+            )
+            rows = await cursor.fetchall()
+            return [dict(row) for row in reversed(rows)]
+        finally:
+            await db.close()
+
+    async def list_interview_probes(self, interview_id: str) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_trials WHERE interview_id = ?
+                   ORDER BY probe_index ASC, created_at ASC""",
+                (interview_id,),
+            )
+            rows = await cursor.fetchall()
+            return [self._trial_row(row) for row in rows]
+        finally:
+            await db.close()
+
+    async def interview_probe_count(self, interview_id: str) -> int:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                "SELECT COUNT(*) FROM animus_studio_trials WHERE interview_id = ?",
+                (interview_id,),
+            )
+            row = await cursor.fetchone()
+            return int(row[0]) if row else 0
+        finally:
+            await db.close()
+
+    async def create_contrast_bundle(self, record: dict, *, event_payload: dict) -> int:
+        async with self.write_transaction() as db:
+            await db.execute(
+                """INSERT INTO animus_studio_contrast_sessions
+                   (contrast_id, session_id, source_version_id, scene_hash, protocol_version,
+                    form_id, seed, max_trials, difficulty, occasion, delay_hours, reflection_json,
+                    status, created_at, completed_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (record["contrast_id"], record["session_id"], record["source_version_id"],
+                 record["scene_hash"], record["protocol_version"], record["form_id"],
+                 int(record["seed"]), int(record["max_trials"]),
+                 float(record.get("difficulty") or 0.45), record.get("occasion", "baseline"),
+                 record.get("delay_hours"), _json(record.get("reflection") or {}),
+                 record.get("status", "active"), record["created_at"],
+                 record.get("completed_at")),
+            )
+            return await self._insert_event_tx(
+                db, record["session_id"], "studio.contrast.started", event_payload)
+
+    async def get_contrast(self, contrast_id: str) -> dict | None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                "SELECT * FROM animus_studio_contrast_sessions WHERE contrast_id = ?",
+                (contrast_id,),
+            )
+            row = await cursor.fetchone()
+            return self._contrast_row(row) if row else None
+        finally:
+            await db.close()
+
+    async def list_contrasts(self, session_id: str, limit: int = 50) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_contrast_sessions WHERE session_id = ?
+                   ORDER BY created_at DESC LIMIT ?""",
+                (session_id, max(1, min(int(limit), 100))),
+            )
+            rows = await cursor.fetchall()
+            return [self._contrast_row(row) for row in reversed(rows)]
+        finally:
+            await db.close()
+
+    async def list_all_contrasts(self, limit: int = 100) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_contrast_sessions
+                   ORDER BY created_at DESC LIMIT ?""",
+                (max(1, min(int(limit), 200)),),
+            )
+            rows = await cursor.fetchall()
+            return [self._contrast_row(row) for row in reversed(rows)]
+        finally:
+            await db.close()
+
+    async def list_completed_contrasts_for_scene(self, scene_hash: str,
+                                                 limit: int = 50) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_contrast_sessions
+                   WHERE scene_hash = ? AND status = 'completed'
+                   ORDER BY created_at DESC LIMIT ?""",
+                (scene_hash, max(1, min(int(limit), 100))),
+            )
+            rows = await cursor.fetchall()
+            return [self._contrast_row(row) for row in reversed(rows)]
+        finally:
+            await db.close()
+
+    async def list_contrast_trials(self, contrast_id: str) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_contrast_trials WHERE contrast_id = ?
+                   ORDER BY trial_index ASC""",
+                (contrast_id,),
+            )
+            return [self._contrast_trial_row(row) for row in await cursor.fetchall()]
+        finally:
+            await db.close()
+
+    async def get_contrast_trial_by_client_id(self, contrast_id: str,
+                                              client_trial_id: str) -> dict | None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                """SELECT * FROM animus_studio_contrast_trials
+                   WHERE contrast_id = ? AND client_trial_id = ?""",
+                (contrast_id, client_trial_id),
+            )
+            row = await cursor.fetchone()
+            return self._contrast_trial_row(row) if row else None
+        finally:
+            await db.close()
+
+    async def record_contrast_trial_bundle(self, *, contrast_id: str, trial: dict,
+                                           event_type: str, event_payload: dict,
+                                           complete: bool = False) -> int | None:
+        async with self.write_transaction() as db:
+            cursor = await db.execute(
+                """INSERT INTO animus_studio_contrast_trials
+                   (trial_id, contrast_id, trial_index, task_id, feature_type, feature_key,
+                    delta, staircase_level, target_side, chosen_option_id, correct, confidence,
+                    abstained, latency_ms, client_trial_id, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   ON CONFLICT(contrast_id, client_trial_id) DO NOTHING""",
+                (trial["trial_id"], contrast_id, int(trial["trial_index"]), trial["task_id"],
+                 trial["feature_type"], trial["feature_key"], trial.get("delta"),
+                 trial.get("staircase_level"), trial["target_side"],
+                 trial.get("chosen_option_id"), trial.get("correct"),
+                 trial.get("confidence"), int(bool(trial.get("abstained"))),
+                 trial.get("latency_ms"), trial["client_trial_id"], trial["created_at"]),
+            )
+            if cursor.rowcount == 0:
+                return None
+            event_seq = await self._insert_event_tx(
+                db, event_payload["session_id"], event_type, event_payload)
+            if complete:
+                await db.execute(
+                    """UPDATE animus_studio_contrast_sessions
+                       SET status = 'completed', completed_at = ?
+                       WHERE contrast_id = ? AND status = 'active'""",
+                    (trial["created_at"], contrast_id),
+                )
+            return event_seq
+
+    async def set_contrast_reflection(self, contrast_id: str, reflection: dict) -> None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            await db.execute(
+                """UPDATE animus_studio_contrast_sessions
+                   SET reflection_json = ? WHERE contrast_id = ?""",
+                (_json(reflection), contrast_id),
+            )
+            await db.commit()
+        finally:
+            await db.close()
+
+    @staticmethod
+    def _contrast_row(row: aiosqlite.Row) -> dict:
+        payload = dict(row)
+        payload["reflection"] = _require_type(
+            _load(payload.pop("reflection_json", None), {}, required=True), dict,
+            "stored contrast reflection is invalid")
+        return payload
+
+    @staticmethod
+    def _contrast_trial_row(row: aiosqlite.Row) -> dict:
+        payload = dict(row)
+        payload["abstained"] = bool(payload.get("abstained"))
+        if payload.get("correct") is not None:
+            payload["correct"] = bool(payload["correct"])
+        return payload
+
+    async def record_trial_bundle(self, *, trial: dict, estimates: list[dict],
+                                  event_type: str, event_payload: dict,
+                                  complete_interview_id: str | None = None) -> int | None:
+        async with self.write_transaction() as db:
+            cursor = await db.execute(
+                """INSERT INTO animus_studio_trials
+                   (trial_id, session_id, profile_id, protocol_run_id, client_trial_id, task_type,
+                    dimension, difficulty, stimulus_json, response_json, outcome_json, confidence,
+                    latency_ms, created_at, task_family, response_kind, scoring_version,
+                    error_profile_json, interview_id, probe_index, probe_type, belief_json,
+                    information_gain)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   ON CONFLICT(session_id, client_trial_id) DO NOTHING""",
+                (trial["trial_id"], trial["session_id"], trial["profile_id"],
+                 trial.get("protocol_run_id"), trial["client_trial_id"], trial["task_type"],
+                 trial["dimension"], float(trial["difficulty"]), _json(trial["stimulus"]),
+                 _json(trial["response"]), _json(trial["outcome"]), float(trial["confidence"]),
+                 int(trial["latency_ms"]), trial["created_at"],
+                 trial.get("task_family") or "legacy",
+                 trial.get("response_kind") or "option",
+                 trial.get("scoring_version") or "v1",
+                 _json(trial.get("error_profile") or {}),
+                 trial.get("interview_id"),
+                 trial.get("probe_index"),
+                 trial.get("probe_type"),
+                 _json(trial.get("belief") or {}),
+                 trial.get("information_gain")),
+            )
+            if cursor.rowcount == 0:
+                return None
+            for estimate in estimates:
+                await db.execute(
+                    """INSERT INTO animus_studio_profile_estimates
+                       (profile_id, dimension, estimate, uncertainty, n, reliability, stats_json, updated_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                       ON CONFLICT(profile_id, dimension) DO UPDATE SET
+                         estimate=excluded.estimate, uncertainty=excluded.uncertainty,
+                         n=excluded.n, reliability=excluded.reliability,
+                         stats_json=excluded.stats_json, updated_at=excluded.updated_at""",
+                    (estimate["profile_id"], estimate["dimension"], estimate.get("estimate"),
+                     estimate.get("uncertainty"), int(estimate.get("n") or 0),
+                     float(estimate.get("reliability") or 0), _json(estimate.get("stats") or {}),
+                     estimate["updated_at"]),
+                )
+            event_seq = await self._insert_event_tx(
+                db, trial["session_id"], event_type, event_payload)
+            if complete_interview_id:
+                await db.execute(
+                    """UPDATE animus_studio_interviews
+                       SET status = 'completed', completed_at = ?
+                       WHERE interview_id = ? AND status = 'active'""",
+                    (trial["created_at"], complete_interview_id),
+                )
+            return event_seq
+
+    @staticmethod
+    def _trial_row(row: aiosqlite.Row) -> dict:
+        payload = dict(row)
+        for key in ("stimulus_json", "response_json", "outcome_json", "error_profile_json",
+                    "belief_json"):
+            name = key.removesuffix("_json")
+            payload[name] = _require_type(
+                _load(payload.pop(key, None), {}, required=True), dict,
+                f"stored trial {name} is invalid")
+        return payload
+
+    async def reset_profile(self, profile_id: str) -> int:
+        async with self.write_transaction() as db:
+            cursor = await db.execute(
+                "DELETE FROM animus_studio_trials WHERE profile_id = ?", (profile_id,))
+            deleted = int(cursor.rowcount or 0)
+            await db.execute(
+                "DELETE FROM animus_studio_profile_estimates WHERE profile_id = ?", (profile_id,))
+            await db.execute("DELETE FROM animus_studio_interviews")
+            await db.execute("DELETE FROM animus_studio_contrast_trials")
+            await db.execute("DELETE FROM animus_studio_contrast_sessions")
+            await db.execute(
+                "UPDATE animus_studio_profiles SET updated_at = datetime('now') WHERE profile_id = ?",
+                (profile_id,),
+            )
+            return deleted
+
+    # --- protocols ------------------------------------------------------------
+    async def upsert_protocol(self, protocol: dict) -> None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            await db.execute(
+                """INSERT INTO animus_studio_protocols
+                   (protocol_id, version, name, description, spec_json, builtin, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)
+                   ON CONFLICT(protocol_id) DO UPDATE SET
+                     version=excluded.version, name=excluded.name, description=excluded.description,
+                     spec_json=excluded.spec_json, builtin=excluded.builtin""",
+                (protocol["protocol_id"], protocol["version"], protocol["name"],
+                 protocol.get("description", ""), _json(protocol["spec"]),
+                 int(protocol.get("builtin", 0)),
+                 protocol.get("created_at") or datetime.now(timezone.utc).isoformat()),
+            )
+            await db.commit()
+        finally:
+            await db.close()
+
+    async def list_protocols(self) -> list[dict]:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            cursor = await db.execute(
+                "SELECT * FROM animus_studio_protocols ORDER BY builtin DESC, name")
+            return [self._protocol_row(row) for row in await cursor.fetchall()]
+        finally:
+            await db.close()
+
+    @staticmethod
+    def _protocol_row(row: aiosqlite.Row) -> dict:
+        payload = dict(row)
+        payload["spec"] = _require_type(
+            _load(payload.pop("spec_json", None), {}, required=True), dict,
+            "stored protocol spec is invalid")
+        payload["builtin"] = bool(payload.get("builtin"))
+        return payload
+
+    async def create_protocol_run(self, run: dict) -> None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            await db.execute(
+                """INSERT INTO animus_studio_protocol_runs
+                   (run_id, protocol_id, session_id, status, current_index, total_trials,
+                    started_at, metadata_json)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (run["run_id"], run["protocol_id"], run["session_id"], run.get("status", "active"),
+                 int(run.get("current_index") or 0), int(run.get("total_trials") or 0),
+                 run["started_at"], _json(run.get("metadata") or {})),
+            )
+            await db.commit()
+        finally:
+            await db.close()
+
+    async def update_protocol_run(self, run_id: str, *, status: str, current_index: int,
+                                  completed_at: str | None = None) -> None:
+        await self.ensure_schema()
+        db = await self._connect()
+        try:
+            await db.execute(
+                """UPDATE animus_studio_protocol_runs
+                   SET status = ?, current_index = ?, completed_at = ? WHERE run_id = ?""",
+                (status, int(current_index), completed_at, run_id),
+            )
+            await db.commit()
+        finally:
+            await db.close()
 
     # --- worlds ---------------------------------------------------------------
     async def save_world(self, world: dict, items: list[dict] | None = None) -> None:

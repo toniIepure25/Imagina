@@ -77,6 +77,103 @@ class StudioCandidateRecord(TypedDict):
     created_at: str
 
 
+class StudioProfileRecord(TypedDict):
+    profile_id: str
+    profile_version: str
+    consent: dict[str, Any]
+    created_at: str
+    updated_at: str
+
+
+class StudioProfileEstimateRecord(TypedDict):
+    profile_id: str
+    dimension: str
+    estimate: float | None
+    uncertainty: float | None
+    n: int
+    reliability: float
+    stats: dict[str, Any]
+    updated_at: str
+
+
+class StudioTrialRecord(TypedDict):
+    trial_id: str
+    session_id: str
+    profile_id: str
+    protocol_run_id: str | None
+    client_trial_id: str
+    task_type: str
+    dimension: str
+    difficulty: float
+    stimulus: dict[str, Any]
+    response: dict[str, Any]
+    outcome: dict[str, Any]
+    error_profile: dict[str, Any]
+    task_family: str
+    response_kind: str
+    scoring_version: str
+    interview_id: str | None
+    probe_index: int | None
+    probe_type: str | None
+    belief: dict[str, Any]
+    information_gain: float | None
+    confidence: float
+    latency_ms: int
+    created_at: str
+
+
+class StudioInterviewRecord(TypedDict):
+    interview_id: str
+    session_id: str
+    source_version_id: str
+    scene_hash: str
+    protocol_version: str
+    form_id: str
+    seed: int
+    difficulty: float
+    max_probes: int
+    status: str
+    created_at: str
+    completed_at: str | None
+
+
+class StudioContrastSessionRecord(TypedDict):
+    contrast_id: str
+    session_id: str
+    source_version_id: str
+    scene_hash: str
+    protocol_version: str
+    form_id: str
+    seed: int
+    max_trials: int
+    difficulty: float
+    occasion: str
+    delay_hours: float | None
+    reflection_json: str
+    status: str
+    created_at: str
+    completed_at: str | None
+
+
+class StudioContrastTrialRecord(TypedDict):
+    trial_id: str
+    contrast_id: str
+    trial_index: int
+    task_id: str
+    feature_type: str
+    feature_key: str
+    delta: float | None
+    staircase_level: float | None
+    target_side: str
+    chosen_option_id: str | None
+    correct: int | None
+    confidence: float | None
+    abstained: int
+    latency_ms: int | None
+    client_trial_id: str
+    created_at: str
+
+
 class StudioWorldItemRecord(TypedDict):
     item_id: str
     world_id: str
@@ -132,6 +229,11 @@ __all__ = [
     "StudioVersionSummaryRecord",
     "StudioVersionRecord",
     "StudioCandidateRecord",
+    "StudioProfileRecord",
+    "StudioProfileEstimateRecord",
+    "StudioTrialRecord",
+    "StudioContrastSessionRecord",
+    "StudioContrastTrialRecord",
     "StudioWorldItemRecord",
     "StudioWorldRecord",
     "StudioSessionSummaryRecord",

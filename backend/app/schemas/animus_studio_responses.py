@@ -213,7 +213,411 @@ class CapabilityModel(_StudioModel):
     network_calls: str
     uploads: str
     privacy_scope: str
+    behavioral_profile: str = "EXPERIMENTAL"
+    behavioral_reconstruction: str = "EXPERIMENTAL"
+    adaptive_practice: str = "EXPERIMENTAL"
+    epistemic_interview: str = "EXPERIMENTAL"
+    contrast_observatory: str = "EXPERIMENTAL"
+    clinical_use: str = "DISABLED"
     claim_ceiling: str
+
+
+class ProfileDimensionModel(_StudioModel):
+    id: str
+    label: str
+    description: str
+    construct: str
+    estimate: float | None = None
+    uncertainty: float = 1.0
+    n: int = 0
+    reliability: float = 0.0
+    status: str = "no_evidence"
+    brier_score: float | None = None
+    provenance: str = "BEHAVIORAL_PRACTICE"
+
+
+class ErrorSignatureModel(_StudioModel):
+    n: int = 0
+    omissions: int = 0
+    intrusions: int = 0
+    mean_spatial_error: float | None = None
+    spatial_n: int = 0
+    epistemic_n: int = 0
+
+
+class EpistemicSummaryModel(_StudioModel):
+    n_interviews: int = 0
+    n_probes: int = 0
+    mean_brier: float | None = None
+    overconfidence: float | None = None
+    abstention_rate: float | None = None
+    mean_information_gain: float | None = None
+    last_interview_id: str | None = None
+
+
+class ProfileContrastModel(_StudioModel):
+    n_sessions: int = 0
+    n_completed: int = 0
+    n_trials: int = 0
+    median_threshold: float | None = None
+    mean_dprime: float | None = None
+    mean_brier: float | None = None
+    calibration_n: int = 0
+    last_contrast_id: str | None = None
+
+
+class ProfileModel(_StudioModel):
+    profile_id: str
+    profile_version: str
+    claim_level: str
+    privacy_scope: str
+    trial_count: int = 0
+    dimensions: list[ProfileDimensionModel] = Field(default_factory=list)
+    error_signature: ErrorSignatureModel = Field(default_factory=ErrorSignatureModel)
+    epistemic: EpistemicSummaryModel = Field(default_factory=EpistemicSummaryModel)
+    contrast: ProfileContrastModel = Field(default_factory=ProfileContrastModel)
+    limitations: list[str] = Field(default_factory=list)
+    created_at: str | None = None
+    updated_at: str | None = None
+    measured_at: str
+
+
+class PracticeOptionModel(_StudioModel):
+    id: str
+    label: str
+    value: Any = None
+    scene: SceneGraphModel | None = None
+
+
+class PracticeTokenModel(_StudioModel):
+    token_id: str
+    kind: str
+    label: str
+    role: str = "prop"
+    color: str | None = None
+
+
+class PracticeLayoutModel(_StudioModel):
+    width: float = 1.0
+    height: float = 1.0
+    grid: int = 7
+    tolerance: float = 0.3
+
+
+class PracticeTaskModel(_StudioModel):
+    task_id: str
+    task_type: str
+    dimension: str
+    prompt: str
+    options: list[PracticeOptionModel] = Field(default_factory=list)
+    difficulty: float
+    task_seed: int
+    preview_seconds: int
+    response_kind: str = "option"
+    tokens: list[PracticeTokenModel] = Field(default_factory=list)
+    layout: PracticeLayoutModel | None = None
+
+
+class PracticeAdaptiveModel(_StudioModel):
+    dimension: str
+    task_type: str
+    difficulty: float
+    reason: str
+    expected_gain: float | None = None
+    trial_index: int | None = None
+
+
+class PracticeStartResponseModel(_StudioModel):
+    session_id: str
+    source_version_id: str
+    task: PracticeTaskModel
+    adaptive: PracticeAdaptiveModel
+    profile: ProfileModel
+    claim_level: str
+
+
+class PracticeTrialModel(_StudioModel):
+    trial_id: str | None = None
+    session_id: str | None = None
+    client_trial_id: str | None = None
+    task_type: str | None = None
+    dimension: str | None = None
+    difficulty: float | None = None
+    task_family: str | None = None
+    response_kind: str | None = None
+    scoring_version: str | None = None
+    stimulus: dict[str, Any] = Field(default_factory=dict)
+    response: dict[str, Any] = Field(default_factory=dict)
+    outcome: dict[str, Any] = Field(default_factory=dict)
+    error_profile: dict[str, Any] = Field(default_factory=dict)
+    interview_id: str | None = None
+    probe_index: int | None = None
+    probe_type: str | None = None
+    information_gain: float | None = None
+    confidence: float | None = None
+    latency_ms: int | None = None
+    created_at: str | None = None
+
+
+class PracticeSubmitResponseModel(_StudioModel):
+    session_id: str
+    trial: PracticeTrialModel | None = None
+    idempotent: bool = False
+    feedback: dict[str, Any] | None = None
+    next_task: PracticeTaskModel | None = None
+    adaptive: PracticeAdaptiveModel | None = None
+    profile: ProfileModel
+    last_event_seq: int
+
+
+class EpistemicOptionModel(_StudioModel):
+    id: str
+    label: str
+
+
+class EpistemicProbeModel(_StudioModel):
+    probe_id: str
+    task_id: str
+    probe_type: str
+    prompt: str
+    options: list[EpistemicOptionModel] = Field(default_factory=list)
+    dimension: str
+    difficulty: float
+    preview_seconds: int = 4
+
+
+class InterviewSummaryModel(_StudioModel):
+    interview_id: str
+    session_id: str
+    source_version_id: str
+    protocol_version: str = "eri-v1"
+    form_id: str = "A"
+    difficulty: float = 0.45
+    status: str = "active"
+    probe_count: int = 0
+    max_probes: int = 12
+    created_at: str | None = None
+    completed_at: str | None = None
+
+
+class EpistemicObjectModel(_StudioModel):
+    label: str
+    kind: str = "custom"
+    probability: float
+    status: str
+
+
+class EpistemicRelationModel(_StudioModel):
+    subject: str
+    relation: str
+    object: str
+    probability: float
+    status: str
+
+
+class EpistemicUncertaintyModel(_StudioModel):
+    object_entropy: float = 0.0
+    relation_entropy: float = 0.0
+
+
+class EpistemicScoresModel(_StudioModel):
+    n_probes: int = 0
+    n_answered: int = 0
+    object_accuracy: float | None = None
+    spatial_accuracy: float | None = None
+    mean_brier: float | None = None
+    coverage: float = 0.0
+    abstention_rate: float = 0.0
+    overconfidence: float | None = None
+    mean_information_gain: float | None = None
+
+
+class EpistemicReconstructionModel(_StudioModel):
+    objects: list[EpistemicObjectModel] = Field(default_factory=list)
+    relations: list[EpistemicRelationModel] = Field(default_factory=list)
+    uncertainty: EpistemicUncertaintyModel = Field(default_factory=EpistemicUncertaintyModel)
+    scores: EpistemicScoresModel = Field(default_factory=EpistemicScoresModel)
+    protocol_version: str = "eri-v1"
+    scoring_version: str = "eri-v1"
+
+
+class InterviewStartResponseModel(_StudioModel):
+    session_id: str
+    interview: InterviewSummaryModel
+    probe: EpistemicProbeModel
+    profile: ProfileModel
+    claim_level: str
+
+
+class InterviewSubmitResponseModel(_StudioModel):
+    session_id: str
+    interview: InterviewSummaryModel | None = None
+    trial: PracticeTrialModel | None = None
+    idempotent: bool = False
+    feedback: dict[str, Any] | None = None
+    next_probe: EpistemicProbeModel | None = None
+    reconstruction: EpistemicReconstructionModel | None = None
+    profile: ProfileModel
+    last_event_seq: int
+
+
+class InterviewSummaryResponseModel(_StudioModel):
+    session_id: str
+    interview: InterviewSummaryModel
+    reconstruction: EpistemicReconstructionModel
+    profile: ProfileModel
+    claim_level: str
+
+
+class InterviewListResponseModel(_StudioModel):
+    session_id: str
+    interviews: list[InterviewSummaryModel] = Field(default_factory=list)
+
+
+class ContrastSummaryModel(_StudioModel):
+    contrast_id: str
+    session_id: str
+    source_version_id: str
+    protocol_version: str = "contrast-v1"
+    form_id: str = "A"
+    max_trials: int = 16
+    difficulty: float = 0.45
+    occasion: str = "baseline"
+    delay_hours: float | None = None
+    status: str = "active"
+    trial_count: int = 0
+    reflection: dict[str, Any] = Field(default_factory=dict)
+    created_at: str | None = None
+    completed_at: str | None = None
+
+
+class ContrastOptionModel(_StudioModel):
+    id: str
+    label: str
+    scene: SceneGraphModel
+
+
+class ContrastTrialModel(_StudioModel):
+    trial_id: str
+    task_id: str
+    trial_index: int
+    prompt: str = "Which scene matches the one you saw?"
+    options: list[ContrastOptionModel] = Field(default_factory=list)
+    preview_seconds: int = 5
+
+
+class ContrastThresholdModel(_StudioModel):
+    threshold: float | None = None
+    slope: float | None = None
+    ci: list[float] | None = None
+    censored: bool | None = None
+    n: int = 0
+    status: str = "insufficient_evidence"
+    scoring_version: str = "sdt-v1"
+
+
+class ContrastCalibrationModel(_StudioModel):
+    n: int = 0
+    brier: float | None = None
+    overconfidence: float | None = None
+    type2_auc: float | None = None
+
+
+class ContrastResultModel(_StudioModel):
+    protocol_version: str = "contrast-v1"
+    scoring_version: str = "sdt-v1"
+    n_trials: int = 0
+    n_answered: int = 0
+    coverage: float | None = None
+    dprime: float | None = None
+    side_bias: float | None = None
+    thresholds: dict[str, ContrastThresholdModel] = Field(default_factory=dict)
+    calibration: ContrastCalibrationModel = Field(default_factory=ContrastCalibrationModel)
+    notes: list[str] = Field(default_factory=list)
+
+
+class ContrastStartResponseModel(_StudioModel):
+    session_id: str
+    contrast: ContrastSummaryModel
+    trial: ContrastTrialModel
+    profile: ProfileModel
+    claim_level: str
+
+
+class ContrastSubmitResponseModel(_StudioModel):
+    session_id: str
+    contrast: ContrastSummaryModel
+    trial: dict[str, Any]
+    recorded: bool = True
+    idempotent: bool = False
+    next_trial: ContrastTrialModel | None = None
+    result: ContrastResultModel | None = None
+    profile: ProfileModel
+    last_event_seq: int
+
+
+class ContrastSummaryResponseModel(_StudioModel):
+    session_id: str
+    contrast: ContrastSummaryModel
+    result: ContrastResultModel
+    profile: ProfileModel
+    claim_level: str
+
+
+class ContrastListResponseModel(_StudioModel):
+    session_id: str
+    contrasts: list[ContrastSummaryModel] = Field(default_factory=list)
+
+
+class EvidenceSourceModel(_StudioModel):
+    probe_id: str
+    probe_type: str
+    choice: str = ""
+    confidence: float | None = None
+    abstained: bool = False
+    information_gain: float | None = None
+    created_at: str | None = None
+
+
+class EvidenceItemModel(_StudioModel):
+    variable_id: str
+    label: str
+    probe_type: str
+    provenance: str = "prior"
+    posterior: float = 0.5
+    uncertainty: float = 0.5
+    n_sources: int = 0
+    leave_one_out_delta: float = 0.0
+    dependence_group: str
+    sources: list[EvidenceSourceModel] = Field(default_factory=list)
+
+
+class ObservatoryModel(_StudioModel):
+    session_id: str
+    source_version_id: str
+    scene_hash: str
+    belief: EpistemicReconstructionModel
+    evidence: list[EvidenceItemModel] = Field(default_factory=list)
+    discrimination: dict[str, Any] = Field(default_factory=dict)
+    reliability: dict[str, Any] = Field(default_factory=dict)
+    boundaries: list[str] = Field(default_factory=list)
+    claim_level: str = "L1_BEHAVIORAL_ASSISTED"
+
+
+class ProtocolSummaryModel(_StudioModel):
+    protocol_id: str
+    version: str
+    name: str
+    description: str = ""
+    builtin: bool = False
+    total_trials: int = 0
+    max_minutes: int = 0
+    dimensions: list[str] = Field(default_factory=list)
+
+
+class ProtocolListResponseModel(_StudioModel):
+    protocol_version: str
+    protocols: list[ProtocolSummaryModel] = Field(default_factory=list)
 
 
 class StudioSnapshotModel(_StudioModel):
@@ -382,6 +786,46 @@ __all__ = [
     "BranchSummaryModel",
     "CandidateModel",
     "CapabilityModel",
+    "ProfileDimensionModel",
+    "ErrorSignatureModel",
+    "EpistemicSummaryModel",
+    "ProfileContrastModel",
+    "ProfileModel",
+    "PracticeOptionModel",
+    "PracticeTokenModel",
+    "PracticeLayoutModel",
+    "PracticeTaskModel",
+    "PracticeAdaptiveModel",
+    "PracticeStartResponseModel",
+    "PracticeTrialModel",
+    "PracticeSubmitResponseModel",
+    "EpistemicOptionModel",
+    "EpistemicProbeModel",
+    "InterviewSummaryModel",
+    "EpistemicObjectModel",
+    "EpistemicRelationModel",
+    "EpistemicUncertaintyModel",
+    "EpistemicScoresModel",
+    "EpistemicReconstructionModel",
+    "InterviewStartResponseModel",
+    "InterviewSubmitResponseModel",
+    "InterviewSummaryResponseModel",
+    "InterviewListResponseModel",
+    "ContrastSummaryModel",
+    "ContrastOptionModel",
+    "ContrastTrialModel",
+    "ContrastThresholdModel",
+    "ContrastCalibrationModel",
+    "ContrastResultModel",
+    "ContrastStartResponseModel",
+    "ContrastSubmitResponseModel",
+    "ContrastSummaryResponseModel",
+    "ContrastListResponseModel",
+    "EvidenceSourceModel",
+    "EvidenceItemModel",
+    "ObservatoryModel",
+    "ProtocolSummaryModel",
+    "ProtocolListResponseModel",
     "StudioSnapshotModel",
     "StudioIntentResponseModel",
     "StudioCommandsResponseModel",

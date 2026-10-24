@@ -14,8 +14,12 @@ const CAPABILITIES = [
   ["Candidate regeneration", "ACTIVE", "Seeded perturbations that preserve locks and explicit edits"],
   ["Image generation", "DISABLED", "No image model, diffusion pipeline, or external render service"],
   ["Neural content", "UNAUTHORIZED", "No inference of imagery or dream content from brain signals"],
-  ["Dream content", "UNAUTHORIZED", "No dream decoding, reconstruction, or interpretation"],
-  ["Neural reconstruction", "UNAUTHORIZED", "No reconstruction claim at any level"],
+  ["Dream content", "UNAUTHORIZED", "No dream decoding, neural reconstruction, or interpretation"],
+  ["Neural reconstruction", "UNAUTHORIZED", "No neural reconstruction claim; behavioural reconstruction is separate"],
+  ["Behavioural profile", "EXPERIMENTAL", "Five separate estimates with explicit evidence counts; no composite score"],
+  ["Epistemic interview", "EXPERIMENTAL", "Binary probes, Beta posteriors, calibration, coverage, and abstention reported separately"],
+  ["Scene Threshold", "EXPERIMENTAL", "Two-alternative contrast discrimination, adaptive staircase, SDT sensitivity, threshold, and test–retest reliability"],
+  ["Clinical use", "DISABLED", "Not a diagnosis, treatment, or validated clinical instrument"],
   ["Network calls during studio use", "DISABLED", "The studio reads and writes only the local backend"],
   ["Uploads", "DISABLED", "No image, audio, or neural-data upload path"],
   ["Privacy scope", "LOCAL ONLY", "SQLite on this machine; no accounts, telemetry, or cloud sync"],
@@ -51,6 +55,9 @@ export default function AnimusAboutPage() {
               <li>A closed loop of intention, visible candidate, correction, and convergence.</li>
               <li>A versioned, inspectable scene graph with deterministic rendering and regeneration.</li>
               <li>A local-first product: your scenes stay in SQLite on this machine.</li>
+              <li>An experimental behavioural profile with object/spatial reconstruction, explicit evidence counts, and no composite score.</li>
+              <li>An epistemic interview that reports posterior uncertainty, calibration, coverage, and abstention separately.</li>
+              <li>A contrastive Scene Threshold task that estimates discrimination sensitivity and a within-scene threshold, not imagery strength.</li>
             </ul>
           </section>
           <section className="rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-4">
@@ -60,6 +67,7 @@ export default function AnimusAboutPage() {
               <li>Not a clinical treatment, diagnostic tool, or validated neurofeedback device.</li>
               <li>Not an image generator: every candidate is a symbolic, procedural preview.</li>
               <li>Not evidence that imagery training generalises beyond this task.</li>
+              <li>Not a validated psychometric or clinical instrument, and not a measure of imagery strength.</li>
             </ul>
           </section>
         </div>

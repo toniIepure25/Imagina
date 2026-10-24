@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Button from "@/components/common/Button";
@@ -37,6 +38,7 @@ function loadErrorCopy(error: StudioApiError | null): { title: string; body: str
 }
 
 export default function StudioClient({ sessionId }: { sessionId: string }) {
+  const router = useRouter();
   const studio = useAnimusStudio(sessionId);
   const [rawSelectedId, setRawSelectedId] = useState<string | null>(null);
   const [savingWorld, setSavingWorld] = useState(false);
@@ -140,6 +142,30 @@ export default function StudioClient({ sessionId }: { sessionId: string }) {
                 className="text-[10px]"
               >
                 Redo
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-[10px]"
+                onClick={() => router.push(`/animus/practice/${snapshot.session_id}`)}
+              >
+                Practice
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-[10px]"
+                onClick={() => router.push(`/animus/interview/${snapshot.session_id}`)}
+              >
+                Interview
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-[10px]"
+                onClick={() => router.push(`/animus/observatory/${snapshot.session_id}`)}
+              >
+                Observatory
               </Button>
               <Button
                 size="sm"

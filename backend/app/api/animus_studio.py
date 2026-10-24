@@ -24,14 +24,34 @@ from app.core.animus.studio.service import studio_service
 from app.schemas.animus_studio import (
     StudioBranchRequest,
     StudioCommandsRequest,
+    StudioContrastReflectionRequest,
+    StudioContrastStartRequest,
+    StudioContrastSubmitRequest,
     StudioCreateRequest,
     StudioIntentRequest,
+    StudioInterviewStartRequest,
+    StudioInterviewSubmitRequest,
     StudioOpenWorldRequest,
+    StudioPracticeStartRequest,
+    StudioPracticeSubmitRequest,
     StudioRegenerateRequest,
     StudioWorldRequest,
 )
 from app.schemas.animus_studio_responses import (
+    ContrastListResponseModel,
+    ContrastStartResponseModel,
+    ContrastSubmitResponseModel,
+    ContrastSummaryResponseModel,
     DeleteResponseModel,
+    InterviewListResponseModel,
+    InterviewStartResponseModel,
+    InterviewSubmitResponseModel,
+    InterviewSummaryResponseModel,
+    ObservatoryModel,
+    PracticeStartResponseModel,
+    PracticeSubmitResponseModel,
+    ProfileModel,
+    ProtocolListResponseModel,
     SessionListResponseModel,
     StudioCapabilitiesResponseModel,
     StudioCommandsResponseModel,
@@ -77,6 +97,8 @@ WorldId = Annotated[str, Path(min_length=3, max_length=80, pattern=r"^[A-Za-z0-9
 CandidateId = Annotated[str, Path(min_length=3, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]
 VersionId = Annotated[str, Path(min_length=3, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]
 BranchId = Annotated[str, Path(min_length=3, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]
+InterviewId = Annotated[str, Path(min_length=3, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]
+ContrastId = Annotated[str, Path(min_length=3, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]
 ExpectedVersion = Annotated[str | None, Header(alias="X-Expected-Version", max_length=80)]
 
 
@@ -126,6 +148,167 @@ async def health(deep: bool = Query(default=False)):
 @router.get("/capabilities", response_model=StudioCapabilitiesResponseModel)
 async def capabilities():
     return {**claim_envelope(), "capabilities": capability_envelope()}
+
+
+@router.get("/profile", response_model=ProfileModel)
+async def profile():
+    return await _call(studio_service.profile())
+
+
+@router.post("/profile/reset", response_model=ProfileModel)
+async def reset_profile():
+    return await _call(studio_service.reset_profile())
+
+
+@router.get("/protocols", response_model=ProtocolListResponseModel)
+async def protocols():
+    return await _call(studio_service.list_protocols())
+
+
+@router.post("/sessions/{session_id}/practice/start", response_model=PracticeStartResponseModel)
+async def practice_start(
+    session_id: SessionId,
+    req: StudioPracticeStartRequest | None = None,
+):
+    return await _call(studio_service.practice_start(
+        session_id,
+        task_type=req.task_type if req else None,
+        difficulty=req.difficulty if req else None,
+    ))
+
+
+@router.post("/sessions/{session_id}/practice/trials", response_model=PracticeSubmitResponseModel)
+async def practice_submit(
+    session_id: SessionId,
+    req: StudioPracticeSubmitRequest,
+    expected_version: ExpectedVersion = None,
+):
+    return await _call(studio_service.practice_submit(
+        session_id,
+        task_id=req.task_id,
+        task_type=req.task_type,
+        task_seed=req.task_seed,
+        difficulty=req.difficulty,
+        response=req.response,
+        confidence=req.confidence,
+        latency_ms=req.latency_ms,
+        client_trial_id=req.client_trial_id,
+        expected_version_id=req.expected_version_id or expected_version,
+    ))
+
+
+@router.post("/sessions/{session_id}/interviews/start",
+             response_model=InterviewStartResponseModel)
+async def interview_start(
+    session_id: SessionId,
+    req: StudioInterviewStartRequest | None = None,
+):
+    body = req or StudioInterviewStartRequest()
+    return await _call(studio_service.interview_start(
+        session_id,
+        max_probes=body.max_probes,
+        form_id=body.form_id,
+        difficulty=body.difficulty,
+        expected_version_id=body.expected_version_id,
+    ))
+
+
+@router.post("/sessions/{session_id}/interviews/{interview_id}/probes",
+             response_model=InterviewSubmitResponseModel)
+async def interview_submit(
+    session_id: SessionId,
+    interview_id: InterviewId,
+    req: StudioInterviewSubmitRequest,
+    expected_version: ExpectedVersion = None,
+):
+    return await _call(studio_service.interview_submit(
+        session_id,
+        interview_id,
+        probe_id=req.probe_id,
+        task_id=req.task_id,
+        choice=req.choice,
+        confidence=req.confidence,
+        abstained=req.abstained,
+        latency_ms=req.latency_ms,
+        client_trial_id=req.client_trial_id,
+        expected_version_id=req.expected_version_id or expected_version,
+    ))
+
+
+@router.get("/interviews/{interview_id}", response_model=InterviewSummaryResponseModel)
+async def interview_summary(interview_id: InterviewId):
+    return await _call(studio_service.interview_summary(interview_id))
+
+
+@router.get("/sessions/{session_id}/interviews", response_model=InterviewListResponseModel)
+async def list_interviews(session_id: SessionId):
+    return await _call(studio_service.list_interviews(session_id))
+
+
+@router.post("/sessions/{session_id}/contrast/start",
+             response_model=ContrastStartResponseModel)
+async def contrast_start(
+    session_id: SessionId,
+    req: StudioContrastStartRequest | None = None,
+):
+    body = req or StudioContrastStartRequest()
+    return await _call(studio_service.contrast_start(
+        session_id,
+        max_trials=body.max_trials,
+        form_id=body.form_id,
+        difficulty=body.difficulty,
+        occasion=body.occasion,
+        delay_hours=body.delay_hours,
+        source_version_id=body.source_version_id,
+        expected_version_id=body.expected_version_id,
+    ))
+
+
+@router.post("/sessions/{session_id}/contrast/{contrast_id}/trials",
+             response_model=ContrastSubmitResponseModel)
+async def contrast_submit(
+    session_id: SessionId,
+    contrast_id: ContrastId,
+    req: StudioContrastSubmitRequest,
+    expected_version: ExpectedVersion = None,
+):
+    return await _call(studio_service.contrast_submit(
+        session_id,
+        contrast_id,
+        trial_id=req.trial_id,
+        task_id=req.task_id,
+        choice=req.choice,
+        confidence=req.confidence,
+        abstained=req.abstained,
+        latency_ms=req.latency_ms,
+        client_trial_id=req.client_trial_id,
+        expected_version_id=req.expected_version_id or expected_version,
+    ))
+
+
+@router.get("/contrast/{contrast_id}", response_model=ContrastSummaryResponseModel)
+async def contrast_summary(contrast_id: ContrastId):
+    return await _call(studio_service.contrast_summary(contrast_id))
+
+
+@router.get("/sessions/{session_id}/contrast", response_model=ContrastListResponseModel)
+async def list_contrasts(session_id: SessionId):
+    return await _call(studio_service.list_contrasts(session_id))
+
+
+@router.get("/sessions/{session_id}/observatory", response_model=ObservatoryModel)
+async def observatory(session_id: SessionId):
+    return await _call(studio_service.observatory(session_id))
+
+
+@router.post("/contrast/{contrast_id}/reflection",
+             response_model=ContrastSummaryResponseModel)
+async def contrast_reflection(
+    contrast_id: ContrastId,
+    req: StudioContrastReflectionRequest,
+):
+    return await _call(studio_service.contrast_reflection(
+        contrast_id, strategies=req.strategies, notes=req.notes))
 
 
 @router.post("/sessions", response_model=StudioSnapshotModel)

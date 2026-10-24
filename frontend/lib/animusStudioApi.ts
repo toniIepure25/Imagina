@@ -124,6 +124,12 @@ export interface StudioCapabilities {
   network_calls: string;
   uploads: string;
   privacy_scope: string;
+  behavioral_profile?: string;
+  behavioral_reconstruction?: string;
+  adaptive_practice?: string;
+  epistemic_interview?: string;
+  contrast_observatory?: string;
+  clinical_use?: string;
   claim_ceiling: string;
 }
 
@@ -213,6 +219,438 @@ export interface StudioEventsResponse {
   session_id: string;
   events: StudioEvent[];
   has_more: boolean;
+}
+
+export interface ProfileDimension {
+  id: string;
+  label: string;
+  description: string;
+  construct: string;
+  estimate: number | null;
+  uncertainty: number;
+  n: number;
+  reliability: number;
+  status: "no_evidence" | "collecting" | "provisional" | "moderate_evidence" | string;
+  brier_score?: number | null;
+  provenance: string;
+}
+
+export interface ErrorSignature {
+  n: number;
+  omissions: number;
+  intrusions: number;
+  mean_spatial_error: number | null;
+  spatial_n: number;
+  epistemic_n?: number;
+}
+
+export interface EpistemicProfileSummary {
+  n_interviews: number;
+  n_probes: number;
+  mean_brier: number | null;
+  overconfidence: number | null;
+  abstention_rate: number | null;
+  mean_information_gain: number | null;
+  last_interview_id: string | null;
+}
+
+export interface ContrastProfileSummary {
+  n_sessions: number;
+  n_completed: number;
+  n_trials: number;
+  median_threshold: number | null;
+  mean_dprime: number | null;
+  mean_brier: number | null;
+  calibration_n: number;
+  last_contrast_id: string | null;
+}
+
+export interface StudioProfile {
+  profile_id: string;
+  profile_version: string;
+  claim_level: string;
+  privacy_scope: string;
+  trial_count: number;
+  dimensions: ProfileDimension[];
+  error_signature?: ErrorSignature;
+  epistemic?: EpistemicProfileSummary;
+  contrast?: ContrastProfileSummary;
+  limitations: string[];
+  created_at?: string | null;
+  updated_at?: string | null;
+  measured_at: string;
+}
+
+export interface PracticeOption {
+  id: string;
+  label: string;
+  value?: unknown;
+  scene?: SceneGraph;
+}
+
+export interface PracticeToken {
+  token_id: string;
+  kind: string;
+  label: string;
+  role: string;
+  color?: string | null;
+}
+
+export interface PracticeLayout {
+  width: number;
+  height: number;
+  grid: number;
+  tolerance: number;
+}
+
+export interface PracticePlacement {
+  token_id: string;
+  x: number;
+  z: number;
+}
+
+export type PracticeResponse =
+  | { option_id: string }
+  | { selected_token_ids: string[] }
+  | { placements: PracticePlacement[] };
+
+export interface PracticeTask {
+  task_id: string;
+  task_type: string;
+  dimension: string;
+  prompt: string;
+  options: PracticeOption[];
+  difficulty: number;
+  task_seed: number;
+  preview_seconds: number;
+  response_kind: "option" | "token_selection" | "spatial_placement";
+  tokens: PracticeToken[];
+  layout?: PracticeLayout | null;
+}
+
+export interface PracticeAdaptive {
+  dimension: string;
+  task_type: string;
+  difficulty: number;
+  reason: string;
+  expected_gain?: number | null;
+  trial_index?: number | null;
+}
+
+export interface PracticeStart {
+  session_id: string;
+  source_version_id: string;
+  task: PracticeTask;
+  adaptive: PracticeAdaptive;
+  profile: StudioProfile;
+  claim_level: string;
+}
+
+export interface PracticeTrial {
+  trial_id?: string | null;
+  session_id?: string | null;
+  client_trial_id?: string | null;
+  task_type?: string | null;
+  dimension?: string | null;
+  difficulty?: number | null;
+  task_family?: string | null;
+  response_kind?: string | null;
+  scoring_version?: string | null;
+  stimulus: Record<string, unknown>;
+  response: Record<string, unknown>;
+  outcome: Record<string, unknown>;
+  error_profile?: Record<string, unknown>;
+  confidence?: number | null;
+  latency_ms?: number | null;
+  created_at?: string | null;
+}
+
+export interface PracticeSubmit {
+  session_id: string;
+  trial?: PracticeTrial | null;
+  idempotent: boolean;
+  feedback?: {
+    correct?: boolean;
+    correct_option_id?: string | null;
+    correct_option_label?: string;
+    error_profile?: Record<string, unknown>;
+    message?: string;
+  } | null;
+  next_task?: PracticeTask | null;
+  adaptive?: PracticeAdaptive | null;
+  profile: StudioProfile;
+  last_event_seq: number;
+}
+
+export interface EpistemicOption {
+  id: string;
+  label: string;
+}
+
+export interface EpistemicProbe {
+  probe_id: string;
+  task_id: string;
+  probe_type: "object_presence" | "spatial_relation" | string;
+  prompt: string;
+  options: EpistemicOption[];
+  dimension: string;
+  difficulty: number;
+  preview_seconds: number;
+}
+
+export interface StudioInterview {
+  interview_id: string;
+  session_id: string;
+  source_version_id: string;
+  protocol_version: string;
+  form_id: string;
+  difficulty: number;
+  status: "active" | "completed" | "abandoned" | string;
+  probe_count: number;
+  max_probes: number;
+  created_at?: string | null;
+  completed_at?: string | null;
+}
+
+export interface EpistemicObject {
+  label: string;
+  kind: string;
+  probability: number;
+  status: string;
+}
+
+export interface EpistemicRelation {
+  subject: string;
+  relation: string;
+  object: string;
+  probability: number;
+  status: string;
+}
+
+export interface EpistemicReconstruction {
+  objects: EpistemicObject[];
+  relations: EpistemicRelation[];
+  uncertainty: {
+    object_entropy: number;
+    relation_entropy: number;
+  };
+  scores: {
+    n_probes: number;
+    n_answered: number;
+    object_accuracy: number | null;
+    spatial_accuracy: number | null;
+    mean_brier: number | null;
+    coverage: number;
+    abstention_rate: number;
+    overconfidence: number | null;
+    mean_information_gain: number | null;
+  };
+  protocol_version: string;
+  scoring_version: string;
+}
+
+export interface InterviewStart {
+  session_id: string;
+  interview: StudioInterview;
+  probe: EpistemicProbe;
+  profile: StudioProfile;
+  claim_level: string;
+}
+
+export interface InterviewSubmit {
+  session_id: string;
+  interview?: StudioInterview | null;
+  trial?: PracticeTrial | null;
+  idempotent: boolean;
+  feedback?: {
+    correct?: boolean | null;
+    error_profile?: Record<string, unknown>;
+    message?: string;
+  } | null;
+  next_probe?: EpistemicProbe | null;
+  reconstruction?: EpistemicReconstruction | null;
+  profile: StudioProfile;
+  last_event_seq: number;
+}
+
+export interface InterviewSummary {
+  session_id: string;
+  interview: StudioInterview;
+  reconstruction: EpistemicReconstruction;
+  profile: StudioProfile;
+  claim_level: string;
+}
+
+export interface InterviewList {
+  session_id: string;
+  interviews: StudioInterview[];
+}
+
+export interface StudioContrast {
+  contrast_id: string;
+  session_id: string;
+  source_version_id: string;
+  protocol_version: string;
+  form_id: string;
+  max_trials: number;
+  difficulty: number;
+  occasion: "baseline" | "follow_up" | string;
+  delay_hours: number | null;
+  status: "active" | "completed" | "abandoned" | string;
+  trial_count: number;
+  reflection: { strategies?: string[]; notes?: string };
+  created_at?: string | null;
+  completed_at?: string | null;
+}
+
+export interface ContrastOption {
+  id: "a" | "b" | string;
+  label: string;
+  scene: SceneGraph;
+}
+
+export interface ContrastTrial {
+  trial_id: string;
+  task_id: string;
+  trial_index: number;
+  prompt: string;
+  options: ContrastOption[];
+  preview_seconds: number;
+}
+
+export interface ContrastThreshold {
+  threshold: number | null;
+  slope: number | null;
+  ci: number[] | null;
+  censored: boolean | null;
+  n: number;
+  status: string;
+  scoring_version: string;
+}
+
+export interface ContrastCalibration {
+  n: number;
+  brier: number | null;
+  overconfidence: number | null;
+  type2_auc: number | null;
+}
+
+export interface ContrastResult {
+  protocol_version: string;
+  scoring_version: string;
+  n_trials: number;
+  n_answered: number;
+  coverage: number | null;
+  dprime: number | null;
+  side_bias: number | null;
+  thresholds: Record<string, ContrastThreshold>;
+  calibration: ContrastCalibration;
+  notes: string[];
+}
+
+export interface ContrastStart {
+  session_id: string;
+  contrast: StudioContrast;
+  trial: ContrastTrial;
+  profile: StudioProfile;
+  claim_level: string;
+}
+
+export interface ContrastSubmit {
+  session_id: string;
+  contrast: StudioContrast;
+  trial: Record<string, unknown>;
+  recorded: boolean;
+  idempotent?: boolean;
+  next_trial?: ContrastTrial | null;
+  result?: ContrastResult | null;
+  profile: StudioProfile;
+  last_event_seq?: number;
+}
+
+export interface ContrastSummary {
+  session_id: string;
+  contrast: StudioContrast;
+  result: ContrastResult;
+  profile: StudioProfile;
+  claim_level: string;
+}
+
+export interface ContrastList {
+  session_id: string;
+  contrasts: StudioContrast[];
+}
+
+export interface EvidenceSource {
+  probe_id: string;
+  probe_type: string;
+  choice: string;
+  confidence: number | null;
+  abstained: boolean;
+  information_gain: number | null;
+  created_at?: string | null;
+}
+
+export interface EvidenceItem {
+  variable_id: string;
+  label: string;
+  probe_type: string;
+  provenance: "direct_probe" | "prior" | "abstained" | "mixed" | string;
+  posterior: number;
+  uncertainty: number;
+  n_sources: number;
+  leave_one_out_delta: number;
+  dependence_group: string;
+  sources: EvidenceSource[];
+}
+
+export interface ObservatoryReliability {
+  status: "estimated" | "insufficient" | string;
+  reason?: string | null;
+  n_occasions: number;
+  n_features?: number;
+  r: number | null;
+  r_ci: number[] | null;
+  sem: number | null;
+  mdc95: number | null;
+  mean_change: number | null;
+  dprime_change?: number | null;
+  occasions?: Array<{
+    contrast_id: string;
+    occasion: string;
+    form_id: string;
+    completed_at?: string | null;
+    dprime: number | null;
+    thresholds: Record<string, ContrastThreshold>;
+  }>;
+}
+
+export interface Observatory {
+  session_id: string;
+  source_version_id: string;
+  scene_hash: string;
+  belief: EpistemicReconstruction;
+  evidence: EvidenceItem[];
+  discrimination: ContrastResult | { status: string; reason?: string };
+  reliability: ObservatoryReliability;
+  boundaries: string[];
+  claim_level: string;
+}
+
+export interface StudioProtocol {
+  protocol_id: string;
+  version: string;
+  name: string;
+  description: string;
+  builtin: boolean;
+  total_trials: number;
+  max_minutes: number;
+  dimensions: string[];
+}
+
+export interface StudioProtocolList {
+  protocol_version: string;
+  protocols: StudioProtocol[];
 }
 
 export interface StudioHealth {
@@ -495,6 +933,211 @@ export function getStudioHealth(): Promise<StudioHealth> {
 
 export function getStudioCapabilities(): Promise<StudioCapabilitiesResponse> {
   return request("/animus/studio/capabilities");
+}
+
+export function getStudioProfile(): Promise<StudioProfile> {
+  return request<StudioProfile>("/animus/studio/profile");
+}
+
+export function resetStudioProfile(): Promise<StudioProfile> {
+  return request<StudioProfile>("/animus/studio/profile/reset", { method: "POST" });
+}
+
+export function listStudioProtocols(): Promise<StudioProtocolList> {
+  return request<StudioProtocolList>("/animus/studio/protocols");
+}
+
+export function startStudioPractice(
+  sessionId: string,
+  options: { taskType?: string; difficulty?: number } = {},
+): Promise<PracticeStart> {
+  return request<PracticeStart>(`/animus/studio/sessions/${sessionId}/practice/start`, {
+    method: "POST",
+    body: JSON.stringify({
+      ...(options.taskType ? { task_type: options.taskType } : {}),
+      ...(typeof options.difficulty === "number" ? { difficulty: options.difficulty } : {}),
+    }),
+  });
+}
+
+export function submitStudioPractice(
+  sessionId: string,
+  input: {
+    taskType: string;
+    taskId: string;
+    taskSeed: number;
+    difficulty: number;
+    response?: PracticeResponse;
+    optionId?: string;
+    confidence: number;
+    latencyMs: number;
+    clientTrialId: string;
+    expectedVersionId?: string;
+  },
+  options?: StudioRequestOptions,
+): Promise<PracticeSubmit> {
+  return request<PracticeSubmit>(
+    `/animus/studio/sessions/${sessionId}/practice/trials`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        task_id: input.taskId,
+        task_type: input.taskType,
+        task_seed: input.taskSeed,
+        difficulty: input.difficulty,
+        response: input.response ?? { option_id: input.optionId ?? "" },
+        confidence: input.confidence,
+        latency_ms: input.latencyMs,
+        client_trial_id: input.clientTrialId,
+        ...(input.expectedVersionId ? { expected_version_id: input.expectedVersionId } : {}),
+      }),
+    },
+    options,
+  );
+}
+
+export function startStudioInterview(
+  sessionId: string,
+  options: {
+    maxProbes?: number;
+    formId?: "A" | "B" | "C";
+    difficulty?: number;
+    expectedVersionId?: string;
+  } = {},
+): Promise<InterviewStart> {
+  return request<InterviewStart>(`/animus/studio/sessions/${sessionId}/interviews/start`, {
+    method: "POST",
+    body: JSON.stringify({
+      ...(typeof options.maxProbes === "number" ? { max_probes: options.maxProbes } : {}),
+      ...(options.formId ? { form_id: options.formId } : {}),
+      ...(typeof options.difficulty === "number" ? { difficulty: options.difficulty } : {}),
+      ...(options.expectedVersionId ? { expected_version_id: options.expectedVersionId } : {}),
+    }),
+  });
+}
+
+export function submitStudioInterview(
+  sessionId: string,
+  interviewId: string,
+  input: {
+    probeId: string;
+    taskId: string;
+    choice?: string;
+    confidence: number;
+    abstained?: boolean;
+    latencyMs: number;
+    clientTrialId: string;
+    expectedVersionId?: string;
+  },
+  options?: StudioRequestOptions,
+): Promise<InterviewSubmit> {
+  return request<InterviewSubmit>(
+    `/animus/studio/sessions/${sessionId}/interviews/${interviewId}/probes`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        probe_id: input.probeId,
+        task_id: input.taskId,
+        choice: input.choice ?? "",
+        confidence: input.confidence,
+        abstained: input.abstained ?? false,
+        latency_ms: input.latencyMs,
+        client_trial_id: input.clientTrialId,
+        ...(input.expectedVersionId ? { expected_version_id: input.expectedVersionId } : {}),
+      }),
+    },
+    options,
+  );
+}
+
+export function getStudioInterview(interviewId: string): Promise<InterviewSummary> {
+  return request<InterviewSummary>(`/animus/studio/interviews/${interviewId}`);
+}
+
+export function listStudioInterviews(sessionId: string): Promise<InterviewList> {
+  return request<InterviewList>(`/animus/studio/sessions/${sessionId}/interviews`);
+}
+
+export function startStudioContrast(
+  sessionId: string,
+  options: {
+    maxTrials?: number;
+    formId?: "A" | "B" | "C";
+    difficulty?: number;
+    occasion?: "baseline" | "follow_up";
+    delayHours?: number;
+    sourceVersionId?: string;
+    expectedVersionId?: string;
+  } = {},
+): Promise<ContrastStart> {
+  return request<ContrastStart>(`/animus/studio/sessions/${sessionId}/contrast/start`, {
+    method: "POST",
+    body: JSON.stringify({
+      ...(typeof options.maxTrials === "number" ? { max_trials: options.maxTrials } : {}),
+      ...(options.formId ? { form_id: options.formId } : {}),
+      ...(typeof options.difficulty === "number" ? { difficulty: options.difficulty } : {}),
+      ...(options.occasion ? { occasion: options.occasion } : {}),
+      ...(typeof options.delayHours === "number" ? { delay_hours: options.delayHours } : {}),
+      ...(options.sourceVersionId ? { source_version_id: options.sourceVersionId } : {}),
+      ...(options.expectedVersionId ? { expected_version_id: options.expectedVersionId } : {}),
+    }),
+  });
+}
+
+export function submitStudioContrast(
+  sessionId: string,
+  contrastId: string,
+  input: {
+    trialId: string;
+    taskId: string;
+    choice?: "a" | "b";
+    confidence: number;
+    abstained?: boolean;
+    latencyMs: number;
+    clientTrialId: string;
+    expectedVersionId?: string;
+  },
+  options?: StudioRequestOptions,
+): Promise<ContrastSubmit> {
+  return request<ContrastSubmit>(
+    `/animus/studio/sessions/${sessionId}/contrast/${contrastId}/trials`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        trial_id: input.trialId,
+        task_id: input.taskId,
+        choice: input.abstained ? "" : input.choice ?? "",
+        confidence: input.confidence,
+        abstained: input.abstained ?? false,
+        latency_ms: input.latencyMs,
+        client_trial_id: input.clientTrialId,
+        ...(input.expectedVersionId ? { expected_version_id: input.expectedVersionId } : {}),
+      }),
+    },
+    options,
+  );
+}
+
+export function getStudioContrast(contrastId: string): Promise<ContrastSummary> {
+  return request<ContrastSummary>(`/animus/studio/contrast/${contrastId}`);
+}
+
+export function listStudioContrasts(sessionId: string): Promise<ContrastList> {
+  return request<ContrastList>(`/animus/studio/sessions/${sessionId}/contrast`);
+}
+
+export function getStudioObservatory(sessionId: string): Promise<Observatory> {
+  return request<Observatory>(`/animus/studio/sessions/${sessionId}/observatory`);
+}
+
+export function submitStudioContrastReflection(
+  contrastId: string,
+  input: { strategies: string[]; notes?: string },
+): Promise<ContrastSummary> {
+  return request<ContrastSummary>(`/animus/studio/contrast/${contrastId}/reflection`, {
+    method: "POST",
+    body: JSON.stringify({ strategies: input.strategies, notes: input.notes ?? "" }),
+  });
 }
 
 export function createStudioSession(input: StudioCreateInput): Promise<StudioSnapshot> {

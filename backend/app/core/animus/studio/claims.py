@@ -56,6 +56,12 @@ def capability_envelope() -> dict:
         "network_calls": "DISABLED",
         "uploads": "DISABLED",
         "privacy_scope": "local_only",
+        "behavioral_profile": "EXPERIMENTAL",
+        "behavioral_reconstruction": "EXPERIMENTAL",
+        "adaptive_practice": "EXPERIMENTAL",
+        "epistemic_interview": "EXPERIMENTAL",
+        "contrast_observatory": "EXPERIMENTAL",
+        "clinical_use": "DISABLED",
         "claim_ceiling": claims.MAX_AUTHORIZED_LEVEL,
     }
 

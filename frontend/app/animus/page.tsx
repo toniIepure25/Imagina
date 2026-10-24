@@ -194,9 +194,14 @@ export default function AnimusPage() {
               <h2 className="text-xl font-semibold tracking-tight">One loop, four moves</h2>
               <p className="mt-1 text-xs text-foreground/40">Imagine → see → correct → converge → keep or explore.</p>
             </div>
-            <Link href="/animus/about" className="text-[10px] text-accent-glow/60 hover:text-accent-glow">
-              How it works →
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/animus/profile" className="text-[10px] text-foreground/45 hover:text-foreground">
+                Behavioural profile →
+              </Link>
+              <Link href="/animus/about" className="text-[10px] text-accent-glow/60 hover:text-accent-glow">
+                How it works →
+              </Link>
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((step) => (

@@ -71,7 +71,7 @@ async def test_backup_before_migration_preserves_rows(migration_dir):
         await db.execute("INSERT INTO payload (value) VALUES ('kept')")
         await db.commit()
 
-        backup_path = await backup_before_migration(db, current=16, target=17)
+        backup_path = await backup_before_migration(db, current=20, target=21)
         assert backup_path is not None
         assert Path(backup_path).parent == migration_dir / "backups"
 
@@ -118,13 +118,13 @@ async def test_backup_failure_aborts_before_migration(migration_dir, monkeypatch
 class TestEmptyDatabaseUpgrade:
     async def test_migrations_run_from_empty(self, empty_db):
         version = await run_migrations(empty_db)
-        assert version == 17
+        assert version == 21
 
     async def test_version_table_created(self, empty_db):
         await run_migrations(empty_db)
         cursor = await empty_db.execute("SELECT COUNT(*) FROM schema_version")
         row = await cursor.fetchone()
-        assert row[0] == 17
+        assert row[0] == 21
 
     async def test_studies_table_exists(self, empty_db):
         await run_migrations(empty_db)
@@ -156,6 +156,25 @@ class TestEmptyDatabaseUpgrade:
         columns = {row["name"] for row in await cursor.fetchall()}
         assert "redo_json" in columns
 
+    async def test_studio_measurement_tables_and_local_profile_exist(self, empty_db):
+        await run_migrations(empty_db)
+        cursor = await empty_db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='animus_studio_trials'"
+        )
+        assert await cursor.fetchone() is not None
+        cursor = await empty_db.execute(
+            "SELECT profile_version FROM animus_studio_profiles WHERE profile_id = 'local_default'"
+        )
+        row = await cursor.fetchone()
+        assert row is not None
+        assert row[0] == "ANIMUS-PROFILE-v1"
+
+    async def test_studio_trials_have_reconstruction_metadata(self, empty_db):
+        await run_migrations(empty_db)
+        cursor = await empty_db.execute("PRAGMA table_info(animus_studio_trials)")
+        columns = {row["name"] for row in await cursor.fetchall()}
+        assert {"task_family", "response_kind", "scoring_version", "error_profile_json"} <= columns
+
 
 class TestLegacyDatabaseUpgrade:
     async def test_legacy_data_preserved(self, legacy_db):
@@ -176,7 +195,7 @@ class TestIdempotentStartup:
     async def test_second_run_is_noop(self, empty_db):
         v1 = await run_migrations(empty_db)
         v2 = await run_migrations(empty_db)
-        assert v1 == v2 == 17
+        assert v1 == v2 == 21
 
 
 class TestV003RuntimeSchema:

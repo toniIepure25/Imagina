@@ -47,6 +47,10 @@ _MIGRATION_MODULES = [
     "app.storage.migrations.v015_animus_studio_branch_scope",
     "app.storage.migrations.v016_animus_studio_integrity",
     "app.storage.migrations.v017_animus_studio_branch_redo",
+    "app.storage.migrations.v018_animus_studio_measurement",
+    "app.storage.migrations.v019_animus_studio_reconstruction",
+    "app.storage.migrations.v020_animus_epistemic_interview",
+    "app.storage.migrations.v021_animus_contrast_observatory",
 ]
 
 _VERSION_TABLE = """
