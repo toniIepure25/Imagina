@@ -1,279 +1,277 @@
 # IMAGINA
 
-**A local-first platform for structured mental imagery training, protocol benchmarking, and closed-loop neuroadaptive UX research.**
+**A local-first research platform for imagination, scene authoring, and behavioural measurement.**
 
-IMAGINA is a personal exploratory system that enables users to define structured imagery protocols, run guided self-report training sessions, visualize adaptive symbolic scene feedback, track skill progression across nine imagery dimensions, benchmark protocols under deterministic closed-loop evaluation, experiment with tunable adaptive policy profiles, and export reproducible safe benchmark packs — entirely locally, without cloud services, telemetry, or neural data collection.
+IMAGINA asks a difficult question without pretending to answer it by magic: can a person externalize an
+imagined scene, inspect it, correct it, and measure the perceptual decisions they make about it — while the
+system remains symbolic, auditable, and honest about what it does not know?
 
----
+The answer is a closed human–AI loop. A person describes an intention, sees a procedural candidate, corrects
+what is wrong, locks what is right, and explores controlled variations. The loop — not a one-shot image — is
+the product. Around that loop, IMAGINA adds adaptive behavioural tasks that report uncertainty, evidence
+counts, and limits instead of a single “imagery score.”
 
-## What IMAGINA Is
-
-IMAGINA addresses a gap in mental imagery research tooling: there is no standardized, local-first, safety-bounded platform for designing, running, benchmarking, and exporting structured imagery training protocols.
-
-IMAGINA provides:
-
-- A **protocol studio** with 8 built-in standardized protocols and a custom protocol designer
-- A **guided session runtime** with 10-phase imagery sessions, micro-check-ins, and live self-report proxy metrics
-- A **30-task imagery battery** across 10 categories (vividness, motion, multisensory, meta-control, etc.)
-- A **9-dimension cognitive phenotype engine** that builds personal imagery profiles from task performance
-- A **symbolic scene simulator** that renders adaptive visual feedback from self-report parameters
-- A **longitudinal skill tree** with 5 unlock levels and 12 mastery milestones per dimension
-- A **closed-loop evaluation benchmark** with 6 determinisitic scenarios and Grade-A scorecard generation
-- A **benchmark Scenario SDK** for external JSON scenario validation, import/export, and custom suite building
-- An **adaptive policy lab** with 6 built-in tunable policy profiles, matrix comparison, and leaderboard ranking
-- A **safe export standard** that guarantees no raw EEG, no raw notes, and no forbidden claims in any artifact
-- An **optional biosignal engineering sandbox** with simulated EEG, LSL/BrainFlow adapters, and signal quality monitoring
+![ANIMUS Studio — symbolic scene authoring](docs/animus/02-studio-initial.png)
 
 ---
 
-## What IMAGINA Is NOT
+## The platform at a glance
 
-IMAGINA makes **no** clinical, diagnostic, therapeutic, BCI, neurofeedback validation, mind-reading, dream decoding, or neural decoding claims. It is not validated neurofeedback. It is not medical software. It is not a brain-computer interface. Every metric is a self-report proxy estimate. Every scene visualization is a symbolic training aid. Every biosignal summary is an engineering diagnostic. Every export enforces `raw_eeg_included = false`.
+| Layer | What it provides | What it deliberately is not |
+|---|---|---|
+| **ANIMUS Studio** | Intention → symbolic scene → correction → version → regenerate → keep / branch / save world | Not an image generator; not neural reconstruction |
+| **Scene practice** | Deterministic reconstruction and placement tasks with adaptive selection | Not a diagnosis or a measure of imagery strength |
+| **Epistemic interview** | Binary probes, Beta posteriors, expected-information-gain selection, uncertainty | Not a read-out of a mental image |
+| **Scene Threshold** | 2-AFC contrast discrimination, adaptive staircase, d′, thresholds, calibration | Not a criterion measure, norm, or clinical instrument |
+| **Observatory** | Provenance-aware evidence, leave-one-out sensitivity, test–retest reliability | Not a composite score or a latent “imagination ability” |
+| **Research platform** | Protocol, benchmark, evidence, validation, and export infrastructure | Not validated neurofeedback or a BCI product |
+
+The public product surface lives at `/animus`. The wider repository also contains the earlier IMAGINA
+protocol, benchmark, evidence, and multimodal research stack; all product-facing claims remain gated by the
+same scientific boundary.
 
 ---
 
-## Quick Start
+## The ANIMUS loop
 
-```bash
-# One-command demo experience
-cd backend && python3 -m app.cli.imagina_demo full
-
-# Start the frontend
-cd frontend && npm run dev
+```text
+intention
+   ↓
+symbolic scene candidate
+   ↓
+see it · correct it · lock what is right
+   ↓
+immutable version + diff
+   ↓
+controlled regeneration
+   ↓
+keep · undo · branch · save a world · reopen
 ```
 
-Then open `http://localhost:3000/imagina/showcase` for the reviewer-ready project overview, or `http://localhost:3000/imagina/live` for the live neuroadaptive control room and benchmark lab.
+Every scene is an **ANIMUS-SG-v1** graph: entities, transforms, attributes with provenance and locks,
+relations, camera, lighting, atmosphere, dynamics, and constraints. Every mutation is validated and
+content-hashed. Every version is immutable. Candidate variation is deterministic and respects locked or
+explicitly authored content.
 
-```bash
-# Docker (alternative)
-docker compose -f docker-compose.release.yml up --build
-docker compose -f docker-compose.release.yml run --rm imagina-demo-seed
-```
+Rendering is procedural React Three Fiber. There is no diffusion model, external renderer, hidden target, or
+upload path in the Studio loop. The renderer makes symbolic state visible; it does not invent content behind
+the user’s back.
+
+### Why this matters
+
+Most “imagination interfaces” jump straight from a signal to a picture. That framing hides the interesting
+part: expression is iterative, correction is informative, and uncertainty is real. IMAGINA makes the
+intermediate structure explicit and measurable. A future validated observation source can plug into the same
+loop without changing the product contract. In the current release, neural content remains **unauthorized**
+and **fail-closed**.
+
+---
+
+## Measurement surfaces
+
+The behavioural instruments are intentionally separate. They do not collapse into one score because they
+answer different questions.
+
+### Scene practice and reconstruction
+
+Adaptive scene practice estimates five separate dimensions: object detail, discrimination, spatial structure,
+edit control, and confidence calibration. Object reconstruction uses a token bank and F1; spatial layout uses
+normalized placement error. Each estimate reports its trial count, uncertainty, and status. The profile also
+exposes a descriptive error signature — omissions, intrusions, and mean spatial error — rather than a
+diagnosis.
+
+### Epistemic reconstruction interview
+
+After a timed encoding view, the interview asks binary object-presence and spatial-relation probes against a
+hidden symbolic scene. Answers and confidence update Beta beliefs; later probes are selected by expected
+information gain. The result reports object/spatial accuracy, mean Brier score, coverage, abstention,
+overconfidence, and entropy separately. The posterior is a belief over task variables, **not** a neural
+image.
+
+### Scene Threshold and observatory
+
+Scene Threshold uses a two-alternative forced-choice contrast task. Two scenes differ only in object
+presence, spatial position, or colour. An adaptive 2-down/1-up staircase concentrates trials near the
+participant’s threshold; the reported estimate comes from a fitted 75%-correct psychometric function. The
+summary separates d′, signed side bias, per-feature thresholds, Brier/overconfidence, type-2 AUC, and
+coverage. The observatory overlays ERI evidence provenance, leave-one-out sensitivity, and feature-level
+test–retest reliability. Censored thresholds are reported as boundaries, not precise estimates.
 
 ---
 
 ## Architecture
 
-### System Layers
-
-IMAGINA is organized into eight modular layers, each with clearly defined responsibilities and safety boundaries:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  REVIEWER INTERFACE                                     │
-│  /imagina/live  ·  /imagina/showcase  ·  /imagina      │
-├─────────────────────────────────────────────────────────┤
-│  FRONTEND PANELS (40+)                                  │
-│  Guided Sessions · Scene Renderer · Skill Tree          │
-│  Benchmark Studio · Policy Lab · Live Control Room      │
-├─────────────────────────────────────────────────────────┤
-│  REST API (~100 endpoints)                              │
-│  Calibration · Protocols · Tasks · Biosignals           │
-│  Fusion · Scene Simulator · Benchmark SDK · Policy Lab  │
-├─────────────────────────────────────────────────────────┤
-│  CORE ENGINES                                           │
-│  Guided Session Runtime · Self-Report IQI/PID Proxies   │
-│  Adaptive Feedback Policy · Scene Simulator             │
-│  Skill Tree · Protocol Studio · Adaptive Training       │
-├─────────────────────────────────────────────────────────┤
-│  BIOSIGNAL SANDBOX (Optional, BCI-Adjacent Only)        │
-│  Simulated/LSL/BrainFlow Sources · Signal Quality       │
-│  Marker Sync · Realtime Monitoring · Derived Feeds      │
-├─────────────────────────────────────────────────────────┤
-│  MULTIMODAL FUSION                                      │
-│  Observation Builder · Adaptive State Estimator         │
-│  Neuroadaptive Policy Engine (Preview-Only)             │
-├─────────────────────────────────────────────────────────┤
-│  BENCHMARK & EVALUATION                                 │
-│  Closed-Loop Scenarios · Policy Matrix · Leaderboard    │
-│  Scenario SDK · Custom Suites · UX Scorecard            │
-├─────────────────────────────────────────────────────────┤
-│  EXPORT LAYER                                           │
-│  Safe Benchmark Packs · Protocol Exports                │
-│  Reproducibility Manifests · Submission Packs           │
-│  Guarantee: raw_eeg_included = false                    │
-├─────────────────────────────────────────────────────────┤
-│  PERSISTENCE (Local-First)                              │
-│  JSON/JSONL · No Cloud · No Telemetry · No Accounts     │
-└─────────────────────────────────────────────────────────┘
+```text
+┌──────────────────────────────────────────────────────────────┐
+│  Next.js 16 · React 19 · TypeScript · Tailwind 4 · R3F      │
+│  /animus  ·  studio  ·  practice  ·  interview  ·  observatory │
+└──────────────────────────────┬───────────────────────────────┘
+                               │ typed REST + WebSocket
+┌──────────────────────────────▼───────────────────────────────┐
+│  FastAPI · Pydantic v2 · per-session serialization           │
+│  scene commands · revisions · candidates · measurement        │
+└──────────────────────────────┬───────────────────────────────┘
+                               │ atomic write bundles
+┌──────────────────────────────▼───────────────────────────────┐
+│  SQLite (WAL) · event sourcing · migrations through v021     │
+│  sessions · versions · branches · worlds · trials · profiles │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-### Module Map
+**Core properties**
 
-| Version Range | Module | Capability |
-|--------------|--------|------------|
-| V8-V12 | Core Infrastructure | Session lifecycle, analytics, IQI/PID metrics, safety monitor, curriculum, event store |
-| V13 | PID v2 Calibration | 8 reference tasks, perception-imagination distance metric |
-| V14-V15 | Adaptive Training | PID-driven 7-day plan generation, day-by-day execution, adherence tracking |
-| V16-V17 | Optimization & Experiments | Plan response model, N-of-1 controlled experiment engine |
-| V18 | Evidence Dashboard | Unified evidence model, quality audit, timeline, research export pack |
-| V19 | Task Battery & Phenotype | 30 tasks across 10 categories, 9-dimension cognitive phenotype builder |
-| V20 | Guided Session Runtime | 10-phase guided sessions, micro-check-ins, live IQI/PID proxies, adaptive feedback |
-| V21 | Skill Tree & Mastery | 5-level skill tree per dimension, 12 mastery milestones, plateau detection |
-| V22 | Scene Simulator | 11 symbolic scene templates, adaptive visualization, session replay |
-| V23 | Protocol Studio | 8 built-in protocols, benchmark engine, protocol comparison |
-| V24 | External Protocol SDK | External JSON schema, validation, import/export, reproducibility manifests |
-| V25-V27 | Release & Reliability | Public showcase, Docker release profile, CI/E2E reliability pack, smoke tests |
-| V28-V29 | Biosignal Sandbox | Simulated/LSL/BrainFlow sources, signal quality, realtime monitoring |
-| V30-V31 | Fusion & Live Events | Multimodal fusion, adaptive state estimator, neuroadaptive policy, live event bus |
-| V32-V34 | Live Control Room | Reviewer-facing dashboard, closed-loop scene adaptation, visible scene dynamics |
-| V35-V36 | Benchmark Scorecard | Closed-loop evaluation, Grade-A scorecard, evidence-based metrics |
-| V37-V39 | Scenario SDK Studio | External scenario import/export, custom suites, scenario gallery, frontend studio |
-| V40-V42 | Adaptive Policy Lab | 6 built-in policy profiles, policy matrix, leaderboard, functional frontend wiring |
+- **Local-first by default.** SQLite on this machine; no accounts, telemetry, cloud sync, or API keys.
+- **Auditable state.** Immutable versions, content hashes, explicit provenance, typed diffs, and durable
+  event sequences.
+- **Deterministic where it matters.** Intention parsing, scene composition, candidate generation, task
+  selection, and scoring are reproducible from stored inputs.
+- **Fail-closed claims.** Machine-readable capability envelopes and a claim ceiling gate every label and
+  export.
+- **Uncertainty is first-class.** Counts, intervals, censoring, coverage, and abstention are part of the
+  interface — not footnotes.
+
+The backend defaults to `127.0.0.1`, validates the `Host` header, and marks Studio responses `no-store`.
+Before a non-empty database is upgraded, it writes and integrity-checks a recovery copy under
+`<db_dir>/backups/`; if that copy fails, startup aborts rather than migrating without a recovery point.
 
 ---
 
-## Key Innovations
+## Quick start
 
-| Innovation | Description |
-|-----------|-------------|
-| **Self-Report IQI/PID Proxy Metrics** | Transparent weighted formulas from vividness, stability, confidence, effort, fatigue. Not neural measurement. |
-| **Symbolic Scene Visualization** | Scene clarity, fog, detail, motion, and stability adapt based on self-report proxies and policy previews. Not mental image reconstruction. |
-| **Deterministic Closed-Loop Benchmarks** | 6 scenarios evaluate whether the adaptive pipeline responds correctly to specific check-in patterns. Software behavior benchmark, not clinical validation. |
-| **Policy Experimentation Lab** | 6 built-in tunable policy profiles (balanced, clarity-first, fatigue-protective, signal-strict, recovery-first, conservative-safe). Matrix comparison and leaderboard ranking. |
-| **Reproducibility Manifests** | Every benchmark run produces a manifest with protocol hashes, task registry hashes, scene registry hashes, and exact CLI reproduction commands. |
-| **Safe Export Standard** | All exports (benchmark packs, protocol exports, submission packs, biosignal packs) are validated to exclude raw EEG, raw notes, and forbidden claims. |
-| **Optional Biosignal Sandbox** | Simulated EEG, LSL, and BrainFlow/OpenBCI adapters provide BCI-adjacent engineering infrastructure without making BCI or neurofeedback claims. |
-| **Local-First Architecture** | All data is stored locally as JSON/JSONL. No cloud accounts, no telemetry, no external APIs. |
+Requirements: Python 3.10+ and a current Node.js installation.
 
----
+**Terminal 1 — backend**
 
-## Safety Boundaries
-
-Every IMAGINA artifact — protocol, session, benchmark, export, report, scene, policy — includes:
-
-```
-analysis_mode           = "personal_exploratory_training"
-not_clinical            = true
-not_diagnostic          = true
-not_mind_reading        = true
-not_bci_claim           = true
-not_neurofeedback_claim = true
-production_valid        = false
-raw_eeg_export_default  = false
-```
-
-The system performs deterministic validation for forbidden terms (`clinical`, `diagnosis`, `therapy`, `treatment`, `BCI-ready`, `mind-reading`, `dream decoding`, `validated neurofeedback`, `neural reconstruction`, `medical`, `patient`, `disorder`) in all externally importable artifacts (protocols, benchmark scenarios, policy profiles). Violations trigger validation failures with `safe_to_import = false`.
-
----
-
-## SDK CLI
-
-```bash
-# Protocol SDK
-python3 -m app.cli.imagina_sdk schema                     # View external protocol schema
-python3 -m app.cli.imagina_sdk example                    # Generate example protocol
-python3 -m app.cli.imagina_sdk validate --file <path>     # Validate protocol against schema
-python3 -m app.cli.imagina_sdk import --user <id> --file <path>  # Import protocol
-python3 -m app.cli.imagina_sdk export-protocol --protocol-id <id>  # Export protocol
-
-# Benchmark SDK
-python3 -m app.cli.imagina_sdk demo                       # Seed demo user with full data
-python3 -m app.cli.imagina_sdk manifest --user <id> [--run-id <id>]  # Build reproducibility manifest
-python3 -m app.cli.imagina_sdk benchmark-export --user <id> [--run-id <id>]  # Export benchmark pack
-
-# Release CLI
-python3 -m app.cli.imagina_release all                    # Generate all release artifacts
-python3 -m app.cli.imagina_release verify                 # Run verification suite
-
-# Demo CLI
-python3 -m app.cli.imagina_demo seed                      # Seed demo data
-python3 -m app.cli.imagina_demo full                      # Seed + showcase + release manifest
-python3 -m app.cli.imagina_demo verify                    # Run key regression tests
-```
-
----
-
-## Running Tests
-
-```bash
-# Full project verification (8 checks: ruff, pytest, frontend build, lint, Docker)
-bash scripts/verify.sh
-
-# Backend integration tests (30+)
+```powershell
 cd backend
-python3 -m app.cli.imagina_v24_sdk_standard_test          # Protocol SDK roundtrip
-python3 -m app.cli.imagina_v25_public_showcase_test       # Public showcase integrity
-python3 -m app.cli.imagina_v35_closed_loop_benchmark_test # Closed-loop benchmark suite
-python3 -m app.cli.imagina_v36_closed_loop_frontend_scorecard_test  # Scorecard + metrics
-python3 -m app.cli.imagina_v42_policy_lab_functional_wiring_test   # Policy lab UI verification
-
-# Run a single benchmark scenario
-python3 -m app.cli.imagina_sdk validate --file docs/examples/example_protocol.json
+python -m pip install -e ".[dev]"
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
----
+**Terminal 2 — frontend**
 
-## Frontend Routes
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open **http://localhost:3000/animus**. The backend creates and migrates the local SQLite schema on startup.
+API documentation is available at **http://127.0.0.1:8000/docs**.
+
+### Product routes
 
 | Route | Purpose |
-|-------|---------|
-| `/imagina` | Main imagery training dashboard |
-| `/imagina/live` | Live neuroadaptive control room, benchmark studio, policy lab |
-| `/imagina/showcase` | Reviewer-ready project overview, architecture, demo flow, safety boundaries |
-| `/imagina/session` | Full guided imagery session flow |
-| `/imagina/reports/[sessionId]` | Per-session report with metrics, scene summary, biosignal data |
-| `/imagina/replay` | Deterministic session replay |
-| `/imagina/science` | Scientific notes and claims policy |
-| `/imagina/profile` | Local user profile |
-| `/imagina/experiments` | Experiment protocol definitions |
-| `/research` | EEG validation artifacts (forensic layer, not IMAGINA core) |
+|---|---|
+| `/animus` | Intention composer, recent sessions, saved worlds |
+| `/animus/studio/[sessionId]` | Scene canvas, prompt bar, candidates, inspector, history |
+| `/animus/practice/[sessionId]` | Adaptive scene practice and local scoring |
+| `/animus/interview/[sessionId]` | Epistemic interview and posterior reconstruction |
+| `/animus/observatory/[sessionId]` | Scene Threshold, confidence atlas, evidence trail, reliability |
+| `/animus/profile` | Experimental behavioural estimates, calibration, and limits |
+| `/animus/worlds` | Saved world library |
+| `/animus/about` | Capability envelope and scientific boundaries |
 
 ---
 
-## Project Structure
+## Verification
 
-```
-imagina/
-├── backend/
-│   └── app/
-│       ├── core/
-│       │   ├── imagery/       # V19-V23: Task battery, guided sessions, skill tree, scene,
-│       │   │                   #          protocol studio, SDK, showcase, release health
-│       │   ├── adaptive/      # V14-V17: PID training, adaptive plans, N-of-1 experiments
-│       │   ├── biosignals/    # V28-V42: Simulated/LSL/BrainFlow, fusion, live events,
-│       │   │                   #          scene dynamics, closed-loop benchmarks, policy lab
-│       │   ├── evidence/      # V18: Evidence model, quality audit, export packs
-│       │   ├── protocols/     # V10-V12: Personal intelligence, protocol engine, experiment design
-│       │   ├── calibration/   # V13: PID v2 calibration
-│       │   └── sessions/      # V8-V9: Session manager, event store
-│       ├── api/imagina/       # ~100 REST endpoints
-│       ├── cli/               # 30+ integration tests, SDK, demo, release, CI CLI tools
-│       └── research/          # Preserved EEG validation forensics (OpenMIIR, PhysioNet)
-├── frontend/
-│   ├── app/imagina/           # /imagina, /imagina/live, /imagina/showcase
-│   ├── components/imagina/    # 40+ panels: tasks, sessions, scene, skill tree, benchmarks
-│   ├── hooks/                 # useLiveNeuroadaptiveDemo, useAdaptivePolicyLab
-│   └── lib/                   # API client, WebSocket, feedback mapping
-├── docs/                      # Architecture, metrics, claims, V14-V42 docs, demo scripts, whitepaper
-├── scripts/                   # verify.sh, Docker smoke, AI context tools
-├── docker-compose.release.yml # 3-service Docker profile (backend, frontend, demo-seed)
-└── README.md
+From `backend/`:
+
+```powershell
+python -m pytest app/tests/test_animus_scene_model.py app/tests/test_animus_scene_commands.py `
+  app/tests/test_animus_scene_revisions.py app/tests/test_animus_studio_intent.py `
+  app/tests/test_animus_studio_persistence.py app/tests/test_animus_studio_api.py `
+  app/tests/test_animus_studio_integrity.py app/tests/test_animus_studio_claims.py `
+  app/tests/test_animus_studio_reconstruction.py app/tests/test_animus_studio_adaptive.py `
+  app/tests/test_animus_studio_simulation.py app/tests/test_animus_epistemic.py `
+  app/tests/test_animus_epistemic_api.py app/tests/test_animus_epistemic_sim.py `
+  app/tests/test_animus_contrast.py app/tests/test_animus_contrast_api.py `
+  app/tests/test_animus_observatory.py app/tests/test_animus_contrast_sim.py `
+  -q -p no:cacheprovider
+python -m ruff check --no-cache app/core/animus app/api/animus_studio.py app/schemas/animus_studio.py
 ```
 
----
+From `frontend/`:
 
-## Limitations
+```powershell
+npm run typecheck
+npm run lint
+npm run build
+node scripts/verify-animus-ui.cjs
+```
 
-| Limitation | Detail |
-|-----------|--------|
-| Self-Report Proxy Metrics | IQI, PID, capability scores, and all dimension profiles are subjective self-report estimates — not neural or physiological measurements. |
-| N-of-1 Experiments | Personal exploratory only — not randomized controlled trials. Results apply to the individual user. |
-| No EEG Validation | Biosignal features are simulated or optionally streamed. The system does not validate or claim EEG-based classification, decoding, or neurofeedback. |
-| Locally Defined Protocols | Protocols are stored and run locally. There is no shared cloud protocol registry. |
-| Frontend Server Required | The Next.js frontend requires a local development server. Static deployment is not currently supported. |
-| Hardware Optional | LSL/BrainFlow adapters require optional dependencies (`pylsl`, `brainflow`) and compatible hardware. All tests pass without hardware. |
-
----
-
-## Future Directions
-
-- **Real EEG/LSL sensor integration** — gated behind metadata preflight validation and raw-data exclusion from public exports
-- **Multi-user local profiles** — independent training histories, phenotypes, and benchmarks on a single machine
-- **PDF/HTML export** — formatted benchmark reports, scorecards, and protocol documentation
-- **Multi-protocol meta-analysis** — cross-protocol trend analysis and statistical comparisons
-- **Public protocol registry** — optional opt-in sharing of anonymized protocol definitions
+`verify-animus-ui.cjs` drives a real local browser through the authoring loop and fails on console errors. It
+writes screenshots to `docs/animus/`.
 
 ---
 
-*IMAGINA is a local-first personal exploratory mental imagery training and research platform. It is non-clinical, non-diagnostic, non-BCI, not neurofeedback validation, not mind-reading, and not mental image reconstruction.*
+## Scientific boundaries
+
+IMAGINA is a **research prototype**, not a clinical product. The current claim ceiling is
+`L1_BEHAVIORAL_ASSISTED`.
+
+- No thought reading, dream decoding, neural content decoding, or neural reconstruction claim.
+- No image-generation model or external renderer in the Studio.
+- No diagnosis, treatment, clinical validation, or neurofeedback claim.
+- No composite “imagination score,” norm, or latent-ability ranking.
+- Scene Threshold thresholds are within-scene normalized units; a lower value means finer discrimination,
+  not stronger imagery.
+- The ERI posterior is a belief over probe variables, not a picture of what someone imagined.
+- Aphantasia is treated as a variation and a design constraint, not a deficit.
+- Simulations and offline recovery checks are **not** human validation.
+- All data stays local; there are no accounts, telemetry, or cloud calls during Studio use.
+
+The full boundary is maintained in [ANIMUS_CLAIMS_BOUNDARY.md](docs/animus/ANIMUS_CLAIMS_BOUNDARY.md), with
+the evidence map in [EVIDENCE_MAP.md](docs/animus/EVIDENCE_MAP.md) and the proposed independent study in
+[VALIDATION_PROTOCOL.md](docs/animus/VALIDATION_PROTOCOL.md).
+
+---
+
+## Repository map
+
+```text
+backend/
+  app/core/animus/          symbolic scene graph, loop, Studio service, measurement instruments
+  app/api/                  REST and WebSocket surfaces
+  app/schemas/              typed wire contracts
+  app/storage/migrations/   additive SQLite migrations
+  app/tests/                hermetic scene, Studio, measurement, and API tests
+  app/evaluation/           offline simulations and recovery checks
+frontend/
+  app/animus/               product routes
+  components/animus/        scene renderer, candidates, probes, atlas, evidence, reliability
+  lib/                      typed API client and Studio hooks
+docs/
+  animus/                   product, architecture, API, measurement, and claims specifications
+  ai/                       task briefs, decisions, session log, risks, project context
+scripts/                    verification and UI-driving scripts
+```
+
+---
+
+## Documentation
+
+| Document | Why read it |
+|---|---|
+| [ANIMUS product vision](docs/animus/ANIMUS_PRODUCT_VISION.md) | The loop, the north star, and what is real today |
+| [Architecture](docs/animus/ANIMUS_ARCHITECTURE.md) | Scene graph, Studio service, measurement layers |
+| [API contract](docs/animus/API_CONTRACT.md) | Wire formats, concurrency, errors, and WebSocket behavior |
+| [Measurement model](docs/animus/MEASUREMENT_MODEL.md) | What the five dimensions mean and do not mean |
+| [Reconstruction spec](docs/animus/RECONSTRUCTION_SPEC.md) | Token/F1 and spatial scoring |
+| [Adaptive policy](docs/animus/ADAPTIVE_POLICY.md) | Coverage floor, information gain, and difficulty updates |
+| [Epistemic interview](docs/animus/EPISTEMIC_INTERVIEW_SPEC.md) | Probes, Beta beliefs, EIG, and abstention |
+| [Scene Threshold](docs/animus/CONTRAST_SPEC.md) | 2-AFC design, staircase, and threshold fit |
+| [Observatory](docs/animus/OBSERVATORY_SPEC.md) | Provenance, leave-one-out sensitivity, and reliability |
+| [Claims boundary](docs/animus/ANIMUS_CLAIMS_BOUNDARY.md) | The exact claim ceiling and forbidden interpretations |
+| [Roadmap](docs/animus/ANIMUS_ROADMAP.md) | What comes next and what remains blocked |
+
+---
+
+## Status
+
+IMAGINA is an active research prototype. The Studio, measurement surfaces, and observatory are implemented
+against an additive schema through migration **v021**; human validation, independent replication, and
+neural-content authorization remain future, gated work.
+
+The system is built to make its own limits inspectable. That is the point.
