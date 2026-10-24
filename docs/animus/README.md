@@ -23,7 +23,7 @@ npm run dev
 ```
 
 Open `http://localhost:3000/animus`. The backend creates/migrates the local SQLite schema (migrations
-v014–v017) on startup. No account, network service, or API key is required. The backend defaults to
+v014–v021) on startup. No account, network service, or API key is required. The backend defaults to
 `127.0.0.1`, validates the `Host` header, and marks Studio responses `no-store`; do not bind it to a public
 interface without adding authentication and an explicit `ALLOWED_HOSTS` value.
 
@@ -42,11 +42,42 @@ gap. See [API_CONTRACT.md](API_CONTRACT.md).
 |---|---|
 | `/animus` | Intention composer, recent sessions, saved worlds |
 | `/animus/studio/[sessionId]` | Scene canvas, prompt bar, candidates, inspector, history |
+| `/animus/practice/[sessionId]` | Adaptive scene practice; deterministic tasks and local scoring |
+| `/animus/interview/[sessionId]` | Epistemic interview; binary probes, posterior reconstruction, and uncertainty |
+| `/animus/observatory/[sessionId]` | Scene Threshold contrast task, confidence atlas, evidence trail, and test–retest reliability |
+| `/animus/profile` | Experimental behavioural estimates, calibration, and limits |
 | `/animus/worlds` | Saved world library; reopen or delete |
 | `/animus/about` | Capability envelope and scientific boundaries |
 
 The legacy `/imagina/animus` route redirects to `/animus`. The P1 research API under `/animus/*` is
 unchanged and remains available for its own clients.
+
+## Experimental measurement
+
+`/animus/profile` reports five separate behavioural estimates from adaptive scene practice: object detail,
+discrimination, spatial structure, edit control, and confidence calibration. Object reconstruction uses a
+token bank and F1; spatial layout uses normalized placement and position error. Each estimate shows its
+trial count, uncertainty, and status; there is no composite score. A descriptive error signature reports
+omissions, intrusions, and mean spatial error. Tasks are deterministic and scored on the server, so answers,
+target flags, and target positions are not sent to the browser before submission. The model, the task
+simplifications, and the claim limits are in [MEASUREMENT_MODEL.md](MEASUREMENT_MODEL.md) and
+[RECONSTRUCTION_SPEC.md](RECONSTRUCTION_SPEC.md); the selection rule is in
+[ADAPTIVE_POLICY.md](ADAPTIVE_POLICY.md); the proposed independent study is in
+[VALIDATION_PROTOCOL.md](VALIDATION_PROTOCOL.md). The profile is experimental and `clinical_use = DISABLED`.
+
+The epistemic interview is a separate behavioural surface. After a timed scene preview, it asks binary
+object-presence and spatial-relation probes against the hidden symbolic scene, updates a Beta posterior from the answer and
+confidence, and selects later probes by expected information gain. It reports object/spatial accuracy,
+mean Brier, coverage, abstention, overconfidence, and entropy separately. There is no composite score and no
+claim that the posterior is a neural image. See [EPISTEMIC_INTERVIEW_SPEC.md](EPISTEMIC_INTERVIEW_SPEC.md).
+
+Scene Threshold adds a contrastive 2-AFC task. After one timed encoding view, the person sees pairs that
+differ only in object presence, spatial position, or colour. An adaptive 2-down/1-up staircase concentrates
+trials near the person's threshold, while the reported estimate comes from a fitted 75%-correct
+psychometric function. The summary separates d′, side bias, per-feature thresholds, Brier/overconfidence,
+and coverage. The observatory overlays the belief layer, evidence provenance, and test–retest reliability
+without a composite score. See [CONTRAST_SPEC.md](CONTRAST_SPEC.md) and
+[OBSERVATORY_SPEC.md](OBSERVATORY_SPEC.md).
 
 ## What is intentionally absent
 
@@ -63,7 +94,13 @@ Backend (from `backend/`):
 python -m pytest app/tests/test_animus_scene_model.py app/tests/test_animus_scene_commands.py `
   app/tests/test_animus_scene_revisions.py app/tests/test_animus_studio_intent.py `
   app/tests/test_animus_studio_persistence.py app/tests/test_animus_studio_api.py `
-  app/tests/test_animus_studio_integrity.py app/tests/test_animus_studio_claims.py -q -p no:cacheprovider
+  app/tests/test_animus_studio_integrity.py app/tests/test_animus_studio_claims.py `
+  app/tests/test_animus_studio_reconstruction.py app/tests/test_animus_studio_adaptive.py `
+  app/tests/test_animus_studio_simulation.py app/tests/test_animus_epistemic.py `
+  app/tests/test_animus_epistemic_api.py app/tests/test_animus_epistemic_sim.py `
+  app/tests/test_animus_contrast.py app/tests/test_animus_contrast_api.py `
+  app/tests/test_animus_observatory.py app/tests/test_animus_contrast_sim.py `
+  -q -p no:cacheprovider
 python -m ruff check --no-cache app/core/animus app/api/animus_studio.py app/schemas/animus_studio.py
 ```
 
@@ -87,6 +124,12 @@ mobile overflow) and fails on browser console errors. It writes screenshots to
 - [Product vision](ANIMUS_PRODUCT_VISION.md)
 - [Architecture](ANIMUS_ARCHITECTURE.md)
 - [API contract](API_CONTRACT.md)
+- [Reconstruction spec](RECONSTRUCTION_SPEC.md)
+- [Adaptive policy](ADAPTIVE_POLICY.md)
+- [Epistemic interview spec](EPISTEMIC_INTERVIEW_SPEC.md)
+- [Scene Threshold spec](CONTRAST_SPEC.md)
+- [Observatory spec](OBSERVATORY_SPEC.md)
+- [Measurement model](MEASUREMENT_MODEL.md)
 - [Claims boundary](ANIMUS_CLAIMS_BOUNDARY.md)
 - [Roadmap](ANIMUS_ROADMAP.md)
 - [Demo script](DEMO_SCRIPT.md)

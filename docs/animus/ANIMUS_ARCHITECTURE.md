@@ -91,6 +91,12 @@ claims imagery content.
 | `studio/types.py` | Runtime-free TypedDicts for persisted records, summaries, and event payloads |
 | `studio/locks.py` | Per-session `asyncio.Lock` registry |
 | `studio/claims.py` | Studio claim/phrase guard and capability envelope |
+| `studio/profile.py` | Experimental Beta-Binomial ability estimates, Brier calibration, limitations |
+| `studio/tasks.py` | Deterministic behavioural/reconstruction tasks; answer never leaves the server |
+| `studio/reconstruction.py` | Token banks, normalized spatial layout, `recon-v1` scoring, error profiles |
+| `studio/adaptive.py` | Coverage floor plus expected-information-gain selection; bounded difficulty |
+| `studio/epistemic.py` | Binary epistemic probes, mean-field Beta belief, EIG selection, `eri-v1` reconstruction |
+| `studio/protocols.py` | Versioned practice protocol definitions and validation |
 | `studio/bus.py` | In-process pub/sub; overflow emits `resync_required` instead of silently losing updates |
 | `api/animus_studio_ws.py` | Live channel: Origin check, subscribe-before-snapshot, typed errors, intent |
 
@@ -118,6 +124,70 @@ verification aborts startup instead of upgrading without a recovery point. SQLit
 1000-page autocheckpoint. Stored JSON is decoded strictly for scene, diff, commands, notes and event
 payloads; undecodable records raise the typed `corrupt_local_state` error instead of becoming an empty
 scene.
+
+Migration **v018** adds the experimental measurement layer: `animus_studio_profiles`,
+`_profile_estimates`, `_protocols`, `_protocol_runs`, and `_trials`. It seeds one `local_default` profile
+and stores trial outcomes, confidence, latency, task identity, and `client_trial_id`. A uniqueness
+constraint on `(session_id, client_trial_id)` makes submission idempotent. The layer is additive: it does
+not alter scenes, versions, branches, candidates, worlds, or P1 events. The profile row is keyed to the
+local profile, not to a user account; there is still no account or tracking.
+
+Migration **v019** adds reconstruction metadata to `animus_studio_trials`: `task_family`, `response_kind`,
+`scoring_version`, and `error_profile_json`, plus a family/time index. Every column has a default, so v018
+rows remain readable and old clients ignore the fields. It is additive and does not alter scene or world
+data.
+
+Migration **v020** adds `animus_studio_interviews` (source version, scene hash, protocol/form, seed,
+difficulty, budget, status) and probe metadata on `animus_studio_trials`: `interview_id`, `probe_index`,
+`probe_type`, `belief_json`, and `information_gain`. Every new column has a default or is nullable, so v019
+rows remain readable. It is additive and leaves scenes, worlds, and P1 tables untouched.
+
+Migration **v021** adds `animus_studio_contrast_sessions` and `animus_studio_contrast_trials`. A session
+stores the immutable source version, scene hash, protocol/form, seed, budget, staircase difficulty,
+occasion/delay, and optional reflection. A trial stores the server-only target side and realised feature
+delta, plus the chosen side, correctness, confidence, abstention, latency, and client idempotency key.
+Both tables are additive; v019 practice rows and v020 interview rows remain readable.
+
+## Measurement and practice layer
+
+The practice loop is intentionally outside the scene mutation path. `practice/start` reads the current
+scene head, asks `adaptive.select_action` for a dimension/task/difficulty, and rebuilds a deterministic
+task from `(scene, task_type, seed, difficulty)` and returns a `task_id` fingerprint. The response contains
+the task **without** its answer; reconstruction tasks carry a shuffled token bank or layout, never target
+positions or target flags. `practice/trials` rebuilds the same task, verifies the fingerprint, scores the
+response server-side (option, token F1, or spatial accuracy), appends a trial, updates the Beta-Binomial
+statistics and Brier calibration, and returns the next task plus the refreshed profile.
+
+The profile is a set of **separate** experimental estimates (`stability`, `discrimination`, `spatial`,
+`control`, `calibration`), each with `n`, posterior uncertainty, and a `collecting/provisional/
+moderate_evidence` status. There is deliberately no composite score. The full model, including its
+assumptions and limitations, is in [MEASUREMENT_MODEL.md](MEASUREMENT_MODEL.md). Reconstruction trials add
+a descriptive `error_signature` (omissions, intrusions, mean spatial error), never a composite. The exact
+instrument is in [RECONSTRUCTION_SPEC.md](RECONSTRUCTION_SPEC.md) and the selection rule in
+[ADAPTIVE_POLICY.md](ADAPTIVE_POLICY.md).
+
+### Epistemic interview
+
+`interviews/start` builds a deterministic binary probe pool from the scene head. It asks one object and one
+spatial probe for coverage, then selects the probe with the highest expected entropy reduction over a
+mean-field Beta belief. `interviews/{id}/probes` verifies the source version and probe identity, updates the
+belief from the chosen option and confidence, records the trial, and returns either the next probe or a
+posterior reconstruction. The probe payload excludes the answer and any target flag. The interview is a
+separate behavioural surface: its scores do not enter the five practice dimensions and its trials do not
+drive the practice selector. The full model is in
+[EPISTEMIC_INTERVIEW_SPEC.md](EPISTEMIC_INTERVIEW_SPEC.md).
+
+### Scene Threshold and observatory
+
+`contrast/start` snapshots an immutable source version and returns a hidden-target pair. One option is the
+encoded scene; the other differs only in presence, x-position, or hue. `contrast/{id}/trials` rebuilds the
+expected pair from the stored scene and trial history, scores a 2-AFC response, and returns the next pair or
+a fitted result. A 2-down/1-up staircase sets the next delta, but the threshold estimate comes from a
+psychometric fit over all trials. The target side, feature, delta, and per-trial correctness never leave the
+server before scoring. The observatory anchors on the latest completed contrast session and attaches ERI
+evidence only when the interview has the same `scene_hash`; it then reports provenance, leave-one-out
+sensitivity, and feature-level test–retest reliability. The model is in
+[CONTRAST_SPEC.md](CONTRAST_SPEC.md) and [OBSERVATORY_SPEC.md](OBSERVATORY_SPEC.md).
 
 ## Write integrity
 
@@ -157,6 +227,18 @@ settings and, with `?deep=true`, `quick_check` plus `foreign_key_check`. Full tr
 | GET | `/sessions/{id}/history`, `/versions/{vid}` | Version and branch inspection |
 | GET | `/sessions/{id}/events?after_seq=&limit=` | Durable event history, ascending cursor |
 | POST | `/sessions/{id}/worlds`; GET/DELETE `/worlds/*`; POST `/worlds/{id}/open` | World library |
+| GET | `/profile`; POST `/profile/reset` | Experimental behavioural profile and reset |
+| GET | `/protocols` | Versioned built-in practice protocols |
+| POST | `/sessions/{id}/practice/start` | Start an adaptive task; answer stays server-side |
+| POST | `/sessions/{id}/practice/trials` | Score a task, append a trial, return next task and profile |
+| POST | `/sessions/{id}/interviews/start` | Start an epistemic interview; first probe has no answer |
+| POST | `/sessions/{id}/interviews/{iid}/probes` | Score a binary probe, update belief, return next probe or reconstruction |
+| GET | `/interviews/{iid}`, `/sessions/{id}/interviews` | Interview summary and local session history |
+| POST | `/sessions/{id}/contrast/start` | Start Scene Threshold; first pair hides target, feature, and delta |
+| POST | `/sessions/{id}/contrast/{cid}/trials` | Score one 2-AFC trial, return next pair or fitted result |
+| GET | `/contrast/{cid}`, `/sessions/{id}/contrast` | Contrast summary and local session history |
+| POST | `/contrast/{cid}/reflection` | Optional strategy reflection after completion |
+| GET | `/sessions/{id}/observatory` | Belief, evidence provenance, discrimination, and reliability |
 
 Responses are whole **snapshots** (scene, version, diff, branches, history, capability envelope,
 undo/redo flags, `last_event_seq`) so the client replaces state atomically. Each successful route declares an explicit
@@ -204,5 +286,7 @@ derived from the same scene palette.
 
 ## Product routes
 `/animus` (start), `/animus/studio/[sessionId]` (loop), `/animus/worlds` (library),
-`/animus/about` (boundaries). The legacy `/imagina/animus` route redirects to `/animus`; the P1 engine and
+`/animus/practice/[sessionId]` (adaptive practice), `/animus/interview/[sessionId]` (epistemic
+interview), `/animus/observatory/[sessionId]` (Scene Threshold and observatory), `/animus/profile`
+(experimental profile), `/animus/about` (boundaries). The legacy `/imagina/animus` route redirects to `/animus`; the P1 engine and
 its benchmark API remain available under `/animus/*` and are not replaced by the Studio.

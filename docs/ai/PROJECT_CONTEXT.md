@@ -230,10 +230,26 @@ Interpretation thresholds:
 | `backend/app/storage/migrations/v015_animus_studio_branch_scope.py` | Session-scoped branch key + lost-branch repair |
 | `backend/app/storage/migrations/v016_animus_studio_integrity.py` | Index-only candidate/list integrity support |
 | `backend/app/storage/migrations/v017_animus_studio_branch_redo.py` | Additive branch redo-stack column |
+| `backend/app/storage/migrations/v018_animus_studio_measurement.py` | Additive profile, estimates, protocols, runs, and trials tables |
+| `backend/app/storage/migrations/v019_animus_studio_reconstruction.py` | Additive reconstruction metadata and error-profile columns |
+| `backend/app/storage/migrations/v020_animus_epistemic_interview.py` | Additive interview header and probe metadata |
+| `backend/app/storage/migrations/v021_animus_contrast_observatory.py` | Additive contrast session and trial tables |
+| `backend/app/core/animus/studio/profile.py` | Beta-Binomial ability estimates, Brier calibration, limitations, no composite |
+| `backend/app/core/animus/studio/tasks.py` | Deterministic scene/reconstruction tasks; answer stays server-side |
+| `backend/app/core/animus/studio/reconstruction.py` | Token banks, spatial scoring, `recon-v1` error profiles |
+| `backend/app/core/animus/studio/adaptive.py` | Coverage floor plus information-gain selection and bounded difficulty |
+| `backend/app/core/animus/studio/epistemic.py` | Binary probes, mean-field Beta belief, `eri-v1` posterior reconstruction |
+| `backend/app/core/animus/studio/sdt.py` | 2-AFC d′, threshold fit, Brier/type-2, test–retest helpers |
+| `backend/app/core/animus/studio/contrast.py` | Contrast pairs, adaptive staircase, `contrast-v1` scoring |
+| `backend/app/core/animus/studio/observatory.py` | Evidence provenance, leave-one-out, longitudinal reliability |
+| `backend/app/core/animus/studio/protocols.py` | Versioned practice protocols and validation |
+| `backend/app/evaluation/animus_instrument_sim.py` | Deterministic synthetic policy comparison; not human validation |
+| `backend/app/evaluation/animus_epistemic_sim.py` | Deterministic interview policy simulation; `simulation_only` |
+| `backend/app/evaluation/animus_contrast_sim.py` | Deterministic 2-AFC respondent and threshold-recovery simulation; `simulation_only` |
 | `backend/app/schemas/animus_studio.py` | Strict bounded request schemas for the Studio API |
 | `backend/app/schemas/animus_studio_responses.py` | Typed response contract for every successful Studio route |
-| `frontend/app/animus/` | Product routes: landing, studio, worlds, about; route-level Studio error boundary |
-| `frontend/components/animus/` | Procedural R3F scene, candidate strip, prompt bar, inspector, history, studio shell |
+| `frontend/app/animus/` | Product routes: landing, studio, practice, interview, observatory, profile, worlds, about |
+| `frontend/components/animus/` | Procedural R3F scene, candidate strip, prompt bar, inspector, history, studio shell, reconstruction board, epistemic probe, contrast pair, atlas, evidence trail, reliability panel |
 | `frontend/lib/animusStudioApi.ts`, `useAnimusStudio.ts` | Typed client, response/command/WS types, and product state hook |
 | `frontend/scripts/verify-animus-ui.cjs` | Playwright end-to-end loop + screenshots |
 | `docs/animus/` | Vision, architecture, API contract, claims boundary, roadmap, demo, README |
@@ -241,6 +257,21 @@ Interpretation thresholds:
 The Studio is additive: it does not replace the IMAGINA session stack or the P1 ANIMUS research API. The claim
 ceiling remains L1; image generation, uploads, neural content, dream content, and neural reconstruction are
 disabled/unauthorized.
+
+Schema v018 adds the experimental measurement layer: a local profile, five separate behavioural estimates,
+Brier calibration, versioned protocols, and idempotent trial records. Schema v019 adds reconstruction task
+metadata and error profiles; schema v020 adds epistemic interview headers and probe metadata; schema v021 adds
+contrast sessions and trials. Practice tasks
+are deterministic and server-scored; the client never receives the answer, target flags, or target positions
+before submission. Object reconstruction uses token F1; spatial layout uses normalized position error;
+calibration is cross-cutting. The profile has no composite and is labelled `EXPERIMENTAL` with
+`clinical_use = DISABLED`. The epistemic interview is a separate surface: binary probes, Beta posterior,
+coverage/calibration/abstention/entropy, no composite, and no neural claim. Scene Threshold is a contrastive
+2-AFC surface: hidden target side, adaptive staircase, fitted within-scene threshold, d′, side bias, Brier,
+and coverage; the observatory adds evidence provenance and feature-level test–retest. See
+`docs/animus/MEASUREMENT_MODEL.md`, `RECONSTRUCTION_SPEC.md`, `ADAPTIVE_POLICY.md`,
+`EPISTEMIC_INTERVIEW_SPEC.md`, `CONTRAST_SPEC.md`, `OBSERVATORY_SPEC.md`, and
+`docs/animus/VALIDATION_PROTOCOL.md`.
 
 Schema v017 persists branch redo stacks; Studio connections use `synchronous=FULL`, strict stored-JSON
 decoding, deep health diagnostics, and a durable event cursor. Before a non-empty database is migrated, the

@@ -2,6 +2,169 @@
 
 ---
 
+## 2026-10-24 -- ANIMUS 5.0: Scene Threshold and provenance observatory (`contrast-v1` / `sdt-v1`)
+
+**Objective:** add a contrastive 2-AFC scene-discrimination task and a provenance-aware longitudinal
+observatory, without adding neural input, an image model, a diagnosis, a composite score, or a new runtime
+dependency.
+
+**Delivered (code complete; not executed)**
+- `studio/sdt.py`: 2-AFC d′ with log-linear correction, signed side bias, Brier/overconfidence, sparse
+  type-2 AUC, deterministic threshold grid fit with bootstrap CI and censoring, Pearson/Fisher r, SEM,
+  MDC95, and calibration summary.
+- `studio/contrast.py`: deterministic presence/position/colour pairs with a server-only target, hidden
+  feature/delta, A/B/C forms, 2-down/1-up staircase, 2-AFC scoring, and per-feature threshold summary.
+- `studio/observatory.py`: evidence provenance (`direct_probe`/`prior`/`abstained`/`mixed`), leave-one-out
+  posterior sensitivity, dependence groups, feature-level test–retest, and fixed boundary strings.
+- Migration **v021**: additive `animus_studio_contrast_sessions` and `animus_studio_contrast_trials`;
+  repository bundle writes; profile contrast summary; reset clears contrast data.
+- Service/API/schemas: start, submit, summary, list, reflection, and observatory routes; idempotency before
+  the version guard; source-version snapshots; no per-trial correctness in the response.
+- Frontend: `ContrastPair`, `ConfidenceAtlas`, `EvidenceTrail`, `ReliabilityPanel`,
+  `/animus/observatory/[sessionId]`, Studio “Observatory” entry, profile contrast card, and About capability
+  row; API types/functions with no new dependency.
+- Offline `evaluation/animus_contrast_sim.py`: deterministic respondent, staircase exercise, and recovery
+  table; explicitly simulation-only.
+- Tests added: pair determinism/no leak, scoring/staircase/summary, SDT and reliability, observatory
+  provenance, API start/submit/idempotency/stale/reflection, and simulation determinism/recovery.
+- Docs: `CONTRAST_SPEC.md`, `OBSERVATORY_SPEC.md`, plus API/architecture/roadmap/measurement/claims/
+  evidence/validation/README updates and ADR-054.
+
+**Static review follow-up:** fixed the API test loop to submit each returned `next_trial`; removed an unused
+repository helper; anchored the observatory on the latest completed contrast and attached interview evidence
+only for a matching `scene_hash`; excluded censored estimates from profile/reliability aggregation; and
+made censored thresholds render as boundaries rather than precise values. The pair `trial_id` no longer
+hashes the target side, the contrast response no longer publishes `scene_hash`, and the side schedule uses a
+server-generated seed that is not returned. No runtime check was performed.
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, migrations, or
+installs were authorized. Backend tests, frontend lint/build, migration v021 on a populated database, and the
+simulation outputs are UNVERIFIED until an authorized environment runs them.
+
+**Claim boundary:** ceiling unchanged `L1_BEHAVIORAL_ASSISTED`; the task is behavioural, not neural; no
+imagery-strength, diagnosis, enhancement, or far-transfer claim. `neural_reconstruction` remains
+`UNAUTHORIZED`, `clinical_use = DISABLED`, privacy `local_only`, and no dependency or external call was added.
+
+---
+
+## 2026-10-23 -- ANIMUS 4.0: epistemic reconstruction interview (`eri-v1`)
+
+**Objective:** add a separate behavioural surface that asks which binary observation would most reduce
+uncertainty about a hidden symbolic scene, updates a transparent belief state, and reports calibration,
+coverage, abstention, and entropy without a composite score.
+
+**Delivered (code complete; not executed)**
+- `studio/epistemic.py`: deterministic object-presence and spatial-relation probe pools, mean-field Beta
+  belief updates, coverage floor plus expected-information-gain selection, Brier/accuracy/coverage summary,
+  posterior reconstruction, and hidden-answer-free public payloads.
+- Migration **v020**: additive `animus_studio_interviews` plus trial metadata `interview_id`,
+  `probe_index`, `probe_type`, `belief_json`, `information_gain`.
+- Repository/service/API/schemas: interview start/submit/summary/list routes, idempotency before the version
+  guard, stale-scene rejection, per-probe trial ledger writes, and an `epistemic` profile summary.
+- Frontend: `EpistemicProbe` component and `/animus/interview/[sessionId]` page with a timed, fixed-view
+  encoding preview; profile epistemic card; Studio "Interview" entry point; API types and functions.
+- Start-time `expected_version_id` guard, and a corrected negative-option Beta update so correct `absent` and
+  `right` answers lower the corresponding positive-state probability instead of raising it.
+- Per-probe correctness/Brier feedback is withheld; the reconstruction relation heading is derived from the
+  posterior rather than copied from the hidden answer.
+- Offline `evaluation/animus_epistemic_sim.py`: deterministic random/fixed/info-gain policy comparison,
+  explicitly labelled `simulation_only`.
+- Tests added: probe determinism/no answer leak, Beta updates, coverage floor, scoring/calibration,
+  reconstruction versions, simulation determinism, API start/submit/idempotency/stale/validation, and schema
+  v020 expectations.
+- Docs: `EPISTEMIC_INTERVIEW_SPEC.md`, updates to evidence/claims/measurement/API/README, ADR-053.
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, migrations, or
+installs were authorized. Backend tests, frontend lint/build, migration v020 on a populated database, and the
+simulation results are UNVERIFIED until an authorized environment runs them.
+
+**Claim boundary:** ceiling unchanged `L1_BEHAVIORAL_ASSISTED`; the interview is behavioural, not neural; no
+diagnosis, imagery-strength, enhancement, or far-transfer claim. `neural_reconstruction` remains
+`UNAUTHORIZED`, `clinical_use = DISABLED`, privacy `local_only`, and no dependency or external call was added.
+
+---
+
+## 2026-10-23 -- ANIMUS 3.0: reconstruction instrument and information-gain policy
+
+**Objective:** move beyond multiple-choice probes without crossing the L1 boundary: let the user rebuild the
+object set or spatial layout from memory, score it server-side, persist an error profile, and select the next
+trial with a coverage floor plus expected information gain.
+
+**Delivered (code complete; not executed)**
+- `studio/reconstruction.py`: deterministic `object_reconstruction` (token bank with target/decoy tokens,
+  F1, omissions, intrusions) and `spatial_layout` (normalized placement, tolerance-scaled position score,
+  mean spatial error), `recon-v1`.
+- `studio/tasks.py`: new task types, hidden `answer`, `response_kind`, `tokens`, `layout`, versioned task
+  fingerprint, and fallback to legacy tasks when a scene cannot support reconstruction.
+- `studio/adaptive.py`: two warmups, coverage floor at `n < 2`, then expected information gain over the Beta
+  posterior; calibration is cross-cutting and not selectable; bounded difficulty retained.
+- Migration **v019**: additive `task_family`, `response_kind`, `scoring_version`, `error_profile_json`, and a
+  family/time index on `animus_studio_trials`.
+- Repository/service/API/schemas: reconstruction responses, `error_signature` in the profile, trial metadata
+  in the wire contract, and idempotency/version/task-id checks preserved.
+- Frontend: `ReconstructionBoard` (token selection and 7×7 click-to-place grid), practice page branching by
+  `response_kind`, error feedback, and an error-signature card on the profile.
+- Offline `evaluation/animus_instrument_sim.py` comparing coverage-first, information-gain, and fixed-cycle
+  policies under a known synthetic model.
+- Tests added: reconstruction determinism/no answer leak, F1/spatial scoring, fallback, adaptive selection,
+  simulation determinism, API reconstruction trial, v019 columns.
+- Docs: `RECONSTRUCTION_SPEC.md`, `ADAPTIVE_POLICY.md`, updates to measurement/validation/evidence/API/
+  architecture/roadmap/claims, ADR-051/052, and RISK-048/049.
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, migrations, or
+installs were authorized. This entry does not claim a passing suite or build. Backend tests, frontend
+lint/build, migration v019 on a populated database, and the simulation results are UNVERIFIED until an
+authorized environment runs them.
+
+**Claim boundary:** ceiling unchanged `L1_BEHAVIORAL_ASSISTED`; reconstruction is behavioural, not neural;
+no diagnosis, imagery-strength, enhancement, or far-transfer claim. `neural_reconstruction` remains
+`UNAUTHORIZED`, `clinical_use = DISABLED`, privacy `local_only`, and no dependency or external call was
+added.
+
+---
+
+## 2026-10-23 -- ANIMUS 2.0: experimental behavioural instrument and adaptive practice
+
+**Objective:** move ANIMUS from a scene-authoring demo to a measurement-grade imagination instrument
+without crossing the L1 boundary: deterministic practice, separate ability/calibration estimates, explicit
+uncertainty, and a local profile that cannot be mistaken for a diagnosis.
+
+**Delivered (code complete; not executed)**
+- Migration **v018** adds `animus_studio_profiles`, `_profile_estimates`, `_protocols`, `_protocol_runs`,
+  and `_trials`, seeds `local_default`, and enforces idempotency with a unique
+  `(session_id, client_trial_id)`.
+- `studio/profile.py`: Beta-Binomial ability estimates (uniform prior), Brier calibration, minimum three
+  trials before display, posterior uncertainty, status labels, and payload-level limitations. No composite.
+- `studio/tasks.py`: deterministic `attribute_recall`, `style_recall`, `candidate_discrimination`,
+  `spatial_view`, and `control_choice`; answers are rebuilt server-side and never sent before submission.
+  Each task carries a `task_id` fingerprint over the scene hash, task type, seed, and rounded difficulty;
+  submission must match it, so a stale or edited scene fails closed instead of scoring a different task.
+- `studio/adaptive.py`: first two trials cover stability and calibration, then least-sampled dimension with
+  a seeded tie-break; difficulty moves by at most 0.08 and is clamped to `[0.1, 0.9]`.
+- `studio/protocols.py`: `ANIMUS-PROTOCOL-v1`, strict validation, and three built-in protocols.
+- Repository/service/API: profile read/reset, protocol list, practice start/submit with
+  `expected_version_id`, idempotent retries checked before the version guard, and a refreshed profile in the
+  response. Calibration exposes no scalar ability estimate; its Brier score is withheld until three trials.
+  Capability envelope
+  adds `behavioral_profile = EXPERIMENTAL`, `adaptive_practice = EXPERIMENTAL`, `clinical_use = DISABLED`.
+- Frontend: typed practice/profile API, `/animus/profile`, `/animus/practice/[sessionId]`, a Practice entry
+  in the Studio, and a `showOverlay` mode on `AnimusScene` so a stimulus does not print the answer.
+- Tests added: profile math, calibration, task determinism/no answer leak, bounded difficulty, migration
+  v018, idempotent submit, stale-version rejection, task-id binding, and capability boundary.
+- Docs: `MEASUREMENT_MODEL.md`, `PROTOCOL_SPEC.md`, `VALIDATION_PROTOCOL.md`, `EVIDENCE_MAP.md`, ADR-048/049/
+  050, roadmap/architecture/API/claims updates, and RISK-046/047.
+
+**Verification:** deliberately **not run** — no local commands, tests, builds, servers, migrations, or
+installs were authorized. This entry does not claim a passing suite or build. The new tests and the
+existing suite remain unexecuted on this host; runtime behavior and migration v018 on a populated database
+are unverified until an authorized environment runs them.
+
+**Claim boundary:** unchanged ceiling `L1_BEHAVIORAL_ASSISTED`; no neural input, image model, diagnosis,
+imagery-strength, or far-transfer claim. Profile is experimental, multidimensional, composite-free, and
+shown with `n`/uncertainty/limitations. Privacy remains `local_only`; no dependency or external call added.
+
+---
+
 ## 2026-10-23 -- ANIMUS Studio: pre-migration backups, gap-aware live events, abortable mutations
 
 **Objective:** make the two remaining local failure modes explicit: an interrupted schema upgrade and a

@@ -90,6 +90,20 @@
 
 ---
 
+## ANIMUS Studio / Behavioural Instrument
+
+1. `docs/animus/README.md` — product routes and local run
+2. `docs/animus/ANIMUS_ARCHITECTURE.md` — modules, migrations, practice loop
+3. `docs/animus/MEASUREMENT_MODEL.md` — dimensions, scoring, limitations
+4. `docs/animus/RECONSTRUCTION_SPEC.md` — `recon-v1` task and scoring contract
+5. `docs/animus/ADAPTIVE_POLICY.md` — coverage floor, information gain, difficulty
+6. `docs/animus/VALIDATION_PROTOCOL.md` — proposed independent study
+7. `docs/animus/ANIMUS_CLAIMS_BOUNDARY.md` — allowed and forbidden copy
+8. `backend/app/core/animus/studio/` — tasks, reconstruction, adaptive, profile, service
+9. `frontend/app/animus/` and `frontend/components/animus/` — product surfaces
+
+---
+
 ## Full Repository Analysis / AI Context Snapshot
 
 1. Run `bash scripts/ai_context.sh` to generate `docs/ai/repo_snapshot.md`
@@ -116,4 +130,4 @@
 
 ---
 
-*Last updated: 2026-05-07*
+*Last updated: 2026-10-23*

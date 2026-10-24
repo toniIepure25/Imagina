@@ -495,4 +495,117 @@ be a deliberate contract change.
 
 ---
 
-*Last updated: 2026-10-23 - RISK-044 pre-migration backup failure, RISK-045 full-snapshot gap recovery*
+## RISK-046: The behavioural profile can be mistaken for a validated or clinical instrument
+
+**Risk:** Five task estimates and a Brier score look psychometric. A user, journalist, or collaborator may
+treat them as a diagnosis, an "imagery IQ", or evidence of improvement, especially if a number rises.
+**Impact:** High for scientific credibility and user wellbeing; a low estimate could be read as a deficit.
+**Mitigation:** `behavioral_profile = EXPERIMENTAL`, `clinical_use = DISABLED`, no composite, minimum `n`
+before display, uncertainty and limitations on every profile payload, and claim-guard copy. Aphantasia is
+described as a variation, not a deficit. Validation is a separate preregistered study
+(`VALIDATION_PROTOCOL.md`), not an assertion.
+**Status:** Actively mitigated in payload, UI, and docs; not yet tested with participants.
+
+---
+
+## RISK-047: Task simplifications and renderer/device confounds limit construct validity
+
+**Risk:** `spatial_view` is a multiple-choice view inference rather than a continuous mental-rotation task;
+`control_choice` is a selection task, not direct manipulation; `candidate_discrimination` changes one or
+more visible attributes. Renderer, display, input latency, and preview duration may influence scores.
+**Impact:** Medium to high for interpretation; the instrument measures task performance, not the named
+construct in general.
+**Mitigation:** Name the tasks as behavioural proxies, document the simplifications in
+`MEASUREMENT_MODEL.md`, log latency, keep preview duration in the task payload, and require an independent
+validation study before any construct or group claim. Do not compare people or publish norms.
+**Status:** Open; inherent to Phase A. A continuous manipulation task and counterbalanced renderer study
+are future work.
+
+---
+
+## RISK-048: Reconstruction scores can be mistaken for a validated or neural measure
+
+**Risk:** A token bank and a spatial board look like an objective reconstruction of the user's imagery. Object
+F1 and position error may be read as "how much you imagined", a diagnosis, or a neural decode.
+**Impact:** High for scientific credibility and user wellbeing, especially for aphantasic users.
+**Mitigation:** `recon-v1` is labelled experimental; object and spatial scores stay separate; the error
+signature is descriptive; the capability envelope keeps `neural_reconstruction = UNAUTHORIZED` and
+`clinical_use = DISABLED`; copy names the task as behavioural. Validation is a preregistered study, not an
+assertion.
+**Status:** Actively mitigated in payload, UI, and docs; no participant validation yet.
+
+---
+
+## RISK-049: Local target leakage and device confounds limit reconstruction validity
+
+**Risk:** The target scene remains in the local session snapshot; a determined user can inspect client state.
+Token composition, decoy plausibility, preview duration, display size, input device, and grid tolerance can
+change scores. A low score may reflect the interface rather than memory.
+**Impact:** Medium to high for interpretation; the instrument is not secure and not device-invariant.
+**Mitigation:** Hide the scene during the question, do not publish target flags or positions before
+submission, log latency, keep preview duration in the payload, version the scoring as `recon-v1`, and
+document the limitations. Do not use for high-stakes, clinical, or comparative decisions. A future study
+must counterbalance token order and estimate device effects.
+**Status:** Open; inherent to a local self-use instrument.
+
+---
+
+## RISK-050: A posterior reconstruction can be mistaken for a neural or objective image
+
+**Risk:** A probability bar labelled "object presence" may be read as a picture of what the user imagined,
+as an objective imagery measure, or as a neural decode. Calibration and entropy may be collapsed into a
+single "imagination score" in external summaries.
+**Impact:** High for scientific credibility and user wellbeing, especially for aphantasic users.
+**Mitigation:** `eri-v1` is labelled experimental; object/spatial accuracy, Brier, coverage, abstention, and
+entropy stay separate; the probe payload never exposes the hidden answer; copy says "behavioural posterior,
+not a picture"; the capability envelope keeps `neural_reconstruction = UNAUTHORIZED` and
+`clinical_use = DISABLED`; no composite is computed.
+**Status:** Actively mitigated in payload, UI, and docs; no participant validation yet.
+
+---
+
+## RISK-051: The Beta response model and local scene snapshot limit interview validity
+
+**Risk:** The `Beta(1, 1)` update assumes the reported confidence is a likelihood and that trials are
+exchangeable. Confidence can be strategic, fatigue-sensitive, or misunderstood. The hidden symbolic scene
+also remains in the local session snapshot, so this is not a secure assessment. Probe composition and form
+order can change difficulty.
+**Impact:** Medium to high for interpretation; the instrument is not device-invariant or secure.
+**Mitigation:** Document the response model in `EPISTEMIC_INTERVIEW_SPEC.md`, report coverage and
+overconfidence separately, label the simulation `simulation_only`, keep the source version pinned with
+`expected_version_id`, and do not use for high-stakes, clinical, or comparative decisions. A preregistered
+study must test calibration fit, form effects, and test–retest reliability.
+**Status:** Open; inherent to a local self-use instrument and a stated response model.
+
+---
+
+## RISK-052: A contrast threshold can be mistaken for imagery strength or a universal limit
+
+**Risk:** A lower "threshold" may be read as stronger imagery, a visual-cortex limit, or a stable trait.
+The value is normalized within one scene, depends on the renderer, display, camera, feature type, and
+staircase, and is not comparable across scenes or people. Side bias or abstention may be framed as failure.
+**Impact:** High for scientific credibility and for aphantasic users.
+**Mitigation:** `contrast-v1`/`sdt-v1` are labelled experimental; d′, threshold, side bias, Brier, and
+coverage stay separate; thresholds are withheld when sparse or marked when censored; the UI says
+"within-scene units, not imagery strength"; the capability envelope keeps
+`neural_reconstruction = UNAUTHORIZED` and `clinical_use = DISABLED`; no composite or norm is computed.
+**Status:** Actively mitigated in payload, UI, and docs; no human validation or device-invariance study yet.
+
+---
+
+## RISK-053: Test–retest reliability is usually unidentifiable with two feature types
+
+**Risk:** The observatory aligns thresholds by feature. With only `spatial_position` and `object_color`,
+there are fewer than the three aligned features required for Pearson r, so the panel usually reports
+`insufficient`. A developer or user may treat this as a bug and force a coefficient, or overinterpret a
+single occasion.
+**Impact:** Medium for interpretation; a forced r with two points would be misleading.
+**Mitigation:** Return `insufficient` with a reason, show occasion-level descriptive change instead, require
+at least three aligned features before r/SEM/MDC95, and document the limitation in `OBSERVATORY_SPEC.md`.
+Adding feature types or occasions is the correct fix, not lowering the threshold.
+**Status:** Open by design; needs more feature types or occasions before a reliability claim is possible.
+
+---
+
+*Last updated: 2026-10-24 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
+RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits*

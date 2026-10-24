@@ -27,6 +27,9 @@ The loop — not one-shot reconstruction — is the core product.
 - Deterministic, replayable loop control (typed state machine).
 - Local-first user-preference learning.
 - **Simulated** neural observations (a synthetic digital twin), used to build and validate the loop.
+- An **experimental behavioural instrument** at `/animus/profile`: deterministic scene and reconstruction
+  tasks, a coverage floor plus information-gain practice policy, separate ability/calibration estimates,
+  a descriptive error signature, and explicit uncertainty. No composite score and no diagnosis.
 
 ## What is FUTURE / PLUGGABLE
 - A **validated** neural content decoder (behind a stable interface, unused in P1).
@@ -37,6 +40,8 @@ The loop — not one-shot reconstruction — is the core product.
 - The UI never implies that synthetic or behavioral observations are decoded thoughts.
 - The Studio makes **no image-generation claim**: every candidate is a symbolic, editable procedural
   preview. Its capability envelope is returned by the backend and displayed in the UI.
+- The behavioural instrument reports task performance and confidence calibration, never imagery strength,
+  neural content, diagnosis, or far transfer. Aphantasia is treated as a variation, not a deficit.
 - A machine-readable **claim level** (L0 simulated / L1 behavioral-assisted) gates every label and export;
   ANIMUS-P1 and Studio operate only at L0/L1. Higher levels require a future scientific gate — no manual
   bypass.

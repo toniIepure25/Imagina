@@ -1100,4 +1100,181 @@ and reconnects, and aborts an in-flight mutation when a new mutation starts or t
 
 ---
 
-*Last updated: 2026-10-23 - ADR-047 pre-migration backups and durable event sequencing*
+## ADR-048: Profile estimates are multidimensional, uncertainty-first, and composite-free
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** A single "imagination score" would hide which process failed, invite comparisons the evidence
+cannot support, and make an unvalidated behavioural task look like a clinical instrument. Imagery is
+multidimensional and self-report/objective measures correlate only minimally.
+
+**Decision:** Keep separate behavioural estimates for scene stability, discrimination, spatial view,
+control, and confidence calibration. Ability estimates use a Beta-Binomial posterior (uniform prior) with
+`n`, posterior uncertainty, and explicit `collecting/provisional/moderate` status. Calibration uses a Brier
+score computed from confidence and outcome, separate from ability. Do not compute or display a composite.
+Hide an estimate until at least three trials exist, and always show evidence count and limitations next to
+the number. Calibration has no scalar ability estimate (`estimate = null`); its Brier score is withheld until
+three confidence-rated trials, so `1 - Brier` cannot be relabelled as an accuracy score.
+
+**Consequences:**
+- The profile cannot be reduced to one leaderboard-friendly number.
+- Sparse dimensions stay visibly uncertain instead of defaulting to a flattering or alarming value.
+- The model is inspectable and reproducible with the standard library; no new dependency.
+- A future validated instrument can replace the estimator behind the same payload contract.
+
+---
+
+## ADR-049: Adaptive practice is deterministic, server-scored, and evidence-seeking
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** An adaptive loop that sends the answer to the browser, or picks tasks by engagement, would be
+easy to game and would not produce interpretable evidence. A fixed curriculum would leave some dimensions
+unmeasured for a long time.
+
+**Decision:** Rebuild each task on the server from `(scene, task_type, seed, difficulty)` and never publish
+`correct_option_id` before submission. Return a `task_id` fingerprint over the scene hash and task identity;
+submission must present the same fingerprint, so an edited scene cannot silently reuse an old task. Select
+the first two trials for stability and calibration, then
+prefer the dimension with the fewest trials, with a seeded tie-break. Adjust difficulty by a bounded step
+after a short rolling window, clamped to `[0.1, 0.9]`; do not use streaks, timers, or engagement signals.
+Submission is idempotent per `client_trial_id` (checked before the version guard so a retry still returns
+the saved trial), and `expected_version_id` rejects a task whose source scene has changed.
+
+**Consequences:**
+- A client cannot read the answer and cannot silently retry a mutated task under the same id.
+- Task generation and scoring are replayable from a seed for audit and tests.
+- The policy deliberately favours coverage over short-term success rate.
+- Difficulty is a heuristic challenge point, not a validated threshold.
+
+---
+
+## ADR-050: The behavioural profile is experimental and never a diagnosis
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** Aphantasia and hypophantasia are variations in imagery experience, not deficits. The
+measurement literature does not support diagnosis from a short local task, far transfer from cognitive
+training, or claims that imagery strength was increased.
+
+**Decision:** Publish the profile under `L1_BEHAVIORAL_ASSISTED` with `behavioral_profile =
+EXPERIMENTAL`, `adaptive_practice = EXPERIMENTAL`, and `clinical_use = DISABLED`. Every profile payload
+carries limitations and a no-diagnosis statement. Copy describes task performance and confidence
+calibration, never imagery strength, neural content, treatment, or enhancement. The product does not claim
+far transfer, a cure, or brain training.
+
+**Consequences:**
+- The instrument can be useful for reflection and research scaffolding without implying clinical validity.
+- Aphantasic users are treated as a design variation; the UI never frames low imagery as failure.
+- Any future clinical or enhancement claim requires a separate validated protocol and ethics review.
+- The capability envelope makes the boundary machine-readable, not just editorial.
+
+---
+
+---
+
+## ADR-051: Reconstruction is a behavioural proxy, not neural reconstruction
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** Multiple-choice tasks capture recognition but not how much of an object set or layout survives.
+Drawing-from-memory studies show that reconstruction can expose object and spatial content, and aphantasia
+work suggests object detail and spatial accuracy can dissociate. ANIMUS has no neural decoder and must not
+imply one.
+
+**Decision:** Add two deterministic reconstruction task families: `object_reconstruction` (token selection,
+F1 with omissions/intrusions) and `spatial_layout` (normalized placement, mean position score and error).
+Both are generated from the symbolic scene, scored server-side under `recon-v1`, and never send target flags
+or target positions before submission. Persist `task_family`, `response_kind`, `scoring_version`, and
+`error_profile_json` in migration v019. Show object and spatial scores separately; aggregate the error
+signature descriptively; do not create a composite.
+
+**Consequences:**
+- The instrument gains a richer behavioural record without gaining a neural claim.
+- Token composition and grid tolerance are versioned instrument choices and require validation.
+- The local session still contains the target scene; the UI hides it, but this is not a secure assessment.
+- `neural_reconstruction` remains `UNAUTHORIZED`; the claim ceiling remains L1.
+
+---
+
+## ADR-052: Adaptive selection uses a coverage floor and expected information gain
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** Coverage-first selection guarantees some evidence per dimension but can waste trials on
+dimensions with narrow posteriors. Pure information gain can starve a dimension with little evidence. The
+adaptive-testing literature supports uncertainty-aware selection in simulation, not as a validated policy
+for this instrument.
+
+**Decision:** After two warmup trials, select any dimension with `n < 2` first. Otherwise select the
+dimension with the highest expected information gain over the Beta posterior at the current difficulty.
+Keep calibration cross-cutting: it is updated on every trial but is not selectable. Keep the existing
+bounded challenge-point difficulty controller. Record the reason and expected gain in the adaptive payload.
+Provide a deterministic simulation harness comparing coverage-first, information-gain, and fixed-cycle
+policies.
+
+**Consequences:**
+- The policy is inspectable, seeded, and testable.
+- Simulation results are policy mechanics, not human validation.
+- If human or simulation evidence shows a regression, coverage-first remains a simple fallback.
+- The policy still assumes exchangeable trials and a one-dimensional ability per task family; those
+  assumptions are open validation questions.
+
+---
+
+## ADR-053: The epistemic interview reports a posterior, not a decoded image
+
+**Status:** Accepted
+**Date:** 2026-10-23
+**Context:** Reconstruction produces a single behavioural score after the fact. It does not expose how
+uncertainty changed or which observation was most informative. A binary probe with a confidence rating can
+support an inspectable belief-update trace without crossing the L1 boundary. The design is informed by
+adaptive-testing and scene-memory work, but no direct human validation of this interview exists.
+
+**Decision:** Add `eri-v1` as a separate behavioural surface. Use a mean-field `Beta(1, 1)` posterior for
+object presence and spatial relations; update it from the answer and confidence, mapping the hidden state to
+the positive option (`present`/`left`) before updating; force one object and one spatial probe for coverage
+when available; then select by expected information gain. Permit abstention, report coverage and
+Brier separately, and never expose the hidden answer in the probe payload. Persist interview headers in
+migration v020 and probe metadata on the existing trial ledger. Report no composite score.
+
+**Consequences:**
+- The interview is inspectable, deterministic, local-only, and separable from the five profile dimensions.
+- The Beta response model is a design choice, not a fitted psychometric model.
+- Abstention is data, not a correctness failure.
+- The simulation can test policy mechanics only; human validity, calibration fit, and test–retest
+  reliability remain open.
+- `neural_reconstruction` remains `UNAUTHORIZED`; `clinical_use` remains `DISABLED`; the claim ceiling remains
+  `L1_BEHAVIORAL_ASSISTED`.
+
+---
+
+## ADR-054: Scene Threshold uses 2-AFC sensitivity and reports no criterion
+
+**Status:** Accepted
+**Date:** 2026-10-24
+**Context:** The profile and ERI both ask the person to report or reconstruct content. Neither estimates a
+detection limit for a small scene change. A 2-AFC contrast task can measure sensitivity and a within-scene
+threshold while keeping the target side hidden and the task local. In 2-AFC the yes/no criterion is not
+identified, so reporting a criterion would be statistically misleading.
+
+**Decision:** Add `contrast-v1` / `sdt-v1`. Build a pair from the encoded scene and one minimally changed
+variant; withhold target side, feature, and delta; use a 2-down/1-up staircase for continuous features;
+fit `p_correct(delta) = 0.5 + 0.5(1-lapse)sigmoid((delta-threshold)/slope)`; report d′, signed side bias,
+per-feature thresholds, Brier/overconfidence/type-2 AUC when identifiable, and coverage. Persist sessions and
+trials in migration v021. Add an observatory that exposes ERI evidence provenance, leave-one-out sensitivity,
+and feature-level test–retest r/SEM/MDC95, with `insufficient` when fewer than three features align.
+
+**Consequences:**
+- No `criterion`, imagery-strength score, cross-scene norm, composite, or clinical category.
+- Thresholds are within-scene normalized units; a lower value means finer discrimination, not stronger
+  imagery.
+- Two continuous feature types make reliability usually `insufficient`; that is honest, not a bug.
+- No per-trial correctness feedback; the aggregate result appears only at completion.
+- No new dependency, no image model, no external call; `local_only` and `L1_BEHAVIORAL_ASSISTED` remain.
+- Human validation and recovery bias remain open; the simulation is not a validation study.
+
+---
+
+*Last updated: 2026-10-24 - ADR-051 reconstruction proxy, ADR-052 information-gain policy, ADR-053
+epistemic interview, ADR-054 Scene Threshold 2-AFC*

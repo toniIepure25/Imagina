@@ -1,4 +1,79 @@
-# TASK_BRIEF.md — Merge Gate B.1: Runtime Completion and Evidence Hardening
+# TASK_BRIEF.md
+
+## Current task — ANIMUS 5.0 Scene Threshold observatory (2026-10-24)
+
+**Goal:** add a contrastive 2-AFC scene-discrimination task and a provenance-aware longitudinal observatory,
+without adding neural input, an image model, a diagnosis, a composite score, or a new dependency.
+
+**Scope**
+- Additive SQLite v021 contrast session and trial tables.
+- Deterministic presence/position/colour pairs with hidden target, feature, and delta.
+- 2-down/1-up staircase and fitted 75%-correct threshold; d′, signed side bias, Brier, coverage.
+- Evidence provenance, leave-one-out sensitivity, and feature-level test–retest reliability.
+- Contrast start/submit/summary/list/reflection and observatory API.
+- Observatory UI, profile card, and Studio entry point.
+- Deterministic simulation and honest validation/claims documentation.
+
+**Non-goals**
+- Neural decoding, neural reconstruction, dream content, image generation.
+- Clinical diagnosis, treatment, cure, imagery-strength, or far-transfer claims.
+- Cross-scene norms, leaderboards, composite scores, or person comparison.
+- A criterion estimate from 2-AFC, which is not identified.
+
+**Constraints**
+- No new runtime dependency; local-only; no external calls.
+- No execution or local install during this session; static verification only.
+- Preserve existing Studio/P1 behavior and claim ceiling.
+
+**Acceptance**
+- Start returns a pair without target side, feature, delta, or answer.
+- Submit is idempotent, rejects a stale scene, and returns the next pair or result.
+- Abstention is excluded from d′/thresholds and included in coverage.
+- Thresholds are withheld when sparse and marked when censored.
+- Observatory reports `insufficient` reliability below three aligned features.
+- Capability envelope keeps neural/clinical/image-generation boundaries.
+- Tests and docs are present; runtime verification remains explicitly pending.
+
+---
+
+## Historical brief — ANIMUS 4.0 epistemic reconstruction interview (2026-10-23)
+
+**Goal:** add a separate behavioural interview that asks binary questions about a hidden symbolic scene,
+updates a transparent posterior, and reports uncertainty/calibration/coverage without adding neural input,
+an image model, a diagnosis, or a composite score.
+
+**Scope**
+- Additive SQLite v020 interview header and probe metadata.
+- `eri-v1` object-presence and spatial-relation probes with hidden answers.
+- Mean-field Beta belief, coverage floor, then expected-information-gain selection.
+- Binary choice, confidence in `[0.5, 1.0]`, and abstention.
+- Posterior reconstruction with object/relation entropy and separate scores.
+- Interview start/submit/summary/list API and local profile summary.
+- Interview UI, profile card, and Studio entry point.
+- Deterministic policy simulation and honest validation/claims documentation.
+
+**Non-goals**
+- Neural decoding, neural reconstruction, dream content, image generation.
+- Clinical diagnosis, treatment, cure, imagery-strength, or far-transfer claims.
+- A single "imagination score", norms, leaderboards, or cross-person comparison.
+- Participant recruitment or data collection.
+
+**Constraints**
+- No new runtime dependency; local-only; no external calls.
+- No execution or local install during this session; static verification only.
+- Preserve existing Studio/P1 behavior and claim ceiling.
+
+**Acceptance**
+- Start returns a probe without the hidden answer or target flag.
+- Submit is idempotent, rejects a stale scene, and returns the next probe or reconstruction.
+- Abstention is excluded from Brier and included in coverage.
+- Profile exposes five dimensions, error signature, and epistemic summary; no composite.
+- Capability envelope keeps neural/clinical/image-generation boundaries.
+- Tests and docs are present; runtime verification remains explicitly pending.
+
+---
+
+## Historical brief — Merge Gate B.1: Runtime Completion and Evidence Hardening
 
 ---
 
