@@ -134,7 +134,7 @@ See `docs/metrics.md` for full formulas and interpretations.
 
 ```bash
 cd backend
-python3 -m pytest app/tests/ -q        # 11 test files
+python3 -m pytest app/tests/ -q        # 34 test files, ~400 tests
 python3 -m ruff check .                 # lint
 python3 -m mypy app/ --ignore-missing-imports  # type check (optional, not in CI)
 ```

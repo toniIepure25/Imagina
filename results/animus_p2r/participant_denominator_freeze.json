@@ -1,0 +1,24 @@
+{
+  "artifact": "ANIMUS_P2R_PARTICIPANT_DENOMINATOR_FREEZE",
+  "milestone": "ANIMUS-P2R",
+  "eligibility_rule": "NOD ImageNet multi-session subjects with raw T1w + imagenet BOLD + events + fieldmaps; prospectively fixed by lowest subject ids; NO outcome-based/motion/signal selection",
+  "n_eligible": 6,
+  "eligible_subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-05",
+    "sub-06"
+  ],
+  "required_passes": 2,
+  "technical_exclusion_rules": [
+    "fMRIPrep failure after reproducible rerun",
+    "required MNI output absent",
+    "empty/zero-coverage Wang25 ROI",
+    "missing mandatory imagenet runs/events"
+  ],
+  "no_performance_based_selection": true,
+  "frozen_before_outcomes": true,
+  "self_hash": "1e566ca5c938f7c73ee7f4f21fb0b9bd3e0ab9e9d759e38d2bd508871b0e233b"
+}

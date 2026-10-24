@@ -1,0 +1,87 @@
+{
+  "artifact": "C3XAT_R1_ATLAS_PROVENANCE_RESOLVED",
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "c3xat_r1_execution_seal": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "primary_roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "wang2015": {
+    "source": "neuropythy bundled Wang et al. 2015 probabilistic maps of visual topography",
+    "neuropythy_version": "0.12.16",
+    "atlas_revision": "wang15 v1_0",
+    "native_source_space": "fsaverage cortical surface",
+    "complete_mpm": true,
+    "maps": 25,
+    "regions": 22,
+    "both_hemispheres": true,
+    "no_area_omitted": true,
+    "no_hemisphere_omitted": true,
+    "no_performance_subselection": true,
+    "maxprob_label_files": [
+      {
+        "file": "lh.wang15_mplbl.v1_0.mgz",
+        "bytes": 11614,
+        "sha256": "20f95e93e7f450198277ad7e8e8206ccc5cb8938bc8892819e2f967db0e7c8bd"
+      },
+      {
+        "file": "rh.wang15_mplbl.v1_0.mgz",
+        "bytes": 11310,
+        "sha256": "dfebccf830437bda5edd09b0f73cae9a6890ccbc922f4910ef7f2d061f9cfcb6"
+      }
+    ],
+    "full_prob_label_files": [
+      {
+        "file": "lh.wang15_fplbl.v1_0.mgz",
+        "bytes": 314060,
+        "sha256": "4536a348a37cb7f6c1031865f46f2be5301f594e055ce48eefd85ac89e45c9cd"
+      },
+      {
+        "file": "rh.wang15_fplbl.v1_0.mgz",
+        "bytes": 304427,
+        "sha256": "d44ee58b2268e11943daf76bace4c8e1763272e63a991532d8fc378d4a436fa8"
+      }
+    ],
+    "volumetric_construction_route": "project fsaverage wang15 mplbl -> each subject's FreeSurfer surface (recon-all from the pinned fMRIPrep) -> fill to that subject's MNI152NLin2009cAsym 2mm functional grid with label-safe (nearest/GenericLabel) interpolation; no custom registration, no hand alignment"
+  },
+  "target_space_transform": {
+    "target_template": "MNI152NLin2009cAsym",
+    "target_res_mm": 2,
+    "source_template": "MNI152NLin6Asym",
+    "templateflow_transform_file": "tpl-MNI152NLin2009cAsym_from-MNI152NLin6Asym_mode-image_xfm.h5",
+    "bytes": 204735104,
+    "sha256": "2e3869a07b96aec406e0419ca2e434afc54882d37cc212b933b139d1b63a4dfe",
+    "reference_res02_T1w": {
+      "file": "tpl-MNI152NLin2009cAsym_res-02_T1w.nii.gz",
+      "bytes": 1763084,
+      "sha256": "7c4e551ae8150ac1f468595bd62074aa15aed747cd334fce6d177182972b6220",
+      "shape": [
+        97,
+        115,
+        97
+      ],
+      "zooms": [
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    "reference_res02_brain_mask": {
+      "file": "tpl-MNI152NLin2009cAsym_res-02_desc-brain_mask.nii.gz",
+      "bytes": 29576,
+      "sha256": "7a71e9ce99d2af7b68bb5c163908c8e25f4c7a198806fb0893a5c1759b480ecd"
+    },
+    "interpolation": "label-safe only (GenericLabel/nearest)",
+    "custom_registration": false,
+    "result_driven_spatial_adjustment": false
+  },
+  "benson14": {
+    "source": "neuropythy Benson14 anatomy-predicted retinotopy",
+    "neuropythy_version": "0.12.16",
+    "role": "SECONDARY",
+    "definition": "union of predicted V1+V2+V3, both hemispheres",
+    "deterministic_construction": "neuropythy.vision benson14 applied to each subject's FreeSurfer surfaces (from the pinned fMRIPrep recon-all); no fitting to functional data",
+    "freesurfer_dependency": "per-subject recon-all from pinned fMRIPrep 24.1.1",
+    "template_assets_hashing": "benson14 template assets hashed at ROI construction alongside the surfaces"
+  },
+  "status": "ATLAS_SPACE_PROVENANCE_RESOLVED",
+  "not_blocked": "C3XAT_R1_BLOCKED_ATLAS_SPACE_PROVENANCE avoided: authoritative Wang2015 maxprob source (neuropythy, hashed), certified fsaverage native space, and the official TemplateFlow MNI152NLin6Asym->2009cAsym transform (hashed) are all established before any neural outcome.",
+  "self_hash": "27f46222fb6ad37ae7b088d5783da708e1f5cb66408e37d29f9a516eed3f429a"
+}

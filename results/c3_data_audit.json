@@ -1,0 +1,103 @@
+{
+  "audit_date": "2026-07-24T09:30:00+00:00",
+  "branch": "research/fmri-imagery-transfer-c3",
+  "source_sha": "15ce4a8952927eecc8425b04066049e7a3203807",
+  "datasets": {
+    "nsd_perception": {
+      "dataset_id": "nsd",
+      "dataset_version": "1.0",
+      "reference": "Allen et al. 2022, doi:10.1038/s41593-021-00962-x",
+      "modality": "7T_fMRI",
+      "beta_variant": "func1pt8mm/betas_fithrf",
+      "voxel_resolution": "1.8mm_isotropic",
+      "total_subjects": 8,
+      "eligible_subjects": ["subj01", "subj02", "subj05", "subj07"],
+      "eligibility_criterion": "completed_40_sessions",
+      "perception_sessions_per_subject": 40,
+      "trials_per_session": "~750",
+      "unique_images_per_subject": "~10000",
+      "shared1000_test_images": 982,
+      "access": "naturalscenesdataset.org",
+      "license": "institutional_agreement"
+    },
+    "nsd_imagery": {
+      "dataset_id": "nsd_imagery",
+      "dataset_version": "1.0",
+      "reference": "Kneeland et al. CVPR 2025, arXiv:2506.06898",
+      "modality": "7T_fMRI",
+      "beta_variant": "func1pt8mm/nsdimagerybetas_fithrf",
+      "voxel_resolution": "1.8mm_isotropic",
+      "total_subjects_scanned": 8,
+      "eligible_subjects": ["subj01", "subj02", "subj05", "subj07"],
+      "unique_stimuli": 18,
+      "stimulus_sets": {
+        "simple": {"count": 6, "description": "4 oriented bars + 2 crosses", "in_distribution": false},
+        "complex": {"count": 6, "description": "5 NSD scenes + 1 artwork", "in_distribution": true},
+        "conceptual": {"count": 6, "description": "word concepts, no ground truth", "excluded": true}
+      },
+      "usable_stimuli_with_ground_truth": 12,
+      "trials_per_subject": 576,
+      "imagery_trials_per_subject": 288,
+      "imagery_trials_per_stimulus": 16,
+      "vision_trials_per_subject": 144,
+      "vision_trials_per_stimulus": 8,
+      "trial_duration_s": 4.0,
+      "vividness_rating": "binary",
+      "access": "naturalscenesdataset.org",
+      "license": "CC-BY-NC-ND_4.0"
+    }
+  },
+  "local_availability": {
+    "subj01": {
+      "imagery_betas": {"available": true, "size_mb": 1003.74, "path": "nsddata_betas/ppdata/subj01/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5"},
+      "ncsnr": {"available": true, "size_mb": 1.09},
+      "roi_masks": {"available": true, "files": ["prf-visualrois.nii.gz", "streams.nii.gz", "nsdgeneral.nii.gz"]},
+      "behavioral": {"available": true, "files_count": 12},
+      "perception_betas": {"available": false, "estimated_size_gb": "16-28", "required_for": "C3-H1"}
+    },
+    "subj02": {"imagery_betas": {"available": false}, "perception_betas": {"available": false}},
+    "subj05": {"imagery_betas": {"available": false}, "perception_betas": {"available": false}},
+    "subj07": {"imagery_betas": {"available": false}, "perception_betas": {"available": false}}
+  },
+  "roi_masks": {
+    "nsdgeneral": {"description": "all visually responsive voxels", "role": "primary", "available": true},
+    "prf_visualrois": {"description": "V1=1, V2=2, V3=3, hV4=4", "role": "secondary", "available": true},
+    "streams": {"description": "ventral=1, lateral=2, parietal=3", "role": "tertiary", "available": true}
+  },
+  "target_embedding": {
+    "model": "openai/clip-vit-large-patch14",
+    "embedding_dim": 768,
+    "normalization": "L2",
+    "frozen_before_imagery_evaluation": true
+  },
+  "published_baselines": {
+    "nsd_imagery_paper": {
+      "clip_2wc_imagery": {"MindEye1": 0.5203, "Brain_Diffuser": 0.5273, "iCNN": 0.4939, "MindEye2": 0.4602, "Takagi": 0.4326},
+      "chance": 0.50,
+      "interpretation": "all_at_or_near_chance"
+    },
+    "spera_2026_frozen_zero_shot": {
+      "clip_2afc": 0.4894,
+      "alex5_2afc": 0.5021,
+      "alex2_2afc": 0.5103,
+      "chance": 0.50,
+      "interpretation": "at_chance"
+    }
+  },
+  "prior_expectation": {
+    "c3_h1_perception": "PASS_expected",
+    "c3_h2_zero_shot": "NULL_most_likely_based_on_published_evidence",
+    "c3_h4_transport": "UNCERTAIN_no_comparable_published_result",
+    "overall_most_likely_outcome": "COMPLETE_WITH_IMAGERY_TRANSFER_NULL"
+  },
+  "power_analysis": {
+    "n_participants": 4,
+    "n_stimuli_with_ground_truth": 12,
+    "n_imagery_trials_per_stimulus": 16,
+    "chance_mrr": 0.259,
+    "minimum_effect_of_interest": 0.10,
+    "sign_flip_permutations": 16,
+    "minimum_achievable_p_value": 0.0625,
+    "power_limitation": "With n=4 and exact permutation, p < 0.0625 is impossible with sign-flip. Must use participant-level null distribution or alternative inference."
+  }
+}

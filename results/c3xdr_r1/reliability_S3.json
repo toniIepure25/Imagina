@@ -1,0 +1,7 @@
+{
+  "artifact": "C3XDR_R1_RELIABILITY",
+  "subject": "S3",
+  "status": "NOT_PRODUCED_BLOCKED",
+  "reason": "no raw betas (Phase-1 ROI/preprocessing provenance blocked)",
+  "self_hash": "25bf6e2351ba33e8c93b618792b407a956ad07d5bb97eedb48e87ecde9b5ac60"
+}

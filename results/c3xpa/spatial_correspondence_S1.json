@@ -1,0 +1,24 @@
+{
+  "artifact": "C3XPA_SPATIAL_CORRESPONDENCE",
+  "subject": "S1",
+  "status": "NO_ARTIFACT_RECEIVED",
+  "roi_names": [
+    "VC",
+    "LVC",
+    "HVC",
+    "V1"
+  ],
+  "released_voxel_count": null,
+  "recovered_voxel_count": null,
+  "released_coordinate_hash": null,
+  "received_coordinate_hash": null,
+  "n_exact_matches": null,
+  "n_missing": null,
+  "n_extra": null,
+  "affine": null,
+  "orientation": null,
+  "grid": null,
+  "exact_match": false,
+  "reason": "no author artifact received; per-subject provenance not evaluable (not fabricated).",
+  "self_hash": "cbd570ba91089206c5435587a68173f9e04a833edeca4727ce021b073cac979a"
+}

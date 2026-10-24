@@ -1,0 +1,106 @@
+{
+  "subject": "subj02",
+  "created_at": "2026-08-26T16:10:16",
+  "downloads": {
+    "betas": {
+      "reused": true,
+      "bytes": 1099059960,
+      "sha256": "ac4e5c7ba014466073fe0e5fd46d44f1e3430e0fa5ea8925bc4d729fc6093a90",
+      "remote_rel": "nsddata_betas/ppdata/subj02/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5"
+    },
+    "ncsnr": {
+      "reused": true,
+      "bytes": 1066447,
+      "sha256": "af520545230547f3d13b91cb4f5657586b7964d5c4fb01adc5019927b3751a86",
+      "remote_rel": "nsddata_betas/ppdata/subj02/func1pt8mm/betas_fithrf/ncsnr.nii.gz"
+    },
+    "nsdgeneral": {
+      "reused": true,
+      "bytes": 64399,
+      "sha256": "b97b27dad1aab3f6e7307d66772603654668c8cb05b831fa116482dad493a517",
+      "remote_rel": "nsddata/ppdata/subj02/func1pt8mm/roi/nsdgeneral.nii.gz"
+    },
+    "prf": {
+      "reused": true,
+      "bytes": 64801,
+      "sha256": "1a1a14fd77d834f0aa1b8106c7bb7737a7c7026a444a2098ad96c0508d6c8d95",
+      "remote_rel": "nsddata/ppdata/subj02/func1pt8mm/roi/prf-visualrois.nii.gz"
+    },
+    "streams": {
+      "reused": true,
+      "bytes": 66775,
+      "sha256": "e1e6009812b61b7ed39ba11d214fe4d20d0b85deb18701770477cbec2d50ecea",
+      "remote_rel": "nsddata/ppdata/subj02/func1pt8mm/roi/streams.nii.gz"
+    }
+  },
+  "beta_shape": [
+    720,
+    84,
+    106,
+    82
+  ],
+  "beta_dtype": "int16",
+  "orientation_transpose": "(2,1,0)",
+  "nsdgeneral_count": 14278,
+  "selected_voxel_count_nsdgeneral_and_ncsnr_gt0": 14088,
+  "row_mapping": {
+    "visB": [
+      192,
+      240
+    ],
+    "imgB_1": [
+      336,
+      384
+    ],
+    "imgB_2": [
+      624,
+      672
+    ]
+  },
+  "setB_vision_shape": [
+    48,
+    14088
+  ],
+  "setB_imagery_shape": [
+    96,
+    14088
+  ],
+  "vision_rows": [
+    192,
+    193,
+    194,
+    "..."
+  ],
+  "imagery_rows": [
+    336,
+    337,
+    338,
+    "..."
+  ],
+  "all_finite": true,
+  "roi_counts": {
+    "prf": {
+      "V1": 1097,
+      "V2": 1057,
+      "V3": 1082,
+      "hV4": 480
+    },
+    "streams": {
+      "ventral": 4634,
+      "lateral": 2957,
+      "parietal": 2263
+    }
+  },
+  "state_matrix_sha256": {
+    "setB_vision": "fa5495c9a4b6d62973beb639996f75a60946e70be828af5136b3bfe4a5253f22",
+    "setB_imagery": "7a1cf2935115ec8c1883d13f3f5f850190085dc8d35ea09ec50b66477dba0eba"
+  },
+  "volume_shape": [
+    84,
+    106,
+    82
+  ],
+  "contract_ok": true,
+  "status": "CERTIFIED",
+  "self_hash": "907ffd605c75a298847595ef2e73b2b97c3fb041baec1275f4d03c3543e565e2"
+}

@@ -1,0 +1,46 @@
+{
+  "artifact": "C3_MULTIPARTICIPANT_ACQUISITION_STATUS",
+  "timestamp": "2026-08-21T19:20:00",
+  "eligible_participant_set": ["subj01", "subj02", "subj05", "subj07"],
+  "note_on_eligibility": "This set was fixed by the C3 protocol before any subj01 result was inspected; it is not being revised based on subj01's outcome.",
+  "per_participant": {
+    "subj01": {
+      "status": "H1_STRICT_REPLAY_IN_PROGRESS_OR_COMPLETE",
+      "perception_beta_sessions_local": "40/40",
+      "local_data_root": "D:\\ComputaCenter\\FMRI2images\\data\\nsd",
+      "note": "Fully acquired and certified; see results/c3_subj01_perception_strict_replay.json for the strict H1 result once it lands."
+    },
+    "subj02": {"status": "NOT_ACQUIRED", "perception_beta_sessions_local": "0/40"},
+    "subj05": {"status": "NOT_ACQUIRED", "perception_beta_sessions_local": "0/40"},
+    "subj07": {"status": "NOT_ACQUIRED", "perception_beta_sessions_local": "0/40"}
+  },
+  "storage_audit": {
+    "local_disk": {
+      "mount": "D:",
+      "total_gb": 184,
+      "used_gb": 146,
+      "available_gb": 39,
+      "required_per_subject_gb": 40.77,
+      "verdict": "INSUFFICIENT — cannot hold even one additional subject's full perception beta set (40.77GB) alongside the existing subj01 data (already ~44GB) without deleting subj01's certified acquisition, which the governing protocol explicitly prohibits."
+    },
+    "remote_pod": {
+      "identity": "orchestraiq-jupyter (Run:AI-managed, namespace runai-romania-dev)",
+      "persistent_volume": "/home/jovyan/work, backed by a 138TB NFS-mounted PVC (108TB free at time of check)",
+      "verdict": "SUFFICIENT capacity in principle, and this session already established a working Python/CUDA environment there while investigating an unrelated GPU embedding task.",
+      "why_not_used_for_subj02_05_07_this_session": [
+        "The pod's ephemeral-storage quota (10Gi) caused repeated pod evictions earlier in this session; the underlying fix (redirecting caches to the PVC) is understood, but the pod also showed non-deterministic multi-minute restart churn under a separate, unrelated workload (a co-tenant FMRI2images_clean conda-env build the user confirmed is theirs and expected to keep running).",
+        "A full rolling-extraction workflow per participant (download 40 sessions, verify each, extract the frozen nsdgeneral+ncsnr voxel union, hash, write provenance, then discard the raw session per the protocol's re-downloadable-original rule) was not built or executed this session — it is a genuinely separate, multi-hour engineering and compute task per participant, not a quick follow-on to the subj01 work already done.",
+        "Each additional participant also needs its own CLIP embedding pool, since NSD subjects see different (only partially overlapping) 10,000-image subsets of the 73,000-image pool; the efficient fix (embedding the full 73k-image corpus once, reusable across all subjects) was identified but not executed this session."
+      ]
+    }
+  },
+  "decision": {
+    "status": "BLOCKED_BY_STORAGE_AND_SCOPE_NOT_BY_OUTCOME",
+    "rationale": "This is a genuine data/storage/access blocker under the governing protocol's own terms ('subject only to genuine data/storage/access blockers'), assessed and recorded before knowing subj01's strict-replay outcome, and independent of it. It does not represent an outcome-dependent continuation decision.",
+    "what_would_unblock_this": [
+      "A rolling-extraction workflow (download session -> verify -> extract frozen ROI/ncsnr union -> hash -> discard raw) implemented and run per participant on a large-capacity root (the remote pod's PVC is the only currently available candidate)",
+      "A full-corpus (73,000-image) CLIP embedding pool generated once and reused across subj02/05/07",
+      "Confirmed pod stability (ephemeral-storage caches redirected to the PVC, as already done for the GPU embedding work) sustained across a multi-hour acquisition run"
+    ]
+  }
+}

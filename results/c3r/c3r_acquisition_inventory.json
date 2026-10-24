@@ -1,0 +1,42 @@
+{
+  "artifact": "C3R_ACQUISITION_INVENTORY",
+  "gate": "C3R",
+  "created_at": "2026-08-26",
+  "status": "PLANNED_BEFORE_DOWNLOAD",
+  "dataset": "NSD-Imagery (public S3 natural-scenes-dataset, no auth)",
+  "s3_base": "https://natural-scenes-dataset.s3.amazonaws.com",
+  "phase1_scope": "imagery reliability screen only -- NO core-NSD perception betas",
+  "storage_preflight": {
+    "work_nfs_free_bytes": 117238646964224,
+    "localdata_xfs_free_bytes": 119350083584,
+    "phase1_download_estimate_bytes": 2905000000,
+    "fits": true,
+    "blocked_c3r_storage": false
+  },
+  "subjects": {
+    "subj02": {
+      "betas_nsdimagery.hdf5": {"path": "nsddata_betas/ppdata/subj02/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5", "remote_bytes": 1099059960, "http": 200},
+      "perception_ncsnr.nii.gz": {"path": "nsddata_betas/ppdata/subj02/func1pt8mm/betas_fithrf/ncsnr.nii.gz", "remote_bytes": 1066447, "http": 200},
+      "nsdgeneral.nii.gz": {"path": "nsddata/ppdata/subj02/func1pt8mm/roi/nsdgeneral.nii.gz", "remote_bytes": 64399, "http": 200},
+      "prf-visualrois.nii.gz": {"path": "nsddata/ppdata/subj02/func1pt8mm/roi/prf-visualrois.nii.gz", "remote_bytes": 64801, "http": 200},
+      "streams.nii.gz": {"path": "nsddata/ppdata/subj02/func1pt8mm/roi/streams.nii.gz", "remote_bytes": 66775, "http": 200}
+    },
+    "subj05": {
+      "betas_nsdimagery.hdf5": {"path": "nsddata_betas/ppdata/subj05/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5", "remote_bytes": 899741016, "http": 200},
+      "perception_ncsnr.nii.gz": {"path": "nsddata_betas/ppdata/subj05/func1pt8mm/betas_fithrf/ncsnr.nii.gz", "remote_bytes": 907848, "http": 200},
+      "nsdgeneral.nii.gz": {"path": "nsddata/ppdata/subj05/func1pt8mm/roi/nsdgeneral.nii.gz", "remote_bytes": 56318, "http": 200},
+      "prf-visualrois.nii.gz": {"path": "nsddata/ppdata/subj05/func1pt8mm/roi/prf-visualrois.nii.gz", "remote_bytes": 56595, "http": 200},
+      "streams.nii.gz": {"path": "nsddata/ppdata/subj05/func1pt8mm/roi/streams.nii.gz", "remote_bytes": 58447, "http": 200}
+    },
+    "subj07": {
+      "betas_nsdimagery.hdf5": {"path": "nsddata_betas/ppdata/subj07/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5", "remote_bytes": 903496120, "http": 200},
+      "perception_ncsnr.nii.gz": {"path": "nsddata_betas/ppdata/subj07/func1pt8mm/betas_fithrf/ncsnr.nii.gz", "remote_bytes": 878273, "http": 200},
+      "nsdgeneral.nii.gz": {"path": "nsddata/ppdata/subj07/func1pt8mm/roi/nsdgeneral.nii.gz", "remote_bytes": 54098, "http": 200},
+      "prf-visualrois.nii.gz": {"path": "nsddata/ppdata/subj07/func1pt8mm/roi/prf-visualrois.nii.gz", "remote_bytes": 54373, "http": 200},
+      "streams.nii.gz": {"path": "nsddata/ppdata/subj07/func1pt8mm/roi/streams.nii.gz", "remote_bytes": 56118, "http": 200}
+    }
+  },
+  "integrity_policy": ".part + atomic rename + resume + size equality + HDF5 open test + SHA-256 certification; no raw neural data in git",
+  "expected_imagery_shape": [720, 83, 104, 81],
+  "expected_dtype": "int16"
+}

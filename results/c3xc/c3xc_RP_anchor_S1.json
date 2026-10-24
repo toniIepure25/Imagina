@@ -1,0 +1,24 @@
+{
+  "reliability": 0.4678053778809852,
+  "bootstrap_ci95": [
+    0.3412148976314607,
+    0.4058010554329202
+  ],
+  "bootstrap_mean": 0.3749910761666054,
+  "null_mean": -0.004210911289746623,
+  "null_std": 0.025206957409190323,
+  "perm_p_one_sided": 0.004975124378109453,
+  "split_seed_values": [
+    0.4678053778809852,
+    0.46814456978020563,
+    0.4696883878431828
+  ],
+  "split_seed_min": 0.4678053778809852,
+  "split_seed_max": 0.4696883878431828,
+  "n_perm": 200,
+  "n_boot": 200,
+  "run_disjoint": true,
+  "gate": "SUBJECT_RELIABILITY_PASS",
+  "n_perm_anchor": 200,
+  "note": "S1 full-inference R_P anchor (frozen c3x run-disjoint, n_perm=200 documented)"
+}

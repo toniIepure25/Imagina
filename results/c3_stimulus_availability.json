@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-07-25T16:47:45",
+  "nsd_stimuli_root_configured": false,
+  "nsd_stimuli_root_env": "NOT_SET",
+  "candidate_locations_searched": [
+    "D:/ComputaCenter/FMRI2images/data/nsd/nsddata_stimuli/stimuli/nsd",
+    "D:/ComputaCenter/FMRI2images/data/nsd/nsddata_stimuli"
+  ],
+  "found_stimulus_container": false,
+  "stimulus_metadata_available": true,
+  "metadata_source": "nsd_stim_info_merged.pkl",
+  "metadata_rows": 73000,
+  "coco_ids_available": true,
+  "crop_boxes_available": true,
+  "nsd_image_index_convention": {
+    "stim_info_pkl": "0-indexed nsdId (0 to 72999)",
+    "subjectim_mat": "1-indexed (1 to 73000)",
+    "masterordering_mat": "1-indexed image slots (1 to 10000)"
+  },
+  "stimulus_source_description": "NSD stimuli are center-cropped COCO images, distributed as nsd_stimuli.hdf5 from NSD S3 bucket",
+  "acquisition_options": [
+    "Download nsd_stimuli.hdf5 from s3://natural-scenes-dataset/nsddata_stimuli/",
+    "Reconstruct from COCO images + cropBox metadata"
+  ],
+  "status": "BLOCKED_STIMULI_NOT_AVAILABLE",
+  "blocker": "NSD stimulus images not locally available for CLIP embedding generation",
+  "resolution": "Download nsddata_stimuli and set NSD_STIMULI_ROOT env var"
+}

@@ -1,0 +1,74 @@
+{
+  "artifact": "C3XC_RELIABILITY",
+  "subject": "S4",
+  "seed": 20260907,
+  "created_at": "2026-09-09T12:53:00",
+  "R_I_n_perm": 1000,
+  "R_I_n_boot": 1000,
+  "R_P_n_perm": 1000,
+  "R_P_n_boot": 1000,
+  "R_I_estimator": "c3xb run-pair-disjoint, unit=SESSION; c3xc_fast buffered accelerator (validated BIT-IDENTICAL to frozen c3xb_reliability, synthetic + real S1)",
+  "R_P_estimator": "c3x run-disjoint on perception runs",
+  "R_I_VC": {
+    "reliability": 0.047367567508716964,
+    "bootstrap_ci95": [
+      -0.017591989127964353,
+      0.07221574981076208
+    ],
+    "bootstrap_mean": 0.03452690813165944,
+    "null_mean": -0.0003658192900886891,
+    "null_std": 0.015555077228735602,
+    "perm_p_one_sided": 0.000999000999000999,
+    "split_seed_values": [
+      0.047367567508716964,
+      0.04843683521582868,
+      0.04643373698285535
+    ],
+    "split_seed_min": 0.04643373698285535,
+    "split_seed_max": 0.04843683521582868,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_pairs": 5,
+    "unit": "run_pair_disjoint",
+    "fast_path": "c3xc_buffered",
+    "gate": "SUBJECT_RELIABILITY_MARGINAL"
+  },
+  "R_P_VC": {
+    "reliability": 0.45399846755169554,
+    "point_only": true,
+    "full_inference_reference": "anchor subject C3XC_RP_FULL run"
+  },
+  "attenuation_VC": 0.10433420131164507,
+  "roi_profile": {
+    "VC": {
+      "R_I": 0.047367567508716964,
+      "R_P": 0.45399846755169554
+    },
+    "earlyVC": {
+      "R_I": 0.05411074624033066,
+      "R_P": 0.551057212024546,
+      "n_voxels": 2217
+    },
+    "LVC": {
+      "R_I": 0.05880173129719065,
+      "R_P": 0.5268863724728623,
+      "n_voxels": 5217
+    },
+    "HVC": {
+      "R_I": 0.042978093262350275,
+      "R_P": 0.41983190378305807,
+      "n_voxels": 11288
+    }
+  },
+  "cue_roi_profile_control": {
+    "earlyVC_V1_R_I": 0.05411074624033066,
+    "HVC_R_I": 0.042978093262350275,
+    "hvc_gt_v1": false,
+    "interpretation": "HVC>earlyVC is consistent with internally-generated (recall) content and against an early-visual cue/leakage artifact; imagery shows no video."
+  },
+  "early_vs_late_temporal_control": {
+    "computable_from_release": false,
+    "reason": "preprocessed single block-averaged amplitude per recall trial; no within-trial time axis. Requires raw BIDS ds005191 + GLM; deferred."
+  },
+  "self_hash": "3573b823d08a33a18ef16d44b10d4697999c92d447dabc7a41750b297f5d8e59"
+}

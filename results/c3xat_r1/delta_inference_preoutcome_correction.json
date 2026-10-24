@@ -1,0 +1,27 @@
+{
+  "artifact": "C3XAT_R1_DELTA_INFERENCE_PREOUTCOME_CORRECTION",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "supersedes": "results/c3xat_r1/delta_inference_preoutcome_freeze.json (preserved, not deleted)",
+  "previous_method": "session-aware permutation with FIXED R_pred",
+  "status": "REJECTED_PREOUTCOME_AS_NONDISCRIMINATING_FOR_DELTA",
+  "reason": "With R_pred held fixed while observed video labels are permuted, P(R_perm - R_pred >= R_obs - R_pred) = P(R_perm >= R_obs): algebraically identical to the ordinary R_I permutation test, so it does NOT independently test whether observed imagery reliability exceeds predicted cue/video contamination.",
+  "real_delta_observed": false,
+  "fallback": "SEALED_CONSERVATIVE_SENSITIVITY",
+  "fallback_spec": {
+    "procedure": "PAIRED hierarchical bootstrap: the SAME imagery-session split + resample realization is applied to BOTH observed and cue/video-predicted imagery betas (never independent bootstraps); predicted signal carries EXACTLY zero true-imagery contribution",
+    "statistic": "Delta_b = R_obs_b - R_pred_b on matched resampled units",
+    "criterion": "Delta_I point > 0 AND paired bootstrap 95% CI lower > 0 AND Delta_I > 0 under every sealed split-seed",
+    "n_boot": 1000,
+    "base_seed": 20260909,
+    "sealed_offsets": [
+      0,
+      100,
+      200
+    ],
+    "primary_R_I_unchanged": "primary R_I keeps its original frozen permutation p-value; no nominal Delta permutation p produced (no joint randomization proof)",
+    "implemented_in": "c3xat_pipeline.paired_delta_sensitivity"
+  },
+  "outcome_data_inspected": false,
+  "self_hash": "41cc3ba2fe5e851c7d88981208ea60fb22a08a3b98e56eccdd53b962f2f03051"
+}

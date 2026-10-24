@@ -1,0 +1,7 @@
+{
+  "artifact": "ANIMUS_P2_FIREWALL_AUDIT",
+  "protocol_frozen": true,
+  "test_outcome_accessed_before_freeze": false,
+  "n_accesses": 0,
+  "accesses": []
+}

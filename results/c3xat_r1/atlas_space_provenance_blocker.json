@@ -1,0 +1,51 @@
+{
+  "artifact": "C3XAT_R1_ATLAS_SPACE_PROVENANCE_BLOCKER",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "required_primary_atlas": "authoritative complete Wang2015 25-area VOLUMETRIC MPM in MNI152NLin6Asym, transformed via the official TemplateFlow MNI152NLin6Asym->MNI152NLin2009cAsym xfm (sha256 2e3869a07b96aec406e0419ca2e434afc54882d37cc212b933b139d1b63a4dfe) to 2009cAsym 2mm, then used deterministically (single resample, identical for all subjects) on the fMRIPrep target grid",
+  "forbidden_for_primary": [
+    "per-subject surface->volume projection",
+    "project Wang from fsaverage",
+    "warp Wang independently per subject"
+  ],
+  "exhaustive_search": [
+    {
+      "source": "neuropythy bundled data (installed on cluster)",
+      "result": "SURFACE only: lh/rh.wang15_mplbl.v1_0.mgz + fplbl; NO volumetric .nii/.nii.gz"
+    },
+    {
+      "source": "TemplateFlow tpl-fsaverage / tpl-MNI152NLin6Asym / tpl-MNI152NLin2009cAsym / tpl-fsLR",
+      "result": "no Wang/visualTopography/Benson objects"
+    },
+    {
+      "source": "FSL FMRIB standard atlases datasets page",
+      "result": "no visuotopic/Wang atlas listed"
+    },
+    {
+      "source": "Princeton napl ProbAtlas_v4.zip (candidate URL)",
+      "result": "HTTP 403 Forbidden"
+    },
+    {
+      "source": "OSF candidate download IDs",
+      "result": "HTTP 400 / not found"
+    },
+    {
+      "source": "web search x3 (volumetric Wang MPM MNI152 download)",
+      "result": "a volumetric MNI form is documented to exist, but every authoritative pointer resolves to the SURFACE-based neuropythy/occipital_atlas per-subject tools; no stable, independently-hashable direct volumetric-file URL identified"
+    }
+  ],
+  "conclusion": "An authoritative, complete, version-pinned, independently-hashable VOLUMETRIC Wang2015 25-area MPM in MNI152NLin6Asym cannot be provenance-established from a stable public source in this environment. The only Wang assets obtainable here are the neuropythy SURFACE labels, whose use for the primary route requires per-subject surface projection -- explicitly forbidden.",
+  "correction_of_prior_overclaim": {
+    "file": "results/c3xat_r1/atlas_provenance_resolved.json",
+    "prior_status": "ATLAS_SPACE_PROVENANCE_RESOLVED (overclaimed)",
+    "reality": "that resolution used neuropythy SURFACE wang15 with a construction route of 'project fsaverage wang15 mplbl -> each subject FreeSurfer surface -> fill to MNI grid' -- which is the per-subject surface projection the primary route forbids. The transform + reference hashes recorded there remain valid; the Wang PRIMARY volumetric-MPM provenance was NOT actually resolved.",
+    "note": "prior artifact preserved (not deleted); this blocker supersedes its Wang-primary claim."
+  },
+  "transform_and_reference_status": "RESOLVED and hashed (MNI152NLin6Asym->2009cAsym xfm 2e3869a0...; res-02 T1w 7c4e551a...; brain mask 7a71e9ce...) -- only the volumetric Wang MPM source is missing",
+  "benson_secondary_status": "unaffected in principle (surface route is permitted for the SECONDARY Benson), but secondary cannot substitute for or rescue the blocked primary",
+  "is_genuine_fail_closed_blocker": true,
+  "not_a_scientific_fail": "no valid primary measurement was possible; this is BLOCKED, not C3XAT_D2_ATLAS_IMAGERY_FAIL (which requires 6 valid measurements)",
+  "resume_path": "provide (or identify a stable, hashable public source for) the authoritative complete Wang2015 volumetric 25-area MPM in MNI152NLin6Asym; then the FROZEN pipeline runs unchanged: hash it, apply the already-hashed official transform to 2009cAsym 2mm, deterministically resample onto the certified 97x115x97 subject grid, QC (grid/affine/labels/coverage), then execute the sealed R_I/R_P/cue-video campaign. No scientific component changes.",
+  "no_neural_outcome_inspected": true,
+  "self_hash": "193b24c221268b7e3401a67c59ba66cf45cf3fcafb693a8a7f2b01c9289523a1"
+}

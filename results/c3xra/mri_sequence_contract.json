@@ -1,0 +1,62 @@
+{
+  "artifact": "C3XRA_MRI_SEQUENCE_CONTRACT",
+  "gate": "C3XRA",
+  "design_only": true,
+  "field_strength_T": 3.0,
+  "head_coil_channels_min": 32,
+  "functional": {
+    "sequence": "2D multiband gradient-echo EPI (BOLD)",
+    "coverage": "whole_brain",
+    "voxel_mm": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "tr_s": 1.5,
+    "te_ms": 30.0,
+    "flip_deg": 65,
+    "multiband_factor": 4,
+    "n_slices": 60,
+    "slice_orientation": "transverse",
+    "phase_encoding_dir": "AP",
+    "fov_mm": [
+      208,
+      208
+    ],
+    "matrix": [
+      104,
+      104
+    ],
+    "partial_fourier": "none",
+    "fat_sat": true
+  },
+  "fieldmap": {
+    "type": "spin-echo EPI opposite phase-encode (AP/PA) pair",
+    "use": "susceptibility distortion correction",
+    "matched_to_bold_geometry": true
+  },
+  "reverse_pe_blip": {
+    "dir": "PA",
+    "volumes": 3
+  },
+  "anatomical": {
+    "sequence": "T1w MPRAGE",
+    "voxel_mm": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "coverage": "whole_head"
+  },
+  "dummy_scans_discarded": 4,
+  "trigger_sync": "scanner TTL pulse at each volume; task logs first-TTL time",
+  "target_preproc": "fMRIPrep -> MNI152NLin2009cAsym 2mm, NO spatial smoothing",
+  "vendor_notes": {
+    "Siemens": "multiband via CMRR/product MB EPI; AP/PA fieldmap; TR/TE as above (confirm on-site).",
+    "Philips": "MB-SENSE EPI; dynamic-stabilization off; parameters to be matched at facility.",
+    "GE": "HyperBand EPI; confirm slice/MB support with physicist."
+  },
+  "no_fabricated_vendor_protocol_names": true,
+  "confirmation_required_before_acquisition": "exact sequence card (WIP/product), MB availability, and timing must be confirmed and phantom-tested at the specific 3T facility before participant 001.",
+  "self_hash": "201b11e758e672e5479ddd40d79548a021f5324c3eff60b2c4d7b6f5aff6b875"
+}

@@ -1,0 +1,53 @@
+{
+  "sub-01": {
+    "status": "CERTIFIED",
+    "imagery": {
+      "n_samples": 520,
+      "n_content": 26,
+      "reps_per_content_median": 20,
+      "n_runs": 20,
+      "n_VC_voxels": 11726
+    },
+    "perceptionTest": {
+      "n_samples": 1200,
+      "n_content": 50,
+      "reps_per_content_median": 24,
+      "n_runs": 24,
+      "n_VC_voxels": 11726
+    }
+  },
+  "sub-02": {
+    "status": "CERTIFIED",
+    "imagery": {
+      "n_samples": 520,
+      "n_content": 26,
+      "reps_per_content_median": 20,
+      "n_runs": 20,
+      "n_VC_voxels": 11114
+    },
+    "perceptionTest": {
+      "n_samples": 1200,
+      "n_content": 50,
+      "reps_per_content_median": 24,
+      "n_runs": 24,
+      "n_VC_voxels": 11114
+    }
+  },
+  "sub-03": {
+    "status": "CERTIFIED",
+    "imagery": {
+      "n_samples": 520,
+      "n_content": 26,
+      "reps_per_content_median": 20,
+      "n_runs": 20,
+      "n_VC_voxels": 9919
+    },
+    "perceptionTest": {
+      "n_samples": 1200,
+      "n_content": 50,
+      "reps_per_content_median": 24,
+      "n_runs": 24,
+      "n_VC_voxels": 9919
+    }
+  }
+}

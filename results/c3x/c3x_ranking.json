@@ -1,0 +1,18 @@
+{
+  "artifact": "C3X_CANDIDATE_RANKING",
+  "created_at": "2026-08-27",
+  "status": "FROZEN_BEFORE_ANY_NEURAL_RELIABILITY_OUTCOME",
+  "basis": "experimental design and data access ONLY; NOT any imagery-reliability value",
+  "ranking": {
+    "D1_ds001506_DIR": "HIGH_PRIORITY_FOR_RELIABILITY_TEST",
+    "D2_ds005191_MindCaptioning": "MEDIUM_PRIORITY",
+    "D3_7T_letters_Senden": "BLOCKED_ACCESS"
+  },
+  "rationale": {
+    "D1": "matched perception (test images) + imagery of the SAME identities, 20 imagery runs across 3-4 sessions, repeated category identities (~10/category), fully public (OpenNeuro CC0 + figshare), official visual ROIs (V1-V4, VC). Best match to the static perception<->imagery geometry question. FIRST empirical qualification target.",
+    "D2": "public and rich, but imagery is RECALL of dynamic VIDEO with verbal preparation cues (semantic/cue confound); paradigm not directly comparable to static-image geometry. Evaluated ONLY if D1 prospectively fails.",
+    "D3": "scientifically strong for topographic geometry (7T, pRF, K=4 high-rep) but not located on OpenNeuro and access likely requires an author request; K=4 cannot justify broad natural-image claims. Not acquired in this gate."
+  },
+  "first_empirical_target": "D1 (ds001506)",
+  "conditional_rule": "inspect D2 neural outcomes ONLY if D1 does not reach DATASET_RELIABILITY_PASS; never to pick whichever dataset looks better (dataset-level outcome fishing forbidden)."
+}

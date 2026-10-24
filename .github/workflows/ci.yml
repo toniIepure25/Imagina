@@ -3,9 +3,10 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  backend:
+  backend-core:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -15,9 +16,48 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
-      - run: python3 -m ruff check .
-      - run: python3 -m pytest app/tests/ -q
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff lint
+        run: python3 -m ruff check .
+      - name: Core and research tests (hermetic merge-gate suite)
+        run: >-
+          python3 -m pytest app/tests/
+          -m "core or research"
+          --strict-markers
+          --timeout=300
+          -q
+
+  backend-runtime:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Runtime tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_migration_runner.py
+          app/tests/test_state_machines.py
+          app/tests/test_runtime.py
+          app/tests/test_outbox.py
+          app/tests/test_manifest.py
+          app/tests/test_synthetic_orchestrator.py
+          app/tests/test_export_service.py
+          app/tests/test_replay_validator.py
+          app/tests/test_run_service.py
+          app/tests/test_unified_db_integration.py
+          app/tests/test_abort.py
+          app/tests/test_regression_gate_a.py
+          -v --timeout=300
 
   frontend:
     runs-on: ubuntu-latest
@@ -33,4 +73,1701 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
       - run: npm run build
+
+  playwright:
+    runs-on: ubuntu-latest
+    needs: [backend-core, backend-runtime, frontend, science-unit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend
+        run: pip install -e ".[dev,science]"
+        working-directory: backend
+      - name: Install frontend
+        run: npm ci
+        working-directory: frontend
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+        working-directory: frontend
+      - name: Run Playwright E2E tests
+        run: npx playwright test --reporter=list
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            frontend/test-results/
+            frontend/playwright-report/
+          retention-days: 7
+
+  docker-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate dev compose
+        run: docker compose config --quiet
+      - name: Validate release compose
+        run: docker compose -f docker-compose.release.yml config --quiet
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build images
+        run: docker compose build
+      - name: Start services
+        run: docker compose up -d
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/api/health > /dev/null 2>&1; then
+              echo "Backend healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend health check failed"
+          docker compose logs backend
+          exit 1
+      - name: Run synthetic workflow smoke
+        run: |
+          set -euo pipefail
+
+          STUDY_ID="docker-smoke-$(date +%s)"
+          IDEM_KEY="docker-smoke-key-$(date +%s)"
+
+          echo "=== Creating synthetic run ==="
+          CREATE=$(curl -sf -X POST http://localhost:8000/api/synthetic-runtime/studies \
+            -H "Content-Type: application/json" \
+            -H "Idempotency-Key: $IDEM_KEY" \
+            -d "{\"study_id\": \"$STUDY_ID\", \"participant_count\": 2, \"seed\": 42, \"trials_per_session\": 2, \"windows_per_trial\": 2}")
+          RUN_ID=$(echo "$CREATE" | python3 -c "import sys,json; print(json.load(sys.stdin)['run_id'])")
+          echo "Run ID: $RUN_ID"
+
+          echo "=== Polling for completion ==="
+          for i in $(seq 1 90); do
+            STATUS=$(curl -sf http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID \
+              | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])")
+            echo "  Poll $i: status=$STATUS"
+            if [ "$STATUS" = "completed" ] || [ "$STATUS" = "completed_with_failures" ]; then
+              break
+            fi
+            if [ "$STATUS" = "failed" ]; then
+              echo "Run failed!"
+              exit 1
+            fi
+            sleep 2
+          done
+
+          if [ "$STATUS" != "completed" ]; then
+            echo "Run did not complete: $STATUS"
+            exit 1
+          fi
+
+          echo "=== Verifying sessions ==="
+          SESSIONS=$(curl -sf http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID/sessions)
+          SESSION_COUNT=$(echo "$SESSIONS" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
+          echo "Session count: $SESSION_COUNT"
+          if [ "$SESSION_COUNT" -lt 6 ]; then
+            echo "Expected at least 6 sessions, got $SESSION_COUNT"
+            exit 1
+          fi
+
+          echo "=== Requesting export ==="
+          EXPORT=$(curl -sf -X POST "http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID/export?allow_overwrite=true")
+          VALID=$(echo "$EXPORT" | python3 -c "import sys,json; print(json.load(sys.stdin)['validation']['valid'])")
+          if [ "$VALID" != "True" ]; then
+            echo "Export validation failed!"
+            exit 1
+          fi
+          echo "Export valid: $VALID"
+
+          echo "=== Checking export_ready ==="
+          RUN_STATUS=$(curl -sf http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID)
+          EXPORT_READY=$(echo "$RUN_STATUS" | python3 -c "import sys,json; print(json.load(sys.stdin)['export_ready'])")
+          if [ "$EXPORT_READY" != "True" ]; then
+            echo "export_ready is not True: $EXPORT_READY"
+            exit 1
+          fi
+          echo "export_ready confirmed: $EXPORT_READY"
+
+          echo "=== Running replay for one session ==="
+          SESSION_ID=$(echo "$SESSIONS" | python3 -c "import sys,json; ss=json.load(sys.stdin); print([s['research_session_id'] for s in ss if s['status']=='completed'][0])")
+          echo "Replaying session: $SESSION_ID"
+          REPLAY=$(curl -sf -X POST "http://localhost:8000/api/synthetic-runtime/runs/$RUN_ID/replay/$SESSION_ID")
+          MATCH=$(echo "$REPLAY" | python3 -c "import sys,json; print(json.load(sys.stdin)['match'])")
+          if [ "$MATCH" != "True" ]; then
+            echo "Replay match failed!"
+            echo "$REPLAY"
+            exit 1
+          fi
+          ORIG_HASH=$(echo "$REPLAY" | python3 -c "import sys,json; print(json.load(sys.stdin)['original_hash'])")
+          REPLAY_HASH=$(echo "$REPLAY" | python3 -c "import sys,json; print(json.load(sys.stdin)['replay_hash'])")
+          if [ "$ORIG_HASH" != "$REPLAY_HASH" ]; then
+            echo "Hash mismatch: original=$ORIG_HASH replay=$REPLAY_HASH"
+            exit 1
+          fi
+          echo "Replay hashes match: $ORIG_HASH"
+
+          echo "=== Docker smoke completed successfully ==="
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
+
+  science-unit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: RNG and determinism tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_rng_registry.py
+          -v --timeout=60
+      - name: Objective measurement tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_objective_endpoints.py
+          app/tests/test_psychophysics.py
+          app/tests/test_calibration.py
+          app/tests/test_objective_runtime.py
+          app/tests/test_objective_runtime_integration.py
+          app/tests/test_objective_provenance.py
+          app/tests/test_objective_replay.py
+          app/tests/test_objective_export.py
+          -v --timeout=120
+      - name: Crossover design tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_crossover_design.py
+          -v --timeout=60
+
+  science-statistics:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Statistics and analysis tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_statistics.py
+          app/tests/test_estimands.py
+          -v --timeout=120
+      - name: Cognitive agent and scenario contracts
+        run: >-
+          python3 -m pytest
+          app/tests/test_cognitive_agent.py
+          app/tests/test_scenario_contracts.py
+          -v --timeout=120
+      - name: Causal oracle tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_causal_oracle.py
+          -v --timeout=120
+      - name: Sample size tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_sample_size.py
+          -v --timeout=120
+
+  science-simulation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Design simulation tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_design_simulation.py
+          app/tests/test_measurement_validity.py
+          -v --timeout=300
+      - name: Falsification suite
+        run: >-
+          python3 -m pytest
+          app/tests/test_falsification.py
+          -v --timeout=300
+      - name: Simulation campaign tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_simulation_campaign.py
+          -v --timeout=300
+      - name: Upload simulation summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-evidence
+          path: backend/results/
+          retention-days: 30
+
+  science-runtime-e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: E2E scientific study test
+        run: >-
+          python3 -m pytest
+          app/tests/test_e2e_scientific_study.py
+          -v --timeout=300
+
+  science-replay-export:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Replay and export tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_objective_replay.py
+          app/tests/test_objective_export.py
+          app/tests/test_objective_provenance.py
+          -v --timeout=120
+
+  science-contrast-invariants:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Known-means contrast recovery
+        run: >-
+          python3 -m pytest
+          app/tests/test_statistics.py::TestContrastRecovery
+          -v --timeout=60
+
+  science-calibrated-inference:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Medium-effect oracle coverage and calibration
+        run: >-
+          python3 -m pytest
+          app/tests/test_design_simulation.py
+          -v --timeout=300
+
+  science-objective-db-transaction:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Schema migration and persistent objective execution
+        run: >-
+          python3 -m pytest
+          app/tests/test_migration_runner.py
+          app/tests/test_objective_runtime.py
+          app/tests/test_objective_runtime_integration.py
+          -v --timeout=120
+
+  science-api-restart-recovery:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Science worker claim and restart recovery
+        run: >-
+          python3 -m pytest
+          app/tests/test_science_worker.py
+          -v --timeout=120
+
+  science-worker-resume-abort:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Worker resume, abort, and lease protection
+        run: >-
+          python3 -m pytest
+          app/tests/test_science_worker.py
+          -k "resume or abort or checkpoint or lease or overlapping or expired"
+          -v --timeout=180
+
+  science-api-cooperative-abort:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: API-driven cooperative abort through the real worker contract
+        run: >-
+          python3 -m pytest
+          app/tests/test_science_api_abort.py
+          -v --timeout=180
+
+  science-replay-failclosed:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Replay fail-closed with sealed provenance
+        run: >-
+          python3 -m pytest
+          app/tests/test_objective_replay.py
+          app/tests/test_replay_persistent.py
+          -v --timeout=120
+
+  science-provenance-no-fallback:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: No replay defaults, no fallback, all-valid export
+        run: >-
+          python3 -m pytest
+          app/tests/test_replay_persistent.py
+          app/tests/test_objective_export.py
+          -k "missing_root_seed or wrong_root_seed or unresolved_scenario
+          or scenario_hash_mismatch or provider_config or rng_version
+          or schedule_db_manifest or missing_previous or replay_missing_verification
+          or mixed_valid_invalid or mixed_pass_fail"
+          -v --timeout=120
+
+  science-replay-export-db-integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: DB-built export validated end to end, with corruption variants
+        run: >-
+          python3 -m pytest
+          app/tests/test_replay_export_db_integration.py
+          -v --timeout=120
+
+  science-export-persistent:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Export from persistent evidence
+        run: >-
+          python3 -m pytest
+          app/tests/test_objective_export.py
+          app/tests/test_objective_provenance.py
+          -v --timeout=120
+
+  science-campaign-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Campaign smoke (strict_null + medium_adaptive, 50 replicates)
+        run: |
+          python3 -c "
+          from app.research.simulation_campaign import run_full_campaign, CORE_SCENARIOS
+          scenarios = {k: CORE_SCENARIOS[k] for k in ['strict_null', 'medium_adaptive']}
+          r = run_full_campaign(50, 50, 18, 42, scenarios)
+          assert r.overall_pass, f'Campaign failed: {r.gate_issues}'
+          sn = r.scenario_summaries['strict_null']
+          assert sn.type_i_error is not None and sn.type_i_error < 0.15
+          assert sn.coverage is not None and sn.coverage > 0.85
+          ma = r.scenario_summaries['medium_adaptive']
+          assert ma.coverage is not None and ma.coverage > 0.85
+          assert ma.power is not None and ma.power > 0.80
+          print('Campaign smoke OK')
+          "
+
+  science-frontend-e2e:
+    runs-on: ubuntu-latest
+    needs: [frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend
+        run: pip install -e ".[dev,science]"
+        working-directory: backend
+      - name: Install frontend
+        run: npm ci
+        working-directory: frontend
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+        working-directory: frontend
+      - name: Run science E2E tests
+        run: npx playwright test science-persistent-e2e --reporter=list
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: science-e2e-artifacts
+          path: |
+            frontend/test-results/
+            frontend/playwright-report/
+          retention-days: 7
+
+  backend-legacy-validation:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev]"
+      - name: Check legacy prerequisites
+        id: preflight
+        run: |
+          MISSING=""
+          if [ ! -d "data/exports" ]; then
+            MISSING="${MISSING}data/exports directory missing. "
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "status=prerequisites_missing" >> "$GITHUB_OUTPUT"
+            echo "::warning::Legacy prerequisites missing: ${MISSING}"
+          else
+            echo "status=available" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Legacy and artifact-dependent tests
+        if: steps.preflight.outputs.status == 'available'
+        run: >-
+          python3 -m pytest app/tests/
+          -m "artifact_dependent or legacy or external_dataset"
+          --strict-markers
+          --timeout=600
+          -q
+      - name: Report prerequisites missing
+        if: steps.preflight.outputs.status == 'prerequisites_missing'
+        run: |
+          echo "::notice::Legacy validation skipped — prerequisites unavailable."
+          echo "::notice::Run CLI pipelines to generate required artifacts (see docs/ai/SESSION_LOG.md)."
+          exit 2
+      - name: Report outcome
+        if: always()
+        run: |
+          echo "::notice::Legacy/artifact validation job completed."
+          echo "::notice::Preflight: ${{ steps.preflight.outputs.status }}"
+
+  # --- Infrastructure: frozen neural-dependency provenance guard ---
+  # Single reusable check (not duplicated per job): fails EARLY and explicitly with
+  # NEURAL_DEPENDENCY_PROVENANCE_MISMATCH if the installed MNE drifts from the exact
+  # pyproject pin, instead of surfacing later as an obscure error inside a scientific
+  # test (MNE 1.13.1 raised SyntaxError in mne/_fiff/utils.py in run 34617415944).
+  neural-dependency-provenance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Print resolved environment
+        run: |
+          python --version
+          python -c "import mne; print('MNE', mne.__version__)"
+      - name: Assert frozen neural dependency provenance + MNE smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_dependency_provenance.py
+          -v --timeout=120
+
+  # --- Scientific Gate C1 (neural-behavioral alignment) ---
+  # All jobs below run against tiny synthetic/deterministic fixtures
+  # generated in-test (pybv-written BrainVision files, small numpy arrays)
+  # -- never the real ds005815 dataset, which is not downloaded in CI.
+  # Full-dataset confirmatory analysis is a separate controlled research
+  # workflow (see C1_ANALYSIS_SPEC.md and run_c1_confirmatory.py), whose
+  # real output is committed as the results/c1_*.json artifacts rather
+  # than reproduced live in CI.
+
+  c1-dataset-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Dataset descriptor, manifest, and provenance dataclass contract
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_registry.py
+          app/tests/test_neural_yoto_adapter.py
+          -v --timeout=120
+
+  c1-download-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Download/checksum logic against mocked HTTP (no real network)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_download.py
+          -v --timeout=60
+
+  c1-preprocessing-determinism:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Fold-safe preprocessing and QC determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_preprocessing.py
+          -v --timeout=120
+
+  c1-split-leakage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Participant-grouped split, LOSO fold membership, no-leakage checks
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_models.py
+          app/tests/test_neural_nested_validation.py::TestLOSONestedValidation
+          app/tests/test_neural_falsification.py::TestFalsification8NoLeakage
+          -v --timeout=180
+
+  c1-neural-reliability:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Classical feature extraction and split-half/session reliability
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_features.py
+          -v --timeout=120
+
+  c1-negative-controls:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: All ten required falsification tests
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_falsification.py
+          -v --timeout=300
+      - name: Real-data falsification-closure variant builders (deterministic fixtures)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_variants.py
+          -v --timeout=120
+
+  c1-nested-validation-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: LOSO nested validation, sensitivity/power analysis, alignment smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_nested_validation.py
+          app/tests/test_neural_sensitivity.py
+          app/tests/test_neural_alignment.py
+          -v --timeout=180
+
+  c1-replay-export:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Replay/export round-trip determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_replay_export.py
+          -v --timeout=180
+      - name: Model checkpoint-hash determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_models.py -k "Deterministic"
+          -v --timeout=120
+      - name: Preprocessing output-hash determinism
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_preprocessing.py -k "output_hash_is_deterministic"
+          -v --timeout=60
+
+  # --- Scientific Gate C2 (neural content-state disentanglement) ---
+  # All jobs below run against tiny synthetic/deterministic fixtures --
+  # never the real ds005815 dataset, which is not downloaded in CI. Full-
+  # dataset confirmatory analysis is a separate controlled research
+  # workflow (see C2_ANALYSIS_SPEC.md and the run_c2_*.py scripts), whose
+  # real output is committed as the results/c2_*.json artifacts.
+
+  c2-data-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Matched-trial-record construction and provenance
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_data.py::TestIsPrimaryContentTrial
+          app/tests/test_neural_c2_data.py::TestSelectVisualContentTrials
+          app/tests/test_neural_c2_data.py::TestMakeMatchedRecord
+          -v --timeout=120
+
+  c2-matched-trial-integrity:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Equal-duration common window and no-paired-trial-split guarantee
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_data.py::TestBuildCommonWindowImageryTrials
+          app/tests/test_neural_c2_data.py::TestVerifyNoPairedTrialSplitAcrossFolds
+          -v --timeout=120
+
+  c2-split-leakage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: LOSO fold membership and within-block shuffle leakage checks
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_nested_validation.py::TestRunLosoNestedValidationClassification
+          app/tests/test_neural_c2_falsification.py
+          -v --timeout=180
+
+  c2-content-baseline:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Content baseline models and nuisance feature constructors
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_models.py
+          -v --timeout=180
+
+  c2-state-duration-control:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Binary state model and equal-duration window construction
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_models.py::TestBinaryFeatureModel
+          app/tests/test_neural_c2_data.py::TestBuildCommonWindowImageryTrials
+          -v --timeout=120
+
+  c2-cross-state-transfer-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Perception/imagery encoder fit-evaluate smoke (matched-length inputs)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_transfer.py
+          -v --timeout=180
+
+  c2-nuisance-probes:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Disentanglement probe machinery (content/state/participant/quality)
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_disentanglement.py
+          -v --timeout=120
+
+  c2-negative-controls:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Within-block label shuffle construction
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_falsification.py
+          -v --timeout=120
+
+  c2-replay-export:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: LOSO classification replay determinism and result-export schema
+        run: >-
+          python3 -m pytest
+          app/tests/test_neural_c2_replay_export.py
+          -v --timeout=120
+
+  c3-data-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3 fMRI registry, manifests, and protocol artifacts
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3_fmri_data.py
+          app/tests/test_c3_nsdimagery_protocol_counts.py
+          app/tests/test_c3_nsdimagery_row_mapping.py
+          -v --timeout=120
+
+  c3-perception-decoder-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3 ridge decoder training and retrieval evaluation smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3_perception_decoder.py
+          app/tests/test_c3_strict_replay_fixes.py
+          -v --timeout=120
+
+  c3-zero-shot-transfer-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3 zero-shot transfer and state transport smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3_transfer_transport.py
+          app/tests/test_c3_h2_inference.py
+          -v --timeout=120
+
+  c3-uncertainty-controls:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3 uncertainty calibration and negative controls
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3_uncertainty_controls.py
+          -v --timeout=120
+
+  c3m-cross-session-alignment:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3M cross-session alignment transforms and collapse diagnostics
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3m_alignment.py
+          -v --timeout=120
+
+  c3g-state-geometry:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3G state-geometry primitives and data-contract invariants
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3g_geometry.py
+          -v --timeout=120
+
+  c3r-imagery-reliability:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3R imagery-reliability screen invariants and gate rules
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3r_reliability.py
+          -v --timeout=120
+
+  c3x-external-dataset-qualification:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3X run-disjoint reliability estimator and dataset-gate contracts
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3x_reliability.py
+          -v --timeout=120
+
+  c3xa-dir-target-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: C3XA target-contract correction and family-separation confound guard
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xa_correction.py
+          -v --timeout=120
+
+  c3xb-natural-object-imagery-qualification:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XB run-pair-disjoint estimator, artifacts, and the full inherited gate suite
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=180
+      - name: backend-core smoke
+        run: >-
+          python3 -m pytest
+          app/tests/test_api_smoke.py
+          -v --timeout=180
+
+  c3xc-mind-captioning-imagery-qualification:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XC qualification, session-unit accelerator equivalence, and inherited gate suite
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=240
+
+  c3xd-d2-cue-deconfounded-imagery:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XD cue-deconfounding + inherited gate suite (synthetic fixtures only; no ds005191 download)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
+      - name: backend-core smoke
+        run: >-
+          python3 -m pytest app/tests/test_api_smoke.py -v --timeout=180
+
+  c3xdr-d2-cue-deconfounded-imagery:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XDR execution-rerun contracts + inherited gate suite (synthetic only; no ds005191 download)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
+      - name: backend-core smoke
+        run: >-
+          python3 -m pytest app/tests/test_api_smoke.py -v --timeout=180
+
+  c3xdr-r1-remote-execution:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XDR-R1 execution-attempt-2 contracts + inherited gate suite (hermetic; no cluster/download)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xdr_r1_execution.py
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
+      - name: backend-core smoke
+        run: >-
+          python3 -m pytest app/tests/test_api_smoke.py -v --timeout=180
+
+  c3xpr-roi-provenance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XPR provenance-only gate + inherited suite (hermetic; no cluster/download/BOLD)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xpr_provenance.py
+          app/tests/test_c3xdr_r1_execution.py
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
+
+  c3xpa-author-artifact:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XPA author-spatial-artifact acceptance (provenance-only) + inherited suite (hermetic; no cluster/download/BOLD)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xpa_acceptance.py
+          app/tests/test_c3xpr_provenance.py
+          app/tests/test_c3xdr_r1_execution.py
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
+
+  c3xat-atlas-imagery:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XAT atlas-defined raw imagery qualification (measurement-only) + inherited suite (hermetic; no cluster/ds005191 download/BOLD)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xat_qualification.py
+          app/tests/test_c3xpa_acceptance.py
+          app/tests/test_c3xpr_provenance.py
+          app/tests/test_c3xdr_r1_execution.py
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
+
+  c3xat-r1-execution:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XAT-R1 execution-attempt-2 contracts + inherited suite (hermetic; no cluster/ds005191 download/BOLD)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xat_r1_execution.py
+          app/tests/test_c3xat_pipeline.py
+          app/tests/test_c3xat_qualification.py
+          app/tests/test_c3xpa_acceptance.py
+          app/tests/test_c3xpr_provenance.py
+          app/tests/test_c3xdr_r1_execution.py
+          app/tests/test_c3xdr_execution.py
+          app/tests/test_c3xd_qualification.py
+          app/tests/test_c3xc_qualification.py
+          app/tests/test_c3xc_fast_equivalence.py
+          app/tests/test_c3xb_reliability.py
+          app/tests/test_c3xb_fast.py
+          app/tests/test_c3xb_artifacts.py
+          app/tests/test_c3xa_correction.py
+          app/tests/test_c3x_reliability.py
+          app/tests/test_c3r_reliability.py
+          app/tests/test_c3g_geometry.py
+          app/tests/test_c3m_alignment.py
+          -v --timeout=300
+
+  c3xrp-replication-precision:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XRP replication & precision (design/seal-only; no real neural outcome) + C3XAT-R1 immutability
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xrp_replication_precision.py
+          app/tests/test_c3xat_r1_execution.py
+          app/tests/test_c3xat_pipeline.py
+          -v --timeout=300
+
+  c3xra-acquisition-readiness:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: pip install -e ".[dev,science,neural]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: C3XRA hermetic tests (schedule / timing / task / BIDS / seals / immutability)
+        run: >-
+          python3 -m pytest
+          app/tests/test_c3xra_acquisition_readiness.py
+          -v --timeout=300
+      - name: C3XRA synthetic end-to-end replay (adversarial guards; no human data)
+        run: PYTHONPATH=. python3 app/research/fmri/run_c3xra_e2e_replay.py
+      - name: Generate mock BIDS dataset (synthetic; no human data)
+        run: >-
+          PYTHONPATH=. python3 -c "from app.research.fmri import c3xra_bids as B;
+          import tempfile, json; d=tempfile.mkdtemp();
+          print(json.dumps(B.generate(d, imagery_units=2, imagery_runs=1, perception_units=1)));
+          open('/tmp/bids_root.txt','w').write(d)"
+      - name: Official BIDS Validator (require 0 errors)
+        run: npx --yes bids-validator@1.14.14 "$(cat /tmp/bids_root.txt)"
+      - name: C3XRA readiness decision + safety guard (immutability, no raw data, no PII, ethics placeholders)
+        run: PYTHONPATH=. python3 app/research/fmri/run_c3xra_readiness.py
+
+  animus-p1-closed-loop:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P1 tests (state machine / privacy / determinism / claims / API / adversarial)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p1.py
+          -v --timeout=300
+      - name: ANIMUS-P1 blind benchmark + acceptance decision (no human/neural data)
+        run: PYTHONPATH=. python3 app/research/animus/run_animus_p1_benchmark.py 100
+      - name: ANIMUS-P1 CI guard (C3X immutability, C3XAG unauthorized, no false neural claims, decision PASS)
+        run: PYTHONPATH=. python3 app/research/animus/run_animus_p1_ci_guard.py
+
+  animus-p2-perception-neural-adapter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P2 tests (leakage / firewall / gate / capability isolation / uncertainty / bridge)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p2.py
+          -v --timeout=300
+      - name: ANIMUS-P2 method validation on synthetic data (signal VALIDATES, null FAILS; leakage-free)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_method_validation.py
+      - name: ANIMUS-P2 protocol seal + firewall audit + product-bridge validation (synthetic)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_protocol_seal.py
+      - name: ANIMUS-P2 scientific decision + capability update (imagery stays unauthorized)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_decision.py
+      - name: ANIMUS-P2 CI guard (immutability, C3XAG/imagery unauthorized, no neural data, firewall)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_ci_guard.py
+
+  animus-p2e-real-confirmatory:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P2E tests (seal inheritance / ROI spatial-provenance block / capability isolation)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p2e.py
+          app/tests/test_animus_p2.py
+          -v --timeout=300
+      - name: ANIMUS-P2E resolution (verified provenance -> specific terminal; no neural data)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2e_confirmatory.py
+      - name: ANIMUS-P2E CI guard (seal inherited, spatial cert failed, no raw data/secrets, imagery unauthorized)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2e_ci_guard.py
+      - name: ANIMUS-P2 CI guard (immutability / capability isolation carried forward)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2_ci_guard.py
+
+  animus-p2r-spatial-provenance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P2R tests (only-provenance-amended re-seal / inheritance / label-safe spatial fixtures)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p2r.py
+          app/tests/test_animus_p2e.py
+          app/tests/test_animus_p2.py
+          -v --timeout=300
+      - name: ANIMUS-P2R prospective re-seal (raw NOD audit / denominator / env / inheritance / protocol)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2r_seal.py
+      - name: ANIMUS-P2R CI guard (only provenance amended; MNI2009c; Wang25 unchanged; capability blocked)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2r_ci_guard.py
+      - name: ANIMUS-P2E CI guard (prior block preserved; imagery unauthorized)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2e_ci_guard.py
+
+  animus-p2xr-independent-replication:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev,science]"
+      - name: Ruff
+        run: python3 -m ruff check .
+      - name: ANIMUS-P2XR tests (adapters / cross-dataset decision / Type-I / seal inheritance / firewall)
+        run: >-
+          python3 -m pytest
+          app/tests/test_animus_p2xr.py
+          -v --timeout=300
+      - name: ANIMUS-P2XR pre-outcome power / Type-I audit (frozen gate operating characteristics)
+        run: PYTHONPATH=. python3 app/research/animus_p2xr/run_p2xr_power_audit.py
+      - name: ANIMUS-P2XR prospective protocol seal (only adapters+denominators changed; method inherited)
+        run: PYTHONPATH=. python3 app/research/animus_p2xr/run_p2xr_seal.py
+      - name: ANIMUS-P2XR CI guard (inheritance unchanged; NOD closed; imagery unauthorized; outcome firewall)
+        run: PYTHONPATH=. python3 app/research/animus_p2xr/run_p2xr_ci_guard.py
+      - name: ANIMUS-P2R CI guard (parent immutability carried forward)
+        run: PYTHONPATH=. python3 app/research/animus_p2/run_p2r_ci_guard.py

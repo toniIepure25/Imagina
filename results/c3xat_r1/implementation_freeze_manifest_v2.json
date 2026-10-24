@@ -1,0 +1,64 @@
+{
+  "artifact": "C3XAT_R1_IMPLEMENTATION_FREEZE_MANIFEST_V2",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "c3xat_r1_execution_seal": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "supersedes_but_preserves": "results/c3xat_r1/implementation_freeze_manifest.json (v1, unchanged)",
+  "frozen_code_sha256": {
+    "c3xat_pipeline": "29f5e623e0e75ef50eb34d18c1c3884c6167ffaa0cefb25ac147f7cd83969f72",
+    "confirmatory_driver": "8a32f23c6e724628158c2e05dc5d47562a88ff60ac4c35cbe2c957b549deb154",
+    "c3xb_reliability": "33d483a135a9692ff97475730c1bd2d5ea0ef6c57e1bbf23da20ddc33d22628e",
+    "c3x_reliability": "623c9236056291ac2e8b2fbc75e0fe5c44f1233b1eef0bca4a5420e719b872ef",
+    "model_a_c3xd_primitives": "86149809d0631acb74e1b818ece39d03ca581d4bfef2033d01fb5dd292cd0212"
+  },
+  "component_roles": {
+    "imagery_pipeline": "c3xat_pipeline (parse_events, build_model_a_design bit-identical C3XD, forward_contamination_bold, paired_delta_sensitivity, gates) UNCHANGED",
+    "perception_parser": "c3xat_pipeline.parse_perception_events (trial_type==2 & stimID>0)",
+    "perception_lsa": "c3xat_pipeline.build_perception_lsa_design (target per stimID + grouped-per-trial_type + nuisance)",
+    "runpair_assignment": "c3xat_pipeline.perception_runpair_id (fixed consecutive pairing)",
+    "R_P_estimator_wrapper": "run_c3xat_r1_confirmatory._perception_betas + c3xb reliability_with_inference_pairs (pair=run-pair, content=stimID)",
+    "c3xb_estimator": "c3xb_reliability.reliability_with_inference_pairs UNCHANGED",
+    "atlas_qc": "run_c3xat_r1_confirmatory._atlas_qc_for_subject (derived, not hard-coded)",
+    "delta_sensitivity": "c3xat_pipeline.paired_delta_sensitivity",
+    "subject_gate": "c3xat_pipeline.subject_primary_pass",
+    "dataset_gate": "c3xat_pipeline.dataset_gate"
+  },
+  "frozen_artifacts_self_hash": {
+    "runpair_contract": "a33efe6e9a245db3536acbc8d228bfbddd973a4892a8a1e47da5af19d4893424",
+    "runpair_estimand_seal": "916e4d704f73c5b474f45bd04f4f446e7d6be43707397e799ce08197008c04be",
+    "five_runpair_clarification": "6181ea9cde5aa2f6fe099645e313986a8cd1213b0f54ef92f0e2260c8d61afe7",
+    "atlas_qc_all_subjects": "9ab9f74c88de78ad7273eddb964626e8c5dbb8247d379af17d5ba5fd97b933b6",
+    "wang25_roi_certification": "9d487e8718b3faddd4ad84f5926a6fb22c4c9e75424bd8ce2554c00fd901854e"
+  },
+  "frozen_atlas": {
+    "wang_archive_sha256": "3743ac34bbfef168e1b9244cfa6819d66994b48f2aebacf0c27bca4275b9fe9f",
+    "primary_target_mask_sha256": "19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc",
+    "primary_target_voxel_count": 7604,
+    "transform_sha256": "2e3869a07b96aec406e0419ca2e434afc54882d37cc212b933b139d1b63a4dfe"
+  },
+  "frozen_inference": {
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_rep_point": 200,
+    "seed_base": 20260909,
+    "seed_offsets": [
+      0,
+      100,
+      200
+    ]
+  },
+  "frozen_container": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "imagery_scientific_pipeline_changed": false,
+  "atlas_changed": false,
+  "estimator_changed": false,
+  "threshold_changed": false,
+  "dataset_gate_changed": false,
+  "perception_path_added": true,
+  "perception_unit": "RUN-PAIR (R_P_RUNPAIR)",
+  "real_R_I_before_v2_freeze": false,
+  "real_R_P_before_v2_freeze": false,
+  "real_Delta_before_v2_freeze": false,
+  "not_c3xat_r2": true,
+  "seals_unchanged": true,
+  "self_hash": "d25b672bcd821a352d95cb0151e5bf255310f90a135f91e3004fa798b59c7cd7"
+}

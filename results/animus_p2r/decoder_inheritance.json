@@ -1,0 +1,30 @@
+{
+  "artifact": "ANIMUS_P2R_DECODER_INHERITANCE",
+  "milestone": "ANIMUS-P2R",
+  "inherited_from": "P2 protocol seal",
+  "unchanged": true,
+  "decoder": {
+    "primary_family": "ridge_linear_multioutput",
+    "alpha_grid": [
+      1.0,
+      10.0,
+      100.0,
+      1000.0,
+      10000.0
+    ],
+    "selection": "nested validation",
+    "secondary": [
+      "low_rank",
+      "small_MLP (descriptive)"
+    ]
+  },
+  "uncertainty": "bootstrap decoder ensemble (predictive spread), calibrated on validation",
+  "seeds": [
+    20260909,
+    20261009,
+    20261109
+  ],
+  "reject_option": "uncertainty>validation-threshold OR QC/ROI invalid OR OOD -> valid=false",
+  "changed": false,
+  "self_hash": "701d88105ee4ede425e95cc9482e1521b1afade4800971d6784a86979a654283"
+}

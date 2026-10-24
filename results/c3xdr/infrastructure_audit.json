@@ -1,0 +1,61 @@
+{
+  "artifact": "C3XDR_INFRASTRUCTURE_AUDIT",
+  "created_at": "2026-09-10",
+  "hostname": "DESKTOP-C2MF2DI",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "drives": {
+    "C:/": {
+      "total_GB": 314.5,
+      "used_GB": 298.9,
+      "free_GB": 15.5,
+      "filesystem": "NTFS",
+      "persistent": true
+    },
+    "D:/": {
+      "total_GB": 197.5,
+      "used_GB": 160.4,
+      "free_GB": 37.1,
+      "filesystem": "NTFS",
+      "persistent": true
+    }
+  },
+  "best_free_GB": 37.1,
+  "disk_write_MBps_D": 344.7,
+  "disk_read_MBps_D": 2355.8,
+  "inode_availability": "N/A (NTFS; no Unix inode limit)",
+  "remote_compute": {
+    "kubectl_present": true,
+    "cluster_reachable": false,
+    "kube_error": "localhost:8080 connection refused; no KUBECONFIG; ~/.kube has only cache/",
+    "network_mounts": "none (net use empty)"
+  },
+  "container_runtime": {
+    "docker": false,
+    "apptainer": false,
+    "singularity": false
+  },
+  "preprocessing_stack": {
+    "fmriprep": false,
+    "fsl": false,
+    "spm": false,
+    "freesurfer": false,
+    "nipype": false,
+    "nilearn": false,
+    "nibabel": true
+  },
+  "requirement": {
+    "min_usable_persistent_storage_GB": 300,
+    "preferred_GB": 500,
+    "reproducible_preprocessing_stack": true,
+    "container_runtime": true
+  },
+  "requirement_met": false,
+  "shortfalls": [
+    "best free storage 37.1 GB << 300 GB required (raw BOLD alone 139.4 GB, peak ~223 GB)",
+    "no reproducible preprocessing/registration stack (no fMRIPrep/FSL/SPM/FreeSurfer/nipype)",
+    "no container runtime (docker/apptainer/singularity) for a replayable pipeline",
+    "no reachable remote/pod compute (kube cluster down, no KUBECONFIG, no network mounts)"
+  ],
+  "status": "C3XDR_BLOCKED_STORAGE",
+  "self_hash": "eba0d476ec348d9a03c3891453422870b33daf0ad4f743a050534049ad4ca72f"
+}

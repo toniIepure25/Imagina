@@ -1,0 +1,26 @@
+{
+  "artifact": "C3XRA_ACQUISITION_QC_SEAL",
+  "gate": "C3XRA",
+  "max_missing_trials_per_run_frac": 0.1,
+  "trigger_desync_tolerance_s": 0.05,
+  "max_dropped_frames_per_trial": 2,
+  "motion_fd_threshold_mm": 0.5,
+  "max_high_motion_fraction": 0.25,
+  "max_absolute_displacement_mm": 3.0,
+  "min_valid_imagery_runs_per_unit": 5,
+  "min_valid_perception_runs_per_unit": 2,
+  "min_valid_imagery_units": 6,
+  "min_valid_perception_units": 6,
+  "min_valid_sessions": 6,
+  "definitions": {
+    "VALID_RUN": "missing trials <= max_missing_trials_per_run_frac AND trigger desync <= tolerance AND high-motion frame fraction <= max_high_motion_fraction AND max abs displacement <= limit AND all mandatory events present",
+    "INVALID_RUN": "any VALID_RUN condition fails",
+    "VALID_SESSION": ">= min_valid runs of its type with contiguous acquisition and usable fieldmap/anat",
+    "INVALID_SESSION": "fewer than min valid runs or missing anat/fieldmap",
+    "TECHNICALLY_INCOMPLETE_PARTICIPANT": "valid imagery/perception units below minima OR withdrew/failed before minimum acquisition -> replaced per participant_plan; enters denominator as technically incomplete, NEVER re-classified by neural reliability"
+  },
+  "replacement_behavior": "a TECHNICALLY_INCOMPLETE_PARTICIPANT is replaced up to the recruitment ceiling; a technically-complete participant is NEVER replaced regardless of R_I/R_P/Delta/PASS",
+  "neural_reliability_excluded_from_technical_validity": true,
+  "reliability_never_determines_valid_run_session_or_participant": true,
+  "self_hash": "669caa28b2be4d241513fd55257457a9eda45781841fd22c9cdef252efea4b02"
+}

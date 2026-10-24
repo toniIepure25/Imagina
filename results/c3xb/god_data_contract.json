@@ -1,0 +1,575 @@
+{
+  "artifact": "C3XB_GOD_DATA_CONTRACT",
+  "dataset": "GOD ds001246 / figshare 7387130 v8",
+  "created_at": "2026-09-04T11:09:03",
+  "subjects": {
+    "Subject1": {
+      "subject": "Subject1",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception_imagenet_test": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_categories": 50,
+        "perception_categories": 50,
+        "shared_categories": 50,
+        "is_50_of_50": true,
+        "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+      },
+      "per_run_pair": {
+        "0": {
+          "runs": [
+            1,
+            2
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "1": {
+          "runs": [
+            3,
+            4
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "2": {
+          "runs": [
+            5,
+            6
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "3": {
+          "runs": [
+            7,
+            8
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "4": {
+          "runs": [
+            9,
+            10
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "5": {
+          "runs": [
+            11,
+            12
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "6": {
+          "runs": [
+            13,
+            14
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "7": {
+          "runs": [
+            15,
+            16
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "8": {
+          "runs": [
+            17,
+            18
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "9": {
+          "runs": [
+            19,
+            20
+          ],
+          "n_categories": 50,
+          "each_once": true
+        }
+      },
+      "self_hash": "ba9d078e7988731a02b7ea6691f3a2de06ace459f76d14d2ddf6635cd9048e26"
+    },
+    "Subject2": {
+      "subject": "Subject2",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception_imagenet_test": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_categories": 50,
+        "perception_categories": 50,
+        "shared_categories": 50,
+        "is_50_of_50": true,
+        "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+      },
+      "per_run_pair": {
+        "0": {
+          "runs": [
+            1,
+            2
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "1": {
+          "runs": [
+            3,
+            4
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "2": {
+          "runs": [
+            5,
+            6
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "3": {
+          "runs": [
+            7,
+            8
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "4": {
+          "runs": [
+            9,
+            10
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "5": {
+          "runs": [
+            11,
+            12
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "6": {
+          "runs": [
+            13,
+            14
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "7": {
+          "runs": [
+            15,
+            16
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "8": {
+          "runs": [
+            17,
+            18
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "9": {
+          "runs": [
+            19,
+            20
+          ],
+          "n_categories": 50,
+          "each_once": true
+        }
+      },
+      "self_hash": "193454f38bb6a4881fe04472f5d0522c4b508145458f834ec9e76c466bc5bd21"
+    },
+    "Subject3": {
+      "subject": "Subject3",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception_imagenet_test": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_categories": 50,
+        "perception_categories": 50,
+        "shared_categories": 50,
+        "is_50_of_50": true,
+        "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+      },
+      "per_run_pair": {
+        "0": {
+          "runs": [
+            1,
+            2
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "1": {
+          "runs": [
+            3,
+            4
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "2": {
+          "runs": [
+            5,
+            6
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "3": {
+          "runs": [
+            7,
+            8
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "4": {
+          "runs": [
+            9,
+            10
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "5": {
+          "runs": [
+            11,
+            12
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "6": {
+          "runs": [
+            13,
+            14
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "7": {
+          "runs": [
+            15,
+            16
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "8": {
+          "runs": [
+            17,
+            18
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "9": {
+          "runs": [
+            19,
+            20
+          ],
+          "n_categories": 50,
+          "each_once": true
+        }
+      },
+      "self_hash": "907fbb9a3cbdae2344191b1f4dcc24e2e7bc648edab01ebbdc57b1398de75509"
+    },
+    "Subject4": {
+      "subject": "Subject4",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception_imagenet_test": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_categories": 50,
+        "perception_categories": 50,
+        "shared_categories": 50,
+        "is_50_of_50": true,
+        "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+      },
+      "per_run_pair": {
+        "0": {
+          "runs": [
+            1,
+            2
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "1": {
+          "runs": [
+            3,
+            4
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "2": {
+          "runs": [
+            5,
+            6
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "3": {
+          "runs": [
+            7,
+            8
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "4": {
+          "runs": [
+            9,
+            10
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "5": {
+          "runs": [
+            11,
+            12
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "6": {
+          "runs": [
+            13,
+            14
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "7": {
+          "runs": [
+            15,
+            16
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "8": {
+          "runs": [
+            17,
+            18
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "9": {
+          "runs": [
+            19,
+            20
+          ],
+          "n_categories": 50,
+          "each_once": true
+        }
+      },
+      "self_hash": "c4294df0ff189b5e39b988f5a43bab4f737a49455f8c0f3acdb68533d1bf9ff8"
+    },
+    "Subject5": {
+      "subject": "Subject5",
+      "status": "CERTIFIED",
+      "imagery": {
+        "n_trials": 500,
+        "n_categories": 50,
+        "reps_per_category_min": 10,
+        "reps_per_category_max": 10,
+        "n_runs": 20,
+        "trials_per_run_all_25": true,
+        "run_pair_contract_ok": true,
+        "n_run_pairs": 10,
+        "contract_ok": true
+      },
+      "perception_imagenet_test": {
+        "n_trials": 1750,
+        "n_categories": 50,
+        "valid_reps_per_category_min": 35,
+        "valid_reps_per_category_max": 35,
+        "one_back_catch_excluded_in_release": true,
+        "contract_ok": true
+      },
+      "correspondence": {
+        "imagery_categories": 50,
+        "perception_categories": 50,
+        "shared_categories": 50,
+        "is_50_of_50": true,
+        "certified_from": "WNID integer of stimulus_number (vmap n%08d_%d), NOT row order"
+      },
+      "per_run_pair": {
+        "0": {
+          "runs": [
+            1,
+            2
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "1": {
+          "runs": [
+            3,
+            4
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "2": {
+          "runs": [
+            5,
+            6
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "3": {
+          "runs": [
+            7,
+            8
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "4": {
+          "runs": [
+            9,
+            10
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "5": {
+          "runs": [
+            11,
+            12
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "6": {
+          "runs": [
+            13,
+            14
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "7": {
+          "runs": [
+            15,
+            16
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "8": {
+          "runs": [
+            17,
+            18
+          ],
+          "n_categories": 50,
+          "each_once": true
+        },
+        "9": {
+          "runs": [
+            19,
+            20
+          ],
+          "n_categories": 50,
+          "each_once": true
+        }
+      },
+      "self_hash": "e0d7229a2be638364ec686c63bc9f3aad9ca7959bb7a54884b133024d10533f2"
+    }
+  },
+  "n_certified": 5,
+  "all_certified": true,
+  "self_hash": "05fd233ebba36c2c80864c415402bd22a222ea6ca240f4bf150f9394b954cf7c"
+}

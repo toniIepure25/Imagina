@@ -1,0 +1,94 @@
+{
+  "artifact": "C3_SUBJ01_STATE_TRANSPORT",
+  "timestamp": "2026-08-22T04:39:07",
+  "subject": "subj01",
+  "scope": "SINGLE_SUBJECT_ONLY",
+  "executed_because": "zero-shot H2 is null (degenerate collapse)",
+  "primary_subset": "Set B complex imagery, nested leave-one-target-out (held-out TARGET)",
+  "estimand": "Delta_transport = held-out-target MRR(calibrated) - held-out-target MRR(identity)",
+  "transport_capacity": {
+    "alpha": 1000.0,
+    "low_rank": 3,
+    "note": "rank < 5 calibration targets"
+  },
+  "frozen_decoder_weights_hash": "df2dfd8961d7f7385f00ab25fd69e18c33923e6508b9fe16c3b74b015dd4f9f1",
+  "identity_mrr": 0.2968900312650312,
+  "chance_mrr_12pool": 0.25860088985088986,
+  "per_method": {
+    "identity": {
+      "per_stimulus_mrr": [
+        0.96875,
+        0.40476190476190477,
+        0.10511363636363637,
+        0.11022727272727273,
+        0.10915404040404039,
+        0.08333333333333333
+      ],
+      "mean_mrr": 0.2968900312650312,
+      "std_mrr": 0.32028752583749615
+    },
+    "mean_correction": {
+      "per_stimulus_mrr": [
+        0.2786458333333333,
+        0.18125,
+        0.08333333333333333,
+        0.08854166666666666,
+        0.08611111111111111,
+        0.08333333333333333
+      ],
+      "mean_mrr": 0.13353587962962962,
+      "std_mrr": 0.07376507204753062,
+      "delta_vs_identity": -0.1633541516354016
+    },
+    "affine_ridge": {
+      "per_stimulus_mrr": [
+        0.16666666666666666,
+        0.16666666666666666,
+        0.08333333333333333,
+        0.08333333333333333,
+        0.08333333333333333,
+        0.08333333333333333
+      ],
+      "mean_mrr": 0.1111111111111111,
+      "std_mrr": 0.039283710065919304,
+      "delta_vs_identity": -0.1857789201539201
+    },
+    "low_rank": {
+      "per_stimulus_mrr": [
+        0.16666666666666666,
+        0.16666666666666666,
+        0.08333333333333333,
+        0.08333333333333333,
+        0.08333333333333333,
+        0.08333333333333333
+      ],
+      "mean_mrr": 0.1111111111111111,
+      "std_mrr": 0.039283710065919304,
+      "delta_vs_identity": -0.1857789201539201
+    },
+    "random_low_rank": {
+      "per_stimulus_mrr": [
+        0.16666666666666666,
+        0.16666666666666666,
+        0.08333333333333333,
+        0.08333333333333333,
+        0.08333333333333333,
+        0.08333333333333333
+      ],
+      "mean_mrr": 0.1111111111111111,
+      "std_mrr": 0.039283710065919304
+    }
+  },
+  "delta_vs_identity": {
+    "mean_correction": -0.1633541516354016,
+    "affine_ridge": -0.1857789201539201,
+    "low_rank": -0.1857789201539201
+  },
+  "matched_random_low_rank_mrr": 0.1111111111111111,
+  "best_method": "mean_correction",
+  "best_delta_transport": -0.1633541516354016,
+  "beats_matched_random": true,
+  "decision": "SUBJ01_STATE_TRANSPORT_NULL_OR_INCONCLUSIVE",
+  "decision_note": "Held-out-TARGET improvement (not merely held-out-trial) that also beats the matched random low-rank control is required to claim any state transport. Given the zero-shot prediction collapse, the frozen decoder's imagery outputs carry little target-specific variance for a transport layer to exploit on unseen targets.",
+  "runtime_seconds": 3.0
+}

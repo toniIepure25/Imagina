@@ -1,0 +1,40 @@
+{
+  "artifact": "C3XRA_PREPROCESSING_EXECUTION_SEAL",
+  "gate": "C3XRA",
+  "fmriprep_version": "24.1.1",
+  "fmriprep_container_digest": "docker://nipreps/fmriprep@sha256:PIN_AT_FACILITY_BEFORE_RUN",
+  "freesurfer_version": "7.3.2 (bundled in fMRIPrep 24.1.1)",
+  "templateflow_template": "MNI152NLin2009cAsym",
+  "output_resolution": "res-2 (2mm)",
+  "spatial_smoothing": "NONE",
+  "ants_version": "2.5.x (bundled)",
+  "afni_version": "bundled",
+  "workbench": "bundled",
+  "output_spaces": [
+    "MNI152NLin2009cAsym:res-2",
+    "fsnative(optional, not used for primary)"
+  ],
+  "command_line": "fmriprep {bids_dir} {out_dir} participant --participant-label {sub} --output-spaces MNI152NLin2009cAsym:res-2 --fs-subjects-dir {fs_dir} --nthreads {n} --omp-nthreads {o} --skip-bids-validation false --notrack --stop-on-first-crash",
+  "no_smoothing_flag": "no --fwhm / no smoothing applied; smoothing NOT part of fMRIPrep output",
+  "nuisance_contract": {
+    "motion6_required": [
+      "trans_x",
+      "trans_y",
+      "trans_z",
+      "rot_x",
+      "rot_y",
+      "rot_z"
+    ],
+    "tissue_if_present": [
+      "csf",
+      "white_matter"
+    ],
+    "cosine_all": true,
+    "run_intercept": true,
+    "rule": "outcome-independent; missing required motion => fail-closed",
+    "inherited_from": "backend/app/research/fmri/c3xat_pipeline.resolve_confounds"
+  },
+  "digest_pinning_required_before_run": true,
+  "note": "container digest is pinned at the facility image before the first real run; design gate does not execute fMRIPrep on any human data.",
+  "self_hash": "82329a06068489baaea2fc2d202df75f69e35e1cfddfd4b91e89233c8016e9b2"
+}

@@ -1,0 +1,39 @@
+{
+  "artifact": "C3XAT_R1_CLUSTER_CERTIFICATION",
+  "seal_self_hash": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "connected_via": "explicit user kubeconfig (~/Downloads/antoniu_iepure.yaml), NOT default context",
+  "context": "antoniu-iepure@default",
+  "namespace": "runai-romania-dev",
+  "auth_can_i_get_pods": true,
+  "auth_can_i_create_jobs": true,
+  "auth_can_i_create_pvc": true,
+  "auth_can_i_create_pods": true,
+  "storage": {
+    "default_storageclass": "nfs-client",
+    "provisioner": "nfs-subdir-external-provisioner (persistent NFS)",
+    "workspace_pvc": "c3xat-r1-workspace",
+    "workspace_pvc_capacity": "600Gi",
+    "workspace_pvc_access_mode": "ReadWriteMany",
+    "workspace_pvc_status": "Bound",
+    "workspace_pvc_volume": "pvc-5f104841-7e1d-40ec-a4ae-4df529ed0c7f"
+  },
+  "gpu": {
+    "node": "k8s-worker-gpu-node-xe8545",
+    "nvidia_gpu_capacity": 4,
+    "additional_gpu_node": "k8s-worker-gpu-node-xe9680"
+  },
+  "egress": {
+    "openneuro_s3": "HTTP 200 (ds005191/dataset_description.json)",
+    "templateflow_s3": "HTTP 200",
+    "verified_from_pod": true,
+    "verified_from_shell": true
+  },
+  "freesurfer_license": {
+    "present": true,
+    "in_cluster_secret": "c3xat-fs-license",
+    "committed_to_git": false
+  },
+  "status": "C3XAT_R1_REMOTE_INFRA_PASS",
+  "advance_over_attempt1": "C3XAT_BLOCKED_EXECUTION (attempt 1) was due to the OrchestrAI kubeconfig being absent that session. Here the cluster is reachable, storage/GPU/egress/FreeSurfer-license are all certified live. That blocker is RESOLVED.",
+  "self_hash": "712bd7c3123d5417bf9d2a7ddc17fa1c1e4fbfaa5870629e7fbb9a44f5b3115e"
+}

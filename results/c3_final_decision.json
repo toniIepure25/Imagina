@@ -1,0 +1,52 @@
+{
+  "gate": "C3",
+  "title": "fMRI Perception-to-Imagery Transfer and Reconstruction Readiness",
+  "branch": "research/fmri-imagery-transfer-c3",
+  "status": "INFRASTRUCTURE_COMPLETE_AWAITING_REAL_DATA",
+  "created_at": "2026-07-24T10:00:00+00:00",
+  "datasets": {
+    "nsd": {"status": "registered", "perception_betas_local": false},
+    "nsd_imagery": {"status": "registered", "imagery_betas_local_subj01": true, "other_subjects": false}
+  },
+  "pipeline_components": {
+    "registry": "COMPLETE",
+    "manifests": "COMPLETE",
+    "ingestion": "COMPLETE",
+    "perception_decoder": "COMPLETE_SMOKE_TESTED",
+    "zero_shot_transfer": "COMPLETE_SMOKE_TESTED",
+    "state_transport": "COMPLETE_SMOKE_TESTED",
+    "uncertainty_calibration": "COMPLETE_SMOKE_TESTED",
+    "negative_controls": "COMPLETE_SMOKE_TESTED",
+    "ci_jobs": "COMPLETE"
+  },
+  "test_summary": {
+    "total_c3_tests": 61,
+    "passed": 61,
+    "failed": 0,
+    "test_files": [
+      "test_c3_fmri_data.py (21 tests)",
+      "test_c3_perception_decoder.py (13 tests)",
+      "test_c3_transfer_transport.py (13 tests)",
+      "test_c3_uncertainty_controls.py (14 tests)"
+    ]
+  },
+  "real_data_requirements": {
+    "blocker": "NSD perception betas not downloaded (16-28 GB per subject)",
+    "subjects_needed": ["subj01", "subj02", "subj05", "subj07"],
+    "total_estimated_storage_gb": "80-120",
+    "when_available": "Run full pipeline to populate c3_perception_decoding.json, c3_zero_shot_transfer.json, c3_state_transport.json, c3_uncertainty.json, c3_negative_controls.json, c3_sensitivity.json"
+  },
+  "prior_expectation": {
+    "most_likely_outcome": "COMPLETE_WITH_IMAGERY_TRANSFER_NULL",
+    "justification": "Published evidence (Kneeland 2025, Spera 2026) shows frozen zero-shot transfer at chance. C3 confirms with ridge decoder and adds formal inference.",
+    "potential_positive": "Low-capacity state transport (H4) is the only untested hypothesis with no published negative"
+  },
+  "decision_pending": {
+    "C3_PERCEPTION_DECODING": "PENDING_REAL_DATA",
+    "C3_ZERO_SHOT_IMAGERY_TRANSFER": "PENDING_REAL_DATA",
+    "C3_STATE_TRANSPORT": "PENDING_REAL_DATA",
+    "C3_UNCERTAINTY_CALIBRATION": "PENDING_REAL_DATA",
+    "C3_RECONSTRUCTION_READINESS": "PENDING_REAL_DATA",
+    "C3": "INFRASTRUCTURE_COMPLETE_AWAITING_REAL_DATA"
+  }
+}

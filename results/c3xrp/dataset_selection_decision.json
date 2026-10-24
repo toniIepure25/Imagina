@@ -1,0 +1,20 @@
+{
+  "artifact": "C3XRP_DATASET_SELECTION_DECISION",
+  "gate": "C3XRP",
+  "decision": "C3XRP_NO_PUBLIC_REPLICATION_DATASET",
+  "rationale": "No public fMRI dataset is simultaneously (a) INDEPENDENT of the prior program (C3XC/C3XD/C3XDR/C3XDR-R1/C3XAT/C3XAT-R1) and (b) structurally sufficient for the C3XAT replication estimand (>=50 distinct naturalistic imagery identities repeated across >=4-5 independent imagery units, matched perception with full identity correspondence, known cue/post-video timing, >=6 eligible subjects). All structurally-capable imagery datasets are KamitaniLab-lineage (GOD used in C3XB; Mind Captioning is C3XAT; shared participant pool) or NSD-Imagery (used in C3) -> NOT_INDEPENDENT. All independent imagery datasets are structurally insufficient (SemReps-8K: 3 imagery identities; THINGS-fMRI/BOLD5000/NOD: perception-only).",
+  "requirements_not_weakened": true,
+  "selected_primary": null,
+  "selected_fallback": null,
+  "next": "proceed to a prospective acquisition protocol (Phase G) + precision planning (Phase F) + prospective spatial-specificity design (Phase I); NO real neural outcome executed.",
+  "ds005191_permitted_uses": [
+    "method validation",
+    "pipeline replay",
+    "synthetic calibration",
+    "precision/power planning"
+  ],
+  "ds005191_forbidden_use": "as the new replication outcome",
+  "neural_outcomes_inspected": false,
+  "c3xag_authorized": false,
+  "self_hash": "3575478fd7a2294762616368c62d99a8ebaafe5e7f23710fe6680c7c34fa2a19"
+}

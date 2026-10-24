@@ -1,0 +1,17 @@
+{
+  "artifact": "C3M_XP_CERTIFICATION",
+  "mapping_all_voxels_found": true,
+  "n_missing": 0,
+  "n_selected": 15587,
+  "mapped_cols_ncsnr_all_gt0": true,
+  "fmri2i_ncsnr_gt0_subset_count": 15587,
+  "decoder_selected_count": 15587,
+  "n_train_images_reconstructed": 9000,
+  "n_train_images_expected": 9000,
+  "decoder_n_train_images": 9000,
+  "voxel_mean_max_abs_diff": 183.4281474548833,
+  "voxel_mean_max_rel_diff": 109.84498629405265,
+  "voxel_mean_corr": 0.9998426710709384,
+  "voxel_std_max_abs_diff": 1282.9788383091027,
+  "CERTIFIED": false
+}

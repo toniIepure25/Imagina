@@ -1,0 +1,127 @@
+{
+  "artifact": "C3XB_RELIABILITY",
+  "subject": "Subject1",
+  "seed": 20260901,
+  "created_at": "2026-09-04T14:24:05",
+  "R_I_n_perm": 1000,
+  "R_I_n_boot": 1000,
+  "R_P_n_perm": 200,
+  "R_P_n_boot": 200,
+  "R_P_resampling_adaptation": "R_P control uses reduced perm/boot (see script docstring); PRIMARY R_I_GOD uses full sealed 1000/1000",
+  "R_I_GOD_VC": {
+    "reliability": 0.049710915193055524,
+    "bootstrap_ci95": [
+      -0.15063344898678932,
+      0.20483772578456566
+    ],
+    "bootstrap_mean": 0.025797824168888754,
+    "null_mean": -0.004695874756111088,
+    "null_std": 0.07431391751124058,
+    "perm_p_one_sided": 0.23976023976023977,
+    "split_seed_values": [
+      0.049710915193055524,
+      0.04697295905556168,
+      0.04822840901083457
+    ],
+    "split_seed_min": 0.04697295905556168,
+    "split_seed_max": 0.049710915193055524,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_pairs": 10,
+    "unit": "run_pair_disjoint",
+    "gate": "SUBJECT_RELIABILITY_MARGINAL"
+  },
+  "R_P_category_VC": {
+    "reliability": 0.6534561051893303,
+    "bootstrap_ci95": [
+      0.41257153952749576,
+      0.570498431333082
+    ],
+    "bootstrap_mean": 0.49224091369061,
+    "null_mean": -0.004615644905688081,
+    "null_std": 0.07558057714914929,
+    "perm_p_one_sided": 0.004975124378109453,
+    "split_seed_values": [
+      0.6534561051893303,
+      0.6508705520482952,
+      0.6490136409956676
+    ],
+    "split_seed_min": 0.6490136409956676,
+    "split_seed_max": 0.6534561051893303,
+    "n_perm": 200,
+    "n_boot": 200,
+    "run_disjoint": true,
+    "gate": "SUBJECT_RELIABILITY_PASS"
+  },
+  "attenuation_VC": 0.07607383999978459,
+  "roi_profile": {
+    "ROI_VC": {
+      "R_I": 0.049710915193055524,
+      "R_P": 0.6534561051893303
+    },
+    "ROI_V1": {
+      "R_I": 0.03445228431276526,
+      "R_P": 0.701836079167585,
+      "n_voxels": 826
+    },
+    "ROI_V2": {
+      "R_I": 0.054640136150784356,
+      "R_P": 0.7079375627283302,
+      "n_voxels": 857
+    },
+    "ROI_V3": {
+      "R_I": 0.05256131411857942,
+      "R_P": 0.703126114991307,
+      "n_voxels": 688
+    },
+    "ROI_V4": {
+      "R_I": 0.03387377257110477,
+      "R_P": 0.6123812305368733,
+      "n_voxels": 266
+    },
+    "ROI_LOC": {
+      "R_I": 0.0599435197212207,
+      "R_P": 0.6300087807489647,
+      "n_voxels": 470
+    },
+    "ROI_FFA": {
+      "R_I": 0.028247369501583533,
+      "R_P": 0.3528213421920254,
+      "n_voxels": 238
+    },
+    "ROI_PPA": {
+      "R_I": 0.054363289167315774,
+      "R_P": 0.5838413118607074,
+      "n_voxels": 144
+    },
+    "LVC_composite": {
+      "R_I": 0.04433573693344467,
+      "R_P": 0.7039823492626758,
+      "composite_of_released": [
+        "ROI_V1",
+        "ROI_V2",
+        "ROI_V3"
+      ]
+    },
+    "HVC_composite": {
+      "R_I": 0.04777000751338175,
+      "R_P": 0.5658685232730383,
+      "composite_of_released": [
+        "ROI_LOC",
+        "ROI_FFA",
+        "ROI_PPA"
+      ]
+    }
+  },
+  "cue_roi_profile_control": {
+    "V1_R_I": 0.03445228431276526,
+    "HVC_R_I": 0.04777000751338175,
+    "hvc_gt_v1": true,
+    "interpretation": "HVC>V1 imagery reliability is consistent with object imagery, NOT a V1-dominated visual word-cue artifact; V1>=HVC would flag cue leakage."
+  },
+  "early_vs_late_temporal_control": {
+    "computable_from_release": false,
+    "reason": "released imagery patterns are single block-averaged amplitudes (one vector per trial); no within-trial time axis. Requires raw BIDS ds001246 + cue/imagery-separated GLM; deferred to C3XR-CAT as a hard prerequisite."
+  },
+  "self_hash": "43217115ecfa4621d282a41a54bfcab3c6f18eb0b9529af3632a5d959050ea6e"
+}

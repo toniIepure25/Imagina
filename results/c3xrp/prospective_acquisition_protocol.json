@@ -1,0 +1,38 @@
+{
+  "artifact": "C3XRP_PROSPECTIVE_ACQUISITION_PROTOCOL",
+  "gate": "C3XRP",
+  "reason": "C3XRP_NO_PUBLIC_REPLICATION_DATASET -> a genuinely independent replication requires new acquisition",
+  "design_only": true,
+  "no_data_acquired": true,
+  "not_designed_around_sub03": true,
+  "participants": {
+    "n": "determined prospectively from precision_design_analysis.json (recommended_min_units maps to imagery sessions; subject N sized so the cohort gate has adequate power); ALL eligible subjects enter the denominator; NO responder enrichment; eligibility = ordinary technical MRI QC only"
+  },
+  "imagery": {
+    "n_independent_sessions": ">=7 (if supported by precision analysis; else the recommended minimum)",
+    "stimulus_set": "fixed naturalistic video identities (>=72), same identities repeated exactly once per session",
+    "structure": "per trial: cue -> imagery -> post-video -> evaluation, timed SEPARATELY to permit deconvolution",
+    "cue_postvideo_separation": "sufficient temporal gap for the Model-A forward operator to separate cue/post-video contamination from imagery"
+  },
+  "matched_perception": {
+    "unit": "complete identity set per independent perception unit (run-pair/block inherent in the acquisition schedule); NO coverage-optimized or outcome-driven pairing",
+    "identity_correspondence": "perception identities == imagery identities (full correspondence)"
+  },
+  "acquisition_params": {
+    "TR": "prospectively fixed (e.g., ~1.0-2.0 s; sealed at acquisition)",
+    "run_length": "fixed",
+    "trial_timing": "fixed cue/imagery/post-video/eval durations + jitter",
+    "session_structure": "fixed",
+    "counterbalancing": "identity order counterbalanced across sessions",
+    "randomization": "sealed RNG",
+    "stimulus_repetition_schedule": "one presentation/identity/session across >=7 sessions",
+    "perception_block_schedule": "consecutive run-pairs each covering all identities once",
+    "scanner": ">=3T, whole-brain EPI, 2mm feasible",
+    "motion_criteria": "framewise displacement thresholds sealed",
+    "technical_exclusion_rules": "prospectively defined MRI QC (coverage, SNR floor, excessive motion) -- NEVER imagery-ability/vividness/prior-R_I based"
+  },
+  "preprocessing": "inherit C3XAT-R1 fMRIPrep 24.1.1 (sha256 9aec0b83...) -> MNI152NLin2009cAsym 2mm, no smoothing",
+  "roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK via the same Wang2015 ProbAtlas_v4 + official transform lineage",
+  "estimators": "frozen c3xb reliability + paired Delta sensitivity + subject/cohort gates (unchanged)",
+  "self_hash": "2b23799ab02d208dd410c2469aa490d0adc8597bcb742b1b8e40dc5cc594933e"
+}

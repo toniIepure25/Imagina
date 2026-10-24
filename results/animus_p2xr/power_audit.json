@@ -1,0 +1,47 @@
+{
+  "artifact": "ANIMUS_P2XR_POWER_AUDIT",
+  "milestone": "ANIMUS-P2XR",
+  "seed": 20260909,
+  "n_bold5000": 4,
+  "n_things": 3,
+  "subject_gate": {
+    "null_pass_rate": 0.0,
+    "signal_pass_rate": 0.9983
+  },
+  "cross_dataset_operating_characteristics": {
+    "null": {
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_PASS": 0.0,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_LIMITED": 0.0,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_FAIL": 1.0
+    },
+    "weak_nod_like_0.33": {
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_PASS": 0.10225,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_LIMITED": 0.46175,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_FAIL": 0.436
+    },
+    "moderate_0.5": {
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_PASS": 0.35425,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_LIMITED": 0.4885,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_FAIL": 0.15725
+    },
+    "strong_0.8": {
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_PASS": 0.86,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_LIMITED": 0.13625,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_FAIL": 0.00375
+    },
+    "heterogeneous_bold0.6_things0.1": {
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_PASS": 0.01575,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_LIMITED": 0.808,
+      "ANIMUS_P2XR_INDEPENDENT_REPLICATION_FAIL": 0.17625
+    }
+  },
+  "checks": {
+    "subject_type_i_below_0.01": true,
+    "subject_sensitivity_above_0.8": true,
+    "null_cross_pass_rate_below_0.001": true,
+    "heterogeneous_single_dataset_never_pass": true,
+    "strong_effect_pass_rate_above_0.5": true
+  },
+  "all_checks_pass": true,
+  "self_hash": "6236f5d72aa4b58e05ca72dd35a6937d953c76c4c00099be54772ae444e0340f"
+}

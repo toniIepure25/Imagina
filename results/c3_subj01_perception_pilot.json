@@ -1,0 +1,111 @@
+{
+  "timestamp": "2026-08-20T20:46:07",
+  "subject": "subj01",
+  "state": "perception",
+  "scope": "subject-specific real-data pilot (NOT population inference)",
+  "decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
+  "config": {
+    "n_sessions": 40,
+    "n_trials": 30000,
+    "n_images": 10000,
+    "roi": "nsdgeneral",
+    "n_voxels": 15724,
+    "clip_model": "openai/clip-vit-large-patch14",
+    "embedding_dim": 768,
+    "solver": "ridge_dual_form",
+    "alpha": 1000000.0,
+    "alpha_selection_results": {
+      "1e+00": -0.48732683062553406,
+      "1e+01": -0.48632320761680603,
+      "1e+02": -0.4695303440093994,
+      "1e+03": -0.3323177397251129,
+      "1e+04": -0.007835213094949722,
+      "1e+05": 0.1850970834493637,
+      "1e+06": 0.1958780139684677,
+      "1e+07": 0.17474254965782166
+    },
+    "n_permutations": 10000,
+    "seed": 42
+  },
+  "test_candidate_count": 1000,
+  "chance_mrr": 0.007485470860550345,
+  "primary_metrics_image_averaged": {
+    "mrr": 0.0827298543501851,
+    "top1": 0.029,
+    "top5": 0.1,
+    "median_rank": 45,
+    "mean_cosine": 0.18130522966384888,
+    "two_way_id": 0.001,
+    "n_test": 1000,
+    "n_pool": 1000
+  },
+  "trial_level_metrics": {
+    "n_trials": 3000,
+    "mrr": 0.06733111136771769,
+    "top1": 0.023,
+    "top5": 0.07733333333333334,
+    "median_rank": 63
+  },
+  "permutation_test": {
+    "observed_mrr": 0.0827298543501851,
+    "null_mean": 0.007474608919630879,
+    "null_std": 0.0012394670655739312,
+    "null_q95": 0.009682447109517787,
+    "null_q99": 0.01082592052798708,
+    "null_max": 0.014276031473826733,
+    "p_value": 9.999000099990002e-05,
+    "n_permutations": 10000,
+    "effect_above_null": 0.07525524543055422,
+    "significant_005": true,
+    "significant_001": true
+  },
+  "forensics": {
+    "session_metrics_sample": {
+      "session_01": {
+        "n_trials": 62,
+        "mrr": 0.03602742109890222,
+        "top1": 0.0
+      },
+      "session_02": {
+        "n_trials": 80,
+        "mrr": 0.05363894099710877,
+        "top1": 0.0
+      },
+      "session_03": {
+        "n_trials": 59,
+        "mrr": 0.058638596064721805,
+        "top1": 0.0
+      },
+      "session_04": {
+        "n_trials": 82,
+        "mrr": 0.07530743492801685,
+        "top1": 0.024390243902439025
+      },
+      "session_05": {
+        "n_trials": 57,
+        "mrr": 0.06873350285009953,
+        "top1": 0.017543859649122806
+      }
+    },
+    "n_sessions_with_test_trials": 40
+  },
+  "runtime_seconds": 233.8,
+  "matrix_dimensions": {
+    "X_train": [
+      8000,
+      15724
+    ],
+    "Y_train": [
+      8000,
+      768
+    ],
+    "X_test": [
+      1000,
+      15724
+    ],
+    "W": [
+      15724,
+      768
+    ]
+  }
+}

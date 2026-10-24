@@ -1,0 +1,59 @@
+{
+  "gate": "C3_REALDATA_INTERIM_DECISION",
+  "date": "2026-07-24T20:15:00",
+  "branch": "research/fmri-imagery-transfer-c3-realdata",
+  "source_sha": "c36768a741fd36ac09906a28a0c96d60b7b69481",
+  "current_status": "BLOCKED_BY_PERCEPTION_BETAS_DOWNLOAD",
+  "infrastructure_status": {
+    "inference_plan_frozen": true,
+    "n4_limitation_documented": true,
+    "randomization_procedure_frozen": true,
+    "existing_data_verified": true,
+    "clip_embeddings_computed": true,
+    "stimulus_metadata_acquired": true,
+    "spatial_alignment_verified": true,
+    "download_script_tested": true,
+    "download_in_progress": true
+  },
+  "download_progress": {
+    "total_sessions": 40,
+    "completed_sessions": 3,
+    "in_progress_session": 4,
+    "size_per_session_gb": 1.02,
+    "total_required_gb": 40.77,
+    "downloaded_gb": 3.06,
+    "remaining_gb": 37.71,
+    "estimated_hours_remaining": 12,
+    "script_resumable": true
+  },
+  "verified_artifacts": {
+    "subj01_imagery_betas_sha256": "31485ff0e4cb9e90b6f83f2f550714b1a688993604f5795148a2746df7b42b64",
+    "nsd_expdesign_sha256": "4cf4901ecf736c525ce534c4466030ec8d13c2fc0c8b31ddf86f17c55faadf89",
+    "clip_pool_hash": "0f4a98d41187ee7f577d65f71e3e312cfe3da86c837bfa41c6b7e2d959ce759d",
+    "nsdgeneral_roi_voxels": 15724
+  },
+  "what_is_blocked": [
+    "Commit 3: Spatial alignment certification (requires perception beta schema verification)",
+    "Commit 4: Real perception decoding (requires all 40 session betas)",
+    "Commit 5: Zero-shot imagery transfer (requires trained perception decoder)",
+    "Commit 6: State transport (requires zero-shot baseline)",
+    "Commit 7: Uncertainty and controls (requires real results)",
+    "Commit 8: Final decision (requires all above)"
+  ],
+  "what_is_complete": [
+    "Commit 1: Inference plan and randomization procedure frozen",
+    "Commit 2: Acquisition infrastructure and existing data certified",
+    "CLIP embeddings for 12 imagery targets (frozen, hash-locked)",
+    "NSD experiment design downloaded and validated",
+    "subj01 imagery data integrity verified (HDF5, ROI, ncsnr, behavioral)",
+    "Spatial axis correspondence confirmed from prior work",
+    "Download script running and verified functional (3/40 complete)"
+  ],
+  "resume_instructions": {
+    "step_1": "Re-run download_perception_betas.py (idempotent, resumes from .part files)",
+    "step_2": "After 40/40 complete, run the full pipeline: perception decoder -> imagery transfer",
+    "step_3": "The entire analysis infrastructure is ready in backend/app/research/fmri/"
+  },
+  "decision": "BLOCKED_BY_REAL_DATA_DOWNLOAD_IN_PROGRESS",
+  "reconstruction_readiness": "PENDING_PERCEPTION_BETAS_DOWNLOAD_COMPLETION"
+}

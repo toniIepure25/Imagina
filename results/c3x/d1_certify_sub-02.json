@@ -1,0 +1,74 @@
+{
+  "imagery": {
+    "file_md5": "b558e779770e036e52948191f4886116",
+    "file_sha256": "dac38339dde35939490eda9c479d875f1a06c381aae40caf781627bf0d22a03f",
+    "download": "downloaded",
+    "n_samples": 520,
+    "n_VC_voxels": 11114,
+    "n_content": 26,
+    "reps_per_content_min": 20,
+    "reps_per_content_max": 20,
+    "reps_per_content_median": 20,
+    "n_runs": 20,
+    "roi_voxel_counts": {
+      "ROI_VC": 11114,
+      "ROI_V1": 2329,
+      "ROI_V2": 2687,
+      "ROI_V3": 2058,
+      "ROI_V4": 837
+    },
+    "all_finite": true,
+    "content_ids_sample": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "perceptionTest": {
+    "file_md5": "3767c08b4b138d3114ec69cfaa8274ab",
+    "file_sha256": "dcbbec9e9021f8ac3993d12d5111fa963974e833b409122d8b2d1a5c9583674a",
+    "download": "downloaded",
+    "n_samples": 1200,
+    "n_VC_voxels": 11114,
+    "n_content": 50,
+    "reps_per_content_min": 24,
+    "reps_per_content_max": 24,
+    "reps_per_content_median": 24,
+    "n_runs": 24,
+    "roi_voxel_counts": {
+      "ROI_VC": 11114,
+      "ROI_V1": 2329,
+      "ROI_V2": 2687,
+      "ROI_V3": 2058,
+      "ROI_V4": 837
+    },
+    "all_finite": true,
+    "content_ids_sample": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "correspondence": {
+    "imagery_contents": 26,
+    "perception_contents": 50,
+    "shared_contents": 26,
+    "imagery_only": 0,
+    "perception_only": 24,
+    "level": "category/image identity (bdpy Label); exact-image vs category to be treated per dataset docs; C3X reliability is WITHIN-condition and does not require the mapping"
+  },
+  "subject": "sub-02",
+  "contract_ok": true,
+  "status": "CERTIFIED",
+  "self_hash": "ca4c4ec830508443d1c203b02e88f625dfaa796a18448a0a17714a3ff887b2ab"
+}

@@ -1,0 +1,59 @@
+{
+  "artifact": "ANIMUS_P2R_PROTOCOL_SEAL",
+  "milestone": "ANIMUS-P2R",
+  "supersedes_block": "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE",
+  "only_scientific_change": "PROSPECTIVELY AUTHORIZED RAW->MNI PREPROCESSING PROVENANCE",
+  "amendment_reason": "public NOD/BOLD5000 derivatives lack MNI152NLin2009cAsym space; re-derive it from RAW NOD via pinned fMRIPrep, then apply the unchanged sealed Wang25 mask and run the unchanged P2 decoder.",
+  "raw_dataset": "ds004496 v2.1.2",
+  "participant_denominator": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-05",
+    "sub-06"
+  ],
+  "fmriprep": {
+    "digest": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+    "output_space": "MNI152NLin2009cAsym:res-2",
+    "smoothing": "NONE",
+    "fieldmaps": "BIDS-provided"
+  },
+  "target_template": "MNI152NLin2009cAsym 2mm (no alternative; no MNI6/fsaverage/localizer sub)",
+  "wang25_roi": "unchanged sealed WANG25 volumetric MPM; label-safe grid-match only if grids differ",
+  "inherited_unchanged": {
+    "question": true,
+    "primary_dataset": "NOD ds004496",
+    "split": true,
+    "target_encoder": "open_clip:ViT-B-32",
+    "decoder": "ridge_linear_multioutput",
+    "primary_statistic": "content margin M = mean(cos(p_i,t_i) - mean_{j!=i} cos(p_i,t_j)), held-out test",
+    "permutation": {
+      "within_test_label_permutation": true,
+      "n_perm": 1000
+    },
+    "bootstrap": {
+      "identity_bootstrap": true,
+      "n_boot": 1000
+    },
+    "seeds": [
+      20260909,
+      20261009,
+      20261109
+    ],
+    "subject_pass": "data_contract & atlas_qc & M>0 & perm_p<0.01 & bootstrap_ci_lower>0 & all_seeds_positive",
+    "dataset_gate": "required_passes=max(2,ceil(N/3)); VALIDATED/LIMITED/FAIL/BLOCKED; fixed denominator",
+    "negative_controls": [
+      "label_permutation",
+      "category_matched_decoys",
+      "low_level_baseline",
+      "run_session_fingerprint",
+      "within/cross-run shuffle"
+    ]
+  },
+  "capability_during_p2r": "PERCEPTION_NEURAL_CONTENT stays BLOCKED until the confirmatory decision",
+  "imagery_dream_reconstruction": "UNAUTHORIZED regardless of outcome",
+  "confirmatory_unlock": "after this seal is committed + CI-green, run fMRIPrep cohort -> features -> P2R_CONFIRMATORY_IMPLEMENTATION_FREEZE -> run_p2_confirmatory (unchanged)",
+  "p2_seal_blob": "cfe13a132d019d306d0b993e469514939e5d1035",
+  "self_hash": "3978bf395c27908d986853e96ebf362be50322097a0e9ca404caea4e71c6b754"
+}

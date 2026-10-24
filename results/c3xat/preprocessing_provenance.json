@@ -1,0 +1,24 @@
+{
+  "artifact": "C3XAT_PREPROCESSING_PROVENANCE",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "tool": "fMRIPrep",
+  "workflow": "single pinned workflow",
+  "output_space": "MNI152NLin2009cAsym",
+  "resolution_mm": 2,
+  "smoothing": "NONE",
+  "pinned": {
+    "fmriprep_version": "PINNED_AT_EXECUTION",
+    "container_digest": "PINNED_AT_EXECUTION",
+    "freesurfer_version": "PINNED_AT_EXECUTION",
+    "templateflow_versions_hashes": "PINNED_AT_EXECUTION",
+    "ants_version": "PINNED_AT_EXECUTION",
+    "afni_version": "PINNED_AT_EXECUTION",
+    "command_line_parameters": "PINNED_AT_EXECUTION",
+    "output_space_parameters": "PINNED_AT_EXECUTION"
+  },
+  "no_smoothing_unless_sealed": true,
+  "no_post_outcome_modification": true,
+  "status": "SPEC_FROZEN_PREPROCESSING_NOT_EXECUTED",
+  "note": "the exact version/digest/hash strings are frozen to their concrete values at the moment the pinned container is pulled on the cluster; recorded here as a frozen requirement so the primary space cannot drift. No preprocessing was run in this session.",
+  "self_hash": "c815f47122504b5dc3fe270e656a04a263e162976c6de09c0a3e884700323d69"
+}

@@ -1,0 +1,75 @@
+{
+  "artifact": "ANIMUS_P2_PRODUCT_BRIDGE",
+  "milestone": "ANIMUS-P2",
+  "authorized_because": "ANIMUS_P2_PERCEPTION_DECODER_VALIDATED",
+  "modes": [
+    "UNINFORMED",
+    "NEURAL_ONLY",
+    "BEHAVIORAL_ONLY",
+    "NEURAL_PLUS_BEHAVIORAL"
+  ],
+  "product_tuning": "NONE (sealed bridge; no parameters fit to product outcome)",
+  "passing_subjects": [
+    "sub-04",
+    "sub-06"
+  ],
+  "per_subject": {
+    "sub-04": {
+      "n_train_trials": 2800,
+      "n_test_trials": 600,
+      "ridge_alpha": 10000.0,
+      "model_weights_hash": "cd3ee7dd93d0539d6895cbe1033753caa193042416c40f1e657c2790f1555c2f",
+      "median_neural_initialization_gain": 0.027734160080881025,
+      "gain_bootstrap_ci95": [
+        0.02737276274507637,
+        0.03253627923086738
+      ],
+      "neural_init_gain_positive": true,
+      "neural_faster": false,
+      "fused_ge_both": true,
+      "mode_medians": {
+        "BEHAVIORAL_ONLY": 0.19416032546071105,
+        "NEURAL_ONLY": 0.12793648586844353,
+        "NEURAL_PLUS_BEHAVIORAL": 0.22660842520925184
+      },
+      "median_initial_similarity_uninformed": 0.0006876394857817276,
+      "median_initial_similarity_neural": 0.12793648586844353,
+      "median_iters_to_threshold_uninformed": 9.0,
+      "median_iters_to_threshold_neural": 9.0
+    },
+    "sub-06": {
+      "n_train_trials": 2800,
+      "n_test_trials": 600,
+      "ridge_alpha": 10000.0,
+      "model_weights_hash": "ff822831d00a91d1ca6e36fe30508a9c98ef82c542e4921b2523c601cb45821d",
+      "median_neural_initialization_gain": 0.015204956003061418,
+      "gain_bootstrap_ci95": [
+        0.01704516062610655,
+        0.022228965673675643
+      ],
+      "neural_init_gain_positive": true,
+      "neural_faster": false,
+      "fused_ge_both": true,
+      "mode_medians": {
+        "BEHAVIORAL_ONLY": 0.19122434379607978,
+        "NEURAL_ONLY": 0.07557184861089884,
+        "NEURAL_PLUS_BEHAVIORAL": 0.21035727984443908
+      },
+      "median_initial_similarity_uninformed": 0.0018894925459819602,
+      "median_initial_similarity_neural": 0.07557184861089884,
+      "median_iters_to_threshold_uninformed": 9.0,
+      "median_iters_to_threshold_neural": 9.0
+    }
+  },
+  "median_gain_across_subjects": 0.02146955804197122,
+  "all_subjects_gain_positive": true,
+  "belief_fusion_respects_uncertainty": {
+    "high_conf_moves_more": true,
+    "high_conf_mean": 0.9524,
+    "low_conf_mean": 0.1667,
+    "pass": true
+  },
+  "scientific_decision_hash": "80cae643f2344d87b8417af092618ee44d21f4f70be4976a2e651d1bcae5caa8",
+  "imagery_remains_unauthorized": true,
+  "self_hash": "a8186e3f8503f22ea70fc23468b646b1b0bdd5e2479765d757dd29d1bd30a7e4"
+}

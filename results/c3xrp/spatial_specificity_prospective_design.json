@@ -1,0 +1,32 @@
+{
+  "artifact": "C3XRP_SPATIAL_SPECIFICITY_PROSPECTIVE_DESIGN",
+  "gate": "C3XRP",
+  "status": "SECONDARY (not promoted to primary unless explicitly sealed as primary before any outcome)",
+  "predeclared": {
+    "primary_roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK (7604 voxels; Wang2015 ProbAtlas_v4 lineage 3743ac34...)",
+    "n_random_controls": 10,
+    "seed_list": [
+      20260909,
+      20261009,
+      20261109,
+      20261209,
+      20261309,
+      20261409,
+      20261509,
+      20261609,
+      20261709,
+      20261809
+    ],
+    "matching_rule": "each random ROI has EXACTLY the Wang25 voxel count on the target grid",
+    "gm_constraint": "random voxels drawn only from cortical gray matter (TemplateFlow 2009c res-02 GM>0.5)",
+    "wang_exclusion": "random voxels EXCLUDE the Wang25 union (disjoint)",
+    "no_outcome_based_placement": true,
+    "participant_statistic": "E_subject = R_I_Wang25 - mean_k(R_I_random_k), same frozen imagery estimator, imagery-session unit",
+    "cohort_inference": "one-sided Wilcoxon signed-rank test across subjects of E_subject>0, alpha=0.05, sealed BEFORE any outcome; H0: median E<=0 (Wang25 R_I not enriched vs size-matched random cortex)",
+    "type_I_target": "<=0.05 under the strict null (Wang25 == random in expectation)",
+    "descriptive_c3xat_enrichment_not_reused_as_inference": true
+  },
+  "must_be_synthetically_validated_before_use": true,
+  "not_retrospective_use_of_c3xat_descriptive": true,
+  "self_hash": "b1ab7672a025ce43237a89c31e02a4dfb0f37012252c2d00f91b4aa9a5e3f5c5"
+}

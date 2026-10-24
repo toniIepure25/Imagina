@@ -1,0 +1,45 @@
+{
+  "artifact": "ANIMUS_P2R_SPATIAL_SUB01",
+  "milestone": "ANIMUS-P2R",
+  "subject": "sub-01",
+  "fmriprep_completed": true,
+  "fmriprep_finished_successfully": true,
+  "n_imagenet_mni_bold": 43,
+  "n_confounds": 43,
+  "anat_transforms_present": [
+    "sub-01_ses-anat_run-01_from-T1w_to-MNI152NLin2009cAsym_mode-image_xfm.h5",
+    "sub-01_ses-anat_run-01_from-MNI152NLin2009cAsym_to-T1w_mode-image_xfm.h5"
+  ],
+  "template": "MNI152NLin2009cAsym",
+  "resolution": "res-2 (2mm)",
+  "bold_shape": [
+    97,
+    115,
+    97,
+    256
+  ],
+  "bold_zooms": [
+    2.0,
+    2.0,
+    2.0
+  ],
+  "wang25_shape": [
+    97,
+    115,
+    97
+  ],
+  "wang25_zooms": [
+    2.0,
+    2.0,
+    2.0
+  ],
+  "wang25_sha256_prefix": "19b681ecba5c",
+  "grid_affine_equal_to_wang25": true,
+  "spatial_shape_equal": true,
+  "resampling_required": false,
+  "grid_match_method": "exact (fMRIPrep MNI2009c:res-2 == sealed Wang25 grid)",
+  "transform_direction_verified": "from filename+fMRIPrep provenance (T1w<->MNI2009cAsym mode-image h5)",
+  "exact_file_sha256": "PINNED_AT_IMPLEMENTATION_FREEZE",
+  "spatial_provenance_certified": true,
+  "self_hash": "012eaa9caeff9f603fc530c600af85497e1732a13becee7a5392c04b3fca67ab"
+}

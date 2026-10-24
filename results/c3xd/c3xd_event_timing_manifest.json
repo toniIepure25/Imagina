@@ -1,0 +1,520 @@
+{
+  "artifact": "C3XD_EVENT_TIMING_MANIFEST",
+  "dataset": "ds005191 v1.0.2 (raw BIDS)",
+  "tr_seconds": 1.0,
+  "subjects": {
+    "S1": {
+      "imagery": {
+        "n_trials": 360,
+        "n_videos": 72,
+        "n_sessions": 5,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5,
+        "trials_per_run": {
+          "testImagery01_run1": 12,
+          "testImagery01_run2": 12,
+          "testImagery01_run3": 12,
+          "testImagery01_run4": 12,
+          "testImagery01_run5": 12,
+          "testImagery01_run6": 12,
+          "testImagery02_run1": 12,
+          "testImagery02_run2": 12,
+          "testImagery02_run3": 12,
+          "testImagery02_run4": 12,
+          "testImagery02_run5": 12,
+          "testImagery02_run6": 12,
+          "testImagery03_run1": 12,
+          "testImagery03_run2": 12,
+          "testImagery03_run3": 12,
+          "testImagery03_run4": 12,
+          "testImagery03_run5": 12,
+          "testImagery03_run6": 12,
+          "testImagery04_run1": 12,
+          "testImagery04_run2": 12,
+          "testImagery04_run3": 12,
+          "testImagery04_run4": 12,
+          "testImagery04_run5": 12,
+          "testImagery04_run6": 12,
+          "testImagery05_run1": 12,
+          "testImagery05_run2": 12,
+          "testImagery05_run3": 12,
+          "testImagery05_run4": 12,
+          "testImagery05_run5": 12,
+          "testImagery05_run6": 12
+        },
+        "session_balance_ok": true,
+        "cue_durations_unique": [
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0,
+          13.0,
+          14.0,
+          17.0
+        ],
+        "imagery_duration_unique": [
+          12.0,
+          13.0,
+          14.0,
+          17.0,
+          18.0,
+          23.0
+        ],
+        "video_duration_unique": [
+          10.0,
+          11.0,
+          12.0,
+          15.0,
+          16.0,
+          21.0
+        ],
+        "cue_to_imagery_gap_unique": [
+          0.0
+        ],
+        "imagery_to_video_gap_unique": [
+          2.0
+        ]
+      },
+      "perception": {
+        "n_video_trials": 360,
+        "n_videos": 72,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5
+      }
+    },
+    "S2": {
+      "imagery": {
+        "n_trials": 360,
+        "n_videos": 72,
+        "n_sessions": 5,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5,
+        "trials_per_run": {
+          "testImagery01_run1": 12,
+          "testImagery01_run2": 12,
+          "testImagery01_run3": 12,
+          "testImagery01_run4": 12,
+          "testImagery01_run5": 12,
+          "testImagery01_run6": 12,
+          "testImagery02_run1": 12,
+          "testImagery02_run2": 12,
+          "testImagery02_run3": 12,
+          "testImagery02_run4": 12,
+          "testImagery02_run5": 12,
+          "testImagery02_run6": 12,
+          "testImagery03_run1": 12,
+          "testImagery03_run2": 12,
+          "testImagery03_run3": 12,
+          "testImagery03_run4": 12,
+          "testImagery03_run5": 12,
+          "testImagery03_run6": 12,
+          "testImagery04_run1": 12,
+          "testImagery04_run2": 12,
+          "testImagery04_run3": 12,
+          "testImagery04_run4": 12,
+          "testImagery04_run5": 12,
+          "testImagery04_run6": 12,
+          "testImagery05_run1": 12,
+          "testImagery05_run2": 12,
+          "testImagery05_run3": 12,
+          "testImagery05_run4": 12,
+          "testImagery05_run5": 12,
+          "testImagery05_run6": 12
+        },
+        "session_balance_ok": true,
+        "cue_durations_unique": [
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0,
+          19.0
+        ],
+        "imagery_duration_unique": [
+          12.0,
+          13.0,
+          14.0,
+          17.0,
+          18.0,
+          23.0
+        ],
+        "video_duration_unique": [
+          10.0,
+          11.0,
+          12.0,
+          15.0,
+          16.0,
+          21.0
+        ],
+        "cue_to_imagery_gap_unique": [
+          0.0
+        ],
+        "imagery_to_video_gap_unique": [
+          2.0
+        ]
+      },
+      "perception": {
+        "n_video_trials": 360,
+        "n_videos": 72,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5
+      }
+    },
+    "S3": {
+      "imagery": {
+        "n_trials": 360,
+        "n_videos": 72,
+        "n_sessions": 5,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5,
+        "trials_per_run": {
+          "testImagery01_run1": 12,
+          "testImagery01_run2": 12,
+          "testImagery01_run3": 12,
+          "testImagery01_run4": 12,
+          "testImagery01_run5": 12,
+          "testImagery01_run6": 12,
+          "testImagery02_run1": 12,
+          "testImagery02_run2": 12,
+          "testImagery02_run3": 12,
+          "testImagery02_run4": 12,
+          "testImagery02_run5": 12,
+          "testImagery02_run6": 12,
+          "testImagery03_run1": 12,
+          "testImagery03_run2": 12,
+          "testImagery03_run3": 12,
+          "testImagery03_run4": 12,
+          "testImagery03_run5": 12,
+          "testImagery03_run6": 12,
+          "testImagery04_run1": 12,
+          "testImagery04_run2": 12,
+          "testImagery04_run3": 12,
+          "testImagery04_run4": 12,
+          "testImagery04_run5": 12,
+          "testImagery04_run6": 12,
+          "testImagery05_run1": 12,
+          "testImagery05_run2": 12,
+          "testImagery05_run3": 12,
+          "testImagery05_run4": 12,
+          "testImagery05_run5": 12,
+          "testImagery05_run6": 12
+        },
+        "session_balance_ok": true,
+        "cue_durations_unique": [
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          15.0
+        ],
+        "imagery_duration_unique": [
+          12.0,
+          13.0,
+          14.0,
+          17.0,
+          18.0,
+          23.0
+        ],
+        "video_duration_unique": [
+          10.0,
+          11.0,
+          12.0,
+          15.0,
+          16.0,
+          21.0
+        ],
+        "cue_to_imagery_gap_unique": [
+          0.0
+        ],
+        "imagery_to_video_gap_unique": [
+          2.0
+        ]
+      },
+      "perception": {
+        "n_video_trials": 360,
+        "n_videos": 72,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5
+      }
+    },
+    "S4": {
+      "imagery": {
+        "n_trials": 360,
+        "n_videos": 72,
+        "n_sessions": 5,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5,
+        "trials_per_run": {
+          "testImagery01_run1": 12,
+          "testImagery01_run2": 12,
+          "testImagery01_run3": 12,
+          "testImagery01_run4": 12,
+          "testImagery01_run5": 12,
+          "testImagery01_run6": 12,
+          "testImagery02_run1": 12,
+          "testImagery02_run2": 12,
+          "testImagery02_run3": 12,
+          "testImagery02_run4": 12,
+          "testImagery02_run5": 12,
+          "testImagery02_run6": 12,
+          "testImagery03_run1": 12,
+          "testImagery03_run2": 12,
+          "testImagery03_run3": 12,
+          "testImagery03_run4": 12,
+          "testImagery03_run5": 12,
+          "testImagery03_run6": 12,
+          "testImagery04_run1": 12,
+          "testImagery04_run2": 12,
+          "testImagery04_run3": 12,
+          "testImagery04_run4": 12,
+          "testImagery04_run5": 12,
+          "testImagery04_run6": 12,
+          "testImagery05_run1": 12,
+          "testImagery05_run2": 12,
+          "testImagery05_run3": 12,
+          "testImagery05_run4": 12,
+          "testImagery05_run5": 12,
+          "testImagery05_run6": 12
+        },
+        "session_balance_ok": true,
+        "cue_durations_unique": [
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0,
+          13.0,
+          14.0,
+          15.0,
+          16.0,
+          17.0,
+          18.0,
+          19.0,
+          20.0,
+          21.0,
+          22.0,
+          24.0,
+          25.0,
+          26.0
+        ],
+        "imagery_duration_unique": [
+          12.0,
+          13.0,
+          14.0,
+          17.0,
+          18.0,
+          23.0
+        ],
+        "video_duration_unique": [
+          10.0,
+          11.0,
+          12.0,
+          15.0,
+          16.0,
+          21.0
+        ],
+        "cue_to_imagery_gap_unique": [
+          0.0
+        ],
+        "imagery_to_video_gap_unique": [
+          2.0
+        ]
+      },
+      "perception": {
+        "n_video_trials": 360,
+        "n_videos": 72,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5
+      }
+    },
+    "S5": {
+      "imagery": {
+        "n_trials": 360,
+        "n_videos": 72,
+        "n_sessions": 5,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5,
+        "trials_per_run": {
+          "testImagery01_run1": 12,
+          "testImagery01_run2": 12,
+          "testImagery01_run3": 12,
+          "testImagery01_run4": 12,
+          "testImagery01_run5": 12,
+          "testImagery01_run6": 12,
+          "testImagery02_run1": 12,
+          "testImagery02_run2": 12,
+          "testImagery02_run3": 12,
+          "testImagery02_run4": 12,
+          "testImagery02_run5": 12,
+          "testImagery02_run6": 12,
+          "testImagery03_run1": 12,
+          "testImagery03_run2": 12,
+          "testImagery03_run3": 12,
+          "testImagery03_run4": 12,
+          "testImagery03_run5": 12,
+          "testImagery03_run6": 12,
+          "testImagery04_run1": 12,
+          "testImagery04_run2": 12,
+          "testImagery04_run3": 12,
+          "testImagery04_run4": 12,
+          "testImagery04_run5": 12,
+          "testImagery04_run6": 12,
+          "testImagery05_run1": 12,
+          "testImagery05_run2": 12,
+          "testImagery05_run3": 12,
+          "testImagery05_run4": 12,
+          "testImagery05_run5": 12,
+          "testImagery05_run6": 12
+        },
+        "session_balance_ok": true,
+        "cue_durations_unique": [
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0,
+          14.0,
+          16.0,
+          22.0
+        ],
+        "imagery_duration_unique": [
+          12.0,
+          13.0,
+          14.0,
+          17.0,
+          18.0,
+          23.0
+        ],
+        "video_duration_unique": [
+          10.0,
+          11.0,
+          12.0,
+          15.0,
+          16.0,
+          21.0
+        ],
+        "cue_to_imagery_gap_unique": [
+          0.0
+        ],
+        "imagery_to_video_gap_unique": [
+          2.0
+        ]
+      },
+      "perception": {
+        "n_video_trials": 360,
+        "n_videos": 72,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5
+      }
+    },
+    "S6": {
+      "imagery": {
+        "n_trials": 360,
+        "n_videos": 72,
+        "n_sessions": 5,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5,
+        "trials_per_run": {
+          "testImagery01_run1": 12,
+          "testImagery01_run2": 12,
+          "testImagery01_run3": 12,
+          "testImagery01_run4": 12,
+          "testImagery01_run5": 12,
+          "testImagery01_run6": 12,
+          "testImagery02_run1": 12,
+          "testImagery02_run2": 12,
+          "testImagery02_run3": 12,
+          "testImagery02_run4": 12,
+          "testImagery02_run5": 12,
+          "testImagery02_run6": 12,
+          "testImagery03_run1": 12,
+          "testImagery03_run2": 12,
+          "testImagery03_run3": 12,
+          "testImagery03_run4": 12,
+          "testImagery03_run5": 12,
+          "testImagery03_run6": 12,
+          "testImagery04_run1": 12,
+          "testImagery04_run2": 12,
+          "testImagery04_run3": 12,
+          "testImagery04_run4": 12,
+          "testImagery04_run5": 12,
+          "testImagery04_run6": 12,
+          "testImagery05_run1": 12,
+          "testImagery05_run2": 12,
+          "testImagery05_run3": 12,
+          "testImagery05_run4": 12,
+          "testImagery05_run5": 12,
+          "testImagery05_run6": 12
+        },
+        "session_balance_ok": true,
+        "cue_durations_unique": [
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "imagery_duration_unique": [
+          12.0,
+          13.0,
+          14.0,
+          17.0,
+          18.0,
+          23.0
+        ],
+        "video_duration_unique": [
+          12.0,
+          13.0,
+          14.0,
+          17.0,
+          18.0,
+          23.0
+        ],
+        "cue_to_imagery_gap_unique": [
+          0.0
+        ],
+        "imagery_to_video_gap_unique": [
+          2.0
+        ]
+      },
+      "perception": {
+        "n_video_trials": 360,
+        "n_videos": 72,
+        "reps_per_video_min": 5,
+        "reps_per_video_max": 5
+      }
+    }
+  },
+  "self_hash": "dd975c763d602292c6a6e056a74315640a6a504faa8fd1e457a72c56641161e2"
+}

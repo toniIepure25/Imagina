@@ -1,0 +1,42 @@
+{
+  "protocol_date": "2026-07-24T09:30:00+00:00",
+  "branch": "research/fmri-imagery-transfer-c3",
+  "source_sha": "15ce4a8952927eecc8425b04066049e7a3203807",
+  "title": "Scientific Gate C3 — fMRI Perception-to-Imagery Transfer and Reconstruction Readiness",
+  "primary_question": "Does a perception-trained fMRI decoder recover visual-semantic information from mental imagery strongly and reproducibly enough to justify a later image-reconstruction experiment?",
+  "secondary_question": "Can a low-capacity imagery-state calibration transform improve transfer on held-out imagery targets without changing the frozen perception decoder?",
+  "datasets": ["nsd", "nsd_imagery"],
+  "eligible_participants": ["subj01", "subj02", "subj05", "subj07"],
+  "n_participants": 4,
+  "primary_metric": "MRR_12_candidate_pool",
+  "chance_mrr": 0.259,
+  "primary_roi": "nsdgeneral",
+  "target_embedding": "openai/clip-vit-large-patch14",
+  "primary_decoder": "ridge_regression",
+  "alpha": 0.05,
+  "inference_method": "participant_level_permutation",
+  "hypotheses": {
+    "H1_perception_foundation": "Ridge decoder on NSD perception predicts CLIP embeddings above shuffled null",
+    "H2_zero_shot_transfer": "Frozen perception decoder on imagery fMRI predicts correct target above null",
+    "H3_roi_dependence": "Evaluate across prespecified ROI families",
+    "H4_state_transport": "Low-capacity transport improves imagery MRR above identity",
+    "H5_uncertainty": "Decoder uncertainty predicts trial-level errors"
+  },
+  "prior_expectation": {
+    "H2_most_likely_outcome": "NULL",
+    "justification": "Kneeland et al. 2025 and Spera et al. 2026 both show frozen zero-shot at chance"
+  },
+  "decision_rules": {
+    "PASS": "H1 pass AND H2 pass",
+    "PASS_CALIBRATION_REQUIRED": "H1 pass AND H2 null AND H4 pass",
+    "BLOCKED": "H1 pass AND H2 null AND H4 null/inconclusive",
+    "FAILED_BY_PERCEPTION": "H1 fails",
+    "FAILED_BY_LEAKAGE": "Any mandatory control fails"
+  },
+  "mandatory_controls_count": 16,
+  "reconstruction_prohibition": "No image generation in C3",
+  "claim_boundaries": {
+    "allowed": ["transfer succeeded/failed", "calibration improved/failed", "specific ROIs carry/fail information", "pipeline is/not reconstruction-ready"],
+    "forbidden": ["thought reading", "exact recovery of mental imagery", "real-time BCI", "clinical efficacy", "causal imagery enhancement"]
+  }
+}

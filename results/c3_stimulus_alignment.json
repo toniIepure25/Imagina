@@ -1,0 +1,159 @@
+{
+  "timestamp": "2026-07-25T14:21:05",
+  "subject_id": "subj01",
+  "subject_idx": 0,
+  "status": "CERTIFIED",
+  "masterordering_shape": [
+    30000
+  ],
+  "subjectim_shape": [
+    8,
+    10000
+  ],
+  "n_shared1000": 1000,
+  "checks": {
+    "masterordering_length": {
+      "expected": 30000,
+      "actual": 30000,
+      "valid": true
+    },
+    "subjectim_subjects": {
+      "expected_subjects": 8,
+      "actual_shape_0": 8,
+      "valid": true
+    },
+    "all_trials_in_bounds": true,
+    "total_mapped_trials": 8250,
+    "repeat_distribution": {
+      "images_seen_once": 2511,
+      "images_seen_twice": 1512,
+      "images_seen_thrice": 905,
+      "max_repeats": 3
+    },
+    "shared1000_count": 1000,
+    "shared1000_handling": "explicit_identification",
+    "clip_uniqueness": {
+      "n_embeddings": 12,
+      "n_duplicates": 0,
+      "unique": true,
+      "duplicate_pairs": []
+    },
+    "clip_pool_hash": {
+      "pool_hash": "0f4a98d41187ee7f577d65f71e3e312cfe3da86c837bfa41c6b7e2d959ce759d",
+      "expected_hash": "0f4a98d41187ee7f577d65f71e3e312cfe3da86c837bfa41c6b7e2d959ce759d",
+      "match": true
+    }
+  },
+  "session_mappings": [
+    {
+      "session": 1,
+      "n_trials": 750,
+      "n_unique_images": 583,
+      "image_id_range": [
+        156,
+        72896
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 2,
+      "n_trials": 750,
+      "n_unique_images": 576,
+      "image_id_range": [
+        14,
+        72984
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 3,
+      "n_trials": 750,
+      "n_unique_images": 571,
+      "image_id_range": [
+        72,
+        72938
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 4,
+      "n_trials": 750,
+      "n_unique_images": 570,
+      "image_id_range": [
+        72,
+        72931
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 5,
+      "n_trials": 750,
+      "n_unique_images": 570,
+      "image_id_range": [
+        28,
+        72934
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 6,
+      "n_trials": 750,
+      "n_unique_images": 564,
+      "image_id_range": [
+        104,
+        72895
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 7,
+      "n_trials": 750,
+      "n_unique_images": 565,
+      "image_id_range": [
+        328,
+        72746
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 8,
+      "n_trials": 750,
+      "n_unique_images": 579,
+      "image_id_range": [
+        114,
+        72993
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 9,
+      "n_trials": 750,
+      "n_unique_images": 571,
+      "image_id_range": [
+        270,
+        72993
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 11,
+      "n_trials": 750,
+      "n_unique_images": 593,
+      "image_id_range": [
+        72,
+        72829
+      ],
+      "all_in_bounds": true
+    },
+    {
+      "session": 12,
+      "n_trials": 750,
+      "n_unique_images": 575,
+      "image_id_range": [
+        111,
+        72621
+      ],
+      "all_in_bounds": true
+    }
+  ]
+}

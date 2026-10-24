@@ -1,0 +1,10 @@
+{
+  "artifact": "C3XDR_TEMPORAL_CONTROLS",
+  "status": "NOT_EXECUTED_BLOCKED",
+  "would_compute": [
+    "early-vs-late FIR imagery reliability",
+    "current/previous/next-video contamination"
+  ],
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed).",
+  "self_hash": "1d7fcccdee3f6811fbdb712d7ac0488ea80bee0b0a1b92073dccc146c4b867b1"
+}

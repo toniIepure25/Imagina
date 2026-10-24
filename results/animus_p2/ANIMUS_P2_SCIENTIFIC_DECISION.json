@@ -1,0 +1,49 @@
+{
+  "artifact": "ANIMUS_P2_SCIENTIFIC_DECISION",
+  "milestone": "ANIMUS-P2",
+  "scientific_parent": "a0b6ca7",
+  "protocol_sealed": true,
+  "decision": "ANIMUS_P2_PERCEPTION_DECODER_VALIDATED",
+  "reason": "confirmatory over 6 eligible subjects; 2 passed the frozen subject gate",
+  "n_eligible": 6,
+  "n_valid": 6,
+  "n_pass": 2,
+  "required_passes": 2,
+  "capability_after": {
+    "matrix": {
+      "BEHAVIORAL_IMAGERY_ASSIST": "AUTHORIZED",
+      "BIOSIGNAL_STATE": "NOT_VALIDATED",
+      "PERCEPTION_NEURAL_CONTENT": "VALIDATED",
+      "IMAGERY_NEURAL_CONTENT": "UNAUTHORIZED",
+      "DREAM_NEURAL_CONTENT": "UNAUTHORIZED",
+      "NEURAL_RECONSTRUCTION": "UNAUTHORIZED"
+    },
+    "usable": {
+      "BEHAVIORAL_IMAGERY_ASSIST": true,
+      "BIOSIGNAL_STATE": false,
+      "PERCEPTION_NEURAL_CONTENT": true,
+      "IMAGERY_NEURAL_CONTENT": false,
+      "DREAM_NEURAL_CONTENT": false,
+      "NEURAL_RECONSTRUCTION": false
+    },
+    "labels": {
+      "BEHAVIORAL_IMAGERY_ASSIST": "Behavioral-assisted imagination amplifier (no decoded neural content)",
+      "BIOSIGNAL_STATE": "Biosignal state \u2014 not validated",
+      "PERCEPTION_NEURAL_CONTENT": "Validated perception-content neural adapter (visual perception only)",
+      "IMAGERY_NEURAL_CONTENT": "Imagery neural content \u2014 NOT authorized (requires C3XRP replication + P3 gate)",
+      "DREAM_NEURAL_CONTENT": "Dream neural content \u2014 NOT authorized",
+      "NEURAL_RECONSTRUCTION": "Neural image reconstruction \u2014 NOT authorized"
+    }
+  },
+  "perception_status": "VALIDATED",
+  "imagery_status": "UNAUTHORIZED",
+  "imagery_remains_unauthorized": true,
+  "authorized_claim": "Experimental validated perception-content neural adapter (visual perception only)",
+  "forbidden_claims": [
+    "imagery neural content",
+    "thought decoding",
+    "dream decoding",
+    "mental image reconstruction"
+  ],
+  "self_hash": "80cae643f2344d87b8417af092618ee44d21f4f70be4976a2e651d1bcae5caa8"
+}

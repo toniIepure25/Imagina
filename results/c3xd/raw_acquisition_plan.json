@@ -1,0 +1,86 @@
+{
+  "artifact": "C3XD_RAW_ACQUISITION_PLAN",
+  "dataset": "ds005191 v1.0.2",
+  "exclude": [
+    "trainPerception"
+  ],
+  "tasks": {
+    "testImagery": {
+      "sub-01": {
+        "n_bold_runs": 30,
+        "bold_bytes": 16962368134,
+        "n_events_files": 30
+      },
+      "sub-02": {
+        "n_bold_runs": 30,
+        "bold_bytes": 16680440309,
+        "n_events_files": 30
+      },
+      "sub-03": {
+        "n_bold_runs": 30,
+        "bold_bytes": 15902902641,
+        "n_events_files": 30
+      },
+      "sub-04": {
+        "n_bold_runs": 30,
+        "bold_bytes": 17003786639,
+        "n_events_files": 30
+      },
+      "sub-05": {
+        "n_bold_runs": 30,
+        "bold_bytes": 15853987145,
+        "n_events_files": 30
+      },
+      "sub-06": {
+        "n_bold_runs": 30,
+        "bold_bytes": 15870270977,
+        "n_events_files": 30
+      }
+    },
+    "testPerception": {
+      "sub-01": {
+        "n_bold_runs": 10,
+        "bold_bytes": 7138949835,
+        "n_events_files": 10
+      },
+      "sub-02": {
+        "n_bold_runs": 10,
+        "bold_bytes": 6989108925,
+        "n_events_files": 10
+      },
+      "sub-03": {
+        "n_bold_runs": 10,
+        "bold_bytes": 6977053054,
+        "n_events_files": 10
+      },
+      "sub-04": {
+        "n_bold_runs": 10,
+        "bold_bytes": 6815006081,
+        "n_events_files": 10
+      },
+      "sub-05": {
+        "n_bold_runs": 10,
+        "bold_bytes": 6384620611,
+        "n_events_files": 10
+      },
+      "sub-06": {
+        "n_bold_runs": 10,
+        "bold_bytes": 6871126584,
+        "n_events_files": 10
+      }
+    }
+  },
+  "bold_bytes": {
+    "testImagery": 98273755845,
+    "testPerception": 41175865090
+  },
+  "storage_preflight": {
+    "free_bytes": 37081071616,
+    "free_GB": 37.1,
+    "selected_bold_bytes": 139449620935,
+    "selected_bold_GB": 139.4,
+    "peak_estimate_GB_with_preproc": 223.1,
+    "sufficient": false
+  },
+  "self_hash": "d1b84cc2be86b0796c563c6692a7041010f506b15f99c295599cd43c64dc3248"
+}

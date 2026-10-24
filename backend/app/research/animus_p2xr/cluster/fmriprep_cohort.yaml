@@ -1,0 +1,98 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: animus-p2xr-fmriprep-cohort
+  namespace: runai-romania-dev
+  labels: {project: romania-dev, gate: animus-p2xr, stage: fmriprep-cohort}
+spec:
+  completionMode: Indexed
+  completions: 7
+  parallelism: 1
+  backoffLimit: 30
+  ttlSecondsAfterFinished: 604800
+  template:
+    metadata:
+      labels: {runai/node-pool: cpu-worker, project: romania-dev, gate: animus-p2xr, stage: fmriprep-cohort}
+    spec:
+      schedulerName: runai-scheduler
+      nodeSelector: {runai/node-pool: cpu-worker}
+      restartPolicy: Never
+      containers:
+        - name: fmriprep
+          image: nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6
+          env:
+            - {name: TEMPLATEFLOW_HOME, value: /work/animus_p2xr/templateflow}
+            - {name: NVIDIA_VISIBLE_DEVICES, value: void}
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -e
+              IDX=${JOB_COMPLETION_INDEX:-0}
+              case $IDX in
+                0) DS=ds004192; SUBJ=sub-03; TASK=things; DSN=things; T1WACQ="prescannormalized";;
+                1) DS=ds004192; SUBJ=sub-01; TASK=things; DSN=things; T1WACQ="prescannormalized";;
+                2) DS=ds004192; SUBJ=sub-02; TASK=things; DSN=things; T1WACQ="prescannormalized";;
+                3) DS=ds001499; SUBJ=sub-CSI4; TASK=5000scenes; DSN=bold5000; T1WACQ="";;
+                4) DS=ds001499; SUBJ=sub-CSI1; TASK=5000scenes; DSN=bold5000; T1WACQ="";;
+                5) DS=ds001499; SUBJ=sub-CSI2; TASK=5000scenes; DSN=bold5000; T1WACQ="";;
+                6) DS=ds001499; SUBJ=sub-CSI3; TASK=5000scenes; DSN=bold5000; T1WACQ="";;
+              esac
+              LBL=${SUBJ#sub-}
+              R=/work/animus_p2xr/$DSN
+              BIDS=$R/raw; DERIV=$R/derivatives; WORK=$R/work/$SUBJ; FS=$R/fs/$SUBJ
+              STATUS=/work/animus_p2xr/status; mkdir -p $BIDS $DERIV $WORK $FS $STATUS
+              echo "=== cohort idx=$IDX $DS/$SUBJ task=$TASK ==="
+              DONEF=$DERIV/$SUBJ.fmriprep_done
+              if [ -f "$DONEF" ]; then echo "$SUBJ already complete -> SKIP"; exit 0; fi
+              # self-serialize against the BOLD5000 config pilot so two heavy fMRIPrep never share the
+              # single cpu-worker: index 0 waits until the pilot produced MNI output (~done) or a timeout.
+              if [ "$IDX" = "0" ]; then
+                for w in $(seq 1 40); do
+                  if ls /work/animus_p2xr/bold5000/derivatives_pilot/**/*space-MNI152NLin2009cAsym*preproc_bold.nii.gz >/dev/null 2>&1; then
+                    echo "pilot produced MNI output -> proceeding"; break; fi
+                  echo "waiting for BOLD5000 pilot to wrap up ($w/40)"; sleep 90
+                done
+              fi
+              echo "STAGING" > $STATUS/${DSN}_${SUBJ}.status
+              # stage raw (anat+func+fmap; exclude physio/recording/sourcedata/derivatives)
+              pip install --quiet awscli 2>&1 | tail -1 || true
+              command -v aws >/dev/null || python -m pip install --quiet awscli
+              aws s3 sync --no-sign-request s3://openneuro.org/$DS/ $BIDS/ \
+                --exclude "*" --include "dataset_description.json" --include "task-*.json" \
+                --include "*.bidsignore" --include "participants.tsv" 2>&1 | tail -1
+              aws s3 sync --no-sign-request s3://openneuro.org/$DS/$SUBJ/ $BIDS/$SUBJ/ \
+                --exclude "*recording-*" --exclude "*physio*" --exclude "*sourcedata*" \
+                --exclude "*derivatives*" --exclude "*pycortex*" 2>&1 | tail -2
+              # bids filter (task-scoped bold; T1w acq for THINGS)
+              if [ -n "$T1WACQ" ]; then
+                printf '{"bold":{"datatype":"func","task":"%s"},"t1w":{"datatype":"anat","suffix":"T1w","acquisition":"%s"}}' "$TASK" "$T1WACQ" > $WORK/filter.json
+              else
+                printf '{"bold":{"datatype":"func","task":"%s"},"t1w":{"datatype":"anat","suffix":"T1w"}}' "$TASK" > $WORK/filter.json
+              fi
+              cat $WORK/filter.json
+              echo "RUNNING" > $STATUS/${DSN}_${SUBJ}.status
+              # SEALED production config (matches P2-R: recon-all ON; MNI2009c:res-2; no smoothing; no cifti)
+              fmriprep $BIDS $DERIV participant \
+                --participant-label $LBL \
+                --output-spaces MNI152NLin2009cAsym:res-2 \
+                --fs-license-file /fs/license.txt \
+                --fs-subjects-dir $FS \
+                --bids-filter-file $WORK/filter.json \
+                --skip-bids-validation --nthreads 12 --omp-nthreads 8 --mem-mb 40000 \
+                --notrack --stop-on-first-crash -w $WORK
+              N=$(find $DERIV/$SUBJ -name "*task-${TASK}*space-MNI152NLin2009cAsym*preproc_bold.nii.gz" 2>/dev/null | wc -l)
+              echo "$SUBJ produced $N MNI bold"
+              [ "$N" -ge 1 ] || { echo "NO MNI OUTPUT $SUBJ"; echo "TECHNICAL_FAIL" > $STATUS/${DSN}_${SUBJ}.status; exit 1; }
+              date > "$DONEF"; echo "COMPLETE:$N" > $STATUS/${DSN}_${SUBJ}.status
+              echo "$SUBJ FMRIPREP_DONE ($N MNI bold)"
+          resources:
+            requests: {cpu: "8", memory: 34Gi}
+            limits: {cpu: "12", memory: 52Gi}
+          volumeMounts:
+            - {name: work, mountPath: /work}
+            - {name: fslic, mountPath: /fs}
+      volumes:
+        - name: work
+          persistentVolumeClaim: {claimName: c3xat-r1-workspace}
+        - name: fslic
+          secret: {secretName: c3xat-fs-license}

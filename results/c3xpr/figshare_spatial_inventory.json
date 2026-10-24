@@ -1,0 +1,29 @@
+{
+  "artifact": "C3XPR_FIGSHARE_SPATIAL_INVENTORY",
+  "article": 25808179,
+  "versions": [
+    1,
+    2
+  ],
+  "files": [
+    "testImagery_S1..6.mat",
+    "testPerception_S1..6.mat",
+    "trainPerception_S1..6.mat",
+    "decfeat_wb.zip",
+    "feature.zip",
+    "res_encoding.zip",
+    "res_textgen.zip",
+    "Supplementary_Video1..3.mov"
+  ],
+  "spatial_support_files": {
+    "roi_masks": false,
+    "reference_epi": false,
+    "affine": false,
+    "transform": false,
+    "surface": false,
+    "localizer": false,
+    "retinotopy": false
+  },
+  "conclusion": "no spatial support artifact beyond what is embedded in the .mat (routes 1 & 3 not satisfied).",
+  "self_hash": "7e72c6b77e502ac05614c52872395f0a86929862b5a1c1bcca33c5b51b8f123f"
+}

@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: animus-p2r-stage-rest
+  namespace: runai-romania-dev
+  labels: {project: romania-dev, gate: animus-p2r, stage: staging}
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 172800
+  template:
+    metadata:
+      labels: {runai/node-pool: cpu-worker, project: romania-dev, gate: animus-p2r, stage: staging}
+    spec:
+      schedulerName: runai-scheduler
+      nodeSelector: {runai/node-pool: cpu-worker}
+      restartPolicy: Never
+      containers:
+        - name: stage
+          image: python:3.11-slim
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -e
+              pip install --quiet awscli 2>&1 | tail -1
+              B=s3://openneuro.org/ds004496
+              R=/work/animus_p2r/raw
+              for N in 02 03 04 05 06; do
+                S=sub-$N
+                echo "==== staging $S ===="
+                aws s3 cp --no-sign-request --recursive $B/$S/ses-anat/ $R/$S/ses-anat/ 2>&1 | tail -1 || true
+                for K in 01 02 03 04 05; do
+                  aws s3 cp --no-sign-request --recursive $B/$S/ses-imagenet$K/ $R/$S/ses-imagenet$K/ 2>&1 | tail -1 || true
+                done
+                echo "$S bold=$(find $R/$S -name '*task-imagenet*_bold.nii.gz' | wc -l) events=$(find $R/$S -name '*task-imagenet*_events.tsv' | wc -l) fmap=$(find $R/$S -path '*fmap*' -name '*.nii.gz' | wc -l) T1w=$(find $R/$S -name '*T1w.nii.gz' | wc -l)"
+                du -sh $R/$S 2>/dev/null | tail -1
+                echo "$S STAGED" > /work/animus_p2r/raw/$S.staged
+              done
+              echo "STAGE_REST_DONE"
+          resources:
+            limits: {cpu: "2", memory: 8Gi}
+            requests: {cpu: "1", memory: 4Gi}
+          volumeMounts: [{name: work, mountPath: /work}]
+      volumes:
+        - name: work
+          persistentVolumeClaim: {claimName: c3xat-r1-workspace}

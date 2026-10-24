@@ -1,0 +1,99 @@
+{
+  "artifact": "C3R_DECISION",
+  "created_at": "2026-08-27T13:26:03",
+  "seal_self_hash": "fb37f3201b5c558c2e70385189e26253f4b92fe06e5a5d11c06b5e7feaab84a5",
+  "subj01_reference_descriptive": 0.011,
+  "per_subject": {
+    "subj02": {
+      "R_I": -0.02425804818801888,
+      "R_I_ci95": [
+        -0.4573558354715359,
+        0.30879263946448293
+      ],
+      "R_I_perm_p": 0.5234765234765235,
+      "R_I_split_seed_min": -0.02425804818801888,
+      "R_P": 0.4814051903627656,
+      "R_P_ci95": [
+        0.10714930407241452,
+        0.5369050890843701
+      ],
+      "R_P_perm_p": 0.000999000999000999,
+      "imagery_gate": "RELIABILITY_NOISE_FLOOR",
+      "vision_gate": "RELIABILITY_PASS",
+      "quality_class": "VISION_RELIABLE_IMAGERY_NOISE_FLOOR",
+      "practical_effect_flags": {
+        "R_gt_0p05": false,
+        "R_gt_0p10": false,
+        "R_gt_0p20": false
+      }
+    },
+    "subj05": {
+      "R_I": 0.10443166169756882,
+      "R_I_ci95": [
+        -0.5006244125870734,
+        0.39685087060523844
+      ],
+      "R_I_perm_p": 0.22977022977022976,
+      "R_I_split_seed_min": 0.10443166169756882,
+      "R_P": 0.19540291126154175,
+      "R_P_ci95": [
+        -0.2917855892346621,
+        0.46178155348107747
+      ],
+      "R_P_perm_p": 0.14685314685314685,
+      "imagery_gate": "RELIABILITY_MARGINAL",
+      "vision_gate": "RELIABILITY_MARGINAL",
+      "quality_class": "VISION_UNRELIABLE_SESSION_QUALITY_BLOCKER",
+      "practical_effect_flags": {
+        "R_gt_0p05": true,
+        "R_gt_0p10": true,
+        "R_gt_0p20": false
+      }
+    },
+    "subj07": {
+      "R_I": -0.07782814784092498,
+      "R_I_ci95": [
+        -0.5969962317496484,
+        0.34569382327036513
+      ],
+      "R_I_perm_p": 0.6533466533466533,
+      "R_I_split_seed_min": -0.07782814784092498,
+      "R_P": -0.06957446838314152,
+      "R_P_ci95": [
+        -0.7320668861581807,
+        0.4344374207441241
+      ],
+      "R_P_perm_p": 0.5334665334665335,
+      "imagery_gate": "RELIABILITY_NOISE_FLOOR",
+      "vision_gate": "RELIABILITY_NOISE_FLOOR",
+      "quality_class": "VISION_UNRELIABLE_SESSION_QUALITY_BLOCKER",
+      "practical_effect_flags": {
+        "R_gt_0p05": false,
+        "R_gt_0p10": false,
+        "R_gt_0p20": false
+      }
+    }
+  },
+  "qualified_subjects": [],
+  "marginal_subjects": [
+    "subj05"
+  ],
+  "noise_floor_subjects": [
+    "subj02",
+    "subj07"
+  ],
+  "session_quality_blockers": [
+    "subj05",
+    "subj07"
+  ],
+  "imagery_specific_attenuation_subjects": [
+    "subj02"
+  ],
+  "decision": "C3R_NO_RELIABLE_IMAGERY_IN_REMAINING_COHORT",
+  "phase5_perception_foundation_triggered": false,
+  "subjects_eligible_for_future_c3g_replication": [],
+  "interpretation": "No participant in the remaining NSD-Imagery cohort (subj02/05/07) shows demonstrably reliable stimulus-specific imagery signal above the noise floor in nsdgeneral under the sealed criterion, so a state-geometry replication is NOT scientifically identifiable in this cohort. This is a MEASUREMENT-BOUND conclusion, NOT evidence that perception and imagery share a representation. subj02 (reliable vision, imagery at noise floor) replicates subj01's imagery-specific attenuation; subj05/subj07 additionally have unreliable same-session VISION (session-quality blockers), so their low imagery cannot even be attributed to cognitive attenuation.",
+  "scope": "conditional_qualified_cohort_only; qualification by prospectively measured imagery reliability; NOT an unbiased population prevalence estimate",
+  "no_geometry_computed": true,
+  "self_hash": "527ec798bf2eb312db3ed97db1ab426bba6c46bfd7259ccfbe7017f4fd364f3b"
+}

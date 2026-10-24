@@ -1,0 +1,41 @@
+{
+  "dataset_id": "ds005815",
+  "dataset_version": "2.0.1",
+  "code_sha": "pending-commit",
+  "estimand_id": "H3_H4_perception_imagery_transfer_exploratory",
+  "created_at": "2026-07-16",
+  "confirmatory_or_exploratory": "exploratory",
+  "note": "2-participant (sub-01, sub-02) demonstration that the alignment pipeline (RSA, CKA, cross-state retrieval, subject-level aggregation) runs end to end against real preprocessed data with a perception-only-trained EEGNet encoder evaluated on held-out imagery trials. sub-05 was excluded (too few surviving trials after artifact rejection, consistent with results/c1_encoder_smoke.json). This is explicitly NOT a confirmatory H3/H4 result -- 2 participants and a lightly-trained (15-epoch) encoder cannot support a transfer claim either way. It demonstrates the machinery works and reports what it found honestly rather than only on a case where the numbers looked good.",
+  "participants": ["sub-01", "sub-02"],
+  "excluded_participants": {
+    "sub-05": "too few surviving perception/imagery trials after artifact rejection (see results/c1_encoder_smoke.json)"
+  },
+  "not_implemented": "The optional frozen visual-semantic image-encoder target (e.g. CLIP) was not implemented: ds005815 does not distribute the actual stimulus images, only descriptive categories (trigger_codebook.py), and adding a large pretrained image encoder for a handful of geometric/face stimuli with no source images available was judged not worth the dependency weight for an explicitly optional component.",
+  "per_participant": [
+    {
+      "participant_id": "sub-01",
+      "rsa_perception_imagery": 0.12599644041533503,
+      "cka_perception_imagery": 0.0709880044687669,
+      "cross_state_retrieval_accuracy": 0.0898876404494382,
+      "chance_retrieval_accuracy": 0.037037037037037035,
+      "retrieval_vs_chance_ratio": 2.427
+    },
+    {
+      "participant_id": "sub-02",
+      "rsa_perception_imagery": 0.12503837329632472,
+      "cka_perception_imagery": 0.08316734085637818,
+      "cross_state_retrieval_accuracy": 0.014492753623188406,
+      "chance_retrieval_accuracy": 0.043478260869565216,
+      "retrieval_vs_chance_ratio": 0.333
+    }
+  ],
+  "aggregate": {
+    "n_participants": 2,
+    "retrieval_accuracy_mean": 0.0521901970363133,
+    "retrieval_accuracy_std": 0.0376974434131249,
+    "rsa_mean": 0.12551740685582988,
+    "cka_mean": 0.07707767266257254,
+    "cka_std": 0.006089668193805645
+  },
+  "interpretation": "Modest, mixed, and honestly reported: sub-01 shows retrieval meaningfully above its own chance level (2.4x), sub-02 shows retrieval below its own chance level (0.33x). With n=2 participants and a lightly-trained encoder, this is consistent with either a real but weak/heterogeneous transfer effect or with sampling noise -- it cannot be distinguished with this N. Per C1_PROTOCOL.md Section 6, subject-level distributions (not a pooled trial-level number) are the correct unit here, and this is exactly why H3/H4 remain exploratory pending the full participant set in a controlled research workflow, never presented as a confirmatory transfer claim from this evidence alone."
+}

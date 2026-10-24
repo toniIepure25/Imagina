@@ -1,0 +1,49 @@
+{
+  "artifact": "C3XRA_FINAL_MEASUREMENT_SCHEDULE_DECISION",
+  "gate": "C3XRA",
+  "compared_unit_counts": [
+    5,
+    7,
+    9
+  ],
+  "marginal_analysis": {
+    "delta_ci_width_at_0.08": {
+      "5": 0.1757861350566588,
+      "7": 0.18959187827768692,
+      "9": 0.17521447374131488
+    },
+    "delta_ci_width_at_0.10": {
+      "5": 0.17401748320995863,
+      "7": 0.1848763028040561,
+      "9": 0.1707127922557147
+    },
+    "joint_power_0.08": {
+      "5": 0.8888888888888888,
+      "7": 0.8333333333333334,
+      "9": 0.8888888888888888
+    },
+    "joint_power_0.15": {
+      "5": 1.0,
+      "7": 1.0,
+      "9": 1.0
+    }
+  },
+  "delta_ci_width_gain_5_to_7": -0.0138,
+  "delta_ci_width_gain_7_to_9": 0.0144,
+  "chosen_imagery_units": 7,
+  "chosen_perception_units": 7,
+  "rationale": "C3XRP coarse proxy found 5 units meet Type-I/power targets, but (a) real imagery reliability is typically LOWER than the synthetic r_img, so a margin above the coarse minimum is prudent; (b) Delta CI width narrows from 5->7 (gain -0.014) more than 7->9 (gain 0.014), i.e. the precision return per added unit diminishes after 7; (c) 9 units add ~28% scan burden for marginal gain. 7 imagery + 7 complete-content perception units is the smallest robust design. NOT auto-minimum; NOT chosen from any neural outcome.",
+  "not_auto_minimum": true,
+  "no_neural_outcome_used": true,
+  "frozen": true,
+  "per_participant": {
+    "imagery_units": 7,
+    "perception_units": 7,
+    "imagery_trials": 504,
+    "perception_target_trials": 504,
+    "identities": 72,
+    "runs_per_imagery_unit": 1,
+    "runs_per_perception_unit": 2
+  },
+  "self_hash": "4012a89a1d5fc6f0a55ea24e2ce32aa350a7bffef2399ab49fdc766cfa9608ad"
+}

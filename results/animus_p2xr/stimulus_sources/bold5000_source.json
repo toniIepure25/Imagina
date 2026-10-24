@@ -1,0 +1,28 @@
+{
+  "artifact": "ANIMUS_P2XR_BOLD5000_STIMULUS_SOURCE",
+  "milestone": "ANIMUS-P2XR",
+  "dataset": "ds001499 (BOLD5000)",
+  "authoritative_source": "figshare article 20436450",
+  "archive_filename": "presented_stimuli.zip",
+  "archive_size_bytes": 357800000,
+  "archive_size_mb": 341.2,
+  "archive_md5": "a3c87680fdaac6eaa037577f24edb193",
+  "download_endpoint": "https://api.figshare.com/v2/articles/20436450 -> file download_url",
+  "labels_companion": {
+    "article": 6459449,
+    "file": "BOLD5000_Stimuli.zip",
+    "md5": "a86dd0a6e86c7157dd9371c395dedd7e",
+    "contents": "Image_Labels + Stimuli_Presentation_Lists only (NO pixels)"
+  },
+  "NOT_used": [
+    "figshare 14456124 BOLD5000 Release 2.0 = GLMsingle/beta artifacts (SECONDARY only)"
+  ],
+  "families": [
+    "imagenet (nXXXX_YYYY.JPEG)",
+    "coco (COCO_train2014_*.jpg)",
+    "scene/SUN (sun_*.jpg)"
+  ],
+  "identity_field": "events.tsv stim_file",
+  "license_note": "BOLD5000 presented-stimuli distribution; research use",
+  "self_hash": "e64f26988212d4053cbf391ed51a9c64db348b1da1e8e75bb2091e4d4fa954d7"
+}

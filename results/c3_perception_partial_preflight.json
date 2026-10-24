@@ -1,0 +1,374 @@
+{
+  "timestamp": "2026-07-25T14:11:22",
+  "betas_dir": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf",
+  "sessions_required": 40,
+  "scientific_use": false,
+  "allowed_use": "schema/alignment/memory/stimulus-mapping validation only",
+  "sessions": [
+    {
+      "session": 1,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session01.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5295263675785764,
+      "mean_abs_value": 506.44146728515625,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 2,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session02.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.529418814860582,
+      "mean_abs_value": 388.993896484375,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 3,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session03.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5295255094451882,
+      "mean_abs_value": 508.488525390625,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 4,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session04.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5294946166432111,
+      "mean_abs_value": 489.5306091308594,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 5,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session05.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5295237931784117,
+      "mean_abs_value": 507.939697265625,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 6,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session06.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5295040561104818,
+      "mean_abs_value": 493.1026611328125,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 7,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session07.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5295114932665134,
+      "mean_abs_value": 491.56146240234375,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 8,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session08.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.529499193354615,
+      "mean_abs_value": 479.1639709472656,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 9,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session09.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5295335186901452,
+      "mean_abs_value": 508.7773742675781,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    },
+    {
+      "session": 11,
+      "file": "D:\\ComputaCenter\\FMRI2images\\data\\nsd\\nsddata_betas\\ppdata\\subj01\\func1pt8mm\\betas_fithrf\\betas_session11.hdf5",
+      "file_size_bytes": 1094445528,
+      "readable": true,
+      "keys": [
+        "betas"
+      ],
+      "shape": [
+        750,
+        83,
+        104,
+        81
+      ],
+      "dtype": "int16",
+      "ndim": 4,
+      "n_trials": 750,
+      "spatial_shape": [
+        83,
+        104,
+        81
+      ],
+      "n_voxels_total": 699192,
+      "format": "4D_volume",
+      "nan_count": 0,
+      "inf_count": 0,
+      "nonzero_fraction": 0.5295120653554388,
+      "mean_abs_value": 518.1015014648438,
+      "sample_vol_nonzero_by_axis": [
+        78,
+        103,
+        79
+      ]
+    }
+  ],
+  "sessions_available": 10,
+  "consistency": {
+    "all_shapes_equal": true,
+    "all_dtypes_equal": true,
+    "shape_sample": [
+      750,
+      83,
+      104,
+      81
+    ],
+    "dtype_sample": "int16",
+    "trial_counts": [
+      750,
+      750,
+      750,
+      750,
+      750,
+      750,
+      750,
+      750,
+      750,
+      750
+    ],
+    "total_trials_available": 7500
+  }
+}

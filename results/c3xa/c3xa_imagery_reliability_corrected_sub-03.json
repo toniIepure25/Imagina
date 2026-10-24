@@ -1,0 +1,86 @@
+{
+  "subject": "sub-03",
+  "artificial_download": "reused",
+  "manifest": {
+    "target_samples": 500,
+    "fixation_samples": 20,
+    "natural_contents": 10,
+    "artificial_contents": 15
+  },
+  "artificial_perception": {
+    "md5": "2fc25e90151f0aa72140c405ac4bc03c",
+    "sha256": "651b2914ae821159aed5e5b6a6ab8fbf6b620911d7705885f3c7deb17f408b7d",
+    "n_samples": 800,
+    "n_content": 40,
+    "n_VC": 9919
+  },
+  "R_I_natural": {
+    "reliability": 0.1738298674578635,
+    "bootstrap_ci95": [
+      -0.27670759644525805,
+      0.3155311813223478
+    ],
+    "bootstrap_mean": 0.07975243824725861,
+    "null_mean": -0.01488227144000476,
+    "null_std": 0.11986199887010793,
+    "perm_p_one_sided": 0.056943056943056944,
+    "split_seed_values": [
+      0.1738298674578635,
+      0.16174002350689193,
+      0.16256594962444637
+    ],
+    "split_seed_min": 0.16174002350689193,
+    "split_seed_max": 0.1738298674578635,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "run_disjoint": true,
+    "gate": "SUBJECT_RELIABILITY_MARGINAL"
+  },
+  "R_I_artificial": {
+    "reliability": 0.4479946924654169,
+    "bootstrap_ci95": [
+      0.09196682598497184,
+      0.4513544451323552
+    ],
+    "bootstrap_mean": 0.29482074343862735,
+    "null_mean": -0.007678830553154475,
+    "null_std": 0.10067984104438762,
+    "perm_p_one_sided": 0.000999000999000999,
+    "split_seed_values": [
+      0.4479946924654169,
+      0.43767176023231863,
+      0.4431419473027101
+    ],
+    "split_seed_min": 0.43767176023231863,
+    "split_seed_max": 0.4479946924654169,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "run_disjoint": true,
+    "gate": "SUBJECT_RELIABILITY_PASS"
+  },
+  "R_I_combined_25_confounded": {
+    "reliability": 0.43139664390063553,
+    "diagnostic_point_only": true
+  },
+  "R_I_including_fixation_oldC3X": {
+    "reliability": 0.471041842410397,
+    "diagnostic_point_only": true
+  },
+  "R_P_natural": {
+    "reliability": 0.6534830561522615,
+    "point_only": true,
+    "full_inference_reference": "C3X d1_reliability R_P (PASS)"
+  },
+  "R_P_artificial": {
+    "reliability": 0.43622753390247804,
+    "point_only": true
+  },
+  "attenuation_natural": 0.2660051639003187,
+  "attenuation_artificial": 1.0269748185257135,
+  "fixation_diagnostic": {
+    "R_I_including_fixation": 0.471041842410397,
+    "R_I_excluding_fixation_combined25": 0.43139664390063553,
+    "fixation_only_repeatability": 0.7104729404219995
+  },
+  "self_hash": "cf4571ffd8bf8f579a51b9254f4aaee37c34a2a1f4e880de938f8353a12a9f98"
+}

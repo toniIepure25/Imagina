@@ -1,0 +1,114 @@
+{
+  "artifact": "C3X_PROTOCOL_SEAL",
+  "gate": "C3X",
+  "title": "External Imagery Dataset Qualification",
+  "is_not_c4": true,
+  "no_reconstruction": true,
+  "no_geometry_in_c3x": true,
+  "scientific_parent_c3r": "25a0524becbdcf6880c5dd571bba4fcaffb7ed0d",
+  "c3r_decision": "C3R_NO_RELIABLE_IMAGERY_IN_REMAINING_COHORT",
+  "branch": "research/external-imagery-qualification-c3x",
+  "created_at": "2026-08-27T13:50:51",
+  "status": "SEALED_BEFORE_RELIABILITY_INSPECTION",
+  "central_question": "Which reproducibly obtainable fMRI imagery dataset provides measurable stimulus-specific imagery reliability with a compatible perception condition, sufficient to identify perception<->imagery geometry?",
+  "measurement_priority": "stimulus-specific IMAGERY RELIABILITY (not decoder accuracy / reconstruction / published performance)",
+  "candidates": {
+    "D1_ds001506_DIR": "HIGH_PRIORITY_FOR_RELIABILITY_TEST",
+    "D2_ds005191_MindCaptioning": "MEDIUM_PRIORITY",
+    "D3_7T_letters_Senden": "BLOCKED_ACCESS"
+  },
+  "ranking_frozen_before_outcomes": true,
+  "first_empirical_target": "D1 (ds001506)",
+  "conditional_rule": "inspect D2 neural outcomes ONLY if D1 does not reach DATASET_RELIABILITY_PASS; never to choose a better-looking dataset.",
+  "estimator": {
+    "module": "app.research.fmri.c3x_reliability",
+    "primary_statistic": "run-disjoint split-half reliability (Pearson r of concatenated content-mean patterns across whole-run halves, Spearman-Brown); reduces to the C3G split-half quantity on a run-less fixture",
+    "n_rep_point": 200,
+    "n_rep_resample": 60,
+    "c3x_reliability_sha256": "623c9236056291ac2e8b2fbc75e0fe5c44f1233b1eef0bca4a5420e719b872ef",
+    "inherited_c3g_geometry_sha256": "a289a915498c1f644d5e8809aaa2488970e7fcc3ebdcf3a7d72f39d94c2242ba"
+  },
+  "null_construction": {
+    "method": "permute the content-label vector; recompute run-disjoint reliability with the same estimator",
+    "n_perm": 1000,
+    "one_sided": true
+  },
+  "bootstrap": {
+    "method": "non-straddling: fixed run-disjoint halves, resample trials WITHIN each half with replacement",
+    "n_boot": 1000,
+    "ci": "2.5/97.5 pct"
+  },
+  "split_seed_robustness": {
+    "seeds": [
+      "seed",
+      "seed+100",
+      "seed+200"
+    ],
+    "seed_base": 20260826
+  },
+  "d1_data_source": {
+    "canonical": "KamitaniLab figshare preprocessed bdpy VC release, DOI 10.6084/m9.figshare.7033577.v16 (official V1-V4/VC ROIs + per-sample stimulus/run labels)",
+    "reason": "OpenNeuro ds001506 BIDS is raw BOLD with no ROI masks; the figshare VC release is the field-standard reproducible source and small (~460 MB)",
+    "imagery_files": {
+      "sub-01": 22713854,
+      "sub-02": 22713863,
+      "sub-03": 22713953
+    },
+    "perception_test_files": {
+      "sub-01": 14830631,
+      "sub-02": 14830697,
+      "sub-03": 14830856
+    },
+    "content_label": "imagined category/image identity (from bdpy labels)",
+    "run_label": "acquisition run (for run-disjoint splits)",
+    "imagery_window": "imagery-period response (bdpy preprocessed sample per trial)"
+  },
+  "reliability_spaces": {
+    "d1_primary": "VC (visual-cortex aggregate)",
+    "d1_secondary": [
+      "V1",
+      "V2",
+      "V3",
+      "V4"
+    ]
+  },
+  "subject_gate": {
+    "SUBJECT_RELIABILITY_PASS": "R_I > 0 AND perm p < 0.05 AND bootstrap CI lower > 0 AND min over split seeds > 0",
+    "SUBJECT_RELIABILITY_MARGINAL": "positive point but CI includes 0 OR p >= 0.05",
+    "SUBJECT_RELIABILITY_NOISE_FLOOR": "R_I <= 0"
+  },
+  "dataset_gate": {
+    "DATASET_RELIABILITY_PASS": ">=2 subjects with imagery PASS AND matched perception reliable (guards against one anomalous subject)",
+    "DATASET_RELIABILITY_PROMISING": "one clear pass or multiple positive-but-underpowered",
+    "DATASET_RELIABILITY_FAIL": "no subject provides demonstrably reliable imagery",
+    "DATASET_QUALITY_BLOCKED": "matched perception itself unreliable for all subjects"
+  },
+  "measurement_ceiling": "report R_I ceiling, R_P ceiling, and attenuation ratio R_I/R_P per dataset before any geometry/decoder claim",
+  "vividness_ordering": "primary reliability uses ALL valid imagery trials; vividness-conditioned analyses are SECONDARY and run only after the primary status is frozen; no high-vividness-only confirmatory sample.",
+  "controls": [
+    "stimulus-label permutation",
+    "run-label-only",
+    "trial-order-only",
+    "cue-only (D2)",
+    "mean-pattern",
+    "ROI-size control",
+    "random-voxel control",
+    "cross-run leakage audit"
+  ],
+  "decision_states": [
+    "C3X_EXTERNAL_IMAGERY_DATASET_QUALIFIED",
+    "C3X_RESTRICTED_TOPOGRAPHIC_IMAGERY_DATASET_QUALIFIED",
+    "C3X_NO_AVAILABLE_DATASET_MEETS_RELIABILITY_GATE"
+  ],
+  "next_gate_if_qualified": "C3XR - External State-Geometry Replication (NOT started in C3X)",
+  "artifact_hashes": {
+    "d1_metadata_audit": "9a115949f20e20f7f7e29d1bb413d2cef06b8437ac1e2c971af8a60a57b78e99",
+    "d2_metadata_audit": "1e7e48640ba1c0d3d82581e0803c3e962a2e077f047eaba3874a47faf844da09",
+    "d3_metadata_audit": "8c1e76a185b8d7b02ad6a37ec195bc9321005a89d33108dc610b227ea371ad34",
+    "candidate_inventory": "ada3b5b85ec4bd38dbbecb4fd8dbadf4d9935ade01ffc1c10089647787d126fa",
+    "ranking": "b2bda949fde93d5a779148da2252c981948cbead53c7aca872a64e5e422db03c"
+  },
+  "code_sha": "25a0524becbdcf6880c5dd571bba4fcaffb7ed0d",
+  "scope": "DATASET_QUALIFICATION_ONLY; conditional on prospectively measured imagery reliability; NOT an unbiased population/prevalence estimate",
+  "self_hash": "bf545a782200d5b5bd1d395bf2e2120d725f1bb7521c908166cdb5ed286b7f5b"
+}

@@ -1,0 +1,140 @@
+{
+  "artifact": "C3G_DECISION",
+  "created_at": "2026-08-26T09:48:50",
+  "seal_self_hash": "9fd2f7ea258304cd5116b58ba072439ad44a5f74caf5fa34069284803897fe40",
+  "primary_family_fdr_nsdgeneral": {
+    "G4_subspace_overlap": {
+      "p": 0.000999000999000999,
+      "significant": true
+    },
+    "G3_participation_ratio": {
+      "p": 0.25274725274725274,
+      "significant": false
+    },
+    "G6_cka": {
+      "p": 0.3076923076923077,
+      "significant": false
+    },
+    "G8_rdm_correlation": {
+      "p": 0.3256743256743257,
+      "significant": false
+    }
+  },
+  "any_primary_significant_after_fdr_B": true,
+  "snr_control": {
+    "imagery_reliability_I": 0.011208673978278197,
+    "imagery_near_noise_floor": true,
+    "G4_raw_reorientation_p": 0.000999000999000999,
+    "G4_raw_overlap": 0.17877407747860274,
+    "G4_relabel_null": 0.42418569237028775,
+    "G4_degP_vs_I_overlap": 0.015077478946475554,
+    "G4_degP_vs_I_reorients_beyond_chance": false,
+    "G3_participation_ratio_reproduced_by_degradation": false,
+    "condition_A_residual_geometry_beyond_reliability": false
+  },
+  "content_metrics_nsdgeneral": {
+    "G6_cka_p": 0.3076923076923077,
+    "G8_rdm_p": 0.3256743256743257
+  },
+  "robustness_sweep": [
+    {
+      "k_subspace": 5,
+      "seed": 20260826,
+      "imagery_reliability": 0.012754900064829856,
+      "raw_overlap": 0.184233722542407,
+      "relabel_null": 0.4703177301592478,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.02471237890521585,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 5,
+      "seed": 20270101,
+      "imagery_reliability": 0.019084595330122234,
+      "raw_overlap": 0.18798727143397792,
+      "relabel_null": 0.4679896281402283,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.021052853845601918,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 5,
+      "seed": 19991231,
+      "imagery_reliability": 0.018780338113371334,
+      "raw_overlap": 0.18522225163944947,
+      "relabel_null": 0.4672818488753763,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.022708655754728396,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 10,
+      "seed": 20260826,
+      "imagery_reliability": 0.012754900064829856,
+      "raw_overlap": 0.17877334298303832,
+      "relabel_null": 0.4256337313697413,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.015124420353020978,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 10,
+      "seed": 20270101,
+      "imagery_reliability": 0.019084595330122234,
+      "raw_overlap": 0.1785419345382178,
+      "relabel_null": 0.42603296184391237,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.014029334234323466,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 10,
+      "seed": 19991231,
+      "imagery_reliability": 0.018780338113371334,
+      "raw_overlap": 0.178153631378046,
+      "relabel_null": 0.4232522486578879,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.01448811539665405,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 20,
+      "seed": 20260826,
+      "imagery_reliability": 0.012754900064829856,
+      "raw_overlap": 0.1428803902895158,
+      "relabel_null": 0.34002732384485657,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.010506799206040796,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 20,
+      "seed": 20270101,
+      "imagery_reliability": 0.019084595330122234,
+      "raw_overlap": 0.14294722427440706,
+      "relabel_null": 0.3393162241061077,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.009613352885610226,
+      "snr_match_collapses_overlap": true
+    },
+    {
+      "k_subspace": 20,
+      "seed": 19991231,
+      "imagery_reliability": 0.018780338113371334,
+      "raw_overlap": 0.14359181238060134,
+      "relabel_null": 0.33888100527405657,
+      "raw_reorientation_p": 0.0033222591362126247,
+      "degP_vs_I_overlap": 0.009761452942796598,
+      "snr_match_collapses_overlap": true
+    }
+  ],
+  "robustness_summary": {
+    "raw_reorientation_significant_all_settings": true,
+    "snr_match_collapses_overlap_all_settings": true,
+    "imagery_reliability_below_0p05_all_settings": true,
+    "interpretation": "The G4 subspace reorientation is significant in every setting but COLLAPSES to the noise floor once perception is degraded to imagery's reliability, in every setting -> the reorientation is a reliability artifact, not a residual state geometry."
+  },
+  "decision": "C3G_SIMPLE_ATTENUATION_SUPPORTED",
+  "scope": "SINGLE_SUBJECT_subj01_ONLY_NOT_POPULATION_EVIDENCE",
+  "self_hash": "2460f40dd869d06b6684aa77984bac93e4015962e31c43dd9babfa8c8883ec98"
+}

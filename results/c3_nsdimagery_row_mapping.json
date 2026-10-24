@@ -1,0 +1,113 @@
+{
+  "artifact": "C3_NSDIMAGERY_BETA_ROW_MAPPING",
+  "timestamp": "2026-08-21T20:00:00",
+  "subject": "subj01",
+  "status": "AUTHORITATIVELY_RESOLVED_BY_NSD_DATA_MANUAL_V1_6",
+  "previous_status": "BLOCKED_IMAGERY_ROW_PROVENANCE",
+  "resolution_status": "AUTHORITATIVELY_RESOLVED_BY_NSD_DATA_MANUAL_V1_6",
+  "resolution": {
+    "source": {
+      "manual_title": "Natural Scenes Dataset Data Manual",
+      "manual_version": "1.6",
+      "manual_snapshot_date": "2025-08-31",
+      "source_url": "gated behind NSD Data Access Agreement form (https://forms.gle/eT4jHxaWwYUDEf2i9), not a directly fetchable public URL",
+      "retrieval_date": null,
+      "retrieval_note": "This session could not itself access or fetch the manual (it is gated). The manual's contents, as summarized below, are recorded as provided by the user for this task, not as a first-hand citation this session verified by reading the document. The claim was instead verified empirically against locally-held data (see verification below) before being relied upon."
+    },
+    "documented_statements": {
+      "run_order_preserved_for_glm": true,
+      "vision_beta_multiplicity": 1,
+      "imagery_beta_multiplicity": 1,
+      "attention_beta_multiplicity": 2,
+      "attention_multiplicity_reason": "cue epoch and detection epoch modeled as two distinct GLM events per attention trial"
+    },
+    "accounting": {
+      "vision": "3 runs x 48 trials x 1 beta = 144",
+      "imagery": "6 runs x 48 trials x 1 beta = 288",
+      "attention": "3 runs x 48 trials x 2 beta = 288",
+      "total": 720
+    },
+    "empirical_verification_performed_this_session": {
+      "method": "Re-inspected nddata/experiments/nsdimagery/designmatrixGLMsingle.mat (sha256 803f0399a746eeff1d402b808dc9d910c6345285d5388cfe192262671c7948f8, already on disk from the prior blocked investigation) programmatically: for each of the 12 per-run [n_TR, 36] design-matrix cells, counted active regressor columns (nonzero-sum columns) and total nonzero (onset) entries.",
+      "per_run_active_columns_and_events": {
+        "visA": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "attA": {"n_tr": 480, "active_columns": 12, "total_events": 96},
+        "imgA_1": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "visB": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "attB": {"n_tr": 480, "active_columns": 12, "total_events": 96},
+        "imgB_1": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "visC": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "attC": {"n_tr": 480, "active_columns": 12, "total_events": 96},
+        "imgC_1": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "imgA_2": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "imgB_2": {"n_tr": 240, "active_columns": 6, "total_events": 48},
+        "imgC_2": {"n_tr": 240, "active_columns": 6, "total_events": 48}
+      },
+      "sum_check": "3*48 (vis) + 6*48 (img) + 3*96 (att) = 144 + 288 + 288 = 720, matches both the claimed manual accounting and the actual betas_nsdimagery.hdf5 row count (720)",
+      "additional_corroboration": "attention runs independently have 480 TRs (2x the 240 TRs of vision/imagery runs) and 2x the active regressor columns (12 vs 6) - structural evidence from the raw design matrix geometry consistent with, and not merely repeating, the two-epochs-per-attention-trial claim",
+      "verdict": "EMPIRICALLY_CORROBORATED"
+    }
+  },
+  "authoritative_run_blocks": {
+    "derivation": "backend/app/research/fmri/nsdimagery_row_mapping.py::compute_run_blocks(), derived programmatically from RUN_ORDER + TRIALS_PER_RUN + BETA_MULTIPLICITY, not hardcoded",
+    "blocks": [
+      {"run": "visA",   "row_start": 0,   "row_end": 48,  "kind": "vis", "set": "A"},
+      {"run": "attA",   "row_start": 48,  "row_end": 144, "kind": "att", "set": "A"},
+      {"run": "imgA_1", "row_start": 144, "row_end": 192, "kind": "img", "set": "A"},
+      {"run": "visB",   "row_start": 192, "row_end": 240, "kind": "vis", "set": "B"},
+      {"run": "attB",   "row_start": 240, "row_end": 336, "kind": "att", "set": "B"},
+      {"run": "imgB_1", "row_start": 336, "row_end": 384, "kind": "img", "set": "B"},
+      {"run": "visC",   "row_start": 384, "row_end": 432, "kind": "vis", "set": "C"},
+      {"run": "attC",   "row_start": 432, "row_end": 528, "kind": "att", "set": "C"},
+      {"run": "imgC_1", "row_start": 528, "row_end": 576, "kind": "img", "set": "C"},
+      {"run": "imgA_2", "row_start": 576, "row_end": 624, "kind": "img", "set": "A"},
+      {"run": "imgB_2", "row_start": 624, "row_end": 672, "kind": "img", "set": "B"},
+      {"run": "imgC_2", "row_start": 672, "row_end": 720, "kind": "img", "set": "C"}
+    ],
+    "total_expected_beta_count": 720,
+    "actual_beta_count": 720
+  },
+  "internal_ordering_note": "Block-level structure is now certified. The internal ordering WITHIN each 48-row (or 96-row) block - whether beta row 0 of a block is behavioral trial 1 - is certified separately in results/c3_nsdimagery_beta_event_manifest.json and cross-validated empirically in results/c3_subj01_nsdimagery_vision_validation.json.",
+  "previous_blocker_preserved_verbatim": {
+    "note": "The following is the complete, unmodified content of this artifact as committed at sha 7e6c945 (research(c3-rd): certify authoritative NSD-Imagery beta-row mapping), preserved for provenance. It was a correct determination given the evidence available at that time.",
+    "status": "BLOCKED_IMAGERY_ROW_PROVENANCE",
+    "raw_beta_file": {
+      "path": "nsddata_betas/ppdata/subj01/func1pt8mm/nsdimagerybetas_fithrf/betas_nsdimagery.hdf5",
+      "shape": [720, 83, 104, 81],
+      "dtype": "int16",
+      "raw_beta_rows": 720,
+      "embedded_metadata": "none (checked f.attrs and betas.attrs on the HDF5 file directly: both empty)"
+    },
+    "expected_task_counts_from_published_experiment": {
+      "task_rows": 576, "vision": 144, "attention": 144, "imagery": 288,
+      "imagery_simple": 96, "imagery_complex": 96, "imagery_concepts": 96,
+      "note": "12 task runs x 48 trials/run = 576, confirmed independently from behavioral logs below"
+    },
+    "unexplained_row_discrepancy": {
+      "raw_beta_rows": 720, "task_rows_from_behavioral_logs": 576, "non_task_or_unexplained_rows": 144
+    },
+    "behavioral_log_cross_check": {
+      "method": "csv.DictReader over all 12 official nsdimagery_subj01_<run>.tsv files, subject=1",
+      "run_order_by_physical_run_number": ["visA", "attA", "imgA_1", "visB", "attB", "imgB_1", "visC", "attC", "imgC_1", "imgA_2", "imgB_2", "imgC_2"],
+      "total_logged_trials": 576,
+      "cue_sets_match_official_pair_lists": true
+    },
+    "authoritative_cue_to_stimulus_pairing": {
+      "source": "official NSD S3 release, bucket natural-scenes-dataset, prefix nsddata/experiments/nsdimagery/",
+      "files": [
+        {"path": "A_pair_list.mat", "sha256": "2c385de7455d37bae2e4de27b3ef743fe3b997f6f3bf5a05b1920d4f32a76cf6"},
+        {"path": "B_pair_list.mat", "sha256": "5ac2bd001c30d4461289a23b8a3063e5baf3522a12187d8195be61d82622b394"},
+        {"path": "C_pair_list.mat", "sha256": "9f67016fe01e371ff289c215baf68b22636a4a693b9c393d7cf0f921c3d3faba"},
+        {"path": "cue_pair_list.xlsx", "sha256": "aeef94fdd8f0753422f31ac098b47ad4345faee47b60475e76cbb39d29880bb2"}
+      ]
+    },
+    "authoritative_metadata_file_search": {
+      "target_files": ["nsdimagery_stimuli.pkl3", "imagery_stimuli_18.pt"],
+      "determination": "nsdimagery_stimuli.pkl3 is not part of the official NSD-Imagery release and is not present in either public dataset repository referenced by the MIRAGE reference implementation."
+    },
+    "decision": {
+      "status": "BLOCKED_IMAGERY_ROW_PROVENANCE",
+      "rationale": "The 144-row gap could not be explained from any authoritative source located at that time."
+    }
+  }
+}

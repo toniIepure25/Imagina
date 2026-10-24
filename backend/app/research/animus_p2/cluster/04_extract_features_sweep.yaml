@@ -1,0 +1,110 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: animus-p2r-extract-sweep
+  namespace: runai-romania-dev
+  labels: {project: romania-dev, gate: animus-p2r, stage: extract}
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 259200
+  template:
+    metadata:
+      labels: {runai/node-pool: cpu-worker, project: romania-dev, gate: animus-p2r, stage: extract}
+    spec:
+      schedulerName: runai-scheduler
+      nodeSelector: {runai/node-pool: cpu-worker}
+      restartPolicy: Never
+      containers:
+        - name: extract
+          image: python:3.11-slim
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -e
+              pip install --quiet nibabel numpy 2>&1 | tail -1
+              python - <<'PY'
+              import nibabel as nib, numpy as np, glob, os, csv, json, hashlib
+              from math import gamma
+              R="/work/animus_p2r"; DERIV=R+"/derivatives/fmriprep"; RAW=R+"/raw"
+              FEAT=R+"/features"; os.makedirs(FEAT,exist_ok=True)
+              MASKP="/work/wang/out/WANG25_primary_union_2009c2mm.nii.gz"
+              # frozen primitives (identical to extract_features_p2r.py / C3XD)
+              def spm_hrf(tr,dur=32.0):
+                  t=np.arange(0,dur,tr)
+                  def g(t,a,b):
+                      tt=np.clip(t,0,None); return (b**a)*(tt**(a-1))*np.exp(-b*tt)/gamma(a)
+                  h=g(t,6.0,1.0)-g(t,16.0,1.0)/6.0; h[t<0]=0; return h/(np.abs(h).sum()+1e-12)
+                  return h
+              def conv(reg,hrf): return np.convolve(reg,hrf)[:len(reg)]
+              def boxcar(n,onset,dur,tr):
+                  x=np.zeros(n); a=int(round(onset/tr)); b=int(round((onset+dur)/tr)); x[max(a,0):min(b,n)]=1.0; return x
+              MOTION=["trans_x","trans_y","trans_z","rot_x","rot_y","rot_z"]; TISSUE=["csf","white_matter"]
+              # embeddings
+              E=np.load(R+"/embeddings/imagenet_clip_vitb32.npz",allow_pickle=True)
+              EMB={str(s):e for s,e in zip(E["stimulus_ids"],E["embeddings"])}
+              print("embeddings",len(EMB))
+              wimg=nib.load(MASKP); mask=np.asarray(wimg.get_fdata())>0; wsha=hashlib.sha256(open(MASKP,'rb').read()).hexdigest()
+              def read_tsv(p):
+                  rows=list(csv.DictReader(open(p),delimiter="\t")); return rows
+              def confmat(p,n):
+                  rows=read_tsv(p); cols=rows[0].keys() if rows else []
+                  sel=[c for c in MOTION if c in cols]
+                  miss=[c for c in MOTION if c not in cols]
+                  if miss: raise ValueError("missing motion "+str(miss))
+                  sel+=[c for c in TISSUE if c in cols]
+                  sel+=sorted([c for c in cols if c.startswith("cosine")])
+                  M=np.zeros((n,len(sel)))
+                  for j,c in enumerate(sel):
+                      v=[r[c] for r in rows]
+                      M[:,j]=[float(x) if x not in ("n/a","") else 0.0 for x in v]
+                  return np.nan_to_num(M), sel
+              for N in range(1,7):
+                  S="sub-%02d"%N; out=FEAT+"/%s.npz"%S
+                  if os.path.exists(out): print(S,"bundle exists -> skip"); continue
+                  bolds=sorted(glob.glob(DERIV+"/%s/**/*task-imagenet*space-MNI152NLin2009cAsym*preproc_bold.nii.gz"%S,recursive=True))
+                  if not bolds: print(S,"no MNI bold -> skip"); continue
+                  X=[]; sids=[]
+                  for b in bolds:
+                      base=os.path.basename(b).split("_space-")[0]  # sub-XX_ses-..._task-imagenet_run-ZZ
+                      d=os.path.dirname(b)
+                      conf=d+"/"+base+"_desc-confounds_timeseries.tsv"
+                      # events in RAW
+                      ev=glob.glob(RAW+"/%s/**/%s_events.tsv"%(S,base),recursive=True)
+                      if not (os.path.exists(conf) and ev): print("  missing conf/events for",base); continue
+                      img=nib.load(b)
+                      if img.shape[:3]!=mask.shape: print("  grid mismatch",base); continue
+                      roi=np.asarray(img.get_fdata())[mask].T  # (n_scans,n_vox)
+                      n=roi.shape[0]
+                      rows=read_tsv(ev[0])
+                      onsets=[float(r["onset"]) for r in rows if r.get("stim_file","").lower().endswith((".jpeg",".jpg",".png"))]
+                      durs=[float(r["duration"]) for r in rows if r.get("stim_file","").lower().endswith((".jpeg",".jpg",".png"))]
+                      sf=[r["stim_file"] for r in rows if r.get("stim_file","").lower().endswith((".jpeg",".jpg",".png"))]
+                      tr=2.0
+                      hrf=spm_hrf(tr)
+                      cols=[conv(boxcar(n,o,dd,tr),hrf) for o,dd in zip(onsets,durs)]
+                      tidx=list(range(len(cols)))
+                      nuis,_=confmat(conf,n)
+                      design=np.column_stack(cols+[nuis[:,j] for j in range(nuis.shape[1])]+[np.ones(n)]) if cols else None
+                      if design is None: continue
+                      beta,*_=np.linalg.lstsq(design,roi,rcond=None)
+                      X.append(beta[tidx,:]); sids+=sf
+                  if not X: print(S,"no runs extracted"); continue
+                  X=np.vstack(X)
+                  keep=[i for i,s in enumerate(sids) if s in EMB]
+                  X=X[keep]; sids=[sids[i] for i in keep]; Y=np.stack([EMB[s] for s in sids])
+                  np.savez(out, X=X.astype(np.float32), stimulus_ids=np.array(sids), Y=Y.astype(np.float32),
+                           atlas_qc_pass=True, subject=S)
+                  man={"artifact":"ANIMUS_P2R_FEATURE_MANIFEST","subject":S,
+                       "feature_sha256":hashlib.sha256(open(out,'rb').read()).hexdigest(),
+                       "roi_sha256":wsha,"roi_voxel_count":int(mask.sum()),"n_trials":int(X.shape[0]),
+                       "n_unique_stimuli":len(set(sids)),"target_encoder":"open_clip:ViT-B-32 laion2b_s34b_b79k",
+                       "embedding_dim":int(Y.shape[1])}
+                  json.dump(man,open(FEAT+"/%s.manifest.json"%S,"w"),indent=2)
+                  print(S,"BUNDLE X",X.shape,"uniq",len(set(sids)))
+              print("EXTRACT_SWEEP_DONE")
+              PY
+          resources: {requests: {cpu: "4", memory: 20Gi}, limits: {cpu: "8", memory: 40Gi}}
+          volumeMounts: [{name: work, mountPath: /work}]
+      volumes:
+        - name: work
+          persistentVolumeClaim: {claimName: c3xat-r1-workspace}

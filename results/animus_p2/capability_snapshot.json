@@ -1,0 +1,28 @@
+{
+  "artifact": "ANIMUS_P2_CAPABILITY_SNAPSHOT",
+  "matrix": {
+    "BEHAVIORAL_IMAGERY_ASSIST": "AUTHORIZED",
+    "BIOSIGNAL_STATE": "NOT_VALIDATED",
+    "PERCEPTION_NEURAL_CONTENT": "VALIDATED",
+    "IMAGERY_NEURAL_CONTENT": "UNAUTHORIZED",
+    "DREAM_NEURAL_CONTENT": "UNAUTHORIZED",
+    "NEURAL_RECONSTRUCTION": "UNAUTHORIZED"
+  },
+  "usable": {
+    "BEHAVIORAL_IMAGERY_ASSIST": true,
+    "BIOSIGNAL_STATE": false,
+    "PERCEPTION_NEURAL_CONTENT": true,
+    "IMAGERY_NEURAL_CONTENT": false,
+    "DREAM_NEURAL_CONTENT": false,
+    "NEURAL_RECONSTRUCTION": false
+  },
+  "labels": {
+    "BEHAVIORAL_IMAGERY_ASSIST": "Behavioral-assisted imagination amplifier (no decoded neural content)",
+    "BIOSIGNAL_STATE": "Biosignal state \u2014 not validated",
+    "PERCEPTION_NEURAL_CONTENT": "Validated perception-content neural adapter (visual perception only)",
+    "IMAGERY_NEURAL_CONTENT": "Imagery neural content \u2014 NOT authorized (requires C3XRP replication + P3 gate)",
+    "DREAM_NEURAL_CONTENT": "Dream neural content \u2014 NOT authorized",
+    "NEURAL_RECONSTRUCTION": "Neural image reconstruction \u2014 NOT authorized"
+  },
+  "self_hash": "f2e810b830bfdbe9ef23a6d8eeb72f3ef4b2d73c83bf35ea8f891dfe5af76c36"
+}

@@ -1,0 +1,22 @@
+{
+  "artifact": "C3XDR_R1_ROI_PROVENANCE",
+  "status": "C3XDR_R1_BLOCKED_ROI_PROVENANCE",
+  "primary_roi": "VC",
+  "secondary": [
+    "V1",
+    "LVC",
+    "HVC"
+  ],
+  "evidence": {
+    "released_roi_source": "KamitaniLab preprocessed .mat metainf.roiname / roiind_value (localizer-defined voxel indices in the released preprocessed space)",
+    "repo_defines_roi_from_raw": false,
+    "getRoiVoxelIdx": "reads ROI indices ONLY from the released .mat (metainf); does not define/map from raw",
+    "preprocessing_from_raw_code_published": false,
+    "roi_masks_or_raw_to_functional_transform_published": false,
+    "released_reference_EPI_for_registration_published": false,
+    "figshare_contents": "block-averaged single-trial amplitude .mat + DNN features + results + videos (no timeseries, no ROI mask, no transform, no preprocessing code)"
+  },
+  "why_blocked": "Neither Phase-1 option is satisfiable from public artifacts: (1) the exact KamitaniLab functional space cannot be reproduced (no published preprocessing pipeline/params); (2) the released-ROI space cannot be targeted (undocumented, no reference volume); (3) no independently certifiable raw->released ROI transform exists (the .mat gives voxel indices/xyz in an undocumented per-subject space with no distributed reference). Sealed rule forbids approximating VC.",
+  "not_resolved_by_infrastructure": true,
+  "self_hash": "d184834a7c16f17e388d88f2ee8df682f437f89522aa415ae8c8c066c718fa2a"
+}

@@ -1,0 +1,16 @@
+{
+  "artifact": "C3XAT_SPATIAL_ENRICHMENT_CONTROL",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "status": "EXECUTION_BLOCKED",
+  "does_not_qualify_dataset": true,
+  "compare": [
+    "WANG25",
+    "Benson V1-V3",
+    "whole cortical gray matter",
+    "ROI-size-matched random cortical masks (prospectively specified)"
+  ],
+  "purpose": "test whether reliability is enriched in visual cortex rather than a generic whole-brain artifact.",
+  "results": null,
+  "note": "descriptive only; not executed.",
+  "self_hash": "b0dde6c6dbf92e11fc953dd7ef3581fe1abeee037ac5f41c419e9e3bfb66b7d4"
+}

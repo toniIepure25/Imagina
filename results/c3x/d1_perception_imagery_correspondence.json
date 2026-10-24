@@ -1,0 +1,29 @@
+{
+  "artifact": "C3X_D1_PERCEPTION_IMAGERY_CORRESPONDENCE",
+  "subjects": {
+    "sub-01": {
+      "imagery_contents": 26,
+      "perception_contents": 50,
+      "shared_contents": 26,
+      "imagery_only": 0,
+      "perception_only": 24,
+      "level": "category/image identity (bdpy Label); exact-image vs category to be treated per dataset docs; C3X reliability is WITHIN-condition and does not require the mapping"
+    },
+    "sub-02": {
+      "imagery_contents": 26,
+      "perception_contents": 50,
+      "shared_contents": 26,
+      "imagery_only": 0,
+      "perception_only": 24,
+      "level": "category/image identity (bdpy Label); exact-image vs category to be treated per dataset docs; C3X reliability is WITHIN-condition and does not require the mapping"
+    },
+    "sub-03": {
+      "imagery_contents": 26,
+      "perception_contents": 50,
+      "shared_contents": 26,
+      "imagery_only": 0,
+      "perception_only": 24,
+      "level": "category/image identity (bdpy Label); exact-image vs category to be treated per dataset docs; C3X reliability is WITHIN-condition and does not require the mapping"
+    }
+  }
+}

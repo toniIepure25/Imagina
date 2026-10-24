@@ -1,0 +1,19 @@
+{
+  "artifact": "C3XPA_AUTHOR_RESPONSE_PROVENANCE",
+  "status": "NONE_RECEIVED",
+  "c3xpr_request_sent": false,
+  "c3xpr_auto_send": false,
+  "author_response_obtained": false,
+  "received_date": null,
+  "sender_identity": null,
+  "delivery_mechanism": null,
+  "search_performed": true,
+  "searched_locations": [
+    "Downloads",
+    "$HOME",
+    "$HOME/Downloads"
+  ],
+  "found_spatial_artifacts": [],
+  "note": "No authoritative response or spatial artifact received. The C3XPR request was prepared (AUTHOR_REQUEST_EMAIL.md / GITHUB_ISSUE_DRAFT.md) but not sent per protocol; silence is NOT 'unavailable'.",
+  "self_hash": "14ad63a1567fb6a76205ebe74e4abf2d910800766c7004021c2b4936055e0bab"
+}

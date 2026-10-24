@@ -1,0 +1,69 @@
+{
+  "acquisition_authorized": false,
+  "all_gates_pass": true,
+  "artifact": "C3XRA_READINESS_DECISION",
+  "decision": "C3XRA_ACQUISITION_READY",
+  "design_only": true,
+  "external_prerequisites_before_participant_001": [
+    "independent ethics approval (drafts only; no number asserted)",
+    "MRI facility authorization and confirmed/phantom-tested sequence",
+    "recruitment authorization",
+    "final naturalistic stimulus corpus licensed or produced (replaces proxy 1:1)",
+    "fresh explicit user authorization to begin acquisition"
+  ],
+  "failed_gates": [],
+  "gate": "C3XRA",
+  "gates": {
+    "bids_dryrun": {
+      "detail": [],
+      "pass": true
+    },
+    "c3xag_not_authorized": {
+      "detail": [],
+      "pass": true
+    },
+    "ethics_drafts_are_placeholders": {
+      "detail": [],
+      "pass": true
+    },
+    "immutable_prior_artifacts": {
+      "detail": [],
+      "pass": true
+    },
+    "no_raw_neural_or_pii": {
+      "detail": [],
+      "pass": true
+    },
+    "reliability_not_used_for_exclusion": {
+      "detail": [],
+      "pass": true
+    },
+    "schedule_contract": {
+      "detail": [],
+      "pass": true
+    },
+    "seals_present_and_self_hashed": {
+      "detail": [],
+      "pass": true
+    },
+    "stimulus_provenance_not_blocked": {
+      "detail": [
+        null
+      ],
+      "pass": true
+    },
+    "synthetic_e2e_replay": {
+      "detail": [],
+      "pass": true
+    },
+    "task_dryrun": {
+      "detail": [],
+      "pass": true
+    },
+    "timing_design": {
+      "detail": [],
+      "pass": true
+    }
+  },
+  "self_hash": "e03e1565eb26c5c766b862fa6a00e577bd802dc9077d6fda96a2ada7c858fdfd"
+}

@@ -1,0 +1,60 @@
+{
+  "artifact": "ANIMUS_P2R_REAL_SPLIT_INHERITANCE_AUDIT",
+  "milestone": "ANIMUS-P2R",
+  "split_rule": "frozen p2 freeze_identity_split(seed=20260909), grouped by stimulus identity (ImageNet file)",
+  "regenerated": false,
+  "per_subject": {
+    "sub-01": {
+      "n_train_ids": 2800,
+      "n_val_ids": 600,
+      "n_test_ids": 600,
+      "train_hash": "345332ae3dae",
+      "val_hash": "9017dbd7e4d3",
+      "test_hash": "6cedc4cb6470"
+    },
+    "sub-02": {
+      "n_train_ids": 2800,
+      "n_val_ids": 600,
+      "n_test_ids": 600,
+      "train_hash": "3ec9b12c20f0",
+      "val_hash": "72dc42e8f4ff",
+      "test_hash": "9ee5cdf9870f"
+    },
+    "sub-03": {
+      "n_train_ids": 2800,
+      "n_val_ids": 600,
+      "n_test_ids": 600,
+      "train_hash": "32ab331c3568",
+      "val_hash": "d4e46fd7d194",
+      "test_hash": "28a87a129964"
+    },
+    "sub-04": {
+      "n_train_ids": 2800,
+      "n_val_ids": 600,
+      "n_test_ids": 600,
+      "train_hash": "f135a1841a20",
+      "val_hash": "bbf7eabff65c",
+      "test_hash": "79362e609535"
+    },
+    "sub-05": {
+      "n_train_ids": 2800,
+      "n_val_ids": 600,
+      "n_test_ids": 600,
+      "train_hash": "09092d20512e",
+      "val_hash": "2d4440ba2f5c",
+      "test_hash": "85e7eea0198f"
+    },
+    "sub-06": {
+      "n_train_ids": 2800,
+      "n_val_ids": 600,
+      "n_test_ids": 600,
+      "train_hash": "2425f6102e6b",
+      "val_hash": "ad30b37f0d84",
+      "test_hash": "8efcef732d67"
+    }
+  },
+  "train_val_test_disjoint": true,
+  "all_repetitions_same_partition": true,
+  "leakage_free": true,
+  "self_hash": "06c422147928f59a3b5cb83586485a325d4b86ce33f3dd1e827cba4402d764a7"
+}

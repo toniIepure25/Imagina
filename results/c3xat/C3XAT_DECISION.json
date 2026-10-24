@@ -1,0 +1,49 @@
+{
+  "artifact": "C3XAT_DECISION",
+  "gate": "C3XAT",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "decision": "C3XAT_BLOCKED_EXECUTION",
+  "is_blocked_not_fail": true,
+  "dataset_gate_evaluated": false,
+  "subjects_processed": 0,
+  "downloaded_bytes": 0,
+  "why_blocked": "confirmatory execution (selective raw ds005191 acquisition + reproducible fMRIPrep of S1-S6 + atlas ROI construction + spatial QC + sealed reliability + cue/video falsification) requires the OrchestrAI cluster and cannot be completed in this session; the live kubeconfig is not present here (never committed).",
+  "what_would_unblock": [
+    "run the sealed pipeline on the OrchestrAI cluster: pull the pinned fMRIPrep container, preprocess S1-S6 to MNI152NLin2009cAsym 2mm, construct WANG25 + Benson V1-V3 + gray-matter masks, certify spatial QC, then execute the frozen reliability + cue/video falsification.",
+    "download and hash-verify the Wang2015 MPM and Benson14 template (fill the null sha256 fields)."
+  ],
+  "no_outcome_fabricated": true,
+  "no_roi_selected_by_performance": true,
+  "primary_roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "secondary_roi_cannot_rescue_primary": true,
+  "c3xdr_rescued": false,
+  "kamitani_roi_replicated": false,
+  "correct_wording": "The exact released-ROI replay remains provenance-blocked. C3XAT independently tests the core imagery-measurement question using prospectively defined public atlas ROIs. No original Kamitani localizer ROI is reproduced.",
+  "c3xag_authorized": false,
+  "c3xag_authorization_condition": "ONLY C3XAT_D2_ATLAS_IMAGERY_QUALIFIED authorizes PREPARING (not executing) the separately-sealed C3XAG gate.",
+  "does_NOT_authorize": [
+    "C3XAG execution",
+    "C3XE",
+    "C3XR",
+    "C3XR-CAT",
+    "C3XDR-R2",
+    "geometry",
+    "decoding",
+    "reconstruction",
+    "C4"
+  ],
+  "no_geometry": true,
+  "no_decoding": true,
+  "no_reconstruction": true,
+  "no_semantic_features": true,
+  "immutable_prior_gates": [
+    "C3XC",
+    "C3XD",
+    "C3XDR",
+    "C3XDR-R1",
+    "C3XPR",
+    "C3XPA"
+  ],
+  "c3xdr_seal_unchanged": "7afc79466c75b671865fc787a56e8e421b4774bfd3d2b65b133092450302f43d",
+  "self_hash": "20147bdd5e1141100ee7b982eab319ae23c0bb946e94491a348501718d9f5f6b"
+}

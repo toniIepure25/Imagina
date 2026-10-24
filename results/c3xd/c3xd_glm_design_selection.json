@@ -1,0 +1,85 @@
+{
+  "artifact": "C3XD_GLM_DESIGN_SELECTION",
+  "status": "NO_IDENTIFIABLE_MODEL_AT_EQUAL_MAGNITUDE",
+  "primary_model": null,
+  "design_metrics": {
+    "condition_number_full_design": 3.84357502976024e+16,
+    "condition_number_note": "full-design cond is inflated by drift/eval collinearity in the nuisance subspace; imagery estimability is governed by imagery VIF (low) and the imagery-submatrix condition number.",
+    "imagery_submatrix_condition_number": 1.1611391192119387,
+    "imagery_vs_own_cue_corr_mean": 0.060567934186880924,
+    "imagery_VIF_mean": 1.6703219773275277,
+    "imagery_VIF_max": 1.9505055017831694,
+    "n_imagery_regressors_per_run": 12
+  },
+  "candidate_summary": {
+    "A": {
+      "imagery_recovery_r_min": 0.609996254152638,
+      "imagery_recovery_r_mean": 0.7595930017559027,
+      "null_fp_by_cue_gain": {
+        "0.25": {
+          "cue_leak_max": 0.03303435109048033,
+          "video_leak_max": 0.0071599967572336205,
+          "null_false_positive_rate": 0.0
+        },
+        "0.5": {
+          "cue_leak_max": 0.05541381433680138,
+          "video_leak_max": 0.0100302946607235,
+          "null_false_positive_rate": 0.0
+        },
+        "1.0": {
+          "cue_leak_max": 0.11516701514866755,
+          "video_leak_max": 0.0235931197593137,
+          "null_false_positive_rate": 0.25
+        }
+      },
+      "meets_thresholds_at_equal_magnitude": false
+    },
+    "B": {
+      "imagery_recovery_r_min": 0.6381694582800083,
+      "imagery_recovery_r_mean": 0.776410619184861,
+      "null_fp_by_cue_gain": {
+        "0.25": {
+          "cue_leak_max": 0.03073579239106768,
+          "video_leak_max": 0.052269393668165874,
+          "null_false_positive_rate": 0.0
+        },
+        "0.5": {
+          "cue_leak_max": 0.05595831459216736,
+          "video_leak_max": 0.09316281923563446,
+          "null_false_positive_rate": 0.0
+        },
+        "1.0": {
+          "cue_leak_max": 0.10549224280151784,
+          "video_leak_max": 0.17401942321959749,
+          "null_false_positive_rate": 0.5
+        }
+      },
+      "meets_thresholds_at_equal_magnitude": false
+    },
+    "C": {
+      "imagery_recovery_r_min": 0.6934904703691317,
+      "imagery_recovery_r_mean": 0.8127088509106305,
+      "null_fp_by_cue_gain": {
+        "0.25": {
+          "cue_leak_max": 0.09621861420735289,
+          "video_leak_max": 0.0037634360353550555,
+          "null_false_positive_rate": 0.25
+        },
+        "0.5": {
+          "cue_leak_max": 0.1849356444654999,
+          "video_leak_max": 0.007522413810554193,
+          "null_false_positive_rate": 0.75
+        },
+        "1.0": {
+          "cue_leak_max": 0.35726483181405166,
+          "video_leak_max": 0.0038846853130751783,
+          "null_false_positive_rate": 0.75
+        }
+      },
+      "meets_thresholds_at_equal_magnitude": false
+    }
+  },
+  "selection_rule": "design conditioning + synthetic recovery/leakage/null-FP vs frozen thresholds; NEVER real imagery reliability/geometry/decoding/ROI/behaviour",
+  "negative_baseline_C_leaks": true,
+  "self_hash": "973fb8a53f65ee3ec660d7ddfbcf27a70ef9c9575a749f9dd5db6a149e8bb344"
+}

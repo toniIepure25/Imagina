@@ -1,0 +1,41 @@
+{
+  "artifact": "C3XRA_ACQUISITION_RESOURCE_MODEL",
+  "gate": "C3XRA",
+  "design_only": true,
+  "imagery": {
+    "runs_per_unit": 6,
+    "units": 7,
+    "mean_trial_s": 28.5,
+    "run_minutes": 5.9,
+    "task_minutes": 247.8
+  },
+  "perception": {
+    "runs_per_unit": 2,
+    "units": 7,
+    "run_minutes": 4.4,
+    "task_minutes": 61.6
+  },
+  "structural_per_session": {
+    "t1w_minutes": 6.0,
+    "fieldmap_minutes": 2.0
+  },
+  "setup_minutes_per_session": 8.0,
+  "estimated_sessions_per_participant": 6,
+  "scanning_cap_minutes_per_session": 50.0,
+  "total_task_minutes": 309.4,
+  "total_structural_minutes": 48.0,
+  "total_setup_minutes": 48.0,
+  "total_scanner_hours_per_participant": 6.76,
+  "target_evaluable_N": 9,
+  "recruitment_ceiling": 12,
+  "total_scanner_hours_cohort_evaluable": 60.8,
+  "total_scanner_hours_cohort_ceiling": 81.1,
+  "data_gb_per_participant_estimate": 18.0,
+  "data_gb_cohort_ceiling_estimate": 216.0,
+  "storage_note": "raw BIDS + fMRIPrep derivatives; add ~1.5x for working copies/backups",
+  "cost_parameterized": {
+    "eur_per_scanner_hour": "PARAMETER (set at facility)",
+    "cohort_cost_formula": "eur_per_scanner_hour * total_scanner_hours_cohort_<evaluable|ceiling>"
+  },
+  "self_hash": "8565b94a7b2d645e7b6a70f9da74659fe9921433923f503d0d8b521dfb7bd4f1"
+}

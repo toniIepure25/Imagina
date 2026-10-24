@@ -1,0 +1,57 @@
+{
+  "artifact": "ANIMUS_P2XR_EXECUTION_STATUS",
+  "milestone": "ANIMUS-P2XR",
+  "note": "operational statuses only; NO neural decoding performance here",
+  "cluster": {
+    "namespace": "runai-romania-dev",
+    "pvc": "c3xat-r1-workspace",
+    "pvc_free": "~101TB (mount)",
+    "cpu_workers": 1,
+    "gpu_nodes": [
+      "a100",
+      "h100"
+    ]
+  },
+  "config_pilots": {
+    "bold5000_config_pilot": "RUNNING",
+    "things_config_pilot": "SUBSUMED_IN_COHORT (index-0 THINGS sub-03 validates config via stop-on-first-crash)"
+  },
+  "stimulus_acquisition": {
+    "bold5000": "RUNNING (figshare 20436450 presented_stimuli.zip)",
+    "things": "RUNNING (OSF jum2f images_THINGS.zip)"
+  },
+  "clip_weights_pinned": "RUNNING (embed job hashes actual open_clip ViT-B-32 laion2b_s34b_b79k bytes)",
+  "clip_embedding": {
+    "bold5000": "RUNNING",
+    "things": "RUNNING"
+  },
+  "raw_staging": {
+    "ds001499/sub-CSI1": "PENDING",
+    "ds001499/sub-CSI2": "PENDING",
+    "ds001499/sub-CSI3": "PENDING",
+    "ds001499/sub-CSI4": "PENDING",
+    "ds004192/sub-01": "PENDING",
+    "ds004192/sub-02": "PENDING",
+    "ds004192/sub-03": "PENDING"
+  },
+  "fmriprep_production": {
+    "ds004192/sub-03": "RUNNING (cohort index 0)",
+    "ds004192/sub-01": "PENDING",
+    "ds004192/sub-02": "PENDING",
+    "ds001499/sub-CSI4": "PENDING",
+    "ds001499/sub-CSI1": "PENDING",
+    "ds001499/sub-CSI2": "PENDING",
+    "ds001499/sub-CSI3": "PENDING"
+  },
+  "feature_bundles": {
+    "status": "PENDING"
+  },
+  "implementation_freeze": "PENDING",
+  "confirmatory": "PENDING",
+  "cross_dataset_decision": "PENDING",
+  "overall": "P2XR_REAL_EXECUTION_RUNNING",
+  "cohort_job": "animus-p2xr-fmriprep-cohort (Indexed, 7, parallelism 1, restart-safe, idempotent, stop-on-first-crash)",
+  "autonomy": "cluster-native; survives Claude/SSH disconnect; resume via backend/app/research/animus_p2xr/cluster/resume_p2xr.sh",
+  "firewall": "NO confirmatory decoding until P2XR_CONFIRMATORY_IMPLEMENTATION_FREEZE committed + remote CI green",
+  "self_hash": "1c5b9fbc665fa5355959f4c5a3d75a308f9e2efec8e986811a04232e0a3acb4f"
+}

@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-08-22T00:35:00",
+  "current_status": "C3_COMPLETE_WITH_IMAGERY_TRANSFER_NULL",
+  "scope": "SINGLE_SUBJECT (subj01) — not population evidence",
+  "gate_summary": {
+    "C3_PERCEPTION_DECODING": "PASS",
+    "C3_IMAGERY_ROW_PROVENANCE": "PASS",
+    "C3_ZERO_SHOT_IMAGERY_TRANSFER": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+    "C3_STATE_TRANSPORT": "NULL_OR_INCONCLUSIVE",
+    "C3_RECONSTRUCTION_READINESS": "BLOCKED",
+    "C3": "COMPLETE_WITH_IMAGERY_TRANSFER_NULL"
+  },
+  "final_decision_artifact": "results/c3_final_decision_realdata_v2.json",
+  "h1_strict_replay": {
+    "decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
+    "mrr": 0.07729543188501593, "chance_mrr": 0.007485470860550345, "p_value": 9.999e-05
+  },
+  "h2_zero_shot": {
+    "decision": "SUBJ01_ZERO_SHOT_IMAGERY_TRANSFER_NULL_DEGENERATE_COLLAPSE",
+    "finding": "frozen decoder collapses to a near-constant single-candidate prediction on the imagery session (cross-session nonstationarity); no genuine transfer"
+  },
+  "reconstruction_readiness": "BLOCKED — no genuine imagery transfer; C4 not begun",
+  "authorized_participants": [],
+  "authorized_participants_note": "subj02/subj05/subj07 remain prospectively eligible; acquisition blocked by local storage, not by the subj01 outcome (see results/c3_multiparticipant_acquisition_status.json).",
+  "population_claim_authorized": false
+}

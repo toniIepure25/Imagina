@@ -1,0 +1,69 @@
+{
+  "artifact": "ANIMUS_P2E_EXECUTION_STATUS",
+  "milestone": "ANIMUS-P2E",
+  "per_subject": {
+    "sub-01": {
+      "download": "N/A",
+      "stimulus_audit": "N/A",
+      "transform": "BLOCKED",
+      "roi_qc": "N/A",
+      "glm": "N/A",
+      "feature_bundle": "N/A",
+      "confirmatory": "N/A",
+      "result": "N/A"
+    },
+    "sub-02": {
+      "download": "N/A",
+      "stimulus_audit": "N/A",
+      "transform": "BLOCKED",
+      "roi_qc": "N/A",
+      "glm": "N/A",
+      "feature_bundle": "N/A",
+      "confirmatory": "N/A",
+      "result": "N/A"
+    },
+    "sub-03": {
+      "download": "N/A",
+      "stimulus_audit": "N/A",
+      "transform": "BLOCKED",
+      "roi_qc": "N/A",
+      "glm": "N/A",
+      "feature_bundle": "N/A",
+      "confirmatory": "N/A",
+      "result": "N/A"
+    },
+    "sub-04": {
+      "download": "N/A",
+      "stimulus_audit": "N/A",
+      "transform": "BLOCKED",
+      "roi_qc": "N/A",
+      "glm": "N/A",
+      "feature_bundle": "N/A",
+      "confirmatory": "N/A",
+      "result": "N/A"
+    },
+    "sub-05": {
+      "download": "N/A",
+      "stimulus_audit": "N/A",
+      "transform": "BLOCKED",
+      "roi_qc": "N/A",
+      "glm": "N/A",
+      "feature_bundle": "N/A",
+      "confirmatory": "N/A",
+      "result": "N/A"
+    },
+    "sub-06": {
+      "download": "N/A",
+      "stimulus_audit": "N/A",
+      "transform": "BLOCKED",
+      "roi_qc": "N/A",
+      "glm": "N/A",
+      "feature_bundle": "N/A",
+      "confirmatory": "N/A",
+      "result": "N/A"
+    }
+  },
+  "blocked_stage": "spatial_transform",
+  "no_performance_in_status": true,
+  "self_hash": "88637f17d606ff263309881cb6058992fec0150fec12bf9e8306f529cda4e9c4"
+}

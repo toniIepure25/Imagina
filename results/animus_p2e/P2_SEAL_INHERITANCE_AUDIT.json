@@ -1,0 +1,103 @@
+{
+  "artifact": "ANIMUS_P2E_SEAL_INHERITANCE_AUDIT",
+  "milestone": "ANIMUS-P2E",
+  "scientific_parent": "a0b6ca7",
+  "p2_branch_tip_inherited": true,
+  "inherited_artifacts": {
+    "protocol_seal": {
+      "path": "results/animus_p2/animus_p2_protocol_seal.json",
+      "git_blob_sha": "cfe13a132d019d306d0b993e469514939e5d1035",
+      "self_hash": "47d6342972f39cb38c7d15d244bf0dabb24c56898cce3dc42e562741f401c19b"
+    },
+    "anchor": {
+      "path": "results/animus_p2/animus_p2_anchor.json",
+      "git_blob_sha": "c4c8a94984e44cf207ba17adb5ff4e9e1da1fb0c",
+      "self_hash": "e8a4785b57f66b600caf7e6ed267a5a8f32e87136a67f58c85085311bfe19c77"
+    },
+    "candidate_matrix": {
+      "path": "results/animus_p2/perception_dataset_candidate_matrix.json",
+      "git_blob_sha": "ea4ecbe9d537d86a161498ed248bde836dc0023c",
+      "self_hash": "b9be2cfb15c0c22cf9260e65ed0e960fc2989c595a822a545ccf7f74992a6d5d"
+    },
+    "capability_snapshot": {
+      "path": "results/animus_p2/capability_snapshot.json",
+      "git_blob_sha": "5ec5ea490240a6bc0b0f1cb913d66cdeef226f2b",
+      "self_hash": "bfc2baf4d5433da56615564f6467245458ea4ac6059294ad11368046d907ed9d"
+    },
+    "method_validation": {
+      "path": "results/animus_p2/method_validation.json",
+      "git_blob_sha": "8347932d487147d13c2ac6935fd0f146e56c3554",
+      "self_hash": "4c7643132e4cfbcc23383b3a1c13e068b54728dec4738f05e4bedd742de9295f"
+    },
+    "bridge_validation": {
+      "path": "results/animus_p2/bridge_validation.json",
+      "git_blob_sha": "4f3335b426a5dbd882f576b617b497b92bffb0f9",
+      "self_hash": "e8be6cc5c70cf1a0f99e28e5c0a1608e82b1f208aa2e7152caf200f841d75396"
+    },
+    "firewall_audit": {
+      "path": "results/animus_p2/firewall_audit.json",
+      "git_blob_sha": "0bcbe3a02045c2d40cbabd7468f717cba359927e",
+      "self_hash": null
+    },
+    "decision": {
+      "path": "results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json",
+      "git_blob_sha": "de1ad755954a868af52aa86edc3ada6ada280136",
+      "self_hash": "b73c4355998d561ccb0452cbb22242a7af54556d263a018ee93e1082aa7448ab"
+    },
+    "staging_status": {
+      "path": "results/animus_p2/confirmatory_staging_status.json",
+      "git_blob_sha": "faf4b69fe7674f4789259afb10f0db151acf8f0b",
+      "self_hash": "8dc9555f601b8e416c38bbf49c5df7dbc7d4ef9c8716fa4c21d1bca20fe34bb8"
+    }
+  },
+  "inherited_semantic_fields": {
+    "primary_dataset": "ds004496 (NOD)",
+    "fallback_dataset": "ds001499 (BOLD5000)",
+    "roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+    "target_encoder": "open_clip:ViT-B-32",
+    "target_pretrained": "laion2b_s34b_b79k",
+    "decoder_family": "ridge_linear_multioutput",
+    "alpha_grid": [
+      1.0,
+      10.0,
+      100.0,
+      1000.0,
+      10000.0
+    ],
+    "uncertainty": "bootstrap decoder ensemble (predictive spread), calibrated on validation",
+    "permutation": {
+      "within_test_label_permutation": true,
+      "n_perm": 1000
+    },
+    "bootstrap": {
+      "identity_bootstrap": true,
+      "n_boot": 1000
+    },
+    "seeds": [
+      20260909,
+      20261009,
+      20261109
+    ],
+    "primary_statistic": "content margin M = mean(cos(p_i,t_i) - mean_{j!=i} cos(p_i,t_j)), held-out test",
+    "subject_pass": "data_contract & atlas_qc & M>0 & perm_p<0.01 & bootstrap_ci_lower>0 & all_seeds_positive",
+    "dataset_gate": "required_passes=max(2,ceil(N/3)); VALIDATED/LIMITED/FAIL/BLOCKED; fixed denominator",
+    "partitions": {
+      "grouped_by": "stimulus_identity",
+      "train": 0.7,
+      "val": 0.15,
+      "test": 0.15,
+      "seal": "results/animus_p2/content_split_seal.json"
+    },
+    "negative_controls": [
+      "label_permutation",
+      "category_matched_decoys",
+      "low_level_baseline",
+      "run_session_fingerprint",
+      "within/cross-run shuffle"
+    ]
+  },
+  "seal_unchanged": true,
+  "no_new_protocol": true,
+  "seal_inheritance_pass": true,
+  "self_hash": "551f084cc01ed862ade2c64e1f024323962b31d432ad3a39520f7148d4a4f540"
+}

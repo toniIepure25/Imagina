@@ -1,0 +1,128 @@
+{
+  "artifact": "ANIMUS_P2XR_PROTOCOL_SEAL",
+  "milestone": "ANIMUS-P2XR",
+  "primary_question": "Does the exact frozen ANIMUS P2 perception->visual-latent decoding METHOD replicate prospectively on independent cohorts, scanners/protocols and stimulus datasets, without outcome-guided rescue?",
+  "p2r_parent_sha": "71371b2fd74ab13a7cfc7e75937b27286d70381c",
+  "p2_validated_decision_hash": "80cae643f2344d87b8417af092618ee44d21f4f70be4976a2e651d1bcae5caa8",
+  "only_changes_vs_p2": "DATASET I/O ADAPTERS + per-dataset participant denominators (nothing else)",
+  "nod_status": "CLOSED for development (immutable historical within-dataset evidence only)",
+  "replication_datasets": {
+    "ds001499": {
+      "name": "BOLD5000",
+      "version": "v1.3.1",
+      "task": "task-5000scenes",
+      "n_subjects": 4,
+      "tr_s": 2.0,
+      "pe": "j-",
+      "fieldmaps": "spinecho_epi",
+      "design": "slow_event_related",
+      "measurement_contract_compatible": true
+    },
+    "ds004192": {
+      "name": "THINGS-fMRI",
+      "version": "v1.0.7",
+      "task": "task-things",
+      "n_subjects": 3,
+      "tr_s": 1.5,
+      "pe": "j",
+      "fieldmaps": "phasediff",
+      "design": "rapid_event_related",
+      "measurement_contract_compatible": true,
+      "trial_types_kept": [
+        "exp",
+        "test"
+      ],
+      "trial_types_excluded": [
+        "catch"
+      ]
+    }
+  },
+  "raw_preprocessing": "raw BIDS -> pinned fMRIPrep -> MNI152NLin2009cAsym:res-2 (PRIMARY path)",
+  "fmriprep_digest": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "smoothing": "NONE",
+  "secondary_paths_declared": "dataset-provided optimized betas (BOLD5000 GLMsingle / THINGS ICA-betas) permitted ONLY as prospectively declared SECONDARY; never the confirmatory primary, since they change the P2 estimand.",
+  "roi": {
+    "name": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+    "space": "MNI152NLin2009cAsym:res-2",
+    "wang25_sha256": "19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc",
+    "expected_voxels": 7604
+  },
+  "target_encoder": {
+    "model_id": "open_clip:ViT-B-32",
+    "pretrained": "laion2b_s34b_b79k",
+    "embedding_dim": 512,
+    "normalization": "unit_l2",
+    "weights_sha256": "TO_PIN_AT_IMPLEMENTATION_FREEZE"
+  },
+  "feature_extraction": {
+    "method": "frozen P2 LSA/GLM (canonical spm_hrf + per-trial boxcar + frozen nuisance motion6 + csf/white_matter + cosine drift + run intercept)",
+    "unchanged_from_p2r": true
+  },
+  "decoder": {
+    "family": "ridge_linear_multioutput",
+    "alpha_selection": "nested-validation (inherited)",
+    "normalization": "fold-safe (inherited P2)",
+    "uncertainty": "bootstrap-ensemble (20)",
+    "reject": "validation-calibrated uncertainty quantile (inherited)"
+  },
+  "primary_statistic": "content margin M (held-out unseen identities)",
+  "permutation": {
+    "within_test_label_permutation": true,
+    "n_perm": 1000
+  },
+  "identity_bootstrap": {
+    "n_boot": 1000
+  },
+  "evaluation_seeds": [
+    20260909,
+    20261009,
+    20261109
+  ],
+  "supporting_endpoints": [
+    "2AFC",
+    "retrieval_top1_top5_top10_mrr_median_rank"
+  ],
+  "negative_controls": {
+    "label_permutation": "both datasets",
+    "category_matched_decoys": {
+      "ds004192": "things_category_nr (concept)",
+      "ds001499": "ImgType family + ImageNet synset (coarser; documented)"
+    },
+    "low_level_baseline": "both datasets (luminance/color/contrast/SF 8-dim)",
+    "run_session_fingerprint": "both datasets",
+    "within_cross_run_shuffle": "both datasets"
+  },
+  "subject_gate": "inherited P2: data_contract & atlas_qc & M>0 & perm_p<0.01 & boot_ci_lower>0 & all_seeds_positive",
+  "dataset_gate": "inherited P2: required_passes=max(2,ceil(N_valid/3)); per dataset independently",
+  "cross_dataset_decision": {
+    "PASS": "BOTH datasets VALIDATED",
+    "LIMITED": "exactly ONE dataset VALIDATED",
+    "FAIL": "NEITHER dataset VALIDATED",
+    "BLOCKED": "genuine technical/provenance impossibility",
+    "no_pooled_rescue": true
+  },
+  "stimulus_split_seal_hash": "cd195e1a169659e4118c3db79b1ab987210fd5e97ec97e7b04b4aa691d5c79cc",
+  "dataset_audit_hash": "04c6cb85254f2fe2c32df6c77bdfd0c6d2d823a029c97bffbb0152a530c831b5",
+  "stimulus_overlap_audit_hash": "385d480f86e1eb6de72be0a1fa94ee5e617e74db36ca6c015949533ee36a11a1",
+  "power_audit_hash": "6236f5d72aa4b58e05ca72dd35a6937d953c76c4c00099be54772ae444e0340f",
+  "power_audit_all_checks_pass": true,
+  "test_firewall": "NO real M / 2AFC / retrieval / cos(pred,true) / subject_PASS / dataset_PASS computed before this seal is committed CI-green and the implementation freeze is committed CI-green; synthetic fixtures only.",
+  "imagery_dream_reconstruction": "UNAUTHORIZED",
+  "c3xag_authorized": false,
+  "p3_execution": false,
+  "inherited_code_norm_sha256": {
+    "gate": "d6fab837f4e0b9a159e36f7788d27933af7bccac3a93228c15392014ce7c311d",
+    "splits": "f394ee1a1e233f8b233611728e916357c9a55ae8768a816ac3b2df4101776b47",
+    "decoder": "e69d7359dcb30b71fcb15d1e560d48b948c1ab10685058c29ccf62e824ee7bed",
+    "pipeline": "caf69eaf1d7988762b0ae1a8ac01bbca31d35368b9103bedc6eda703f3bb458d",
+    "metrics": "2a77df27ecb79fa9ae49433c63ecfa8a5ec80a10ae21176263d961e8e428e51e",
+    "features": "33564c8f52a42a02af4e5fde0edef04de08a565073b1f1f14e48da64e161273f",
+    "target_representation": "bcd7da40500ede5765f6733061d2287c090f38b25c5a4841c34dde010871f93e",
+    "frozen_lsa_glm_extractor": "4ccaa301ed6eec5640b43892eb170407a0d8012c48761bdb4f7e550ab9a815b4"
+  },
+  "p2xr_code_norm_sha256": {
+    "adapters": "86adb7e3ec6b84746bdd95c9f674fa382862ccdd4955ed21bbe847d60b85329b",
+    "decision": "0374b0b1c2fc3ab99afbe4fc217c01e66f32be435a7d46f5806cf3a29451c469"
+  },
+  "self_hash": "de8452dfbf36988955f2f335f9ab9113037b73ade27135898789172a9a08a717"
+}

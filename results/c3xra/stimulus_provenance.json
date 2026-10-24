@@ -1,0 +1,30 @@
+{
+  "artifact": "C3XRA_STIMULUS_PROVENANCE",
+  "gate": "C3XRA",
+  "n_identities": 72,
+  "id_range": "VID001..VID072",
+  "min_required": 50,
+  "preferred": 72,
+  "same_set_every_participant_and_unit": true,
+  "manifest": "stimuli/manifest.tsv",
+  "manifest_sha256": "c6921b2ede26bf8fcd09d48846684f5a73ae228628e2c1302bbfa81fde3548c1",
+  "corpus_role": "design_validation_proxy",
+  "proxy_rationale": "A deterministic, purpose-created, CC0 proxy corpus (reproducible spec-hashes, NO binaries committed) fixes the 72-identity contract and lets the scanner task, schedule, BIDS and dry-run pipelines be validated bit-deterministically WITHOUT any restricted media.",
+  "final_stimulus_set_status": "EXTERNAL_PREREQUISITE",
+  "final_stimulus_set_requirement": "Before acquisition the 72 proxy entries MUST be replaced 1:1 (same IDs, count, presentation timing) by the genuine naturalistic-video set for the C3XRP paradigm \u2014 either the original study's stimuli under license, or a purpose-created openly-licensed naturalistic set matched on duration/resolution/fps/codec. This is a LOUD, declared replacement, NOT a silent substitution: the readiness decision lists it as a named external prerequisite.",
+  "intended_technical_target": {
+    "resolution": "1280x720",
+    "fps": 30,
+    "codec": "h264",
+    "container": "mp4",
+    "audio": "none",
+    "min_duration_s": 2.0,
+    "presentation_duration_s": 4.0
+  },
+  "no_restricted_binaries_committed": true,
+  "no_silent_substitution": true,
+  "blocked": false,
+  "block_code": null,
+  "note": "If no legal naturalistic set can be licensed or produced at acquisition time, the correct outcome is C3XRA_BLOCKED_STIMULUS_PROVENANCE \u2014 recorded here as the fail-closed rule.",
+  "self_hash": "82232a839aeba1a5ac1d9e5235f8b5df5aa770389548e2e772f732e73a149ff0"
+}

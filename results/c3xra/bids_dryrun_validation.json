@@ -1,0 +1,17 @@
+{
+  "artifact": "C3XRA_BIDS_DRYRUN_VALIDATION",
+  "gate": "C3XRA",
+  "synthetic_only": true,
+  "bids_version": "1.9.0",
+  "mock_subject": "sub-9001",
+  "n_nifti": 10,
+  "n_bold": 4,
+  "structural_errors": [],
+  "structural_warnings": [],
+  "structural_error_count": 0,
+  "structural_pass": true,
+  "authoritative_validator": "bids-validator (deno/npx) \u2014 run in CI job c3xra-acquisition-readiness, require 0 errors",
+  "warning_policy": "NB01/NB02 (no b0/no anat-in-session) and SLICE_TIMING notes classified as acceptable for a synthetic mock; participant/data-level warnings do not block design readiness",
+  "pass": true,
+  "self_hash": "4a7fec29170bf2d17438ca4bbb791a05799dc44abb49370df193d8d4cf75c528"
+}

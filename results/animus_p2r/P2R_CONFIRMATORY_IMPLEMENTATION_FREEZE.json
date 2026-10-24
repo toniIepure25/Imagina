@@ -1,0 +1,93 @@
+{
+  "artifact": "ANIMUS_P2R_CONFIRMATORY_IMPLEMENTATION_FREEZE",
+  "milestone": "ANIMUS-P2R",
+  "dataset": "OpenNeuro ds004496 (NOD) v2.1.2",
+  "participant_denominator": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-05",
+    "sub-06"
+  ],
+  "n_eligible": 6,
+  "required_passes": 2,
+  "fmriprep_environment": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "spatial_provenance": "raw NOD -> fMRIPrep -> MNI152NLin2009cAsym:res-2; output grid == sealed Wang25 (no resample)",
+  "wang25_sha256": "19b681ecba5c8d2aa323b8f6e15d36191d4036cea070d095663a790690c544fc",
+  "roi_voxel_count": 7604,
+  "feature_extractor": "frozen Wang25 ROI LSA-GLM (extract_features_p2r.py / cluster 04_extract sweep; canonical spm_hrf + per-trial boxcar + motion6/csf/wm/cosine nuisance)",
+  "feature_bundle_sha256_prefix": {
+    "sub-01": "2ee6c678698e053d",
+    "sub-02": "fba67403d73d31a9",
+    "sub-03": "4958e9a938ff2bb1",
+    "sub-04": "59c532be04ce0fb2",
+    "sub-05": "327a674681272303",
+    "sub-06": "d953b8f529605e3b"
+  },
+  "n_trials_per_subject": 4000,
+  "n_unique_ids_per_subject": 4000,
+  "stimulus_manifest": "24000 ImageNet stimuli; per-stimulus SHA in embeddings/manifest.json",
+  "clip_architecture": "open_clip:ViT-B-32",
+  "clip_pretrained": "laion2b_s34b_b79k",
+  "clip_embedding_dim": 512,
+  "clip_normalization": "unit_l2",
+  "embeddings_sha256": "55d2d991a0819894533db864497915db0dc740707d6e59165077b746551e56be",
+  "split": "frozen p2 identity split seed 20260909; 2800/600/600 per subject; leakage-free",
+  "split_hashes": {
+    "sub-01": {
+      "train": "345332ae3dae",
+      "val": "9017dbd7e4d3",
+      "test": "6cedc4cb6470"
+    },
+    "sub-02": {
+      "train": "3ec9b12c20f0",
+      "val": "72dc42e8f4ff",
+      "test": "9ee5cdf9870f"
+    },
+    "sub-03": {
+      "train": "32ab331c3568",
+      "val": "d4e46fd7d194",
+      "test": "28a87a129964"
+    },
+    "sub-04": {
+      "train": "f135a1841a20",
+      "val": "bbf7eabff65c",
+      "test": "79362e609535"
+    },
+    "sub-05": {
+      "train": "09092d20512e",
+      "val": "2d4440ba2f5c",
+      "test": "85e7eea0198f"
+    },
+    "sub-06": {
+      "train": "2425f6102e6b",
+      "val": "ad30b37f0d84",
+      "test": "8efcef732d67"
+    }
+  },
+  "decoder": "UNCHANGED sealed ridge_linear_multioutput; nested-validation alpha; bootstrap-ensemble uncertainty; reject option",
+  "normalization": "fold-safe train-only (FoldSafeNormalizer); no PCA",
+  "permutation": 1000,
+  "bootstrap": 1000,
+  "seeds": [
+    20260909,
+    20261009,
+    20261109
+  ],
+  "primary_statistic": "content margin M (held-out test identities)",
+  "subject_pass": "data_contract & atlas_qc & M>0 & perm_p<0.01 & bootstrap_ci_lower>0 & all_seeds_positive",
+  "dataset_gate": "required_passes=max(2,ceil(N/3))",
+  "controls": [
+    "category_matched_2afc (within-synset)",
+    "low_level_baseline (luminance/color/contrast/SF, 8-dim)",
+    "label_permutation"
+  ],
+  "decision_code": "UNCHANGED run_p2_confirmatory.py + run_p2_decision.py (delivered via ConfigMap; sealed)",
+  "real_decoder_performance_inspected_before_freeze": false,
+  "real_M_inspected_before_freeze": false,
+  "real_2AFC_inspected_before_freeze": false,
+  "real_retrieval_inspected_before_freeze": false,
+  "subject_PASS_inspected_before_freeze": false,
+  "self_hash": "9477a3cf3cdaf9786dfc76dbb645594a0d6299306ed8da6ba49fef4ac4c87837"
+}

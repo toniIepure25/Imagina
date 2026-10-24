@@ -1,0 +1,52 @@
+{
+  "artifact": "C3XAT_R1_DATASET_ACQUISITION",
+  "seal_self_hash": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "dataset": "OpenNeuro ds005191",
+  "version": "1.0.2",
+  "name": "Mind Captioning",
+  "author": "Tomoyasu Horikawa",
+  "license": "CC0",
+  "subjects_present": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-05",
+    "sub-06"
+  ],
+  "bids_layout": {
+    "anat_session": "ses-anat",
+    "imagery_sessions": [
+      "ses-testImagery01",
+      "ses-testImagery02",
+      "ses-testImagery03",
+      "ses-testImagery04",
+      "ses-testImagery05"
+    ],
+    "perception_sessions": [
+      "ses-testPerception01",
+      "ses-testPerception02"
+    ],
+    "excluded_train_sessions": [
+      "ses-trainPerception01",
+      "ses-trainPerception02",
+      "ses-trainPerception03",
+      "ses-trainPerception04",
+      "ses-trainPerception05",
+      "ses-trainPerception06",
+      "ses-trainPerception07",
+      "ses-trainPerception08",
+      "ses-trainPerception09",
+      "ses-trainPerception10"
+    ]
+  },
+  "imagery_sessions_count": 5,
+  "selective_sync": "aws s3 sync s3://openneuro.org/ds005191 (exclude *ses-trainPerception*, derivatives/*) -> PVC c3xat-r1-workspace:/work/ds005191",
+  "trainPerception_excluded_from_analysis_and_tuning": true,
+  "acquire_job": "c3xat-r1-acquire",
+  "job_status_observed": "Running",
+  "progress_observed": "~1.5 GiB / ~10 GiB at ~74 MiB/s (per-subject partial; full 6-subject sync continues on the persistent PVC)",
+  "input_hashing": "SHA-256 manifest of all *.nii.gz/*.tsv/*.json built by the acquire job on the PVC",
+  "status": "ACQUISITION_IN_PROGRESS",
+  "self_hash": "0bfc0311f7a46d91d323a3a6ec2f38e0e4cab8eadf5613f9b0b6a2e81cbe0208"
+}

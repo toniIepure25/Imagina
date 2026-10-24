@@ -1,0 +1,72 @@
+{
+  "artifact": "C3XB_CANDIDATE_INVENTORY",
+  "created_at": "2026-09-01",
+  "gate": "C3XB",
+  "download_date": null,
+  "primary_candidate": {
+    "name": "Generic Object Decoding (GOD)",
+    "paper": "Horikawa & Kamitani 2017, Nature Communications 8:15037",
+    "openneuro": {
+      "accession": "ds001246",
+      "requested_version": "1.2.1",
+      "latest_snapshot_verified": "1.2.1",
+      "snapshot_created": "2019-12-06T20:42:17.000Z",
+      "role": "raw-BIDS provenance anchor only; NOT the operative analysis source"
+    },
+    "figshare": {
+      "article_id": 7387130,
+      "title": "Generic Object Decoding",
+      "requested_version_in_mission": 6,
+      "selected_version": 8,
+      "selected_doi": "10.6084/m9.figshare.7387130.v8",
+      "latest_version_live": 8,
+      "license": "CC BY 4.0",
+      "published_date_v8": "2026-06-03T08:33:31Z",
+      "role": "OPERATIVE analysis source (preprocessed single-trial bdpy .h5 patterns)"
+    }
+  },
+  "provenance_amendment": {
+    "type": "PRE_OUTCOME_PROVENANCE_AMENDMENT",
+    "issue": "Mission pinned Figshare 7387130 v6, but Figshare no longer serves versions 1-7; /versions returns only [8], and /versions/6 returns HTTP 404. v6 cannot be retrieved or hash-verified.",
+    "resolution": "Pin the only live, retrievable release: v8. v8 is a LATER curated release that supersedes v6.",
+    "why_scientifically_acceptable": "The reason the mission selected a post-correction version was the corrected category_index/image_index metadata. v8 (2026-06-03) is strictly later than v6 and therefore contains those corrections (and any further curation). Selecting the latest supersession satisfies -- indeed exceeds -- the correctness requirement that motivated the v6 selection.",
+    "reproducibility": "Reproducibility is preserved by pinning v8 file IDs + supplied_md5 (below) and computing SHA-256 on download; the empirical Phase 1 data-contract audit will re-verify all trial invariants and the 50/50 category correspondence against the selected files before any reliability outcome is inspected.",
+    "cache_rule_honored": "No older cached GOD dataset is reused; the ONLY accepted files are those matching the v8 IDs + MD5 recorded here."
+  },
+  "files_to_use": {
+    "imagery": {
+      "Subject1_Imagery.h5": {"file_id": 25103432, "supplied_md5": "ed0352234d2f3213b6de373cd98c801f", "size": 954349751, "sha256": null},
+      "Subject2_Imagery.h5": {"file_id": 25103492, "supplied_md5": "e88265460dcc8c099b14357fc8df3652", "size": 923935279, "sha256": null},
+      "Subject3_Imagery.h5": {"file_id": 25103771, "supplied_md5": "693e9c94e982f962c0decc5379e02657", "size": 1209616299, "sha256": null},
+      "Subject4_Imagery.h5": {"file_id": 25103948, "supplied_md5": "2658e4055e42575cda6e47260a0950db", "size": 906403851, "sha256": null},
+      "Subject5_Imagery.h5": {"file_id": 25104008, "supplied_md5": "4ec9ed006f9633cfebd5dea1c238db97", "size": 891078076, "sha256": null}
+    },
+    "category_matched_perception": {
+      "Subject1_ImageNetTest.h5": {"file_id": 25103408, "supplied_md5": "4152356c1c4af94654a0591118e91916", "size": 1655358337, "sha256": null},
+      "Subject2_ImageNetTest.h5": {"file_id": 25103441, "supplied_md5": "01a701f43c2b94984e3c408eb9eedc15", "size": 1599404665, "sha256": null},
+      "Subject3_ImageNetTest.h5": {"file_id": 25103513, "supplied_md5": "48159a5940ec7e70c8df7e99984eecdd", "size": 2100340917, "sha256": null},
+      "Subject4_ImageNetTest.h5": {"file_id": 25103798, "supplied_md5": "23f15d32398a91bfd1f6f4ed5e83311e", "size": 1537356457, "sha256": null},
+      "Subject5_ImageNetTest.h5": {"file_id": 25103972, "supplied_md5": "082ffae67c1ede74a1a2f9f88da0cfb1", "size": 1555315862, "sha256": null}
+    },
+    "download_url_pattern": "https://ndownloader.figshare.com/files/{file_id}"
+  },
+  "not_used_in_C3XB": [
+    "Subject{N}_ImageNetTraining.h5 (training set; not needed for reliability screen)",
+    "ImageFeatures.mat / ImageFeatures.h5 (CNN/model features -- FORBIDDEN in C3XB: no CLIP/DINO/CNN)",
+    "*_SpaceTemplate.nii / *_T1wAligned.nii / *_fMRIPrepSpaceTemplate.nii (anatomical; not needed)",
+    "Subject{N}.h5 (2026 combined-format file; per-task files used instead for contract clarity)"
+  ],
+  "code_provenance_for_contract": {
+    "note": "The GOD category contract (50 categories, run-pair balancing, imagery cue paradigm) will be certified from the paper (Horikawa & Kamitani 2017) + KamitaniLab GenericObjectDecoding code + the bdpy metadata in the selected files -- NOT from neural results, mirroring the C3XA target-contract methodology.",
+    "kamitanilab_repo": "https://github.com/KamitaniLab/GenericObjectDecoding",
+    "bdpy_repo": "https://github.com/KamitaniLab/bdpy"
+  },
+  "fallback_D2": {
+    "name": "Mind Captioning",
+    "openneuro": "ds005191",
+    "version": "1.0.2",
+    "frozen_before_GOD_outcomes": true,
+    "inspection_rule": "Inspect ONLY if GOD fails the C3XB gate. Do NOT inspect if GOD qualifies."
+  },
+  "self_hash_field": "self_hash"
+}

@@ -1,0 +1,19 @@
+{
+  "artifact": "ANIMUS_P2R_CLIP_RUNTIME_PROVENANCE",
+  "milestone": "ANIMUS-P2R",
+  "runtime_encoder": "open_clip:ViT-B-32",
+  "runtime_pretrained": "laion2b_s34b_b79k",
+  "runtime_embedding_dim": 512,
+  "runtime_normalization": "unit_l2",
+  "runtime_n_stimuli": 24000,
+  "embeddings_sha256": "55d2d991a0819894533db864497915db0dc740707d6e59165077b746551e56be",
+  "sealed_encoder": "open_clip:ViT-B-32",
+  "sealed_pretrained": "laion2b_s34b_b79k",
+  "sealed_embedding_dim": 512,
+  "sealed_normalization": "unit_l2",
+  "matches_p2_seal": true,
+  "weights_sha256": null,
+  "weights_pinning": "pretrained tag 'laion2b_s34b_b79k' resolves to exactly one open_clip checkpoint (HF laion/CLIP-ViT-B-32-laion2B-s34B-b79K, open_clip_pytorch_model.bin); local file-hash not captured this run (glob gap) -> to be pinned at the implementation freeze. NOT a provenance mismatch.",
+  "provenance_status": "ENCODER IDENTITY MATCHES SEAL (no mismatch); embedding artifact hashed",
+  "self_hash": "c997e738a95ae44e2e46738a7cc0ed9b3caf2b49225e342f8e62c93e313f7782"
+}

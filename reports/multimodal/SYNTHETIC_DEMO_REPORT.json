@@ -1,0 +1,632 @@
+{
+  "generated_at": "2026-10-12T16:23:34.171182+00:00",
+  "scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding.",
+  "sessions": [
+    {
+      "scenario": "shadow_default",
+      "wall_s": 4.33,
+      "final_state": "ACTIVE_SHADOW",
+      "n_ticks": 90,
+      "n_adaptive_feedback_delivered": 0,
+      "n_fallback_rest_ticks": 0,
+      "safety_codes": [
+        "low_confidence",
+        "low_signal_quality",
+        "no_usable_stream"
+      ],
+      "transitions": [
+        {
+          "t": 0.0,
+          "from": "IDLE",
+          "to": "CALIBRATION",
+          "reason": "session start"
+        },
+        {
+          "t": 40.0,
+          "from": "CALIBRATION",
+          "to": "BASELINE",
+          "reason": "calibrated on 20 windows"
+        },
+        {
+          "t": 50.0,
+          "from": "BASELINE",
+          "to": "ACTIVE_SHADOW",
+          "reason": "mode=shadow"
+        }
+      ],
+      "trace_valid": true,
+      "replay_reproduced": true,
+      "tick_latency_ms": {
+        "p50": 47.98370000207797,
+        "p95": 51.589850000164006,
+        "max": 86.23650000663474,
+        "note": "wall-clock processing per tick on this machine"
+      },
+      "max_alignment_uncertainty_ms": 0.0
+    },
+    {
+      "scenario": "simulated_feedback_research",
+      "wall_s": 3.75,
+      "final_state": "FEEDBACK_RESEARCH",
+      "n_ticks": 90,
+      "n_adaptive_feedback_delivered": 16,
+      "n_fallback_rest_ticks": 0,
+      "safety_codes": [
+        "low_confidence",
+        "low_signal_quality",
+        "no_usable_stream"
+      ],
+      "transitions": [
+        {
+          "t": 0.0,
+          "from": "IDLE",
+          "to": "CALIBRATION",
+          "reason": "session start"
+        },
+        {
+          "t": 40.0,
+          "from": "CALIBRATION",
+          "to": "BASELINE",
+          "reason": "calibrated on 20 windows"
+        },
+        {
+          "t": 50.0,
+          "from": "BASELINE",
+          "to": "FEEDBACK_RESEARCH",
+          "reason": "mode=feedback_research"
+        }
+      ],
+      "trace_valid": true,
+      "replay_reproduced": true,
+      "tick_latency_ms": {
+        "p50": 48.56959999597166,
+        "p95": 51.3445349977701,
+        "max": 57.957400000304915,
+        "note": "wall-clock processing per tick on this machine"
+      },
+      "max_alignment_uncertainty_ms": 0.0
+    },
+    {
+      "scenario": "eeg_disconnect_fault",
+      "wall_s": 3.52,
+      "final_state": "SAFE_FALLBACK",
+      "n_ticks": 90,
+      "n_adaptive_feedback_delivered": 6,
+      "n_fallback_rest_ticks": 42,
+      "safety_codes": [
+        "low_confidence",
+        "low_signal_quality",
+        "no_usable_stream",
+        "sensor_disconnected"
+      ],
+      "transitions": [
+        {
+          "t": 0.0,
+          "from": "IDLE",
+          "to": "CALIBRATION",
+          "reason": "session start"
+        },
+        {
+          "t": 40.0,
+          "from": "CALIBRATION",
+          "to": "BASELINE",
+          "reason": "calibrated on 20 windows"
+        },
+        {
+          "t": 50.0,
+          "from": "BASELINE",
+          "to": "FEEDBACK_RESEARCH",
+          "reason": "mode=feedback_research"
+        },
+        {
+          "t": 98.0,
+          "from": "FEEDBACK_RESEARCH",
+          "to": "SAFE_FALLBACK",
+          "reason": "persistent hold: sensor_disconnected"
+        }
+      ],
+      "trace_valid": true,
+      "replay_reproduced": true,
+      "tick_latency_ms": {
+        "p50": 43.58890000003157,
+        "p95": 51.28465500383754,
+        "max": 55.551900004502386,
+        "note": "wall-clock processing per tick on this machine"
+      },
+      "max_alignment_uncertainty_ms": 1.075
+    },
+    {
+      "scenario": "scripted_distress_report",
+      "wall_s": 4.32,
+      "final_state": "SAFE_FALLBACK",
+      "n_ticks": 90,
+      "n_adaptive_feedback_delivered": 6,
+      "n_fallback_rest_ticks": 41,
+      "safety_codes": [
+        "dissociation_keyword",
+        "low_confidence",
+        "low_signal_quality",
+        "no_usable_stream"
+      ],
+      "transitions": [
+        {
+          "t": 0.0,
+          "from": "IDLE",
+          "to": "CALIBRATION",
+          "reason": "session start"
+        },
+        {
+          "t": 40.0,
+          "from": "CALIBRATION",
+          "to": "BASELINE",
+          "reason": "calibrated on 20 windows"
+        },
+        {
+          "t": 50.0,
+          "from": "BASELINE",
+          "to": "FEEDBACK_RESEARCH",
+          "reason": "mode=feedback_research"
+        },
+        {
+          "t": 100.0,
+          "from": "FEEDBACK_RESEARCH",
+          "to": "SAFE_FALLBACK",
+          "reason": "dissociation_keyword"
+        }
+      ],
+      "trace_valid": true,
+      "replay_reproduced": true,
+      "tick_latency_ms": {
+        "p50": 52.065700001548976,
+        "p95": 71.6137899988098,
+        "max": 91.08290000585839,
+        "note": "wall-clock processing per tick on this machine"
+      },
+      "max_alignment_uncertainty_ms": 0.0
+    },
+    {
+      "scenario": "operator_emergency_stop",
+      "wall_s": 1.28,
+      "final_state": "TERMINATED",
+      "n_ticks": 39,
+      "n_adaptive_feedback_delivered": 0,
+      "n_fallback_rest_ticks": 0,
+      "safety_codes": [
+        "low_confidence",
+        "low_signal_quality",
+        "no_usable_stream"
+      ],
+      "transitions": [
+        {
+          "t": 0.0,
+          "from": "IDLE",
+          "to": "CALIBRATION",
+          "reason": "session start"
+        },
+        {
+          "t": 40.0,
+          "from": "CALIBRATION",
+          "to": "BASELINE",
+          "reason": "calibrated on 20 windows"
+        },
+        {
+          "t": 50.0,
+          "from": "BASELINE",
+          "to": "ACTIVE_SHADOW",
+          "reason": "mode=shadow"
+        },
+        {
+          "t": 80.0,
+          "from": "ACTIVE_SHADOW",
+          "to": "TERMINATED",
+          "reason": "manual emergency stop"
+        }
+      ],
+      "trace_valid": true,
+      "replay_reproduced": true,
+      "tick_latency_ms": {
+        "p50": 20.61739999044221,
+        "p95": 57.45947999967029,
+        "max": 59.420699995826,
+        "note": "wall-clock processing per tick on this machine"
+      },
+      "max_alignment_uncertainty_ms": 0.0
+    }
+  ],
+  "fusion_inference_latency_ms": {
+    "late_fusion": {
+      "p50_ms": 0.6304500057012774,
+      "p95_ms": 0.6848999932117289,
+      "n": 200
+    },
+    "intermediate_fusion": {
+      "p50_ms": 0.887200003489852,
+      "p95_ms": 1.228214994625887,
+      "n": 200
+    }
+  },
+  "protocols": {
+    "A": {
+      "protocol": "A",
+      "spec": {
+        "name": "Perception vs imagery vs rest",
+        "unit": "trial",
+        "split": "subject-grouped (LOSO)",
+        "primary": "balanced accuracy vs permutation null",
+        "controls": [
+          "label permutation",
+          "ocular-only model"
+        ]
+      },
+      "source_kinds": [
+        "SYNTHETIC"
+      ],
+      "scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding.",
+      "result": {
+        "name": "fbcsp_lda",
+        "scheme": "loso",
+        "fold_scores": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "chance": 0.5,
+        "permutation_p": 0.05,
+        "n_samples": 300,
+        "n_groups": 5,
+        "source_kinds": [
+          "SYNTHETIC"
+        ],
+        "extra": {},
+        "interpretation_scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding."
+      }
+    },
+    "B": {
+      "protocol": "B",
+      "spec": {
+        "name": "High vs low self-reported vividness",
+        "unit": "trial",
+        "split": "within-subject median split, LOSO evaluation",
+        "primary": "AUC vs permutation null",
+        "controls": [
+          "effort/arousal-only model",
+          "permutation"
+        ]
+      },
+      "source_kinds": [
+        "SYNTHETIC"
+      ],
+      "scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding.",
+      "result": {
+        "auc_loso": 0.6203124999999999,
+        "fold_auc": [
+          0.485,
+          0.565,
+          0.6875,
+          0.735,
+          0.6174999999999999,
+          0.6849999999999999,
+          0.6325,
+          0.5549999999999999
+        ],
+        "permutation_p": 0.0196078431372549,
+        "label_definition": "within-subject median split of self-reported vividness"
+      }
+    },
+    "C": {
+      "protocol": "C",
+      "spec": {
+        "name": "Subject-specific vs cross-subject decoding",
+        "unit": "subject",
+        "split": "within-subject k-fold vs LOSO on identical data",
+        "primary": "paired accuracy difference",
+        "controls": [
+          "permutation"
+        ]
+      },
+      "source_kinds": [
+        "SYNTHETIC"
+      ],
+      "scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding.",
+      "result": {
+        "within_subject": {
+          "name": "ts_within",
+          "scheme": "within_subject",
+          "fold_scores": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.9166666666666666,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.8333333333333334,
+            0.8333333333333334,
+            1.0,
+            0.9166666666666666,
+            1.0,
+            1.0,
+            1.0,
+            0.9166666666666666,
+            0.9166666666666666,
+            1.0,
+            0.9166666666666666,
+            0.9166666666666666,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": 0.9666666666666666,
+          "ci95": [
+            0.9433333333333335,
+            0.9866666666666666
+          ],
+          "chance": 0.5,
+          "permutation_p": null,
+          "n_samples": 300,
+          "n_groups": 5,
+          "source_kinds": [
+            "SYNTHETIC"
+          ],
+          "extra": {},
+          "interpretation_scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding."
+        },
+        "loso": {
+          "name": "ts_loso",
+          "scheme": "loso",
+          "fold_scores": [
+            0.95,
+            0.55,
+            0.5166666666666667,
+            0.9666666666666667,
+            0.6
+          ],
+          "mean": 0.7166666666666667,
+          "ci95": [
+            0.55,
+            0.8866666666666665
+          ],
+          "chance": 0.5,
+          "permutation_p": null,
+          "n_samples": 300,
+          "n_groups": 5,
+          "source_kinds": [
+            "SYNTHETIC"
+          ],
+          "extra": {},
+          "interpretation_scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding."
+        },
+        "difference": 0.2499999999999999,
+        "note": "Cross-subject loss reflects inter-subject variability not handled by this baseline."
+      }
+    },
+    "D": {
+      "protocol": "D",
+      "spec": {
+        "name": "Unimodal vs multimodal estimation",
+        "unit": "subject",
+        "split": "LOSO",
+        "primary": "fusion minus best unimodal accuracy",
+        "controls": [
+          "leave-one-modality-out ablation"
+        ]
+      },
+      "source_kinds": [
+        "SYNTHETIC"
+      ],
+      "scope": "SYNTHETIC/REPLAY infrastructure result. Demonstrates that the pipeline runs and behaves as designed on generated data; it is not a human neuroscience finding.",
+      "result": {
+        "all": {
+          "accuracy": 0.8166666666666665,
+          "fold_accuracy": [
+            0.82,
+            0.7,
+            0.88,
+            0.94,
+            0.76,
+            0.8
+          ],
+          "ece": 0.11778077530307524,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "only_eeg": {
+          "accuracy": 0.6933333333333334,
+          "fold_accuracy": [
+            0.74,
+            0.7,
+            0.58,
+            0.84,
+            0.62,
+            0.68
+          ],
+          "ece": 0.12462624680358851,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "without_eeg": {
+          "accuracy": 0.7333333333333333,
+          "fold_accuracy": [
+            0.76,
+            0.72,
+            0.7,
+            0.82,
+            0.74,
+            0.66
+          ],
+          "ece": 0.0999514744917196,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "only_ecg": {
+          "accuracy": 0.5666666666666667,
+          "fold_accuracy": [
+            0.58,
+            0.52,
+            0.7,
+            0.58,
+            0.54,
+            0.48
+          ],
+          "ece": 0.13503161620314966,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "without_ecg": {
+          "accuracy": 0.8099999999999999,
+          "fold_accuracy": [
+            0.78,
+            0.76,
+            0.84,
+            0.9,
+            0.78,
+            0.8
+          ],
+          "ece": 0.09065140057452387,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "only_eda": {
+          "accuracy": 0.65,
+          "fold_accuracy": [
+            0.68,
+            0.68,
+            0.68,
+            0.64,
+            0.6,
+            0.62
+          ],
+          "ece": 0.09772239724448135,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "without_eda": {
+          "accuracy": 0.7999999999999999,
+          "fold_accuracy": [
+            0.78,
+            0.72,
+            0.86,
+            0.9,
+            0.76,
+            0.78
+          ],
+          "ece": 0.09579531354782538,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "only_respiration": {
+          "accuracy": 0.5800000000000001,
+          "fold_accuracy": [
+            0.54,
+            0.58,
+            0.5,
+            0.68,
+            0.5,
+            0.68
+          ],
+          "ece": 0.11359335124542302,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "without_respiration": {
+          "accuracy": 0.8066666666666666,
+          "fold_accuracy": [
+            0.8,
+            0.76,
+            0.88,
+            0.9,
+            0.74,
+            0.76
+          ],
+          "ece": 0.10363258657775566,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "only_fnirs": {
+          "accuracy": 0.63,
+          "fold_accuracy": [
+            0.58,
+            0.7,
+            0.58,
+            0.68,
+            0.7,
+            0.54
+          ],
+          "ece": 0.1077211144978844,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "without_fnirs": {
+          "accuracy": 0.7766666666666667,
+          "fold_accuracy": [
+            0.84,
+            0.66,
+            0.78,
+            0.96,
+            0.74,
+            0.68
+          ],
+          "ece": 0.13085670696823,
+          "n_folds": 6,
+          "source_kinds": [
+            "SYNTHETIC"
+          ]
+        },
+        "_summary": {
+          "fusion": "late",
+          "scheme": "loso",
+          "all_minus_best_unimodal": 0.12333333333333318,
+          "note": "Difference is descriptive; a fusion benefit claim needs a preregistered test on real paired data."
+        }
+      }
+    },
+    "E-G_design_operating_characteristics": {
+      "n_per_arm": 20,
+      "results": {
+        "effect_0.0": {
+          "rejection_rate": 0.0525,
+          "n_sims": 400
+        },
+        "effect_0.1": {
+          "rejection_rate": 0.5375,
+          "n_sims": 400
+        },
+        "effect_0.2": {
+          "rejection_rate": 0.9825,
+          "n_sims": 400
+        }
+      },
+      "interpretation": "effect_0.0 estimates type-I error; non-zero effects estimate power. Simulated outcomes only."
+    }
+  }
+}

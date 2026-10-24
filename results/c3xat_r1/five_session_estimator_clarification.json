@@ -1,0 +1,25 @@
+{
+  "artifact": "C3XAT_R1_FIVE_SESSION_ESTIMATOR_CLARIFICATION",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "context": "C3XAT has 5 imagery sessions; the frozen c3xb splitter uses h=len(units)//2 -> 2 vs 2 with 1 omitted",
+  "certified": {
+    "n_sessions": 5,
+    "each_split_4_distinct_and_1_omitted": true,
+    "halves_never_overlap": true,
+    "all_sessions_participate": true,
+    "omission_counts": {
+      "1": 128,
+      "2": 109,
+      "3": 106,
+      "4": 118,
+      "5": 139
+    },
+    "n_splits_examined": 600,
+    "scientific_estimator_changed": false
+  },
+  "scientific_estimator_changed": false,
+  "primary_R_I": "remains the exact frozen c3xb_reliability.reliability_with_inference_pairs callable",
+  "note": "This is the estimator's existing, historically-used behavior (also present in C3XD simulations); no modification to c3xb_reliability.py and no new primary estimator.",
+  "self_hash": "78f5fd7ab376d27b7aade51ecfcab2621929a7218f2d75cf085d370cf712484d"
+}

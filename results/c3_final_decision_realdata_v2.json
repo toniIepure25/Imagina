@@ -1,0 +1,90 @@
+{
+  "gate": "C3_REAL_DATA_FINAL_DECISION_V2",
+  "supersedes": "results/c3_final_decision_realdata.json",
+  "timestamp": "2026-08-22T00:30:00",
+  "branch": "research/fmri-imagery-transfer-c3-realdata",
+  "scope": "SINGLE_SUBJECT (subj01) — NOT population evidence",
+
+  "C3_PERCEPTION_DECODING": "PASS",
+  "C3_IMAGERY_ROW_PROVENANCE": "PASS",
+  "C3_ZERO_SHOT_IMAGERY_TRANSFER": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+  "C3_STATE_TRANSPORT": "NULL_OR_INCONCLUSIVE",
+  "C3_RECONSTRUCTION_READINESS": "BLOCKED",
+  "C3": "COMPLETE_WITH_IMAGERY_TRANSFER_NULL",
+
+  "results": {
+    "perception_decoding": {
+      "decision": "SUBJ01_PERCEPTION_FOUNDATION_PASS",
+      "mrr": 0.07729543188501593, "chance_mrr": 0.007485470860550345,
+      "permutation_p": 9.999e-05, "two_way_identification": 0.8455,
+      "artifact": "results/c3_subj01_perception_strict_replay.json"
+    },
+    "imagery_row_provenance": {
+      "decision": "AUTHORITATIVELY_RESOLVED_BY_NSD_DATA_MANUAL_V1_6",
+      "accounting": "720 = 144 vision (1 beta/trial) + 288 imagery (1 beta/trial) + 288 attention (2 betas/trial)",
+      "empirically_corroborated": "design matrix: vision/imagery runs 6 active cols x 8 onsets = 48; attention runs 12 cols x 8 = 96",
+      "within_block_ordering": "beta row k == behavioral trial k (design onset order == behavioral trial order)",
+      "vision_ground_truth_agreement": "96/96 (CONDITION -> pair_list -> FRAMEFILE)",
+      "artifacts": ["results/c3_nsdimagery_row_mapping.json", "results/c3_nsdimagery_beta_event_manifest.json"]
+    },
+    "vision_cross_session_validation": {
+      "status": "BLOCKED_CROSS_SESSION_VISION_VALIDATION_DEGENERATE_COLLAPSE",
+      "finding": "frozen decoder collapses on the imagery session (seen Set A 48/48 -> one candidate, seen Set B 45/48). Mapping is certified correct independently; the collapse is cross-session nonstationarity.",
+      "artifact": "results/c3_subj01_nsdimagery_vision_validation.json"
+    },
+    "zero_shot_imagery_transfer": {
+      "decision": "SUBJ01_ZERO_SHOT_IMAGERY_TRANSFER_NULL_DEGENERATE_COLLAPSE",
+      "primary_setB_mrr": 0.29689, "primary_exact_6fact_p": 0.00139,
+      "two_way_identification": 0.42424,
+      "prediction_collapse": "candidate 6 nearest for 96/96 Set B imagery trials",
+      "interpretation": "exact-p significance is a single-candidate collapse artifact (one stimulus coincides with the collapse target); 2AFC below chance confirms no genuine transfer",
+      "secondary_setA_OOD": {"mrr": 0.2510, "exact_p": 0.3125},
+      "artifact": "results/c3_zero_shot_transfer_realdata.json"
+    },
+    "state_transport_h4": {
+      "decision": "SUBJ01_STATE_TRANSPORT_NULL_OR_INCONCLUSIVE",
+      "held_out_target": "all transport methods worse than identity (deltas -0.16 to -0.19); none beats matched random low-rank",
+      "artifact": "results/c3_state_transport_realdata.json"
+    },
+    "sensitivity": {
+      "conclusion": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+      "min_detectable_mrr_improvement_80pct_power": 0.1397,
+      "note": "the n=1 design (96 trials, 6 targets x 16 repeats, exact 6! null, collapse-guarded criterion) has 80% power to detect a genuine non-degenerate transfer raising MRR by ~0.14; none is present",
+      "artifact": "results/c3_h2_sensitivity.json"
+    },
+    "falsification_uncertainty": {
+      "collapse_control": "FLAGGED_DEGENERATE (load-bearing falsification)",
+      "leakage_audits": "cue/target-metadata/row-mapping leakage all PASS (structural)",
+      "generator_free": "PASS (retrieval-only, no image generation)",
+      "uncertainty_h5": "not meaningful under collapse; not claimed",
+      "artifact": "results/c3_realdata_falsification_uncertainty.json"
+    }
+  },
+
+  "gate_mapping": "Imagery null: PERCEPTION=PASS, ZERO_SHOT=NULL_SUPPORTED_WITHIN_SENSITIVITY, STATE_TRANSPORT=NULL_OR_INCONCLUSIVE, RECONSTRUCTION_READINESS=BLOCKED, C3=COMPLETE_WITH_IMAGERY_TRANSFER_NULL",
+
+  "reconstruction_prohibition": "No image reconstruction performed or attempted. C4 not begun.",
+
+  "claim_boundaries": {
+    "supported": [
+      "subj01: a strictly leakage-free perception-trained CLIP decoder recovers stimulus information from perception fMRI well above chance",
+      "subj01: that frozen perception decoder does NOT transfer zero-shot to the NSD-Imagery session — it collapses to a near-constant prediction (cross-session nonstationarity)",
+      "subj01: low-capacity output-space calibration does not rescue the imagery null on held-out targets",
+      "the single-subject design was well-powered to detect a genuine moderate transfer effect and found none"
+    ],
+    "not_supported": [
+      "any population/cohort claim (n=1)",
+      "thought reading, general imagery decoding, reconstruction of private mental imagery, reconstruction readiness"
+    ]
+  },
+
+  "population_readiness": {
+    "eligible_participants": ["subj01", "subj02", "subj05", "subj07"],
+    "status": "subj02/05/07 acquisition remains BLOCKED_BY_STORAGE (local 39GB free vs 40.77GB/subject); not abandoned",
+    "single_subject_outcome_does_not_gate_acquisition": true,
+    "note": "The cross-session collapse suggests future work should test whether other subjects show the same nonstationarity, and whether a session-alignment step (outside the strict zero-shot protocol) changes the imagery result. That is future work, not C4.",
+    "artifact": "results/c3_multiparticipant_acquisition_status.json"
+  },
+
+  "stop_condition": "Work stops after the single-subject H2 decision and population-readiness plan. C4 (image reconstruction) is NOT begun."
+}

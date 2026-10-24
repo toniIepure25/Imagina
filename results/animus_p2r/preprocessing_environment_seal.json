@@ -1,0 +1,16 @@
+{
+  "artifact": "ANIMUS_P2R_PREPROCESSING_ENVIRONMENT_SEAL",
+  "milestone": "ANIMUS-P2R",
+  "fmriprep_container_digest": "nipreps/fmriprep@sha256:9aec0b83b3728795fa5a593d373c9bc5d4a7034e943a793173408e3b70e702c6",
+  "fmriprep_version": "24.x (pinned by digest; same image as C3XAT cohort)",
+  "freesurfer": "bundled in image",
+  "templateflow": "MNI152NLin2009cAsym (pinned cache)",
+  "ants": "bundled",
+  "afni": "bundled",
+  "output_spaces": "MNI152NLin2009cAsym:res-2",
+  "spatial_smoothing": "NONE",
+  "fieldmap_policy": "use dataset BIDS fieldmaps (present for all eligible subjects); single predeclared behavior; no per-subject scientific variation",
+  "cifti": "disabled",
+  "no_floating_tags": true,
+  "self_hash": "8a94b170bd0354b18f4db287f18297992106291d695f9bc0103b9c0b1e04347f"
+}

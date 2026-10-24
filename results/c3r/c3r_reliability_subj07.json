@@ -1,0 +1,94 @@
+{
+  "subject": "subj07",
+  "n_voxels_nsdgeneral": 12511,
+  "R_I_nsdgeneral": {
+    "reliability": -0.07782814784092498,
+    "bootstrap_ci95": [
+      -0.5969962317496484,
+      0.34569382327036513
+    ],
+    "bootstrap_mean": -0.05186709130035652,
+    "null_mean": -0.019982996650785265,
+    "null_std": 0.17406018916978316,
+    "perm_p_one_sided": 0.6533466533466533,
+    "split_seed_values": [
+      -0.07782814784092498,
+      -0.04883461864724328,
+      -0.056987910207818286
+    ],
+    "split_seed_min": -0.07782814784092498,
+    "split_seed_max": -0.04883461864724328,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_rep_point": 200
+  },
+  "R_P_nsdgeneral": {
+    "reliability": -0.06957446838314152,
+    "bootstrap_ci95": [
+      -0.7320668861581807,
+      0.4344374207441241
+    ],
+    "bootstrap_mean": -0.05504233500962184,
+    "null_mean": -0.0673402210854145,
+    "null_std": 0.25229246406902783,
+    "perm_p_one_sided": 0.5334665334665335,
+    "split_seed_values": [
+      -0.06957446838314152,
+      -0.05644770141849453,
+      -0.06989565220994998
+    ],
+    "split_seed_min": -0.06989565220994998,
+    "split_seed_max": -0.05644770141849453,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_rep_point": 200
+  },
+  "R_I_over_R_P": 1.1186308663162334,
+  "practical_effect_flags_imagery": {
+    "R_gt_0p05": false,
+    "R_gt_0p10": false,
+    "R_gt_0p20": false
+  },
+  "imagery_gate": "RELIABILITY_NOISE_FLOOR",
+  "vision_gate": "RELIABILITY_NOISE_FLOOR",
+  "quality_class": "VISION_UNRELIABLE_SESSION_QUALITY_BLOCKER",
+  "roi_secondary": {
+    "V1": {
+      "n_voxels": 1131,
+      "R_I": -0.0027212230307801827,
+      "R_P": 0.10645664080904714
+    },
+    "V2": {
+      "n_voxels": 977,
+      "R_I": 0.049140755121717526,
+      "R_P": -0.17406775434523716
+    },
+    "V3": {
+      "n_voxels": 720,
+      "R_I": 0.15708200565505154,
+      "R_P": -0.14029461268895793
+    },
+    "hV4": {
+      "n_voxels": 393,
+      "R_I": -0.24547918728464194,
+      "R_P": -0.1496439336169518
+    },
+    "ventral": {
+      "n_voxels": 3727,
+      "R_I": -0.22683643421378455,
+      "R_P": -0.11511441634906823
+    },
+    "lateral": {
+      "n_voxels": 2833,
+      "R_I": -0.08987979888996335,
+      "R_P": -0.09441228717516449
+    },
+    "parietal": {
+      "n_voxels": 1736,
+      "R_I": -0.01011359297513132,
+      "R_P": -0.06301307963661427
+    }
+  },
+  "subj01_reference_descriptive": 0.011,
+  "self_hash": "3ffea5049656e3c3ad624c32f5131506489e319736ead9d140fa8d7613245cf6"
+}

@@ -1,0 +1,30 @@
+{
+  "artifact": "C3XAT_R1_RELIABILITY",
+  "subject": "S3",
+  "seal_self_hash": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK",
+  "independent_unit": "imagery SESSION",
+  "estimator": "c3xb_reliability.reliability_with_inference_pairs",
+  "split_seeds": [
+    20260909,
+    20261009,
+    20261109
+  ],
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "n_rep_point": 200,
+  "status": "EXECUTION_INCOMPLETE",
+  "R_I": null,
+  "perm_p_one_sided": null,
+  "bootstrap_ci95": null,
+  "split_seed_min": null,
+  "R_P": null,
+  "cue_gain": null,
+  "video_gain": null,
+  "R_I_cuevideo_predicted": null,
+  "Delta_I": null,
+  "delta_inference": null,
+  "subject_pass_status": null,
+  "note": "requires completed fMRIPrep + atlas ROI + sealed estimator on the cluster; not yet available this session. No value fabricated.",
+  "self_hash": "89dee7ef22853c4217d7d7e4c3bec3d21ff226272a7e1736bb6e93bcec775403"
+}

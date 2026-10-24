@@ -1,0 +1,78 @@
+{
+  "artifact": "C3G_TRANSFORMS_SECONDARY",
+  "created_at": "2026-08-26T09:39:23",
+  "status": "UNDERPOWERED_K6_SECONDARY_DOES_NOT_DRIVE_PRIMARY_DECISION",
+  "n_content": 6,
+  "shared_subspace_rank": 4,
+  "seed": 20260826,
+  "hierarchy_heldout_cosine": {
+    "T0_identity": -0.01663727115393618,
+    "T1_gain": -0.07045610471784138,
+    "T3_procrustes": -0.09781721212213451,
+    "T4_lowrank": -0.07741069768734475
+  },
+  "hierarchy_detail": {
+    "T0_identity": {
+      "heldout_cosine_mean": -0.01663727115393618,
+      "per_content": [
+        0.053113559921324535,
+        0.17018292567257134,
+        -0.2674979835435744,
+        -0.36313246417421924,
+        0.02479555617407785,
+        0.28271477902620284
+      ]
+    },
+    "T1_gain": {
+      "heldout_cosine_mean": -0.07045610471784138,
+      "per_content": [
+        0.009591706045391354,
+        0.3023262674375998,
+        -0.43098853706509627,
+        -0.4325274883538194,
+        -0.13564783624662796,
+        0.2645092598755042
+      ]
+    },
+    "T3_procrustes": {
+      "heldout_cosine_mean": -0.09781721212213451,
+      "per_content": [
+        0.020181705774625015,
+        0.21803226047062407,
+        -0.42931328987873996,
+        -0.46276104265621903,
+        -0.1258117468706928,
+        0.19276884042759568
+      ]
+    },
+    "T4_lowrank": {
+      "heldout_cosine_mean": -0.07741069768734475,
+      "per_content": [
+        0.007791868724981914,
+        0.2911937688105366,
+        -0.4338156213786964,
+        -0.4395233621987236,
+        -0.13755048274837636,
+        0.24743964266620927
+      ]
+    }
+  },
+  "identity_heldout_cosine": -0.01663727115393618,
+  "best_learned_transform": "T1_gain",
+  "best_learned_heldout_cosine": -0.07045610471784138,
+  "capacity_matched_random": {
+    "n": 200,
+    "mean": -0.0668412510864491,
+    "pct95": -0.05015775129462873,
+    "max": -0.039268895897341276
+  },
+  "best_beats_identity": false,
+  "best_beats_random_95pct": false,
+  "content_invariance_note": "H-common vs H-content is not separable at K=6 with a leakage-free split; a common low-capacity transform generalizing to held-out content above identity+random would support content-invariance, but absence of such generalization here is UNDERPOWERED, not evidence for content-dependence.",
+  "omitted_transforms": {
+    "T2_diagonal": "non-identifiable at K=6",
+    "T5_covariance": "coincides with frozen C3M correction",
+    "T6_nonlinear": "not justified; linear stage underpowered"
+  },
+  "self_hash": "1ca4e1940d0d35594958660bd68ce0bd28df5c9dc6708fb432639924e98a3937"
+}

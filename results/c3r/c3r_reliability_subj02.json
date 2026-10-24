@@ -1,0 +1,94 @@
+{
+  "subject": "subj02",
+  "n_voxels_nsdgeneral": 14088,
+  "R_I_nsdgeneral": {
+    "reliability": -0.02425804818801888,
+    "bootstrap_ci95": [
+      -0.4573558354715359,
+      0.30879263946448293
+    ],
+    "bootstrap_mean": -0.020049094671061207,
+    "null_mean": -0.023974814632742026,
+    "null_std": 0.16121810320907387,
+    "perm_p_one_sided": 0.5234765234765235,
+    "split_seed_values": [
+      -0.02425804818801888,
+      -0.0005901268307794227,
+      -0.0034750822476754387
+    ],
+    "split_seed_min": -0.02425804818801888,
+    "split_seed_max": -0.0005901268307794227,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_rep_point": 200
+  },
+  "R_P_nsdgeneral": {
+    "reliability": 0.4814051903627656,
+    "bootstrap_ci95": [
+      0.10714930407241452,
+      0.5369050890843701
+    ],
+    "bootstrap_mean": 0.34704906887838005,
+    "null_mean": -0.0303033664087829,
+    "null_std": 0.1565891860316948,
+    "perm_p_one_sided": 0.000999000999000999,
+    "split_seed_values": [
+      0.4814051903627656,
+      0.48521456946340213,
+      0.48856951821891603
+    ],
+    "split_seed_min": 0.4814051903627656,
+    "split_seed_max": 0.48856951821891603,
+    "n_perm": 1000,
+    "n_boot": 1000,
+    "n_rep_point": 200
+  },
+  "R_I_over_R_P": -0.05039008443124406,
+  "practical_effect_flags_imagery": {
+    "R_gt_0p05": false,
+    "R_gt_0p10": false,
+    "R_gt_0p20": false
+  },
+  "imagery_gate": "RELIABILITY_NOISE_FLOOR",
+  "vision_gate": "RELIABILITY_PASS",
+  "quality_class": "VISION_RELIABLE_IMAGERY_NOISE_FLOOR",
+  "roi_secondary": {
+    "V1": {
+      "n_voxels": 1097,
+      "R_I": -0.3333843983207964,
+      "R_P": 0.6468970327920591
+    },
+    "V2": {
+      "n_voxels": 1057,
+      "R_I": -0.321539453530395,
+      "R_P": 0.41128576777740244
+    },
+    "V3": {
+      "n_voxels": 1082,
+      "R_I": -0.22795225845515,
+      "R_P": 0.36252225806039506
+    },
+    "hV4": {
+      "n_voxels": 480,
+      "R_I": -0.1908297260976834,
+      "R_P": 0.6293553295540664
+    },
+    "ventral": {
+      "n_voxels": 4634,
+      "R_I": 0.19869887448103893,
+      "R_P": 0.3950545102947246
+    },
+    "lateral": {
+      "n_voxels": 2957,
+      "R_I": -0.09107796990612535,
+      "R_P": 0.42634929999039983
+    },
+    "parietal": {
+      "n_voxels": 2263,
+      "R_I": 0.270877072692852,
+      "R_P": 0.4953401086626228
+    }
+  },
+  "subj01_reference_descriptive": 0.011,
+  "self_hash": "5981fca7a2320ff01e7b042a5760d5901472d2dd0bcfd5ecbf784ad8ab11023d"
+}

@@ -1,0 +1,21 @@
+{
+  "artifact": "ANIMUS_P2XR_THINGS_STIMULUS_SOURCE",
+  "milestone": "ANIMUS-P2XR",
+  "dataset": "ds004192 (THINGS-fMRI)",
+  "authoritative_source": "OSF project jum2f (THINGS images)",
+  "archive_filename": "images_THINGS.zip",
+  "archive_size_bytes": 5022473688,
+  "archive_size_gb": 5.02,
+  "password_file": "password_images.txt (OSF jum2f; kept in ephemeral/PVC state, NOT committed)",
+  "download_endpoint": "https://api.osf.io/v2/nodes/jum2f/files/osfstorage/ -> images_THINGS.zip",
+  "identity_field": "events.tsv file_path (concept/concept_NNs.jpg)",
+  "trial_types_kept": [
+    "exp",
+    "test"
+  ],
+  "trial_types_excluded": [
+    "catch"
+  ],
+  "license_note": "THINGS images password-protected for copyright; research use",
+  "self_hash": "c300526c8dd2ba2df7c6525ba25ead3b9bca54f602b6ea55249ad6c47b37db09"
+}

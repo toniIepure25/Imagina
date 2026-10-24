@@ -104,11 +104,11 @@
 
 ## RISK-011: Frontend Test Coverage Gap
 
-**Risk:** The frontend has no automated tests (`npm test` script is missing). UI regressions and logic bugs in session flow, scene rendering, or metric displays could go undetected.  
-**Impact:** Medium — frontend bugs could affect user safety (e.g., incorrect safety banner behavior) or scientific data quality (e.g., incorrect metric display).  
-**Mitigation:** Add `npm test` script with a test framework (vitest/jest + testing-library). Prioritize tests for session flow, safety banner, and metric display components.  
+**Risk:** Frontend tests exist but are limited in scope — mostly export/import checks and basic timing verification.  
+**Impact:** Medium — deeper behavioral tests (consent flow, session abort, safety stop) are still missing.  
+**Mitigation:** Vitest infrastructure is in place with 11 passing tests. Playwright end-to-end tests are planned for Merge Gate B.  
 **Owner:** TBD  
-**Status:** Not yet mitigated. No frontend test infrastructure exists.
+**Status:** Partially mitigated. Vitest runs in CI. Playwright not yet implemented.
 
 ---
 
@@ -202,4 +202,410 @@
 
 ---
 
-*Last updated: 2026-05-07 — Phase 3A*
+## RISK-021: Feedback Conditions Not Wired Into Live Session
+
+**Risk:** Feedback conditions (adaptive, fixed, yoked) are defined in `feedback_conditions.py` but `websocket/session_stream.py` always constructs the original `FeedbackPolicyEngine`. Research conditions cannot be executed in a live session.
+**Impact:** High for research — no experiment can run until this is resolved.
+**Mitigation:** Merge Gate B implemented unified feedback policy adapters (AdaptiveFeedbackPolicy, FixedResearchFeedbackPolicy, FrozenYokedFeedbackPolicy) and a transport-independent ResearchSessionRuntime. The demo WebSocket loop remains unchanged.
+**Owner:** TBD
+**Status:** Mitigated for synthetic sessions. Demo WebSocket loop still uses original engine.
+
+---
+
+## RISK-022: Trial Scheduler Is In-Memory Only
+
+**Risk:** `TrialScheduler` stores state in memory, uses wall-clock timestamps, and has no persistence, resume, or abort semantics.
+**Impact:** High — session interruption loses trial data; no provenance trail.
+**Mitigation:** Merge Gate B implemented persistent state machines with optimistic concurrency (state_version CAS), transition audit tables, and injectable clocks.
+**Owner:** TBD
+**Status:** Mitigated for research runtime. Legacy trial scheduler unchanged.
+
+---
+
+## RISK-023: Synthetic-Only Validation
+
+**Risk:** Merge Gate B proves engineering execution with synthetic data only. No human behavioral or neural data has been collected or validated.
+**Impact:** The system cannot be described as scientifically validated, human-ready, or publication-ready.
+**Mitigation:** Explicit synthetic data classification in all records and exports. Disclaimers in UI and export metadata. Governance gates block human data collection by default.
+**Owner:** TBD
+**Status:** Active — by design.
+
+---
+
+## RISK-024: Export Path Security
+
+**Risk:** The synthetic export API currently uses a configured export root. Path traversal, symlink escape, and overwrite attacks are partially mitigated but not fully hardened.
+**Impact:** Medium — local-only deployment limits exposure, but export endpoints should validate paths rigorously.
+**Mitigation:** Export root is server-configured. Client cannot specify arbitrary paths. Full hardening (fsync, atomic rename, symlink checks) planned for production readiness.
+**Owner:** TBD
+**Status:** Partially mitigated — B.1 adds atomic export with temp dir → rename.
+
+---
+
+## RISK-025: Adaptive Session Replay Non-Determinism
+
+**Risk:** Replay-from-manifest is only verified for fixed-condition sessions. Adaptive sessions wrap FeedbackPolicyEngine which uses `utcnow()` internally and may accumulate state.
+**Impact:** Medium — adaptive replay may produce hash mismatches that are false negatives.
+**Mitigation:** Deterministic clock injection into AdaptiveFeedbackPolicy pending. Fixed and yoked replay verified deterministic.
+**Owner:** TBD
+**Status:** Active — known limitation.
+
+---
+
+## RISK-026: Docker Smoke Test Availability
+
+**Risk:** Docker smoke test requires Docker daemon; may not be available in all CI environments.
+**Impact:** Low — docker-smoke job is manual trigger only (workflow_dispatch).
+**Mitigation:** docker-config job validates compose files on every push. Docker smoke is optional evidence.
+**Owner:** TBD
+**Status:** Accepted — by design.
+
+---
+
+## RISK-027: Playwright E2E Flakiness
+
+**Risk:** Playwright E2E tests require both backend and frontend services running simultaneously. Timing-dependent polling may be flaky in resource-constrained CI.
+**Impact:** Low-Medium — false failures in CI may block merges.
+**Mitigation:** Generous timeouts (120s), reuseExistingServer, polling with 2s intervals and 60 iterations.
+**Owner:** TBD
+**Status:** Active — monitoring needed.
+
+---
+
+## RISK-028: Synthetic Cognitive Agent Model Validity
+
+**Risk:** The cognitive agent model generates synthetic responses using mathematical distributions and assumed correlations between constructs. These assumptions may not reflect actual human cognitive architecture.
+**Impact:** High — simulation-based power and design recommendations are only as valid as the generative model.
+**Mitigation:** Model parameters are transparent and versioned. Multiple adversarial scenarios test robustness. All results are labeled synthetic-only. Human pilot data is required to validate model assumptions.
+**Owner:** TBD
+**Status:** Active — by design. No human validation performed.
+
+---
+
+## RISK-029: Psychometric Properties Not Established
+
+**Risk:** The objective task battery (feature reconstruction, manipulation, delayed imagery, perceptual control) has no established human psychometric properties (reliability, validity, sensitivity).
+**Impact:** High — human response distributions may differ from synthetic model assumptions.
+**Mitigation:** Calibration procedure adapts difficulty. Split-half and test-retest reliability are estimated in simulation. Human pilot testing is planned before full study.
+**Owner:** TBD
+**Status:** Active — synthetic validation only.
+
+---
+
+## RISK-030: Type-I Error Control Under Monte Carlo Uncertainty
+
+**Risk:** With small simulation iteration counts (fast mode: 20 iterations), Monte Carlo SE is large and Type-I error estimates have wide confidence intervals. CI checks use relaxed thresholds to avoid false failures.
+**Impact:** Medium — actual Type-I error control can only be established with larger iteration counts (research mode).
+**Mitigation:** CI uses fast mode with relaxed bounds. Research mode (1000+ iterations) is available for thorough validation. Monte Carlo SE is always reported alongside point estimates.
+**Owner:** TBD
+**Status:** Accepted — monitoring needed in research mode.
+
+---
+
+---
+
+## RISK-031: Primary Estimator 100% Fallback
+
+**Risk:** The primary GEE/MixedLM crossover estimator does not converge with the default N=18 design (3-period, full covariate adjustment). All replicates use fallback aggregate estimation, yielding `inference_valid=False` and coverage/power of 0.
+**Impact:** Critical — no valid inferential results are produced. Operating characteristics cannot be evaluated for the primary model.
+**Mitigation:** Correctly detected and flagged by the campaign calibration checks. Resolution paths: (a) increase sample size, (b) simplify model terms (fewer covariates), (c) use human pilot data to determine appropriate model complexity. Do not weaken fallback detection or use permissive thresholds.
+**Owner:** TBD
+**Status:** Active — blocking for publication-quality evidence.
+
+---
+
+## RISK-032: Remote CI Execution Pending
+
+**Risk:** CI workflow is defined with all required jobs but remote execution depends on push to GitHub.
+**Impact:** Medium — local test passing does not guarantee remote environment compatibility.
+**Mitigation:** Push branch and trigger CI. All scientific jobs are defined in `.github/workflows/ci.yml`:
+- science-contrast-invariants, science-calibrated-inference
+- science-objective-db-transaction, science-api-restart-recovery
+- science-replay-failclosed, science-export-persistent
+- science-campaign-smoke, science-frontend-e2e
+**Owner:** TBD
+**Status:** Active — push required.
+
+---
+
+## RISK-033: Multimodal pipelines validated only on synthetic ground truth
+
+**Risk:** ECG/EDA/respiration/fNIRS/EEG pipelines pass tests against generators written in the same package.
+**Impact:** High for any physiological interpretation; shared assumptions between generator and detector go unnoticed.
+**Mitigation:** Validate on annotated public datasets (PhysioNet ECG/EDA/respiration, public SNIRF data) before use.
+**Owner:** TBD
+**Status:** Active.
+
+---
+
+## RISK-034: Device adapters untested against real streams
+
+**Risk:** `LSLInletProvider` and `BrainFlowProvider` are written against documented APIs, but pylsl/brainflow are not
+installed here; the ADS1299 frame protocol has only been tested with encoded byte streams.
+**Impact:** Medium; first hardware contact may surface API/timing issues.
+**Mitigation:** Test with an LSL replay outlet and the BrainFlow synthetic board; complete
+`docs/hardware_validation_checklist.json` before any human connection.
+**Owner:** TBD
+**Status:** Active (HARDWARE REQUIRED).
+
+---
+
+## RISK-035: EDA SCR onset bias and near-threshold spurious responses
+
+**Risk:** Zero-phase smoothing biases detected SCR onsets ~0.3 s early; slow tonic drift can yield ~0.01 uS
+spurious SCRs.
+**Impact:** Low to medium for event-related SCR windows and SCR rate.
+**Mitigation:** Event windows are 1-4 s; consider deconvolution (cvxEDA/Ledalab-style) once validated.
+**Owner:** TBD
+**Status:** Active.
+
+---
+
+## RISK-036: Multimodal sessions are in-memory; command center not inspected in a browser
+
+**Risk:** `/api/multimodal` keeps up to 20 sessions in process memory; the UI was verified by build, typecheck, unit
+tests and an HTTP smoke test but not visually in a browser.
+**Impact:** Low; restart loses demo sessions; layout issues possible.
+**Mitigation:** Persist manifests (SessionStore/SQLite); add a Playwright check for `/multimodal`.
+**Owner:** TBD
+**Status:** Active.
+
+---
+
+*Last updated: 2026-10-12 — RISK-033..036 multimodal platform*
+
+---
+
+## RISK-037: Studio parser and renderer are bounded approximations
+
+**Risk:** The intention parser covers a finite vocabulary of objects, colours, styles, times, moods, and spatial
+relations. Unknown nouns become abstract forms; the procedural renderer is a stylised approximation rather than a
+physically accurate world. A correction may therefore be represented differently from what the user pictured.
+**Impact:** Medium for product fidelity; none for the claim ceiling, because the scene is explicitly symbolic.
+**Mitigation:** Unknown nouns and unsupported requests surface warnings/resolutions; the element inspector exposes
+exact attributes and locks; every version is diffable; regenerate is seeded and reversible.
+**Owner:** TBD
+**Status:** Accepted product limitation. Parser vocabulary and renderer fidelity are follow-up work, not validated
+imagery measurement.
+
+---
+
+## RISK-038: Browser verification depends on a system Chrome/Edge
+
+**Risk:** The Playwright package is present but its bundled Chromium is not installed in this environment. The
+verification harness therefore launches a locally installed Chrome/Edge. On a machine without either browser, the
+end-to-end check cannot run.
+**Impact:** Low; backend, unit, typecheck, lint and production-build checks remain independent.
+**Mitigation:** `frontend/scripts/verify-animus-ui.cjs` accepts `CHROME_PATH` and probes standard Chrome/Edge paths.
+**Status:** Active; harness passed against local Chrome on 2026-10-22 (0 console errors, 0 px mobile overflow).
+
+---
+
+*Last updated: 2026-10-22 - RISK-037..039 ANIMUS Studio and test environment*
+
+---
+
+## RISK-039: pytest temp-directory ACL blocks the default full suite on this host
+
+**Risk:** `pytest`'s default `tmp_path` root (`%LOCALAPPDATA%\Temp\pytest-of-ComputaCenter`) is not writable by
+the current account. A plain `pytest app/tests` aborts collection/fixtures with `PermissionError: [WinError 5]`.
+**Impact:** Low for product code; it obscures the full-suite signal in this environment.
+**Mitigation:** Pass a writable base temp directory, e.g.
+`python -m pytest app/tests -q -p no:cacheprovider --basetemp=D:\ComputaCenter\Imagina\.pytest-tmp` with
+`TEMP`/`TMP` set to the same path. New Studio persistence/API tests also avoid `tmp_path` by using
+`tempfile.mkdtemp`.
+**Status:** Active environment issue; targeted Studio (80) and P1 (25) suites pass with the workaround.
+
+---
+
+## RISK-040: Studio serialization assumes a single local process
+
+**Risk:** Per-session mutation serialization uses an in-process `asyncio.Lock`. Two backend processes
+pointed at the same SQLite file would not share that lock, so a rare concurrent write could still race.
+**Impact:** Low for the shipped local product (one `uvicorn` process, one user); high for any future
+multi-process or hosted deployment.
+**Mitigation:** Documented as an explicit assumption in ADR-042 and the API contract. SQLite still provides
+atomic transactions, strict version inserts, branch-key uniqueness, and `busy_timeout`, so failed races
+surface as errors rather than silent corruption. A future hosted mode needs a durable lock or revision
+column check.
+**Status:** Accepted product limitation; no hosted mode exists.
+
+---
+
+## RISK-041: Browser checks still require a live backend + system Chrome/Edge
+
+**Risk:** The hardening changes add optimistic-concurrency and WebSocket behavior that unit tests can
+simulate but not fully exercise without running the local stack and a browser. This environment does not
+run servers or installs on request.
+**Impact:** Medium; a transport regression could survive static review even with unit/contract tests.
+**Mitigation:** `frontend/scripts/verify-animus-ui.cjs` already drives the real loop; it now also checks
+candidate persistence after reload, confirmed world deletion, the typed missing-studio state, and schema
+v017. The backend suites cover WS ordering/overflow/error mapping, migration repair, concurrent expected
+versions, redo restart, and corrupt-state decoding.
+**Status:** Verification deferred by explicit instruction; do not report the hardening as runtime-verified.
+
+---
+
+## RISK-042: `synchronous=FULL` makes local commits slower than the previous connection default
+
+**Risk:** Durable SQLite mode forces an fsync per commit; the UI may feel slower on slow disks.
+**Impact:** Low; commits are small and local, and correctness/recovery is the priority.
+**Mitigation:** The mode is explicit on every connection, documented in architecture and ADR-044, and
+covered by a diagnostics test. It can be revisited only as a deliberate product tradeoff.
+**Status:** Accepted.
+
+---
+
+## RISK-043: A custom hostname needs an explicit Host allowlist
+
+**Risk:** The local API rejects unknown `Host` headers. A user who exposes the backend through a custom
+hostname, reverse proxy, or container network name must set `ALLOWED_HOSTS`; otherwise requests return 400.
+**Impact:** Medium for custom deployments; intended for the default loopback product.
+**Mitigation:** `ALLOWED_HOSTS` is environment-configurable, documented in the README/architecture, and the
+Docker network name `backend` is included in the default list. Public exposure still requires authentication,
+which is deliberately out of scope.
+**Status:** Accepted; do not widen the allowlist without an explicit deployment decision.
+
+---
+
+## RISK-044: A migration can be blocked by backup disk space or permissions
+
+**Risk:** Before a non-empty database is upgraded, the runner writes a full `VACUUM INTO` copy under
+`<db_dir>/backups/`, verifies it with `PRAGMA quick_check`, and retains five backups. If the disk is full,
+the directory is read-only, or the copy fails verification, migration aborts and the backend does not start
+with a partially upgraded database.
+**Impact:** Medium for startup availability on a full or read-only disk; intended for data safety.
+**Mitigation:** The failure is explicit and logged, the destination is unique per attempt, a failed partial
+file is removed, old backups are pruned to five, and empty/new databases skip the copy. Operators can move
+or delete backups manually; nothing is uploaded.
+**Status:** Accepted fail-closed tradeoff; no automatic remote backup exists.
+
+---
+
+## RISK-045: Event gaps are repaired by a full snapshot, not partial replay
+
+**Risk:** The live channel now tags events with durable `seq` and the client refreshes on a gap or overflow.
+The refresh is a full snapshot; a very large scene or history can make recovery slower than a delta replay.
+The event cursor exists for audit but the product does not stream a bounded catch-up log.
+**Impact:** Low for local scene sizes; a future very large history could make reconnect recovery expensive.
+**Mitigation:** Debounce normal events, refresh immediately on a detected gap, cap the bus backlog with an
+explicit `resync_required`, and keep the durable cursor available for diagnostics. A delta protocol would
+be a deliberate contract change.
+**Status:** Accepted; full-snapshot recovery is the current product boundary.
+
+---
+
+## RISK-046: The behavioural profile can be mistaken for a validated or clinical instrument
+
+**Risk:** Five task estimates and a Brier score look psychometric. A user, journalist, or collaborator may
+treat them as a diagnosis, an "imagery IQ", or evidence of improvement, especially if a number rises.
+**Impact:** High for scientific credibility and user wellbeing; a low estimate could be read as a deficit.
+**Mitigation:** `behavioral_profile = EXPERIMENTAL`, `clinical_use = DISABLED`, no composite, minimum `n`
+before display, uncertainty and limitations on every profile payload, and claim-guard copy. Aphantasia is
+described as a variation, not a deficit. Validation is a separate preregistered study
+(`VALIDATION_PROTOCOL.md`), not an assertion.
+**Status:** Actively mitigated in payload, UI, and docs; not yet tested with participants.
+
+---
+
+## RISK-047: Task simplifications and renderer/device confounds limit construct validity
+
+**Risk:** `spatial_view` is a multiple-choice view inference rather than a continuous mental-rotation task;
+`control_choice` is a selection task, not direct manipulation; `candidate_discrimination` changes one or
+more visible attributes. Renderer, display, input latency, and preview duration may influence scores.
+**Impact:** Medium to high for interpretation; the instrument measures task performance, not the named
+construct in general.
+**Mitigation:** Name the tasks as behavioural proxies, document the simplifications in
+`MEASUREMENT_MODEL.md`, log latency, keep preview duration in the task payload, and require an independent
+validation study before any construct or group claim. Do not compare people or publish norms.
+**Status:** Open; inherent to Phase A. A continuous manipulation task and counterbalanced renderer study
+are future work.
+
+---
+
+## RISK-048: Reconstruction scores can be mistaken for a validated or neural measure
+
+**Risk:** A token bank and a spatial board look like an objective reconstruction of the user's imagery. Object
+F1 and position error may be read as "how much you imagined", a diagnosis, or a neural decode.
+**Impact:** High for scientific credibility and user wellbeing, especially for aphantasic users.
+**Mitigation:** `recon-v1` is labelled experimental; object and spatial scores stay separate; the error
+signature is descriptive; the capability envelope keeps `neural_reconstruction = UNAUTHORIZED` and
+`clinical_use = DISABLED`; copy names the task as behavioural. Validation is a preregistered study, not an
+assertion.
+**Status:** Actively mitigated in payload, UI, and docs; no participant validation yet.
+
+---
+
+## RISK-049: Local target leakage and device confounds limit reconstruction validity
+
+**Risk:** The target scene remains in the local session snapshot; a determined user can inspect client state.
+Token composition, decoy plausibility, preview duration, display size, input device, and grid tolerance can
+change scores. A low score may reflect the interface rather than memory.
+**Impact:** Medium to high for interpretation; the instrument is not secure and not device-invariant.
+**Mitigation:** Hide the scene during the question, do not publish target flags or positions before
+submission, log latency, keep preview duration in the payload, version the scoring as `recon-v1`, and
+document the limitations. Do not use for high-stakes, clinical, or comparative decisions. A future study
+must counterbalance token order and estimate device effects.
+**Status:** Open; inherent to a local self-use instrument.
+
+---
+
+## RISK-050: A posterior reconstruction can be mistaken for a neural or objective image
+
+**Risk:** A probability bar labelled "object presence" may be read as a picture of what the user imagined,
+as an objective imagery measure, or as a neural decode. Calibration and entropy may be collapsed into a
+single "imagination score" in external summaries.
+**Impact:** High for scientific credibility and user wellbeing, especially for aphantasic users.
+**Mitigation:** `eri-v1` is labelled experimental; object/spatial accuracy, Brier, coverage, abstention, and
+entropy stay separate; the probe payload never exposes the hidden answer; copy says "behavioural posterior,
+not a picture"; the capability envelope keeps `neural_reconstruction = UNAUTHORIZED` and
+`clinical_use = DISABLED`; no composite is computed.
+**Status:** Actively mitigated in payload, UI, and docs; no participant validation yet.
+
+---
+
+## RISK-051: The Beta response model and local scene snapshot limit interview validity
+
+**Risk:** The `Beta(1, 1)` update assumes the reported confidence is a likelihood and that trials are
+exchangeable. Confidence can be strategic, fatigue-sensitive, or misunderstood. The hidden symbolic scene
+also remains in the local session snapshot, so this is not a secure assessment. Probe composition and form
+order can change difficulty.
+**Impact:** Medium to high for interpretation; the instrument is not device-invariant or secure.
+**Mitigation:** Document the response model in `EPISTEMIC_INTERVIEW_SPEC.md`, report coverage and
+overconfidence separately, label the simulation `simulation_only`, keep the source version pinned with
+`expected_version_id`, and do not use for high-stakes, clinical, or comparative decisions. A preregistered
+study must test calibration fit, form effects, and test–retest reliability.
+**Status:** Open; inherent to a local self-use instrument and a stated response model.
+
+---
+
+## RISK-052: A contrast threshold can be mistaken for imagery strength or a universal limit
+
+**Risk:** A lower "threshold" may be read as stronger imagery, a visual-cortex limit, or a stable trait.
+The value is normalized within one scene, depends on the renderer, display, camera, feature type, and
+staircase, and is not comparable across scenes or people. Side bias or abstention may be framed as failure.
+**Impact:** High for scientific credibility and for aphantasic users.
+**Mitigation:** `contrast-v1`/`sdt-v1` are labelled experimental; d′, threshold, side bias, Brier, and
+coverage stay separate; thresholds are withheld when sparse or marked when censored; the UI says
+"within-scene units, not imagery strength"; the capability envelope keeps
+`neural_reconstruction = UNAUTHORIZED` and `clinical_use = DISABLED`; no composite or norm is computed.
+**Status:** Actively mitigated in payload, UI, and docs; no human validation or device-invariance study yet.
+
+---
+
+## RISK-053: Test–retest reliability is usually unidentifiable with two feature types
+
+**Risk:** The observatory aligns thresholds by feature. With only `spatial_position` and `object_color`,
+there are fewer than the three aligned features required for Pearson r, so the panel usually reports
+`insufficient`. A developer or user may treat this as a bug and force a coefficient, or overinterpret a
+single occasion.
+**Impact:** Medium for interpretation; a forced r with two points would be misleading.
+**Mitigation:** Return `insufficient` with a reason, show occasion-level descriptive change instead, require
+at least three aligned features before r/SEM/MDC95, and document the limitation in `OBSERVATORY_SPEC.md`.
+Adding feature types or occasions is the correct fix, not lowering the threshold.
+**Status:** Open by design; needs more feature types or occasions before a reliability claim is possible.
+
+---
+
+*Last updated: 2026-10-24 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
+RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits*

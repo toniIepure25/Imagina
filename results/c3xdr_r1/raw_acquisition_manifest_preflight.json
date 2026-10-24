@@ -1,0 +1,28 @@
+{
+  "artifact": "C3XDR_R1_RAW_ACQUISITION_MANIFEST_PREFLIGHT",
+  "status": "NOT_ACQUIRED_BLOCKED",
+  "dataset": "ds005191 v1.0.2",
+  "planned_include": [
+    "testImagery",
+    "testPerception",
+    "events",
+    "sidecars",
+    "anat",
+    "fmap if required"
+  ],
+  "planned_exclude": [
+    "trainPerception"
+  ],
+  "subjects": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
+  ],
+  "expected_bytes_GB": 139.4,
+  "downloaded_bytes": 0,
+  "reason": "Phase-1 gate (reproducible preprocessing + certified ROI mapping) failed BEFORE download (protocol: determine the pipeline BEFORE acquiring raw BOLD).",
+  "self_hash": "e2cbd8fc4fe63ded0e2faadd03f8190f94266c4f2588cf5c15297a23000de8c0"
+}

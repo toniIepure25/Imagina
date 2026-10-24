@@ -1,0 +1,40 @@
+{
+  "artifact": "ANIMUS_P2R_REMOTE_CLOSEOUT",
+  "milestone": "ANIMUS-P2R",
+  "repository": "toniIepure25/Imagina",
+  "branch": "product/animus-p2r-spatial-provenance-recovery",
+  "remote_head": "71371b2fd74ab13a7cfc7e75937b27286d70381c",
+  "ci_run_id": 36351456101,
+  "ci_run_url": "https://github.com/toniIepure25/Imagina/actions/runs/36351456101",
+  "ci_conclusion": "success",
+  "ci_green": true,
+  "required_jobs_green": [
+    "backend-core",
+    "backend-runtime",
+    "frontend",
+    "neural-dependency-provenance",
+    "animus-p2-perception-neural-adapter",
+    "animus-p2r-spatial-provenance",
+    "animus-p2e-real-confirmatory",
+    "science-provenance-no-fallback"
+  ],
+  "skipped_jobs_non_failing": [
+    "docker-smoke",
+    "backend-legacy-validation"
+  ],
+  "decision": "ANIMUS_P2_PERCEPTION_DECODER_VALIDATED",
+  "decision_self_hash": "80cae643f2344d87b8417af092618ee44d21f4f70be4976a2e651d1bcae5caa8",
+  "n_eligible": 6,
+  "n_valid": 6,
+  "n_pass": 2,
+  "required_passes": 2,
+  "passing_subjects": [
+    "sub-04",
+    "sub-06"
+  ],
+  "p2e_block_preserved": true,
+  "nod_closed_for_development": true,
+  "imagery_remains_unauthorized": true,
+  "p2r_closed": true,
+  "self_hash": "fd5ea0bd9dfdfcf74d69e6159c97dd0c96862904ce52a33824c2781f85c18d3c"
+}

@@ -1,0 +1,20 @@
+{
+  "artifact": "ANIMUS_P2R_EXECUTION_DECISION",
+  "milestone": "ANIMUS-P2R",
+  "supersedes_reason_of": "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE (preserved historically in P2E)",
+  "decision": "ANIMUS_P2_BLOCKED_CONFIRMATORY_COMPUTE",
+  "spatial_provenance_resolved_in_method": true,
+  "pilot": "sub-01 real fMRIPrep raw NOD -> MNI2009c grid-identical to sealed Wang25 (7604 vox, coverage 1.0); spatial relation reproducibly establishable; P2E blocker resolved in method.",
+  "cohort_confirmatory": "DEFERRED \u2014 full 6-subject fMRIPrep ~30-44h exclusive shared cpu-worker; hardware needed for other work (user-stated); not run in this window.",
+  "n_eligible": 6,
+  "n_valid_preprocessed": 1,
+  "required_passes": 2,
+  "n_pass": 0,
+  "perception_status": "BLOCKED",
+  "imagery_status": "UNAUTHORIZED",
+  "imagery_remains_unauthorized": true,
+  "no_neural_outcome_computed": true,
+  "no_fabrication": true,
+  "unblock_path": "dedicated compute window: fMRIPrep sub-02..06 (reuse animus-p2r-fmriprep pattern) -> ROI-GLM feature bundles (Wang25 grid-identical, CLIP embeddings staged) -> P2R_CONFIRMATORY_IMPLEMENTATION_FREEZE -> run_p2_confirmatory.py -> run_p2_decision.py -> VALIDATED/LIMITED/FAIL.",
+  "self_hash": "c109bc166e97d3064aed99373f4f1e590b5fe258c8170e7930f3d4a35c91581f"
+}

@@ -1,0 +1,53 @@
+{
+  "artifact": "C3XRA_TIMING_DESIGN_AUDIT",
+  "gate": "C3XRA",
+  "design_only_no_neural_data": true,
+  "hrf": "inherited MODEL_A canonical_hrf (frozen C3XD spm_hrf)",
+  "tr_s": 1.5,
+  "frozen_timing_s": {
+    "cue": 1.5,
+    "gap_cue_imagery": [
+      2.0,
+      6.0
+    ],
+    "imagery": 8.0,
+    "gap_imagery_postvideo": [
+      2.0,
+      6.0
+    ],
+    "postvideo": 4.0,
+    "gap_postvideo_eval": [
+      0.5,
+      1.5
+    ],
+    "eval": 2.0,
+    "iti": [
+      2.0,
+      6.0
+    ],
+    "lead_in": 6.0,
+    "jitter_seed": 1434215784
+  },
+  "representative_run_trials": 12,
+  "run_duration_s": 352.0,
+  "n_scans": 235,
+  "n_scientific_regressors": 37,
+  "design_rank": 37,
+  "rank_deficiency": 0,
+  "condition_number": 8.74,
+  "max_vif": 1.619,
+  "mean_vif": 1.193,
+  "max_abs_cue_imagery_corr": 0.163,
+  "max_abs_imagery_postvideo_corr": 0.119,
+  "predeclared_bounds": {
+    "condition_number_max": 100.0,
+    "vif_max": 5.0,
+    "abs_same_trial_corr_max": 0.6
+  },
+  "rank_deficiency_zero": true,
+  "condition_ok": true,
+  "vif_ok": true,
+  "collinearity_ok": true,
+  "audit_pass": true,
+  "self_hash": "77d7fe64159b8ab087cdf024a12e57f26b344e89096ce0a448e224642a9a0209"
+}

@@ -1,0 +1,89 @@
+{
+  "artifact": "C3M_FINAL_DECISION",
+  "gate": "C3M",
+  "title": "Cross-Session Neural Alignment and Imagery-Transfer Mechanism",
+  "subject": "subj01",
+  "created_at": "2026-08-23T21:56:25",
+  "source_sha": "1a3375549a1f42faa48965ede88d90b5793cab9a",
+  "branch": "research/cross-session-alignment-c3m",
+  "protocol_self_hash": "a63606aec3e0fd249af7d55e0175199b622487480412e02e24c963c5c2e06473",
+  "seal_self_hash": "1332fee66e723b046718938288adbdcf4c19da52f5bb53ff27c24f200a8cf6f3",
+  "does_not_modify_c3": true,
+  "C3M_H1_session_shift_explains_collapse": {
+    "verdict": "SUPPORTED",
+    "evidence": "Strict-C3 identity collapses on SEEN Set-B vision (dominant_fraction 0.938); per-voxel mean-correction (M1) improves but leaves residual collapse (0.646); covariance alignment (M3 CORAL) clears it (0.312). The collapse is driven by SECOND-MOMENT (covariance) cross-session mismatch, not merely a mean offset."
+  },
+  "C3M_H2_H3_vision_restoration": {
+    "verdict": "PASS",
+    "method": "M3 CORAL (target-blind, Family A)",
+    "set_B_mrr": 0.8052083333333334,
+    "set_B_two_afc": 0.8875,
+    "set_B_dominant_fraction": 0.3125,
+    "set_B_perm_p": 0.001388888888888889,
+    "held_out_target_LOTO": true,
+    "capacity_matched_control_max_mrr": 0.5534722222222223,
+    "m3_exceeds_capacity_control_max": true,
+    "hyperparameter_sensitivity": {
+      "n_settings": 16,
+      "n_pass_all_guards": 16,
+      "fraction_pass": 1.0
+    },
+    "set_A_simple": "OOD: collapse removed but not significant (synthetic bars outside the natural-image perception decoder's domain)"
+  },
+  "C3M_H4_aligned_imagery_transfer": {
+    "verdict": "NULL",
+    "primary_metric_mrr": 0.4756944444444445,
+    "dominant_fraction": 0.5104166666666666,
+    "two_afc": 0.5791666666666667,
+    "perm_p": 0.022222222222222223,
+    "exceeds_matched_random_95pct": true,
+    "failing_guard": "non-degeneracy (dominant_fraction 0.5104 > 0.5)",
+    "interpretation": "The SAME frozen vision-calibrated alignment PARTIALLY transfers to imagery: it reduces collapse from 1.000 (strict C3) to 0.510, raises prediction-covariance effective rank 24->11, improves MRR 0.428->0.476 with stimulus-specific and capacity-exceeding signal (perm p 0.022) -- but the aligned imagery predictions remain marginally DEGENERATE, so no clean stimulus-specific imagery transfer is established. Imagery carries a residual STATE-SPECIFIC degradation beyond the cross-session shift."
+  },
+  "decision_rule_applied": "B (vision PASS + imagery NULL)",
+  "C3M_CROSS_SESSION_ALIGNMENT": "PASS",
+  "C3M_ALIGNED_IMAGERY_TRANSFER": "NULL_SUPPORTED_WITHIN_SENSITIVITY",
+  "C3M": "COMPLETE_WITH_STATE_SPECIFIC_IMAGERY_NULL",
+  "scope": "SINGLE_SUBJECT_subj01_ONLY_NOT_POPULATION_EVIDENCE",
+  "multiparticipant_status": {
+    "prospectively_eligible": [
+      "subj02",
+      "subj05",
+      "subj07"
+    ],
+    "infrastructure": "DEMONSTRATED (NSD public-S3 re-download bit-identical to C3; rolling perception extraction to the frozen voxel order; FMRI2images pre-extracted features present for all four subjects but REJECTED as X_p by certification -- different beta version).",
+    "executed": [
+      "subj01"
+    ],
+    "not_yet_executed": [
+      "subj02",
+      "subj05",
+      "subj07"
+    ],
+    "note": "subj01 alone never licenses a population claim; participant-level replication is the defined next step and is not gated by subj01's outcome."
+  },
+  "prohibitions_honored": [
+    "no images generated",
+    "no diffusion",
+    "C4 NOT begun",
+    "no tuning against imagery results (frozen guard yields NULL; pipeline not adjusted)",
+    "frozen C3 decoder weights unchanged",
+    "no imagery decoder trained",
+    "no mind-reading claim",
+    "no population claim from subj01",
+    "Spera's method not adopted/relabelled"
+  ],
+  "artifacts": {
+    "protocol": "results/c3m_protocol_decision.json",
+    "xp_certification": "results/c3m_xp_certification.json",
+    "xp_extraction": "results/c3m_xp_extraction_subj01.json",
+    "vision_gate_M0_M2": "results/c3m_vision_gate.json",
+    "vision_gate_M3_M4": "results/c3m_vision_gate_m3m4.json",
+    "vision_robustness": "results/c3m_vision_robustness.json",
+    "alignment_seal": "results/c3m_alignment_seal.json",
+    "imagery_transfer": "results/c3m_imagery_transfer.json"
+  },
+  "next_step": "STOP. Do NOT begin C4. Multi-participant replication (subj02/05/07) is the defined continuation if pursued.",
+  "code_sha": "d581e586b86f4095ec240e0ee43798537e4faabb",
+  "self_hash": "b872ae52ea5eecf4dbecd77966487b88ddb84d0b15b46d7c3b15126644a7d917"
+}

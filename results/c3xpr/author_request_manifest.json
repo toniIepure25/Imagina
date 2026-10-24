@@ -1,0 +1,23 @@
+{
+  "artifact": "C3XPR_AUTHOR_REQUEST_MANIFEST",
+  "smallest_unblocking_artifact": "per-subject VC/LVC/HVC NIfTI masks + matching native-space BOLD reference image (S1-S6)",
+  "acceptable_alternatives": [
+    "ROI voxel coordinates + parent-grid dims + affine",
+    "released BOLDref + raw->released transform chain",
+    "manually-corrected FreeSurfer derivative used for registration",
+    "retinotopy/localizer derivative masks"
+  ],
+  "explicitly_not_needed": [
+    "semantic features",
+    "captions",
+    "decoder outputs",
+    "model checkpoints",
+    "subject rankings",
+    "best-ROI recommendations",
+    "any neural outcomes"
+  ],
+  "email": "reports/c3xpr/AUTHOR_REQUEST_EMAIL.md",
+  "issue": "reports/c3xpr/GITHUB_ISSUE_DRAFT.md",
+  "auto_send": false,
+  "self_hash": "cf1ee3744e6d5e3a4f12529c30784b2ca05d95d1cc3cd4d2903f162f7cf019a5"
+}

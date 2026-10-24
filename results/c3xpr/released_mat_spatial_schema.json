@@ -1,0 +1,49 @@
+{
+  "artifact": "C3XPR_RELEASED_MAT_SPATIAL_SCHEMA",
+  "inspected_file": "testImagery_S1.mat (structural-only)",
+  "metainf_fields": [
+    "Block",
+    "Label",
+    "Run",
+    "Session",
+    "label_type",
+    "roiind_value",
+    "roiname",
+    "roiname_excluded",
+    "roiname_used",
+    "volInds",
+    "voxind_all",
+    "xyz"
+  ],
+  "roi_indices_are_masks_over_released_voxels": true,
+  "roiind_value_shape": [
+    148513,
+    1853
+  ],
+  "n_roinames": 1853,
+  "n_roinames_used": 1679,
+  "voxel_coordinates_available": true,
+  "xyz_shape": [
+    148513,
+    3
+  ],
+  "xyz_units": "world millimetres",
+  "world_coordinates_available": true,
+  "voxel_ijk_field": false,
+  "regular_lattice": true,
+  "voxel_size_mm": 2.0,
+  "lattice_roundtrip_residual": 0.0,
+  "occupied_bbox_dims": [
+    78,
+    86,
+    63
+  ],
+  "full_parent_grid_known": false,
+  "affine_known": false,
+  "boldref_identifier_known": false,
+  "world_frame_identified": false,
+  "can_reconstruct_nifti_mask_in_released_frame_exactly": true,
+  "can_relate_exactly_to_raw_native_functional_space_from_public_data": false,
+  "why": "world coords + membership + 2 mm lattice permit an EXACT mask in the released (unlabelled) world frame, but no affine/space-identity/reference-EPI/transform is released, so exact reproducible correspondence to a fresh raw-derived native functional space is not publicly achievable; resampling into a new space would be approximate (forbidden).",
+  "self_hash": "fda7ed95ac4271a9410fb9654460b0577b4aa388d22c8b27dc69209fa81f9e23"
+}

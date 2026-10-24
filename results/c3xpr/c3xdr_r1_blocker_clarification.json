@@ -1,0 +1,8 @@
+{
+  "artifact": "C3XDR_R1_BLOCKER_CLARIFICATION",
+  "misreading": "'no preprocessing pipeline exists'",
+  "accurate_blocker": "ROI/SPATIAL PROVENANCE insufficiency: the released ROIs are voxel-index masks in an unidentified released functional space; the exact correspondence to a raw-derived native functional space is not publicly reconstructable.",
+  "paper_specifies_preprocessing": true,
+  "note": "The publication provides substantial preprocessing methodology; the gap is the spatial reference/transform + ROI-defining derivatives, not the method description.",
+  "self_hash": "db2d1a09ad3e54999fb71070ac2c1febf26b21fa7e355b530d755cee02cb2bc4"
+}

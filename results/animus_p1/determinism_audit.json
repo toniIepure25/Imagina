@@ -1,0 +1,9 @@
+{
+  "artifact": "ANIMUS_P1_DETERMINISM_AUDIT",
+  "milestone": "ANIMUS-P1",
+  "n_trials": 8,
+  "identical_replay_hashes": true,
+  "campaign_hash": "a912ef908cac5f0e",
+  "pass": true,
+  "self_hash": "b8b13066a4ca809c51547d4e3064d510bfcf9a26746fde2d6ed9276550193334"
+}

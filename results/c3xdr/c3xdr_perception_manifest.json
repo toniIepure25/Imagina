@@ -1,0 +1,12 @@
+{
+  "artifact": "C3XDR_PERCEPTION_MANIFEST",
+  "status": "NOT_PRODUCED_BLOCKED",
+  "required_contract": {
+    "videos": 72,
+    "reps_per_video": 5,
+    "same_stack": true,
+    "no_figshare_substitution": true
+  },
+  "reason": "execution not performed: C3XDR_BLOCKED_STORAGE (Section-1 infrastructure gate failed).",
+  "self_hash": "cf2047d2ea32aa5ddb0b9e71537aeb7bc402bff1814a172b84cf6b1e427785aa"
+}

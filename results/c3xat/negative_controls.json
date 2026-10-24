@@ -1,0 +1,32 @@
+{
+  "artifact": "C3XAT_NEGATIVE_CONTROLS",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "status": "EXECUTION_BLOCKED",
+  "no_semantic_models": true,
+  "controls": [
+    "video-label permutation",
+    "session-only predictor",
+    "trial-order predictor",
+    "motion/quality-only predictor",
+    "global-mean-pattern control",
+    "ROI-size-matched random cortical mask",
+    "current/previous/next video contamination",
+    "early-vs-late imagery control",
+    "cue-only predicted reliability",
+    "post-video-only predicted reliability"
+  ],
+  "results": {
+    "video_label_permutation": null,
+    "session_only": null,
+    "trial_order": null,
+    "motion_quality_only": null,
+    "global_mean_pattern": null,
+    "roi_size_matched_random": null,
+    "adjacent_video_contamination": null,
+    "early_vs_late": null,
+    "cue_only_predicted": null,
+    "post_video_only_predicted": null
+  },
+  "note": "sealed control battery; none executed (no BOLD). Values null, not fabricated.",
+  "self_hash": "02c38950164056b09cd11f9df69eacf548a4198aa400f362336fe667dec8aef2"
+}

@@ -1,0 +1,35 @@
+{
+  "artifact": "C3XAT_R1_PERCEPTION_ESTIMAND_BLOCKER_RESOLUTION",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "historical_blocker": "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND",
+  "resolution": "FIXED_72_VIDEO_PERCEPTION_RUNPAIR_ESTIMAND_CERTIFIED",
+  "basis": "acquisition metadata only",
+  "outcome_inspected": false,
+  "subjects": "6/6",
+  "pairs": "5/subject",
+  "videos_per_pair": 72,
+  "trials_per_video_per_pair": 1,
+  "pairing_rule": "fixed consecutive run numbers within each session: (01,02),(03,04),(05,06); never cross-session",
+  "evidence": {
+    "runpair_contract": "perception_runpair_contract_preoutcome.json (all_subjects_pass=true)",
+    "estimand_seal": "perception_runpair_estimand_preoutcome_seal.json",
+    "five_runpair_clarification": "perception_five_runpair_estimator_clarification.json",
+    "atlas_qc": "atlas_qc_all_subjects_preoutcome.json (all_subjects_atlas_qc_pass=true, 7604 vox)"
+  },
+  "no_workaround_used": {
+    "alternative_pairing": false,
+    "hungarian_matching": false,
+    "coverage_maximizing": false,
+    "common_video_restriction": false,
+    "run_dropping": false,
+    "video_dropping": false,
+    "session_only": false,
+    "outcome_guided": false
+  },
+  "execution_attempt_num": 2,
+  "C3XAT_R2": false,
+  "original_seals_changed": false,
+  "preserves": "the historical C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND artifacts unchanged",
+  "self_hash": "569a371dd1ff94483950f06513da73ea5cc53fc1d6fb690f351e29c72f12e42d"
+}

@@ -1,0 +1,75 @@
+{
+  "artifact": "ANIMUS_P1_CONTROLLER_COMPARISON",
+  "milestone": "ANIMUS-P1",
+  "baselines": [
+    "STATIC",
+    "RANDOM",
+    "GREEDY_USER_FEEDBACK",
+    "GREEDY_NEURAL_ONLY",
+    "ANIMUS_ACTIVE"
+  ],
+  "per_controller": {
+    "STATIC": {
+      "n": 300,
+      "median_loop_gain": 0.16124,
+      "median_final_similarity": 0.6711199999999999,
+      "median_uncertainty_reduction": 0.38998,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.33,
+      "median_iterations_to_threshold_reached": 2.0,
+      "median_iterations_to_threshold_censored": 9.0,
+      "median_attribute_accuracy": 0.25,
+      "median_object_accuracy": 0.8125
+    },
+    "RANDOM": {
+      "n": 300,
+      "median_loop_gain": 0.179825,
+      "median_final_similarity": 0.69343,
+      "median_uncertainty_reduction": 0.40700000000000003,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.5066666666666667,
+      "median_iterations_to_threshold_reached": 4.0,
+      "median_iterations_to_threshold_censored": 8.0,
+      "median_attribute_accuracy": 0.375,
+      "median_object_accuracy": 0.8125
+    },
+    "GREEDY_USER_FEEDBACK": {
+      "n": 300,
+      "median_loop_gain": 0.149195,
+      "median_final_similarity": 0.65862,
+      "median_uncertainty_reduction": 0.3903,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.29,
+      "median_iterations_to_threshold_reached": 2.0,
+      "median_iterations_to_threshold_censored": 9.0,
+      "median_attribute_accuracy": 0.25,
+      "median_object_accuracy": 0.8125
+    },
+    "GREEDY_NEURAL_ONLY": {
+      "n": 300,
+      "median_loop_gain": 0.168155,
+      "median_final_similarity": 0.675475,
+      "median_uncertainty_reduction": 0.38862,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.37333333333333335,
+      "median_iterations_to_threshold_reached": 3.0,
+      "median_iterations_to_threshold_censored": 9.0,
+      "median_attribute_accuracy": 0.25,
+      "median_object_accuracy": 0.8125
+    },
+    "ANIMUS_ACTIVE": {
+      "n": 300,
+      "median_loop_gain": 0.287195,
+      "median_final_similarity": 0.799605,
+      "median_uncertainty_reduction": 0.41169,
+      "valid_fraction": 1.0,
+      "reached_threshold_fraction": 0.9633333333333334,
+      "median_iterations_to_threshold_reached": 5.0,
+      "median_iterations_to_threshold_censored": 5.0,
+      "median_attribute_accuracy": 0.875,
+      "median_object_accuracy": 0.8125
+    }
+  },
+  "note": "all baselines reported; no cherry-picking",
+  "self_hash": "0f2556e82765a946e73a16b2524e79ccda2b8cd6199216cfab3bfe086dc1b750"
+}

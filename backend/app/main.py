@@ -3,20 +3,28 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
+from app.api.animus import router as animus_router
+from app.api.animus_studio import router as animus_studio_router
+from app.api.animus_studio_ws import router as animus_studio_ws_router
 from app.api.calibration import router as calibration_router
 from app.api.experiments import router as experiments_router
 from app.api.exports import router as exports_router
 from app.api.feedback import router as feedback_router
 from app.api.health import router as health_router
 from app.api.imagina.routes import router as imagina_router
+from app.api.multimodal import router as multimodal_router
 from app.api.replay import router as replay_router
 from app.api.reports import router as reports_router
+from app.api.research_protocol import router as research_protocol_router
+from app.api.research_science import router as research_science_router
 from app.api.routes_datasets import router as datasets_router
 from app.api.routes_research import router as research_router
 from app.api.sessions import router as sessions_router
 from app.api.signals import router as signals_router
 from app.api.state import router as state_router
+from app.api.synthetic_runtime import router as synthetic_runtime_router
 from app.api.tasks import router as tasks_router
 from app.api.users import router as users_router
 from app.core.config import settings
@@ -34,23 +42,47 @@ from app.websocket.session_stream import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    from app.api.synthetic_runtime import recover_interrupted_runs
+    await recover_interrupted_runs()
+    from app.api.multimodal import mark_interrupted_on_startup
+    mark_interrupted_on_startup()
     yield
 
 
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="Dream Corridor Scene Stabilizer — closed-loop mental imagery training prototype",
+    description=(
+        "Dream Corridor Scene Stabilizer — closed-loop mental imagery training research prototype. "
+        "Estimates proxy metrics (PID/IQI) from simulated signals and self-report. "
+        "Does not decode thoughts or dreams. All default signals are simulated."
+    ),
     lifespan=lifespan,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins.split(","),
+    allow_origins=[origin.strip() for origin in settings.cors_origins.split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Studio-Error-Code"],
 )
+
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=[host.strip() for host in settings.allowed_hosts.split(",") if host.strip()],
+)
+
+
+@app.middleware("http")
+async def studio_response_headers(request, call_next):
+    """Keep local scene responses out of browser caches and MIME-sniffing paths."""
+    response = await call_next(request)
+    if request.url.path.startswith("/animus/studio"):
+        response.headers.setdefault("Cache-Control", "no-store")
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    return response
 
 app.include_router(calibration_router)
 app.include_router(datasets_router)
@@ -67,6 +99,13 @@ app.include_router(feedback_router)
 app.include_router(replay_router)
 app.include_router(reports_router)
 app.include_router(research_router)
+app.include_router(research_protocol_router)
+app.include_router(synthetic_runtime_router)
+app.include_router(research_science_router)
+app.include_router(animus_router)
+app.include_router(animus_studio_router)
+app.include_router(animus_studio_ws_router)
+app.include_router(multimodal_router)
 
 
 @app.websocket("/ws/sessions/{session_id}")

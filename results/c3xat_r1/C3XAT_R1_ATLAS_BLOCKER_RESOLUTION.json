@@ -1,0 +1,36 @@
+{
+  "artifact": "C3XAT_R1_ATLAS_BLOCKER_RESOLUTION",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "historical_blocker": "C3XAT_R1_BLOCKED_ATLAS_SPACE_PROVENANCE",
+  "resolution": "RECOVERED_STABLE_HASHED_PROBATLAS_V4_VOLUMETRIC_SOURCE",
+  "execution_attempt_num": 2,
+  "new_scientific_protocol": false,
+  "seal_changed": false,
+  "neural_outcome_inspected": false,
+  "evidence": {
+    "archive": "bbuchsbaum/neuroatlas @ wang-probatlas-v4 / wang_probatlas_v4_volumes.tar.gz (asset 450801005)",
+    "archive_sha256": "3743ac34bbfef168e1b9244cfa6819d66994b48f2aebacf0c27bca4275b9fe9f (EXACT match)",
+    "archive_size": 718625,
+    "source_space": "MNI152NLin6Asym (FSL-MNI 1mm)",
+    "representation": "original ProbAtlas_v4 VOLUME product",
+    "transform": "frozen official TemplateFlow MNI152NLin6Asym->2009cAsym xfm 2e3869a0... (re-verified)",
+    "target": "MNI152NLin2009cAsym 2mm, grid matches subject BOLD exactly",
+    "primary_roi_certified": true,
+    "target_voxel_count": 7604,
+    "finite_bold_coverage_in_roi": 1.0
+  },
+  "checks_passed": {
+    "provenance": true,
+    "integrity": true,
+    "geometry": true,
+    "grid_affine_match": true,
+    "label_safe_interpolation": true,
+    "no_illegal_labels": true,
+    "no_nan_inf": true,
+    "distinct_labels_2mm": "24/25 (MST absorbed by mandated GenericLabel downsampling; territory retained in union) -- documented, not a provenance failure"
+  },
+  "supersedes_but_preserves": "results/c3xat_r1/C3XAT_R1_FINAL_DECISION.json (C3XAT_R1_BLOCKED_ATLAS_SPACE_PROVENANCE checkpoint preserved, not rewritten)",
+  "not_c3xat_r2": true,
+  "self_hash": "fc9c4df7198eb2d2828c49416c27ab0d3db69a02e42a920edfd0cbaccc1c9e65"
+}

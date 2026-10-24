@@ -1,0 +1,59 @@
+{
+  "artifact": "C3XAT_R1_FINAL_DECISION_v2",
+  "gate": "C3XAT_R1",
+  "execution_attempt": 2,
+  "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "c3xat_r1_execution_seal": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a",
+  "decision": "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND",
+  "is_blocked_not_fail": true,
+  "supersession_chain": [
+    "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE (interim checkpoint, preserved)",
+    "C3XAT_R1_BLOCKED_ATLAS_SPACE_PROVENANCE (preserved; RESOLVED via ProbAtlas_v4 recovery)",
+    "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND (current terminal for attempt 2)"
+  ],
+  "detected_before_outcome_inspection": true,
+  "scientific_outcome_used_for_detection": false,
+  "why_blocked": "The sealed matched-perception control R_P uses independent unit = perception RUN, run-disjoint, on the 72-video estimand. Metadata-only audit of all C(10,5)/2=126 5v5 run partitions shows min_common_videos=64 (<72) for every subject, so the frozen estimator (which uses only videos common to both halves) would evaluate a split-dependent subset -> the 72-video R_P estimand is not well-defined under run-disjoint splitting for this dataset's perception schedule.",
+  "R_P_authorized": false,
+  "primary_subject_pass_requires": "Wang25 R_I PASS AND Wang25 R_P PASS AND cue/video PASS AND unit contract AND atlas QC; with R_P unauthorized, no subject can be validly certified -> dataset gate cannot be evaluated with valid measurements.",
+  "dataset_gate_evaluated": false,
+  "no_neural_outcome_computed_or_inspected": true,
+  "no_R_P_computed": true,
+  "no_R_I_used_from_invalid_driver_run": true,
+  "invalid_campaign_quarantine": "/work/wang/quarantine_pre_correction/ (0 result files existed at stop)",
+  "what_succeeded_and_remains_frozen": [
+    "ds005191 acquisition (1063 files, 139.96GB, 749ded7b...)",
+    "fMRIPrep S1-S6 succeeded",
+    "S1 technical qualification",
+    "Wang2015 volumetric provenance recovered (3743ac34...) + primary ROI certified (7604 vox, mask 19b681ec...)",
+    "imagery Model A bit-identical C3XD + frozen estimator + paired Delta + first implementation freeze"
+  ],
+  "c3xag_authorized": false,
+  "does_NOT_authorize": [
+    "C3XAG execution",
+    "C3XE",
+    "C3XR",
+    "C3XDR-R2",
+    "geometry",
+    "decoding",
+    "reconstruction",
+    "C4"
+  ],
+  "no_geometry": true,
+  "no_decoding": true,
+  "no_reconstruction": true,
+  "no_semantic_features": true,
+  "immutable_prior_gates": [
+    "C3XC",
+    "C3XD",
+    "C3XDR",
+    "C3XDR-R1",
+    "C3XPR",
+    "C3XPA",
+    "C3XAT"
+  ],
+  "seals_unchanged": true,
+  "not_c3xat_r2": true,
+  "resume_path": "a SEPARATELY JUSTIFIED, prospective clarification of the matched-perception estimand (e.g., a run-pair or session-aware perception unit, or an explicitly sealed common-video restriction) would be required before any R_P is computed; no outcome may guide that choice. Imagery-side components + atlas remain frozen and reusable.",
+  "self_hash": "a023624079f06eac326a63165441812912d85b682b05a005679d698ad61759ea"
+}

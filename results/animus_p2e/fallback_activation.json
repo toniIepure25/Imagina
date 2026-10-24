@@ -1,0 +1,11 @@
+{
+  "artifact": "ANIMUS_P2E_FALLBACK_ACTIVATION",
+  "milestone": "ANIMUS-P2E",
+  "primary_blocked_pre_outcome": true,
+  "primary_block_reason": "required derivatives unavailable (NOD anat derivatives absent) AND required transform unavailable (no MNI<->T1w) \u2014 \u00a73 valid triggers",
+  "fallback_checked": "ds001499 (BOLD5000)",
+  "fallback_also_lacks_mni_relation": true,
+  "recorded_before_any_confirmatory_outcome": true,
+  "outcome": "both primary and fallback lack the sealed MNI ROI relation -> spatial provenance block (not a performance-based switch)",
+  "self_hash": "e7c1e1252bb029ba42aabc768d9938794288de4966cd45b570b6c5fa7c844142"
+}

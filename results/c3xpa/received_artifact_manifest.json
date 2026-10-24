@@ -1,0 +1,9 @@
+{
+  "artifact": "C3XPA_RECEIVED_ARTIFACT_MANIFEST",
+  "status": "NO_ARTIFACT_RECEIVED",
+  "items": [],
+  "n_items": 0,
+  "hashed_before_processing": true,
+  "note": "empty: nothing was received to hash/validate.",
+  "self_hash": "3b6cba3d79e07b5f8ee84c02ceea1e69a193895b783918bf8217738f48e349dd"
+}

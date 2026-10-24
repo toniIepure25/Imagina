@@ -1,0 +1,26 @@
+{
+  "artifact": "ANIMUS_P2_MODEL_MANIFEST",
+  "milestone": "ANIMUS-P2",
+  "subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-05",
+    "sub-06"
+  ],
+  "features_dir": "/work/animus_p2r/features",
+  "protocol_seal": "/work/animus_p2r/results/animus_p2/animus_p2_protocol_seal.json",
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "reproduction": "run_p2_confirmatory --features-dir <dir>",
+  "validated_subjects": [
+    "sub-04",
+    "sub-06"
+  ],
+  "model_weights_sha256": {
+    "sub-04": "cd3ee7dd93d0539d6895cbe1033753caa193042416c40f1e657c2790f1555c2f",
+    "sub-06": "ff822831d00a91d1ca6e36fe30508a9c98ef82c542e4921b2523c601cb45821d"
+  },
+  "self_hash": "6525e195e116c6431eeaddc77ff2c768d2b519f3e9332816d46c29703d9575b8"
+}

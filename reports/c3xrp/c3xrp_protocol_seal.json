@@ -1,0 +1,87 @@
+{
+  "artifact": "C3XRP_PROTOCOL_SEAL",
+  "gate": "C3XRP",
+  "sealed_at": "2026-09-15",
+  "not_c3xat_r2": true,
+  "not_c3xag": true,
+  "not_c3xe": true,
+  "not_c3xr": true,
+  "not_c4": true,
+  "scientific_question": "Does the cue/video-deconfounded stimulus-specific imagery reliability observed in C3XAT-R1 replicate in INDEPENDENT participants/data, and can increased independent measurement PRECISION distinguish reproducible imagery signal from cue/video contamination without subject selection?",
+  "c3xat_anchor": {
+    "decision": "C3XAT_D2_ATLAS_IMAGERY_LIMITED",
+    "may_be_changed": false,
+    "anchor_self_hash": "0726c4be9ea3273a58942289b488cd7cff160b9c3f09bc14b989543bb7ceb268",
+    "c3xat_seal": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+    "c3xat_r1_execution_seal": "23a6f92d47caf91dafb3ea3ad555e4d138a5c6af23766299c2f05b85615a545a"
+  },
+  "selected_replication_dataset": "NO_PUBLIC_DATASET",
+  "dataset_selection_self_hash": "3575478fd7a2294762616368c62d99a8ebaafe5e7f23710fe6680c7c34fa2a19",
+  "candidate_matrix_self_hash": "3fb6d4537040a3da6948e59c65037ea9ca5842eee824c732b1b00d75367b4f73",
+  "dataset_version": null,
+  "independence_rule": "primary replication data must NOT have been used in C3XC/C3XD/C3XDR/C3XDR-R1/C3XAT/C3XAT-R1; ds005191 usable only for method validation/replay/synthetic calibration/precision planning",
+  "participant_eligibility": "all prospectively eligible subjects enter the fixed denominator; ordinary technical MRI QC only; NO responder enrichment; NO selection by imagery ability/vividness/prior R_I/Delta/decoding/ROI signal; must NOT target sub-02 or sub-03",
+  "independent_units": {
+    "imagery": "imagery session/acquisition block",
+    "perception": "complete-identity unit (run-pair/block inherent in schedule)"
+  },
+  "stimulus_identity_contract": "fixed naturalistic identities (>=72 target) repeated once per imagery unit; >=50 distinct identities minimum",
+  "perception_contract": "each perception independent unit contains the SAME complete identity set; NO coverage-optimized or outcome-driven pairing",
+  "roi": "WANG25_TOPOGRAPHIC_VISUAL_NETWORK (Wang2015 ProbAtlas_v4 3743ac34...; mask 19b681ec...); NO performance-defined or localizer ROI for the PRIMARY endpoint",
+  "preprocessing": "inherit fMRIPrep 24.1.1 sha256 9aec0b83... -> MNI152NLin2009cAsym 2mm, no smoothing",
+  "GLM": "MODEL_A_LSA (bit-identical C3XD): per-trial cue/imagery/post-video + grouped real-eval + frozen nuisance",
+  "nuisance": "motion6 required; csf/white_matter if present; all cosine drift; run/session intercept",
+  "R_I": "Spearman-Brown corrected session/block-disjoint split-half reliability; frozen c3xb estimator",
+  "R_P": "matched fixed-content reliability; complete-identity unit; frozen c3xb estimator",
+  "Delta": "R_I_observed - R_I_contamination_predicted; contamination carries EXACTLY zero true-imagery; conservative PAIRED sensitivity (Delta>0 point AND paired boot CI lower>0 AND Delta>0 every seed); rejected fixed-R_pred permutation NOT restored",
+  "bootstrap": "non-straddling hierarchical (whole-unit)",
+  "permutation": "within-unit content-label",
+  "seed_list": {
+    "base": 20260909,
+    "offsets": [
+      0,
+      100,
+      200
+    ]
+  },
+  "n_perm": 1000,
+  "n_boot": 1000,
+  "n_rep_point": 200,
+  "subject_PASS": "imagery R_I PASS AND matched R_P PASS AND cue/post-stimulus Delta PASS AND unit contract PASS AND atlas QC PASS",
+  "cohort_gate": "required_passes = max(2, ceil(N/3)) over the FIXED eligible denominator (inherits C3XAT 2/6=one-third); >=req -> C3XRP_REPLICATION_QUALIFIED; 0<pass<req -> LIMITED; 0 with complete valid -> FAIL; incomplete/invalid -> C3XRP_BLOCKED_*",
+  "precision_design": {
+    "analysis_self_hash": "6c49cd1637f084f48e03e71e3b8f0db4e21e0d5c21c6be5f9e6a62a04ff230c4",
+    "recommended_min_imagery_units": 5,
+    "targets": "TypeI<=0.05@0=0; power>=0.80@0.08; >=0.90@0.15 (coarse)"
+  },
+  "prospective_acquisition_self_hash": "2b23799ab02d208dd410c2469aa490d0adc8597bcb742b1b8e40dc5cc594933e",
+  "spatial_specificity_endpoint": {
+    "status": "SECONDARY unless prospectively promoted before any outcome",
+    "self_hash": "b1ab7672a025ce43237a89c31e02a4dfb0f37012252c2d00f91b4aa9a5e3f5c5"
+  },
+  "negative_controls": "inherit C3XAT (within-unit content-label permutation null; cue/post-video forward-contamination; size-matched random cortex)",
+  "STOP_rules": "STOP after seal + dataset selection/NO_PUBLIC_DATASET + frozen precision design + tests + green CI; do NOT execute real replication neural outcomes here",
+  "forbidden_before_seal": [
+    "real new-dataset R_I",
+    "real R_P",
+    "real Delta",
+    "pattern similarity",
+    "ROI performance comparison",
+    "decoding",
+    "geometry",
+    "reconstruction",
+    "semantic/stimulus-feature analysis"
+  ],
+  "forbidden_analyses": [
+    "decoding",
+    "geometry",
+    "reconstruction",
+    "C3XAG execution",
+    "C4"
+  ],
+  "real_neural_outcome_before_seal": false,
+  "c3xag_authorized": false,
+  "next_authorization_required_for_execution": "(1) acquire/identify a genuinely independent dataset satisfying this sealed contract; (2) a separate explicit authorization to RUN the sealed C3XRP measurement. Only a future actual C3XRP_REPLICATION_QUALIFIED may later be considered toward authorizing a geometry gate -- not now.",
+  "self_hash_field": "self_hash",
+  "self_hash": "5586e68e1e89c9ed435151d076643bc1e06f55a8dffcbec6ff3fe8ebbc06170e"
+}

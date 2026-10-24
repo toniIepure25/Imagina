@@ -1,0 +1,17 @@
+{
+  "subj02": {
+    "status": "CERTIFIED",
+    "V": 14088,
+    "beta_sha256": "ac4e5c7ba0144660"
+  },
+  "subj05": {
+    "status": "CERTIFIED",
+    "V": 12902,
+    "beta_sha256": "80c3b054376b9b44"
+  },
+  "subj07": {
+    "status": "CERTIFIED",
+    "V": 12511,
+    "beta_sha256": "c943bb70514861a9"
+  }
+}

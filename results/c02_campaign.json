@@ -1,0 +1,72 @@
+{
+  "campaign_id": "577fa215e5aeb816",
+  "version": "2.0",
+  "total_replicates": 100,
+  "total_scenarios": 2,
+  "overall_pass": false,
+  "elapsed_s": 9.87,
+  "gate_issues": [
+    "medium_adaptive: coverage_too_low_0.0000"
+  ],
+  "scenario_summaries": {
+    "strict_null": {
+      "scenario_id": "strict_null",
+      "total_replicates": 50,
+      "n_valid_replicates": 50,
+      "n_invalid_replicates": 0,
+      "n_batches": 1,
+      "campaign_valid": true,
+      "invalid_reason": "",
+      "oracle_effect": 0.0,
+      "oracle_se": 0.0,
+      "type_i_error": 0.08,
+      "type_i_se": 0.0384,
+      "power": null,
+      "power_se": null,
+      "bias": 6.4e-05,
+      "bias_se": 0.0,
+      "rmse": 0.002562,
+      "coverage": 0.92,
+      "coverage_se": 0.0384,
+      "interval_width": 0.009999,
+      "convergence_rate": 1.0,
+      "fallback_rate": 0.0,
+      "valid_inference_rate": 1.0,
+      "negative_control_fp_rate": 0.08,
+      "elapsed_s": 5.612545013427734,
+      "calibration_pass": true,
+      "issues": []
+    },
+    "medium_adaptive": {
+      "scenario_id": "medium_adaptive",
+      "total_replicates": 50,
+      "n_valid_replicates": 50,
+      "n_invalid_replicates": 0,
+      "n_batches": 1,
+      "campaign_valid": false,
+      "invalid_reason": "coverage_too_low_0.0000",
+      "oracle_effect": -0.042585,
+      "oracle_se": 0.00106,
+      "type_i_error": null,
+      "type_i_se": null,
+      "power": 1.0,
+      "power_se": 0.0,
+      "bias": 0.016133,
+      "bias_se": 0.0,
+      "rmse": 0.016514,
+      "coverage": 0.0,
+      "coverage_se": 0.0,
+      "interval_width": 0.015749,
+      "convergence_rate": 1.0,
+      "fallback_rate": 0.0,
+      "valid_inference_rate": 1.0,
+      "negative_control_fp_rate": 0.08,
+      "elapsed_s": 4.255913496017456,
+      "calibration_pass": false,
+      "issues": [
+        "coverage_too_low_0.0000"
+      ]
+    }
+  },
+  "n_batch_summaries": 0
+}

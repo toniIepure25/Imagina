@@ -1,0 +1,17 @@
+{
+  "artifact": "C3XD_RAW_PERCEPTION_MANIFEST",
+  "required_contract": {
+    "subjects": 6,
+    "videos": 72,
+    "reps_per_video": 5
+  },
+  "event_certified": {
+    "videos": 72
+  },
+  "do_not_use_figshare_in_primary_raw_vs_raw": true,
+  "status": "NOT_PRODUCED_BLOCKED",
+  "reason": "raw BOLD betas were not produced: C3XD_BLOCKED_RAW_PIPELINE_INFEASIBLE (139.4 GB raw BOLD vs 37.1 GB free; no reproducible preprocessing/registration stack) + BLOCKED_C3XD_ROI_PROVENANCE (raw-space VC not certifiable).",
+  "contract_certified_from_events": "results/c3xd/c3xd_event_timing_manifest.json",
+  "no_silent_trial_drop": true,
+  "self_hash": "5dbe279198314f35976293647f778dc19229d0e36bf1d7ad8a8f087a168db6c7"
+}

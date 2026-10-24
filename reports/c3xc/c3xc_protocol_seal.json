@@ -1,0 +1,246 @@
+{
+  "artifact": "C3XC_PROTOCOL_SEAL",
+  "gate": "C3XC",
+  "title": "Mind Captioning (D2) internally-generated semantic/event imagery qualification",
+  "sealed_at": "2026-09-07",
+  "sealed_before_neural_outcomes": true,
+  "not_c4": true,
+  "no_reconstruction": true,
+  "no_captioning_or_semantic_decoding": true,
+  "no_geometry_computed": true,
+  "branch": "research/mind-captioning-imagery-qualification-c3xc",
+  "source_sha_c3xb_final": "d8cce52a7f804d00ffccff365a2e3e8975a598ed",
+  "d2_contract_ref": "reports/c3xc/d2_contract_extraction.md",
+  "trigger": "inspected because C3XB (GOD) decision = C3XB_GOD_CATEGORY_IMAGERY_FAIL (fallback precondition satisfied); no dataset-level outcome fishing",
+  "provenance": {
+    "openneuro": {
+      "accession": "ds005191",
+      "version": "1.0.2",
+      "role": "raw-BIDS anchor only (NOT downloaded)"
+    },
+    "figshare_article": 25808179,
+    "figshare_selected_version": 2,
+    "figshare_doi": "10.6084/m9.figshare.25808179.v2",
+    "license": "CC BY 4.0",
+    "operative_source": "preprocessed .mat (figshare) ONLY; raw and preprocessed not mixed",
+    "inventory": "results/c3xc/c3xc_candidate_inventory.json",
+    "cache_rule": "only files matching pinned figshare file_id + supplied_md5 accepted; SHA-256 computed on download"
+  },
+  "content_scope": {
+    "modality": "internally-generated SEMANTIC/EVENT (cued recall of dynamic natural video clips, Cowen & Keltner 2017)",
+    "forbidden_descriptions": [
+      "natural-object category imagery",
+      "exact-image imagery",
+      "pixel-matched imagery",
+      "static-image"
+    ],
+    "n_target_videos": 72,
+    "imagery_shows_no_stimulus": true,
+    "ref": "reports/c3xc/content_contract.md"
+  },
+  "expected_subjects": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
+  ],
+  "trial_contract": {
+    "imagery": {
+      "samples": 360,
+      "videos": 72,
+      "sessions": 5,
+      "reps_per_video": 5,
+      "unit_rule": "each of the 5 sessions contains all 72 videos exactly once",
+      "content_label": "imageryID (== Condition)",
+      "violation_state": "BLOCKED_D2_UNIT_CONTRACT"
+    },
+    "perception": {
+      "samples": 360,
+      "videos": 72,
+      "reps_per_video": 5,
+      "sessions": 2,
+      "runs": 10,
+      "content_label": "stimID"
+    },
+    "correspondence": {
+      "required": "72/72 exact",
+      "certified_from": "imageryID set == stimID set (video identity), NOT row order"
+    },
+    "exclusions": "none (all 72 videos have 5 clean imagery reps; no catch trials); behavioural accuracy/vividness NEVER used to select trials"
+  },
+  "roi_contract": {
+    "source": "released metainf.roiname localizer functional ROIs (officially released); hemisphere pair localizer_r_{lh,rh}.<area>",
+    "primary": "VC",
+    "VC_areas": [
+      "V1d",
+      "V1v",
+      "V2d",
+      "V2v",
+      "V3d",
+      "V3v",
+      "V3A",
+      "V3B",
+      "V7",
+      "hV4",
+      "LO1",
+      "LO2",
+      "LOC",
+      "FFA1",
+      "FFA2",
+      "EBA",
+      "FBA",
+      "OFA",
+      "PPA",
+      "OPA",
+      "MPA",
+      "VWFA1",
+      "VWFA2",
+      "OWFA",
+      "hMT"
+    ],
+    "earlyVC_V1_areas": [
+      "V1d",
+      "V1v"
+    ],
+    "LVC_areas": [
+      "V1d",
+      "V1v",
+      "V2d",
+      "V2v",
+      "V3d",
+      "V3v"
+    ],
+    "HVC_areas": [
+      "LOC",
+      "FFA1",
+      "FFA2",
+      "EBA",
+      "FBA",
+      "OFA",
+      "PPA",
+      "OPA",
+      "MPA",
+      "VWFA1",
+      "VWFA2",
+      "OWFA",
+      "hMT"
+    ],
+    "excluded_nonvisual_localizer": [
+      "AC",
+      "fSTS",
+      "frontal_language",
+      "temporal_language",
+      "lateral_TOM",
+      "medial_TOM"
+    ],
+    "prespecified_before_outcomes": true,
+    "gating_roi": "VC only; earlyVC/LVC/HVC are secondary/descriptive (cue control + interpretation), NOT gating"
+  },
+  "frozen_estimators": {
+    "c3g_geometry.py": "a289a915498c1f644d5e8809aaa2488970e7fcc3ebdcf3a7d72f39d94c2242ba",
+    "c3x_reliability.py": "623c9236056291ac2e8b2fbc75e0fe5c44f1233b1eef0bca4a5420e719b872ef",
+    "c3xb_reliability.py": "33d483a135a9692ff97475730c1bd2d5ea0ef6c57e1bbf23da20ddc33d22628e",
+    "c3xb_fast.py": "f5a19a7fc8eddb99a578477bcff472805d04e3c9cd22bfe7cd57e3eaeee52a7b"
+  },
+  "imagery_estimator": {
+    "normative": "c3xb_reliability.reliability_with_inference_pairs (FROZEN)",
+    "independent_unit": "SESSION (5 fully-balanced units; one trial per (session, video)) -- passed as the `pair` argument",
+    "rationale": "D2 sessions satisfy the run-pair estimator precondition (each unit covers all 72 contents exactly once), so the frozen C3XB estimator applies directly with unit:=session; within-session label-permutation null preserves acquisition structure",
+    "statistic": "R_I = Spearman-Brown-corrected Pearson r of concatenated 72-video-mean patterns across disjoint session-halves (5 -> 2 vs 2, 2 reps/video/half)",
+    "permutation_null": "permute video identities WITHIN each session; n_perm=1000",
+    "bootstrap": "non-straddling hierarchical: fix disjoint session-halves, resample whole sessions within each half with replacement; n_boot=1000",
+    "accelerator": "c3xb_fast.reliability_with_inference_pairs_fast (validated BIT-IDENTICAL to the frozen estimator on synthetic fixtures AND on >=1 real committed subject before large-scale use)",
+    "split_seeds": [
+      20260907,
+      20260907,
+      20260907
+    ],
+    "split_seed_offsets": [
+      0,
+      100,
+      200
+    ],
+    "n_rep_point": 200
+  },
+  "perception_control": {
+    "estimator": "c3x_reliability run-disjoint (FROZEN) on perception runs (10) / reps; global content-label permutation null",
+    "statistic": "R_P (matched video-identity perception reliability, same VC ROI)",
+    "mode": "full inference where feasible; documented point-only fallback anchored to a full-inference subject (C3XA/C3XB precedent) permitted",
+    "report": "attenuation A = R_I / R_P"
+  },
+  "cue_control": {
+    "vocabulary": [
+      "CUE_CLEAN",
+      "CUE_CONTROLLED",
+      "CUE_AMBIGUOUS",
+      "CUE_FAIL"
+    ],
+    "risks": [
+      "recall cue content",
+      "target-video presentation leakage",
+      "HRF spillover",
+      "previous trial",
+      "block-averaging/temporal preprocessing"
+    ],
+    "structural_fact": "imagery samples show NO video (stimID=0, cueID=0) -> target-presentation leakage structurally absent in the recall window",
+    "audit": [
+      "temporal-window certification (block-averaged recall period; no within-trial axis -> early-vs-late deferred, needs raw BIDS)",
+      "ROI-profile: HVC vs earlyVC(V1) dominance",
+      "target-presentation leakage argument"
+    ],
+    "rule": "primary reliability admissible only if CLEAN or CONTROLLED; CUE_AMBIGUOUS -> report with explicit limitation and do NOT upgrade; CUE_FAIL -> C3XC_BLOCKED_BY_CUE_PROVENANCE",
+    "no_upgrade_of_ambiguous": true
+  },
+  "subject_gate": "R_I>0 AND perm p<0.05 AND bootstrap CI lower>0 AND min-over-seeds>0 -> PASS; else MARGINAL (R_I>0, a criterion fails) or NOISE_FLOOR (R_I<=0) [frozen subject_reliability_gate]",
+  "dataset_gate": {
+    "qualified": ">=2/6 subjects imagery PASS AND matched perception PASS AND cue control acceptable (CLEAN/CONTROLLED) -> C3XC_D2_SEMANTIC_IMAGERY_QUALIFIED",
+    "limited": "exactly 1/6 -> C3XC_D2_SEMANTIC_IMAGERY_LIMITED (no downstream authorization)",
+    "fail": "0/6 -> C3XC_D2_SEMANTIC_IMAGERY_FAIL",
+    "blocked": "contract/unit uncertifiable or cue CUE_FAIL -> C3XC_BLOCKED_* ",
+    "aggregation": "count subjects independently; do NOT average subjects before subject-level qualification"
+  },
+  "multiplicity": "single prespecified gating ROI (VC); secondary ROIs descriptive only; no ROI selection after observing reliability",
+  "downstream_authorization": {
+    "on_qualified": "at most a FUTURE, separately-prespecified, D2-content-scoped (semantic/event video-recall) reliability-bounded analysis",
+    "never": [
+      "C3XR",
+      "C3XR-CAT",
+      "reconstruction",
+      "captioning/semantic decoding",
+      "C4"
+    ],
+    "on_fail_or_blocked_or_limited": "no downstream scope authorized"
+  },
+  "fail_closed": [
+    "figshare md5/sha mismatch -> abort",
+    "seal missing at decision -> abort",
+    "session unit not balanced (72x1) -> BLOCKED_D2_UNIT_CONTRACT",
+    "correspondence != 72/72 -> report exact subset, do not silently drop",
+    "frozen estimator hash changed -> abort",
+    "accelerator not proven equivalent -> use frozen only"
+  ],
+  "fallback_behavior": "if C3XC FAIL/BLOCKED, record the next candidate ONLY (do not execute)",
+  "integrity": {
+    "no_raw_neural_in_git": true,
+    "paths_via_env_vars": true,
+    "no_destructive_git": true,
+    "prior_artifacts_preserved": true,
+    "c3xa_c3xb_not_modified": true,
+    "no_forbidden_features": [
+      "CLIP",
+      "DINO",
+      "CNN",
+      "diffusion",
+      "deberta",
+      "timesformer",
+      "text-embedding"
+    ],
+    "behavioural_ratings": "descriptive only, never used to select trials",
+    "cross_dataset": "descriptive only"
+  },
+  "stop_after_c3xc": true,
+  "self_hash_field": "self_hash",
+  "self_hash": "e3c2ac5686edda077ad0fbbe575c0deaffe69d4567e09397cf30081eacf762b6"
+}

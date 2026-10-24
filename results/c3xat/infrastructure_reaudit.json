@@ -1,0 +1,14 @@
+{
+  "artifact": "C3XAT_INFRASTRUCTURE_REAUDIT",
+  "seal_self_hash": "bb0d07acb9a2cf8d271d4697acc6cde352b9b12cd38504203b14f8cf6079cee2",
+  "certified_by": "C3XDR-R1 (C3XDR_R1_REMOTE_INFRA_PASS)",
+  "kubernetes_available": true,
+  "persistent_nfs_free_GB": 107000,
+  "a100_available": true,
+  "large_cpu_ram": true,
+  "changed_since_c3xdr_r1": false,
+  "live_reaudit_performed_this_session": false,
+  "reason": "the OrchestrAI kubeconfig is not present in this session (never committed, per policy); live re-audit requires it. No new scientific decision is derived from infrastructure because availability is unchanged from the C3XDR-R1 certification.",
+  "status": "INFRA_ASSUMED_UNCHANGED_LIVE_REAUDIT_REQUIRES_KUBECONFIG",
+  "self_hash": "4f07d077130769378a341978cf193758b27521d1da20a4b2ef5d014a7d8bf9fb"
+}

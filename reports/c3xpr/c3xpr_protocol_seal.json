@@ -1,0 +1,45 @@
+{
+  "artifact": "C3XPR_PROTOCOL_SEAL",
+  "gate": "C3XPR",
+  "sealed_at": "2026-09-11",
+  "provenance_only": true,
+  "obtained_non_public_artifact": false,
+  "no_raw_bold": true,
+  "no_neural_outcomes": true,
+  "no_reliability": true,
+  "no_geometry": true,
+  "not_c3xdr_r2": true,
+  "not_c3xe": true,
+  "not_c4": true,
+  "branch": "research/d2-roi-provenance-recovery-c3xpr",
+  "lineage": {
+    "c3xdr_r1_decision": "C3XDR_R1_BLOCKED_ROI_PROVENANCE",
+    "c3xdr_seal": "7afc79466c75b671865fc787a56e8e421b4774bfd3d2b65b133092450302f43d",
+    "c3xc_c3xd_c3xdr_immutable": true
+  },
+  "allowed_recovery_routes": [
+    "1 exact released ROI masks + reference BOLD/EPI",
+    "2 exact ROI voxel coordinates + parent grid + affine",
+    "3 exact released-space reference + raw->released transform chain",
+    "4 preprocessing/registration derivatives sufficient to recreate the released space",
+    "5 released retinotopy/localizer derivatives sufficient to regenerate exact ROIs"
+  ],
+  "approximate_or_substitute_roi_forbidden": true,
+  "exact_requirements": [
+    "coordinate round-trip",
+    "exact voxel counts",
+    "exact affine/grid agreement",
+    "100% in-brain validity",
+    "same method every subject"
+  ],
+  "decision_states": [
+    "C3XPR_PUBLIC_ROI_PROVENANCE_RECOVERED",
+    "C3XPR_PUBLIC_ROI_PROVENANCE_PARTIAL",
+    "C3XPR_PUBLIC_ROI_PROVENANCE_INSUFFICIENT",
+    "C3XPR_AUTHOR_ARTIFACT_REQUIRED",
+    "C3XPR_ROI_PROVENANCE_UNRECOVERABLE (only w/ authoritative author response)"
+  ],
+  "silence_is_not_unrecoverable": true,
+  "self_hash_field": "self_hash",
+  "self_hash": "dc2eb9f9de391dcde9953c5290202104ac8caa353876b1eca0fc4d17ea1e6519"
+}

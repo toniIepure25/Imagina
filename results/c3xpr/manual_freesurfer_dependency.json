@@ -1,0 +1,15 @@
+{
+  "artifact": "C3XPR_MANUAL_FREESURFER_DEPENDENCY",
+  "status": "PUBLIC_PROVENANCE_DEPENDS_ON_UNRELEASED_MANUAL_FS_DERIVATIVE",
+  "paper_reports_manual_fs_correction": true,
+  "affects": [
+    "bbregister functional<->anatomical registration",
+    "surface geometry",
+    "retinotopic boundaries",
+    "localizer ROI definitions",
+    "VC/LVC/HVC voxel membership"
+  ],
+  "bypassing_released_derivative_found": false,
+  "note": "vanilla recon-all is NOT a permitted substitute; exact ROI reproduction depends on the unreleased manually-corrected FreeSurfer derivative.",
+  "self_hash": "76bd9ac3edd9c666d403650b6941b5bda6aad8d38c87a0df2e18646d4ef0f9be"
+}

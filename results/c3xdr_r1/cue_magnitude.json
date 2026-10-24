@@ -1,0 +1,6 @@
+{
+  "artifact": "C3XDR_R1_CUE_MAGNITUDE",
+  "status": "NOT_MEASURED_BLOCKED",
+  "reason": "requires raw VC betas; pipeline blocked at ROI provenance",
+  "self_hash": "73b125c7fb8f6a15e4136a5ade98677a16fc8f44d97ce32c7b9508c33761423e"
+}

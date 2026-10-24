@@ -1,0 +1,64 @@
+{
+  "artifact": "C3XB_GOD_CUE_LEAKAGE_AUDIT",
+  "created_at": "2026-09-01",
+  "paradigm": "3s visual WORD cue -> ~15s eyes-closed imagery -> 3s vividness",
+  "release_is_block_averaged_single_trial": true,
+  "imagery_rows_equal_500_blocks": true,
+  "within_trial_time_axis_in_release": false,
+  "averaging_window_documented": "imagery-maintenance period after hemodynamic-delay shift, per-run detrend+zscore (Horikawa & Kamitani 2017 / KamitaniLab pipeline); cue period is not the averaging target",
+  "provenance_limitation": "exact averaging-window sentence + hemodynamic-shift value not re-quotable in-environment (nature.com auth-gated; PMC reCAPTCHA); determination rests on structural evidence (block-averaged single-trial amplitudes) + established Kamitani pipeline; data-descriptor design confirmed via OpenNeuro/figshare",
+  "residual_risks": [
+    "3s word-cue hemodynamic tail overlaps imagery averaging window",
+    "word cue is category-informative -> residual cue signal would be category-specific"
+  ],
+  "early_vs_late_temporal_control": {
+    "computable_from_release": false,
+    "reason": "no within-trial time axis in block-averaged release",
+    "requires": "raw BIDS ds001246 + cue/imagery/eval-separated GLM",
+    "status": "DEFERRED as HARD PREREQUISITE for C3XR-CAT (not satisfied within C3XB)"
+  },
+  "roi_profile_control": {
+    "principle": "V1-dominated reliability would flag a visual word-cue artifact; HVC(LOC/FFA/PPA)-dominated reliability is consistent with object imagery",
+    "computed_in_phase2": true,
+    "per_subject": {
+      "Subject1": {
+        "V1_R_I": 0.0345,
+        "HVC_R_I": 0.0478,
+        "LVC_R_I": 0.0443,
+        "hvc_gt_v1": true
+      },
+      "Subject2": {
+        "V1_R_I": -0.0281,
+        "HVC_R_I": 0.209,
+        "LVC_R_I": -0.0356,
+        "hvc_gt_v1": true
+      },
+      "Subject3": {
+        "V1_R_I": 0.0879,
+        "HVC_R_I": 0.2586,
+        "LVC_R_I": 0.1063,
+        "hvc_gt_v1": true
+      },
+      "Subject4": {
+        "V1_R_I": 0.035,
+        "HVC_R_I": 0.1484,
+        "LVC_R_I": 0.041,
+        "hvc_gt_v1": true
+      },
+      "Subject5": {
+        "V1_R_I": -0.0296,
+        "HVC_R_I": 0.0233,
+        "LVC_R_I": 0.0141,
+        "hvc_gt_v1": true
+      }
+    },
+    "note": "filled after the Phase 2 reliability screen (descriptive, post-primary)",
+    "hvc_gt_v1_all_subjects": true,
+    "conclusion": "HVC>V1 for all 5 subjects -> the (weak) imagery reliability is higher-visual-cortex dominated, consistent with object imagery and AGAINST a V1-dominated visual word-cue artifact. Cue state CONTROLLED is corroborated by data."
+  },
+  "cue_contamination_state": "CUE_CONTAMINATION_CONTROLLED",
+  "state_scope": "reliability-qualification question only; does NOT certify cue-vs-imagery dissociation",
+  "downstream_enforcement": "C3XB qualification authorizes C3XR-CAT ONLY subject to the raw-BIDS early-vs-late / cue-separated-GLM dissociation control",
+  "self_hash_field": "self_hash",
+  "self_hash": "f46fc8ec27f663d8cc162dcad9403af45d4bf7f4e6a21358779f4540dceef5ae"
+}

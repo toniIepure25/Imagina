@@ -1,0 +1,24 @@
+{
+  "artifact": "C3XDR_R1_CONTAINER_EXECUTION_CERTIFICATION",
+  "status": "AVAILABLE",
+  "mode": "Kubernetes Job with pinned image digest + persistent NFS PVC (no docker-in-docker required)",
+  "base_pod_image": "quay.io/jupyter/pytorch-notebook:cuda12-latest",
+  "base_pod_image_digest": "sha256:85ab930435b7afc06396e2949a4fe508d027a7980a319bec6a92f827578e5343",
+  "compute": {
+    "cpus": 256,
+    "mem_Gi": 1007,
+    "gpu": "NVIDIA A100-SXM4-40GB",
+    "kernel": "6.8.0-51-generic",
+    "python": "3.13.15"
+  },
+  "preprocessing_stack_in_base_image": {
+    "fmriprep": false,
+    "fsl": false,
+    "flirt": false,
+    "recon-all": false,
+    "spm12": false,
+    "nibabel": false
+  },
+  "note": "K8s can run any pinned preprocessing container as a Job; container execution is NOT the blocker. The blocker is scientific ROI/preprocessing PROVENANCE (below), independent of which container is used.",
+  "self_hash": "39f34038abbf7acb10169ffcf17ff4cc70f09616852ada59c9366541b20e6185"
+}

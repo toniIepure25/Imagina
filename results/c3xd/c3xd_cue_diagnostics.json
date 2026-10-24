@@ -1,0 +1,65 @@
+{
+  "artifact": "C3XD_CUE_DIAGNOSTICS",
+  "source": "synthetic (real S1 timing; NO BOLD)",
+  "imagery_per_trial_estimable": {
+    "imagery_submatrix_condition_number": 1.1611391192119387,
+    "imagery_VIF_mean": 1.6703219773275277,
+    "imagery_vs_own_cue_corr_mean": 0.060567934186880924,
+    "verdict": "YES -- per-trial imagery is well-conditioned and separable in the mean"
+  },
+  "false_positive_reliability_vs_cue_magnitude": {
+    "A": {
+      "0.25": {
+        "cue_leak_max": 0.03303435109048033,
+        "video_leak_max": 0.0071599967572336205,
+        "null_false_positive_rate": 0.0
+      },
+      "0.5": {
+        "cue_leak_max": 0.05541381433680138,
+        "video_leak_max": 0.0100302946607235,
+        "null_false_positive_rate": 0.0
+      },
+      "1.0": {
+        "cue_leak_max": 0.11516701514866755,
+        "video_leak_max": 0.0235931197593137,
+        "null_false_positive_rate": 0.25
+      }
+    },
+    "B": {
+      "0.25": {
+        "cue_leak_max": 0.03073579239106768,
+        "video_leak_max": 0.052269393668165874,
+        "null_false_positive_rate": 0.0
+      },
+      "0.5": {
+        "cue_leak_max": 0.05595831459216736,
+        "video_leak_max": 0.09316281923563446,
+        "null_false_positive_rate": 0.0
+      },
+      "1.0": {
+        "cue_leak_max": 0.10549224280151784,
+        "video_leak_max": 0.17401942321959749,
+        "null_false_positive_rate": 0.5
+      }
+    },
+    "C": {
+      "0.25": {
+        "cue_leak_max": 0.09621861420735289,
+        "video_leak_max": 0.0037634360353550555,
+        "null_false_positive_rate": 0.25
+      },
+      "0.5": {
+        "cue_leak_max": 0.1849356444654999,
+        "video_leak_max": 0.007522413810554193,
+        "null_false_positive_rate": 0.75
+      },
+      "1.0": {
+        "cue_leak_max": 0.35726483181405166,
+        "video_leak_max": 0.0038846853130751783,
+        "null_false_positive_rate": 0.75
+      }
+    }
+  },
+  "interpretation": "Proper deconfounding (Model A/B) yields ZERO false-positive imagery reliability when the video-specific cue/video response is <=0.5x the imagery response, but 25-50% false-positive reliability at comparable (1.0x) magnitude, because a video-specific cue response is consistent across repetitions and the reliability estimator cannot distinguish it from imagery. The naive late-window model (C) leaks even at 0.25x. The ACTUAL cue-response magnitude in VC is unknown and can only be measured from raw BOLD, which is infeasible here.",
+  "self_hash": "fbca068e22bdca62ea705da19808e89fdde3545e2b8126970c7eb314ec33461e"
+}

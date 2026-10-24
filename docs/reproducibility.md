@@ -29,6 +29,70 @@ Limitations: deterministic simulation is useful for engineering validation, but 
 
 All exported PID/IQI values remain experimental derived proxies.
 
+## Research Reproducibility (v0.5.0+)
+
+### Synthetic Dataset Generation
+
+Generate a deterministic synthetic dataset for analysis pipeline development:
+
+```bash
+python scripts/generate_synthetic_dataset.py --n-participants 24 --seed 42 --output data/synthetic/
+```
+
+This produces `participants.csv`, `trials.csv`, and `metadata.json` with deterministic, seeded data matching the expected research schema.
+
+### Provenance Tracking
+
+Every trial in research mode records:
+- Software version and git commit SHA
+- Study ID, participant ID, session ID
+- Condition assignment and trial index
+- Stimulus ID and content hash
+- Signal provider ID and protocol version
+
+### Preregistration
+
+See `docs/preregistration.md` for the study preregistration template. Complete before any data collection.
+
+### Analysis Pipeline
+
+The confirmatory hierarchical analysis is **executable** on synthetic data using `backend/app/research/statistics/confirmatory.py` (Python statsmodels MixedLM). The primary model formula is:
+
+```
+objective_error ~ condition + period + session_index + baseline_precision + task_family + (1 | participant)
+```
+
+The analysis pipeline includes:
+- Design matrix construction (`statistics/design_matrix.py`)
+- Primary confirmatory model with fallback (`statistics/confirmatory.py`)
+- Holm-Bonferroni multiplicity correction (`statistics/multiplicity.py`)
+- Sensitivity analyses (`statistics/sensitivity.py`)
+
+**Status:** Executable on synthetic data. Human data analysis requires: ethics approval, human data collection, and validated psychometric properties.
+
+### Environment Reproducibility
+
+```bash
+# Backend
+cd backend
+pip install -e ".[dev]"
+python -m pytest app/tests/ -q
+
+# Frontend
+cd frontend
+npm ci
+npm run typecheck
+npm test
+npm run build
+```
+
+### Version Pinning
+
+- Backend dependencies: `backend/pyproject.toml`
+- Frontend dependencies: `frontend/package-lock.json`
+- Python version: >= 3.10
+- Node version: >= 20
+
 ## LSL Smoke Test (Experimental)
 
 For real EEG hardware validation, a manual smoke test CLI is available:

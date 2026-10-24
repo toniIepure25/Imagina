@@ -1,0 +1,56 @@
+{
+  "artifact": "C3XB_SCOPE_REGISTRY",
+  "purpose": "Housekeeping registry that pins the scope of every dataset/family touched across the C3-external program, to prevent claim drift between gates. Descriptive; authoritative decision records remain the per-gate decision JSONs.",
+  "created_at": "2026-09-01",
+  "created_in_gate": "C3XB",
+  "scopes": {
+    "NSD_C3G": {
+      "dataset": "Natural Scenes Dataset (internal C3G state-geometry work)",
+      "modality": "perception (natural scenes)",
+      "role": "Origin of the perception<->imagery geometry question; internal reference geometry.",
+      "imagery_qualified": null,
+      "authorizes": "internal C3G geometry only; NOT an external imagery qualification.",
+      "claim_boundary": "No imagery reliability claim; perception-side reference only."
+    },
+    "DIR_natural": {
+      "dataset": "Deep Image Reconstruction (DIR), OpenNeuro ds001506 / Figshare",
+      "modality": "imagery of 10 memorized NATURAL image exemplars",
+      "role": "C3X/C3XA candidate natural-image imagery family",
+      "imagery_qualified": false,
+      "authorizes": "nothing -- 0/3 subjects passed the conservative reliability gate (C3XA).",
+      "claim_boundary": "DIR does NOT support natural-image perception->imagery geometry. Exact-image / pixel-matched imagery family; distinct from GOD category imagery."
+    },
+    "DIR_artificial": {
+      "dataset": "Deep Image Reconstruction (DIR), ds001506",
+      "modality": "imagery of 15 memorized ARTIFICIAL shape exemplars",
+      "role": "C3XA restricted-family qualification",
+      "imagery_qualified": true,
+      "authorizes": "a restricted artificial-shape geometry pilot ONLY (clearly labelled RESTRICTED); NOT general C3XR; NOT natural-image geometry.",
+      "claim_boundary": "Artificial synthetic shapes only. Not a natural-object claim."
+    },
+    "GOD": {
+      "dataset": "Generic Object Decoding (GOD), OpenNeuro ds001246 v1.2.1 / Figshare 7387130 v6; Horikawa & Kamitani 2017 Nat Commun 8:15037",
+      "modality": "natural-object CATEGORY imagery (imagine any exemplar of a cued object category)",
+      "role": "C3XB primary candidate (THIS gate)",
+      "imagery_qualified": "PENDING_C3XB",
+      "authorizes": "if qualified, ONLY a restricted future category-level geometry gate C3XR-CAT; NEVER exact-image / pixel-matched C3XR.",
+      "claim_boundary": "CATEGORY-level (natural-object category) imagery and category-matched perception<->imagery ONLY. NEVER 'exact-image imagery' or 'pixel-matched'."
+    },
+    "MindCaptioning": {
+      "dataset": "Mind Captioning, OpenNeuro ds005191 v1.0.2",
+      "modality": "natural-scene/sentence imagery (D2 fallback candidate)",
+      "role": "C3XB D2 fallback IF GOD fails (frozen before GOD outcomes)",
+      "imagery_qualified": "NOT_INSPECTED",
+      "authorizes": "nothing yet; inspected only if GOD fails the C3XB gate.",
+      "claim_boundary": "Do NOT inspect if GOD qualifies. Has its own cue-only confound to control."
+    }
+  },
+  "global_invariants": {
+    "no_reconstruction": true,
+    "no_C4": true,
+    "no_geometry_computed_in_C3XB": true,
+    "raw_neural_data_never_committed": true
+  },
+  "self_hash_field": "self_hash",
+  "self_hash": "1e3da15afb1b1d53b0de56cb59838d1684b2820ac2b03ca71c5a1ea8e9bf5dac"
+}

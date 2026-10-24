@@ -1,0 +1,20 @@
+{
+  "artifact": "ANIMUS_P2E_FINAL_INTEGRITY_AUDIT",
+  "milestone": "ANIMUS-P2E",
+  "p2_seal_unchanged": true,
+  "primary_dataset_respected": true,
+  "fallback_rule_respected": true,
+  "roi_unchanged_wang25": true,
+  "no_atlas_switch": true,
+  "no_invented_registration": true,
+  "target_encoder_unchanged": true,
+  "decoder_unchanged": true,
+  "test_firewall_respected": true,
+  "no_confirmatory_outcome_inspected": true,
+  "no_partial_outcome_peeking": true,
+  "all_findings_pre_outcome": true,
+  "c3xag_authorized": false,
+  "imagery_unauthorized": true,
+  "no_fabricated_numbers": true,
+  "self_hash": "3b10592f4fe73ca152d1da0c1eecba7a172174d14c7e15b53ce2a6c97d83ef15"
+}

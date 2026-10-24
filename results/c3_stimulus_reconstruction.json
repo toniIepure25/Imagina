@@ -1,0 +1,58 @@
+{
+  "timestamp": "2026-07-26T01:15:00",
+  "status": "STIMULUS_RECONSTRUCTION_EQUIVALENT_WITH_FROZEN_TOLERANCE",
+  "method": "COCO source + NSD cropBox (forced-square via min dimension)",
+  "cropBox_convention": "(top_frac, bottom_frac, left_frac, right_frac)",
+  "crop_algorithm": "sq = min(W,H); landscape: x_start=round(left_frac*W); portrait: y_start=round(top_frac*H)",
+  "resize": "PIL LANCZOS to 425x425",
+  "output_format": "PNG",
+  "frozen_tolerance": {
+    "max_abs_pixel_diff_per_image": 210,
+    "mean_abs_pixel_diff_per_image": 10.0,
+    "min_clip_cosine_similarity": 0.99,
+    "source": "JPEG codec differences between cocodataset.org 2026 distribution and NSD original ~2019 COCO copy, plus LANCZOS interpolation rounding"
+  },
+  "gold_standard_comparison": {
+    "method": "Direct pixel comparison against official nsd_stimuli.hdf5 imgBrick via S3 HTTP range reads",
+    "hdf5_url": "https://natural-scenes-dataset.s3.amazonaws.com/nsddata_stimuli/stimuli/nsd/nsd_stimuli.hdf5",
+    "hdf5_shape": [73000, 425, 425, 3],
+    "hdf5_dtype": "uint8",
+    "n_compared": 16,
+    "validation_subset_ids": [13, 10, 27, 95, 99, 147, 356, 458, 2950, 6521, 24852, 38246, 48795, 54743, 72620, 72999],
+    "results_summary": {
+      "all_correct_size": true,
+      "all_forced_square": true,
+      "pixel_identical": 0,
+      "within_tolerance": 16,
+      "max_pixel_diff_across_all": 206,
+      "mean_of_mean_diffs": 3.08,
+      "max_of_mean_diffs": 7.80
+    },
+    "clip_cosine_validation": {
+      "model": "openai/clip-vit-large-patch14",
+      "worst_case_ids": [2950, 356, 458, 48795, 38246, 99],
+      "cosine_values": [0.998905, 0.995179, 0.998394, 0.998363, 0.999055, 0.998017],
+      "min_cosine": 0.995179,
+      "all_above_threshold": true
+    }
+  },
+  "incorrect_interpretation_rejected": {
+    "format_tried": "(top_frac, left_frac, bottom_frac, right_frac)",
+    "result": "Non-square intermediate crops producing mean pixel diff 29-54",
+    "status": "REJECTED"
+  },
+  "image_index_conventions": {
+    "stim_info_pkl_index": "0-based (row 0 = nsdId 0)",
+    "subjectim_values": "1-based (value 1 = nsdId 0)",
+    "masterordering_values": "1-based image slot indices",
+    "imgBrick_index": "0-based (index 0 = nsdId 0)",
+    "output_filename": "nsd_{nsdId:05d}.png",
+    "clip_embedding_row": "sorted participant image slot order (ascending nsdId)"
+  },
+  "participant_images": {
+    "subject": "subj01",
+    "n_unique_nsd_ids": 10000,
+    "nsd_id_range": [13, 72999],
+    "derivation": "sorted(set(subjectim[0, :] - 1))"
+  }
+}

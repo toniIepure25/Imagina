@@ -1,0 +1,63 @@
+{
+  "subject": "sub-04",
+  "R_I": 0.023952487672105924,
+  "perm_p": 0.1928071928071928,
+  "bootstrap_ci95": [
+    -0.031218005905567805,
+    0.0977876957860699
+  ],
+  "split_seed_min_R_I": 0.021817660806280285,
+  "split_seed_values_R_I": [
+    0.023952487672105924,
+    0.02425447111394886,
+    0.021817660806280285
+  ],
+  "R_P": 0.1528250302803945,
+  "R_P_perm_p": 0.000999000999000999,
+  "R_P_ci95": [
+    -0.010364245488980035,
+    0.21417082991850606
+  ],
+  "R_P_split_seed_min": 0.1516182661886494,
+  "R_P_split_seed_values": [
+    0.1528250302803945,
+    0.1516182661886494,
+    0.15452901488448656
+  ],
+  "R_I_cuevideo_predicted": -0.03960703069103573,
+  "Delta_I": 0.06355951836314165,
+  "paired_delta": {
+    "delta_point": 0.06355951836314165,
+    "delta_ci95": [
+      -0.04627096628493049,
+      0.17158623020239577
+    ],
+    "delta_bootstrap_mean": 0.0484406989136659,
+    "per_seed_delta": [
+      0.06355951836314165,
+      0.06718608880647058,
+      0.06307870159534572
+    ],
+    "delta_min_seed": 0.06307870159534572,
+    "n_boot": 1000,
+    "seeds": [
+      20260909,
+      20261009,
+      20261109
+    ],
+    "paired": true,
+    "method": "SEALED_CONSERVATIVE_SENSITIVITY",
+    "criterion_pass": false
+  },
+  "imagery_pass": false,
+  "perception_pass": false,
+  "cuevideo_pass": false,
+  "unit_contract_pass": true,
+  "runpair_contract_pass": true,
+  "atlas_qc_pass": true,
+  "primary_pass": false,
+  "n_imagery_trials": 360,
+  "n_perception_trials": 360,
+  "n_perception_runpairs": 5,
+  "n_roi_voxels": 7604
+}
