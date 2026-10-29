@@ -5,8 +5,9 @@ review_note: >-
   Canonical claim statuses after reconciling ANIMUS P2, P2E, and P2R. P2 reported an internal
   pilot gate as VALIDATED; P2R showed that the confirmatory cohort was never executed because the
   spatial-provenance blocker was resolved only in method, not in data. The canonical ANIMUS_P2 gate
-  is therefore BLOCKED, and the perception-content claim is PILOT, not VALIDATED. No claim above
-  L1_BEHAVIORAL_ASSISTED is authorized.
+  is therefore BLOCKED, and the perception-content claim is PILOT, not VALIDATED. Stage 0 of the
+  source-monitoring program adds three claims; all are UNVALIDATED or BLOCKED because no human data
+  exist. No claim above L1_BEHAVIORAL_ASSISTED is authorized.
 
 claims:
   - claim_id: claim.behavioral_imagery_assistance
@@ -154,3 +155,63 @@ claims:
       - "Clinically validated"
       - "Medical device"
     last_reviewed: "2026-10-29"
+
+  - claim_id: claim.source_monitoring_measurement
+    statement: >-
+      The Source and Imagination Monitor estimates source discrimination and source calibration for
+      seen, imagined, described, and new content, with reported uncertainty and explicit
+      insufficient-data states.
+    status: UNVALIDATED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "Stage 0 specification and simulation only; no human reliability or validity data"
+    forbidden_interpretations:
+      - "Validated source-monitoring instrument"
+      - "Measures imagery strength"
+      - "Diagnoses aphantasia"
+      - "Decodes imagined content"
+      - "Normed or comparable across scenes"
+    last_reviewed: "2026-10-29"
+    notes: >-
+      Stage 0 adds a protocol, a generative model, and a simulation harness. The claim remains
+      UNVALIDATED until a registered study passes reliability, invariance, and construct gates.
+
+  - claim_id: claim.source_monitoring_training
+    statement: >-
+      Adaptive source-monitoring feedback improves source calibration or source discrimination
+      beyond a yoked active control.
+    status: BLOCKED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "Conditional on measurement validation; no training RCT has been executed"
+    forbidden_interpretations:
+      - "Improves imagination"
+      - "Treats hallucinations"
+      - "Generalizes beyond the trained task"
+      - "Clinically effective"
+    last_reviewed: "2026-10-29"
+    notes: "Blocked until the Stage 1 measurement gates pass and a separate RCT is registered."
+
+  - claim_id: claim.source_monitoring_clinical
+    statement: >-
+      The Source and Imagination Monitor diagnoses, predicts, or treats a clinical condition.
+    status: BLOCKED
+    ceiling: L3_CLOSED_LOOP
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "No clinical sample, no diagnostic accuracy study, no regulatory review"
+    forbidden_interpretations:
+      - "Diagnoses psychosis"
+      - "Predicts hallucinations"
+      - "Clinical biomarker"
+      - "Medical device"
+    last_reviewed: "2026-10-29"
+    notes: "No clinical sample or clinical claim is authorized in this program."

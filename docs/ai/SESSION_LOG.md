@@ -5412,3 +5412,43 @@ C3XAT-R1 is `LIMITED` (1/6 pass); C1/C2/C3/C3M are `NULL`.
 **Known gaps:** the ledger registers canonical gate artifacts, not all 378 result JSONs; there is no
 automatic discovery of unregistered result files yet. `frontend/lib/claims.json` remains separate.
 No human data, no ethics approval, no new neural result.
+
+---
+
+## 2026-10-29 - Stage 0: epistemic source-monitoring specification and simulation
+
+**Task:** implement the first slice of the approved IMAGINA 3.0 program without adding an API, UI, or
+human-data surface.
+
+**Built:**
+- `docs/animus/SOURCE_MONITORING_SPEC.md`: construct definition, four-source task, generative model,
+  adaptive EIG over person parameters, yoked control, estimands, COSMIN validation matrix, and
+  explicit non-goals.
+- `docs/program/PRM_PREREGISTRATION.md` and `docs/program/PRM_ANALYSIS_PLAN.md`: draft OSF/registered
+  report protocol and statistical analysis plan; both marked DRAFT and not registered.
+- `science/protocols/prm-v1.yaml`: machine-readable `ANIMUS-SIM-v1` protocol.
+- `backend/app/research/prm/`: dependency-free model, metrics, adaptive design, and simulator.
+- `backend/app/cli/prm_simulate.py`: deterministic `--check` and configurable simulation CLI.
+- `backend/app/tests/test_prm_stage0.py`: 13 tests covering probability normalization, d-prime
+  separation and null recovery, Brier/ECE bounds, meta-d-prime gating, EIG item preference, entropy
+  reduction, coverage, schedule balance, determinism, design comparison, and the simulation gate.
+- `results/prm/PRM_STAGE0_SIMULATION.json`: 120 simulated participants x 120 trials. Recovery bias
+  +0.051, RMSE 0.197, PASS. Adaptive EIG reduced final posterior entropy by 28.9% versus the fixed
+  stratified schedule. Coverage counts: described 21.0%, imagined 39.5%, new 15.0%, seen 24.5%.
+- Registry: three new claims (`claim.source_monitoring_measurement` UNVALIDATED,
+  `claim.source_monitoring_training` BLOCKED, `claim.source_monitoring_clinical` BLOCKED), one
+  simulation-only gate (`ANIMUS_P3_SIM`), and one canonical simulation artifact.
+
+**Verification (actually run):**
+- `python -m app.cli.prm_simulate --check`: PASS.
+- `pytest app/tests/test_prm_stage0.py`: 13 passed.
+- `ruff check app/research/prm app/cli/prm_simulate.py app/tests/test_prm_stage0.py`: clean.
+- `python -m app.cli.science_ledger --check`: 13 artifacts, 8 gates, 11 claims; `ANIMUS_P3_SIM=PASS`.
+- `python -m app.cli.science_ledger --write`: regenerated `PROGRAM_STATUS.md` and `ledger.json`.
+
+**Decisions:** ADR-067 records source monitoring as the next scientific object, with Stage 0 limited
+to specification and simulation.
+
+**Known gaps:** the simulator uses a fixed stratified schedule as a stand-in for the human yoked
+control; the human study implements true yoking. `meta_d_prime` is gated but not estimated in Stage 0.
+No human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.

@@ -267,6 +267,8 @@ Interpretation thresholds:
 | `frontend/scripts/verify-animus-ui.cjs` | Playwright end-to-end loop + screenshots |
 | `science/registry/`, `science/schemas/` | Canonical claim/gate/artifact registry and JSON Schemas |
 | `backend/app/research/ledger.py`, `backend/app/cli/science_ledger.py` | Validates the registry and generates the program status document |
+| `backend/app/research/prm/`, `backend/app/cli/prm_simulate.py` | Stage 0 source-monitoring model, adaptive design, metrics, and deterministic simulation; no API or DB |
+| `docs/animus/SOURCE_MONITORING_SPEC.md`, `docs/program/PRM_*`, `science/protocols/prm-v1.yaml` | Source-monitoring specification, draft preregistration/analysis plan, and machine-readable protocol |
 | `docs/program/PROGRAM_STATUS.md`, `results/ledger.json` | Generated canonical gate/claim status; never edit by hand |
 | `docs/animus/` | Vision, architecture, API contract, interface principles, claims boundary, roadmap, demo, README |
 

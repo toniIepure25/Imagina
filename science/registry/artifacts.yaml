@@ -149,3 +149,17 @@ artifacts:
     note: >-
       Canonical: confirmatory compute blocked; 1/6 subjects preprocessed; no neural outcome
       computed. Imagery remains unauthorized.
+
+  - artifact_id: animus.p3.sim
+    path: results/prm/PRM_STAGE0_SIMULATION.json
+    gate_id: ANIMUS_P3_SIM
+    authority: canonical
+    status_path: decision
+    status_map:
+      PRM_STAGE0_SIMULATION_PASS: PASS
+      PRM_STAGE0_SIMULATION_REVIEW: LIMITED
+    required_fields: [protocol, decision, config, recovery, comparison]
+    note: >-
+      Stage 0 simulation with 120 simulated participants and 120 trials each. Parameter recovery
+      passed (bias +0.051, RMSE 0.197). Adaptive EIG reduced final posterior entropy by 28.9% versus
+      the fixed stratified schedule. This is a design artifact, not human evidence.

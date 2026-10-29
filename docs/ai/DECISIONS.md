@@ -1718,4 +1718,42 @@ supersession. A reader could not tell which file was authoritative.
 
 ---
 
-*Last updated: 2026-10-29 - ADR-066 canonical claim registry and result ledger*
+*Last updated: 2026-10-29 - ADR-067 source monitoring as the next scientific object*
+
+---
+
+## ADR-067: Source monitoring as the next scientific object
+
+**Status:** Proposed (Stage 0 only)
+**Date:** 2026-10-29
+**Context:** The neural-decoding lane is blocked by null and single-subject results (C3, C3M,
+C3XAT-R1), while the platform's claim ceiling is `L1_BEHAVIORAL_ASSISTED`. The existing behavioural
+surfaces measure discrimination thresholds, reconstruction beliefs, and confidence, but not the
+process by which a person decides whether an experience was seen, imagined, described, or new.
+Source-monitoring research provides a mature behavioural operationalization of that question, and
+the platform can generate controlled seen/imagined/described/new items from its symbolic scenes.
+
+**Decision:**
+
+1. The next flagship scientific object is **epistemic source monitoring**, not neural decoding of
+   imagery.
+2. The instrument reports separate axes: source discrimination (`d_prime`), source bias (`c`),
+   source calibration (Brier/ECE), and exploratory epistemic efficiency. No composite score.
+3. Adaptive selection maximizes expected information gain over **person-level parameters**, not
+   scene variables, and is compared with a yoked fixed schedule.
+4. Stage 0 is simulation and specification only. No human data, API, migration, or UI is authorized
+   until the simulation gate passes.
+5. Claims stay `UNVALIDATED` or `BLOCKED`; no diagnosis, no imagery-strength claim, no neural
+   inference.
+
+**Consequences:**
+
+- `claim.source_monitoring_measurement` is `UNVALIDATED`; training and clinical claims are `BLOCKED`.
+- `ANIMUS_P3_SIM` is a simulation-only gate. A PASS does not validate the instrument.
+- The existing ERI and Scene Threshold surfaces remain available as secondary measures.
+- A registered validation study is required before any training RCT or product surface.
+- The claim ceiling did not change.
+
+---
+
+*Last updated: 2026-10-29 - ADR-067 source monitoring as the next scientific object*

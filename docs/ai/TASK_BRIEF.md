@@ -1,6 +1,35 @@
 # TASK_BRIEF.md
 
-## Current task — Phase 1: canonical claim registry and results ledger (2026-10-29)
+## Current task — Phase 3: Stage 0 epistemic source monitoring (2026-10-29)
+
+**Goal:** implement the approved first slice of the source-monitoring program: specification,
+preregistration draft, analysis plan, machine-readable protocol, claim-registry entries, and a
+dependency-free simulation core that passes its design gate. No human data, API, migration, or UI.
+
+**Scope**
+- `docs/animus/SOURCE_MONITORING_SPEC.md`, `docs/program/PRM_PREREGISTRATION.md`,
+  `docs/program/PRM_ANALYSIS_PLAN.md`, `science/protocols/prm-v1.yaml`.
+- `backend/app/research/prm/` model, metrics, adaptive design, simulator; `app/cli/prm_simulate.py`.
+- `backend/app/tests/test_prm_stage0.py`.
+- `results/prm/PRM_STAGE0_SIMULATION.json` and registry entries for the simulation-only gate.
+- ADR-067 and session log.
+
+**Non-goals**
+- No API, database migration, frontend route, human recruitment, clinical sample, or neural data.
+- No claim above `L1_BEHAVIORAL_ASSISTED`; no diagnosis, imagery-strength, or decoding claim.
+- No `meta_d_prime` estimate in Stage 0; it is gated.
+
+**Acceptance**
+- Simulation `--check` and 13 Stage 0 tests pass.
+- `ANIMUS_P3_SIM=PASS` in the ledger; 11 claims with the three new source-monitoring claims.
+- Ruff clean; `verify.py --quick` passes; docs links pass.
+- The artifact is reproducible from the documented CLI command.
+
+**Status:** implemented; verification recorded in the 2026-10-29 session-log entry.
+
+---
+
+## Previous task — Phase 1: canonical claim registry and results ledger (2026-10-29)
 
 **Goal:** replace hand-maintained, contradictory scientific status prose with one machine-readable
 claim registry and one hash-chained results ledger, then generate the program status document from

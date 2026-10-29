@@ -49,6 +49,18 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p3.sim",
+      "authority": "canonical",
+      "bytes": 1934,
+      "gate_id": "ANIMUS_P3_SIM",
+      "note": "Stage 0 simulation with 120 simulated participants and 120 trials each. Parameter recovery passed (bias +0.051, RMSE 0.197). Adaptive EIG reduced final posterior entropy by 28.9% versus the fixed stratified schedule. This is a design artifact, not human evidence.",
+      "path": "results/prm/PRM_STAGE0_SIMULATION.json",
+      "raw_status": "PRM_STAGE0_SIMULATION_PASS",
+      "sha256": "68a1a41df0f78b21e787b42bb6ed3eb3e184b7da2cec55c0005f9bb640dd79cc",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "c1.final",
       "authority": "canonical",
       "bytes": 9737,
@@ -258,6 +270,39 @@
       "statement": "The platform diagnoses, treats, or clinically validates a mental-health or neurological condition.",
       "status": "BLOCKED",
       "uncertainty": "No clinical study, no regulatory review"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.source_monitoring_measurement",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "The Source and Imagination Monitor estimates source discrimination and source calibration for seen, imagined, described, and new content, with reported uncertainty and explicit insufficient-data states.",
+      "status": "UNVALIDATED",
+      "uncertainty": "Stage 0 specification and simulation only; no human reliability or validity data"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.source_monitoring_training",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Adaptive source-monitoring feedback improves source calibration or source discrimination beyond a yoked active control.",
+      "status": "BLOCKED",
+      "uncertainty": "Conditional on measurement validation; no training RCT has been executed"
+    },
+    {
+      "ceiling": "L3_CLOSED_LOOP",
+      "claim_id": "claim.source_monitoring_clinical",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "The Source and Imagination Monitor diagnoses, predicts, or treats a clinical condition.",
+      "status": "BLOCKED",
+      "uncertainty": "No clinical sample, no diagnostic accuracy study, no regulatory review"
     }
   ],
   "errors": [],
@@ -329,6 +374,14 @@
       "name": "Perception decoder confirmation",
       "note": "Confirmatory compute blocked; pilot only.",
       "status": "BLOCKED"
+    },
+    {
+      "canonical_artifact": "animus.p3.sim",
+      "claims": [],
+      "gate_id": "ANIMUS_P3_SIM",
+      "name": "Source-monitoring Stage 0 simulation",
+      "note": "Simulation-only design gate for the Source and Imagination Monitor. A PASS means parameter recovery and the coverage constraints are acceptable in simulation; it is not human validation and does not authorize a measurement claim.",
+      "status": "PASS"
     }
   ],
   "generated_from": "science/registry",

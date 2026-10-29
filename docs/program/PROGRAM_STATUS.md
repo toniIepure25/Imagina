@@ -17,6 +17,7 @@
 | C3XAT_R1 | Atlas imagery qualification (replication 1) | `LIMITED` | `c3xat.r1.final` | 1/6 subject pass; C3XAG not authorized. |
 | ANIMUS_P1 | ANIMUS closed-loop vertical slice | `PASS` | `animus.p1` | Engineering pass under simulation; not a human validation. |
 | ANIMUS_P2 | Perception decoder confirmation | `BLOCKED` | `animus.p2r` | Confirmatory compute blocked; pilot only. |
+| ANIMUS_P3_SIM | Source-monitoring Stage 0 simulation | `PASS` | `animus.p3.sim` | Simulation-only design gate for the Source and Imagination Monitor. A PASS means parameter recovery and the coverage constraints are acceptable in simulation; it is not human validation and does not authorize a measurement claim. |
 
 ## Claims
 
@@ -30,6 +31,9 @@
 | `claim.neural_geometry` | `BLOCKED` | `L2_NEURAL_CONTENT` |  | `c3xat.r1.final` | Imagery-related neural geometry can be estimated and used to authorize a new acquisition or closed-loop geometry experiment. |
 | `claim.legacy_pid_iqi` | `DEPRECATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | PID and IQI are composite proxy scores that summarize simulated or demonstrated session signals. |
 | `claim.clinical_or_diagnostic` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | The platform diagnoses, treats, or clinically validates a mental-health or neurological condition. |
+| `claim.source_monitoring_measurement` | `UNVALIDATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | The Source and Imagination Monitor estimates source discrimination and source calibration for seen, imagined, described, and new content, with reported uncertainty and explicit insufficient-data states. |
+| `claim.source_monitoring_training` | `BLOCKED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Adaptive source-monitoring feedback improves source calibration or source discrimination beyond a yoked active control. |
+| `claim.source_monitoring_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | The Source and Imagination Monitor diagnoses, predicts, or treats a clinical condition. |
 
 ## Supersession and conflicts
 
@@ -47,6 +51,7 @@
 | `animus.p2` | ANIMUS_P2 | historical | `PILOT` | `e268f6acd4df1992c8e803bb0a7f19744f5cdb9c66c862b4d6ac9966b16bfcca` | 2005 |
 | `animus.p2e` | ANIMUS_P2 | historical | `BLOCKED` | `b1dce7a92e27901662632910d6cad3a508dff9c9e1edf76d1a750553232a7541` | 2570 |
 | `animus.p2r` | ANIMUS_P2 | canonical | `BLOCKED` | `173620c625e8cb70338d4806b45fab428fddb82c498f36a35ba98382bd4d9cab` | 1308 |
+| `animus.p3.sim` | ANIMUS_P3_SIM | canonical | `PASS` | `68a1a41df0f78b21e787b42bb6ed3eb3e184b7da2cec55c0005f9bb640dd79cc` | 1934 |
 | `c1.final` | C1 | canonical | `NULL` | `1f412b5216d37664a54078ace6e9bc5aaf084ef24830607732a77d1006632c3b` | 9737 |
 | `c2.final` | C2 | canonical | `NULL` | `e02e6c961302614380333e572d221b17bc11d8f14603d412784e709f95998a2e` | 8804 |
 | `c3.final` | C3 | canonical | `NULL` | `6073ec1c8aa130ef1aa06e73c87db1df571edbd49986d2e6d5e2e57113c0fc60` | 5650 |

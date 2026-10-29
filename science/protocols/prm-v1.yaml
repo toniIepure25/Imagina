@@ -1,0 +1,96 @@
+protocol_id: ANIMUS-SIM-v1
+version: 0.1.0
+status: draft
+claim_ceiling: L1_BEHAVIORAL_ASSISTED
+registered: false
+registration_note: >-
+  Stage 0 specification only. No human data may be collected under this protocol until the
+  preregistration is registered and ethics approval is documented.
+
+construct:
+  name: epistemic_source_monitoring
+  definition: >-
+    The accuracy, calibration, and efficiency with which a person attributes a remembered or
+    imagined experience to seen, imagined, described, or new sources under uncertainty.
+  not:
+    - neural decoding
+    - diagnostic classification
+    - imagery strength
+    - composite score
+
+sources: [seen, imagined, described, new]
+
+design:
+  task: four_alternative_source_judgment
+  confidence_range: [0.5, 1.0]
+  abstention_allowed: true
+  trials_per_occasion: 120
+  meta_d_prime_min_trials: 200
+  occasions_days: [0, 7, 28]
+  arms: [adaptive, yoked]
+  adaptive:
+    objective: expected_information_gain_over_person_parameters
+    theta: [d_prime, bias]
+    coverage_floor_fraction: 0.15
+    block_coverage_planned: 20
+    max_family_fraction: 0.40
+  yoked:
+    match: item_content_order_condition_counts_time_on_task
+    fallback: stratified_random
+
+estimands:
+  primary:
+    - d_prime_seen_imagined
+    - brier_score
+  secondary:
+    - criterion_c
+    - externalization_rate
+    - expected_calibration_error
+    - overconfidence
+    - meta_d_prime
+    - posterior_entropy_reduction_per_minute
+  forbidden:
+    - composite_source_monitoring_score
+    - diagnosis
+    - imagery_strength
+    - neural_content
+
+reliability:
+  model: ICC(2,1)
+  target: 0.75
+  lower_ci_target: 0.60
+  sem: true
+  mdc95: true
+
+validation:
+  framework: COSMIN
+  content_validity_n: 24
+  target_n: 180
+  strata:
+    aphantasia_or_hypophantasia: 60
+    typical: 60
+    hyperphantasia: 60
+  invariance:
+    delta_cfi_max: 0.01
+    delta_rmsea_max: 0.015
+
+gates:
+  feasibility:
+    completion_min: 0.80
+    comprehension_min: 0.90
+    serious_adverse_events_max: 0
+  reliability:
+    icc_min: 0.75
+    lower_ci_min: 0.60
+  adaptive_efficiency:
+    precision_per_minute_gain_min: 0.20
+    final_d_prime_equivalence_margin: 0.20
+  construct:
+    generic_source_memory_r_max: 0.70
+
+boundaries:
+  clinical_sample: false
+  neural_data: false
+  diagnosis: false
+  llm_in_loop: false
+  external_api: false
