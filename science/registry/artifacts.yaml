@@ -218,3 +218,48 @@ artifacts:
       Policy-parameter recovery with 60 simulated participants and 80 trials. Beta bias -0.131,
       lambda bias -0.035, tau bias -0.025. Conditional on the known EIG feature matrix; not a
       human validation and not a full hierarchical recovery.
+
+  - artifact_id: animus.p5.crt.sim
+    path: results/crt/CRT_STAGE0_SIMULATION.json
+    gate_id: ANIMUS_P5_CRT_SIM
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0_SIMULATION_PASS: PASS
+      CRT_STAGE0_SIMULATION_REVIEW: LIMITED
+    required_fields: [protocol, decision, config, condition_summaries, condition_comparison]
+    note: >-
+      Stage 0C simulation with 120 simulated participants and 120 trials across the four CRT cells
+      plus the observe baseline. The prospective-prediction contrast is positive and
+      counterfactual-discrimination efficiency is high. The active-versus-yoked calibration
+      contrast is near zero under matched-sequence yoking, so the active-selection claim is not
+      supported by this artifact. Design evidence only; not human validation.
+
+  - artifact_id: animus.p5.crt.recovery
+    path: results/crt/CRT_MODEL_RECOVERY.json
+    gate_id: ANIMUS_P5_CRT_RECOVERY
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0_RECOVERY_PASS: PASS
+      CRT_STAGE0_RECOVERY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, recovery, comparison]
+    note: >-
+      Policy, prediction-precision, and imagination-inflation recovery with 60 simulated
+      participants and 120 trials. Policy parameters and prediction precision recover within tolerance
+      (beta bias -0.016, lambda bias -0.033, tau bias 0.227, pi bias -0.010). The
+      imagination-inflation parameter is secondary and has a 0.105 RMSE; it is not a clinical process
+      estimate. Not a human validation.
+
+  - artifact_id: animus.p5.crt.power
+    path: results/crt/CRT_STAGE0_POWER.json
+    gate_id: ANIMUS_P5_CRT_POWER
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0_POWER_PASS: PASS
+      CRT_STAGE0_POWER_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, scenarios]
+    note: >-
+      Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95%
+      bound above 0.60 is 0.961 under a normal approximation. Not human evidence.

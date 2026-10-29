@@ -22,6 +22,9 @@
 | ANIMUS_P4_ART_SIM | Active Reality Testing Stage 0B simulation | `PASS` | `animus.p4.art.sim` | Simulation-only design gate. A PASS means the EIG agent is above chance and its query choices are efficient under the stated model; it is not human validation and does not authorize a measurement claim. |
 | ANIMUS_P4_ART_POWER | Active Reality Testing Stage 2 power check | `PASS` | `animus.p4.art.power` | Simulation-only planning gate. A PASS means N=180 has at least 80% power for the ARTE reliability lower-bound target under the stated approximation; it is not human evidence. |
 | ANIMUS_P4_ART_RECOVERY | Active Reality Testing policy recovery | `PASS` | `animus.p4.art.recovery` | Simulation-only model-recovery gate. A PASS means the policy parameters are recovered within the stated tolerance conditional on the known EIG feature matrix; it does not validate the task or the full hierarchical measurement model. |
+| ANIMUS_P5_CRT_SIM | Counterfactual Reality Testing Stage 0C simulation | `LIMITED` | `animus.p5.crt.sim` | Simulation-only design gate. A PASS means the prospective-prediction contrast and the meta-EIG policy clear the stated thresholds in simulation; it is not human validation and does not authorize a measurement claim. A REVIEW preserves the prediction contrast as provisional and blocks the active-selection claim. |
+| ANIMUS_P5_CRT_RECOVERY | Counterfactual Reality Testing policy and precision recovery | `PASS` | `animus.p5.crt.recovery` | Simulation-only recovery gate. A PASS means policy, prediction-precision, and imagination-inflation parameters are recovered within the stated tolerance under the Stage 0C fixed-parameter conditions; it does not validate the task or the human analysis model. |
+| ANIMUS_P5_CRT_POWER | Counterfactual Reality Testing Stage 1 power check | `PASS` | `animus.p5.crt.power` | Simulation-only planning gate. A PASS means N=180 has at least 80% power for the reliability lower-bound target under the stated approximation; it is not human evidence. |
 
 ## Claims
 
@@ -41,6 +44,9 @@
 | `claim.active_reality_testing_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | Active Reality Testing diagnoses, predicts, or treats a clinical condition. |
 | `claim.source_monitoring_training` | `BLOCKED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Adaptive source-monitoring feedback improves source calibration or source discrimination beyond a yoked active control. |
 | `claim.source_monitoring_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | The Source and Imagination Monitor diagnoses, predicts, or treats a clinical condition. |
+| `claim.counterfactual_reality_testing_measurement` | `UNVALIDATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence of a source-diagnostic test and uses prediction error to revise a seen/imagined/described/new attribution, with reported uncertainty and explicit low-information states. |
+| `claim.counterfactual_reality_testing_training` | `BLOCKED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Counterfactual Reality Testing training improves source calibration or prediction accuracy beyond a yoked prediction control. |
+| `claim.counterfactual_reality_testing_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | Counterfactual Reality Testing diagnoses, predicts, or treats a clinical condition. |
 
 ## Supersession and conflicts
 
@@ -63,6 +69,9 @@
 | `animus.p4.art.power` | ANIMUS_P4_ART_POWER | canonical | `PASS` | `3e68343aa70239b7fcd1518708675a3bca61baa5dc47fd56453681bfa253fc1e` | 996 |
 | `animus.p4.art.recovery` | ANIMUS_P4_ART_RECOVERY | canonical | `PASS` | `6c6da963106c4ce4219794c738624ceb3a24e0a5c7c841a6e8b7a74f8f787674` | 5986 |
 | `animus.p4.art.sim` | ANIMUS_P4_ART_SIM | canonical | `PASS` | `812b6001986b50debfd2ddeb7dc66770f4a5ced641e2529c7517199fd6acdb4d` | 1582 |
+| `animus.p5.crt.power` | ANIMUS_P5_CRT_POWER | canonical | `PASS` | `daa13c992968be65b04fe0711dadfc700d9232c6baecc5e9ba5152e395a70d5a` | 996 |
+| `animus.p5.crt.recovery` | ANIMUS_P5_CRT_RECOVERY | canonical | `PASS` | `d5976cd23bb3081c69f9f8f01f1becf724472507b35e5f96fdd1b83b1a4c462b` | 7565 |
+| `animus.p5.crt.sim` | ANIMUS_P5_CRT_SIM | canonical | `LIMITED` | `3b9c89ae29d29fed7b736dfba713cce3bc28b9f3f8c5d0042013847fe172219b` | 5442 |
 | `c1.final` | C1 | canonical | `NULL` | `1f412b5216d37664a54078ace6e9bc5aaf084ef24830607732a77d1006632c3b` | 9737 |
 | `c2.final` | C2 | canonical | `NULL` | `e02e6c961302614380333e572d221b17bc11d8f14603d412784e709f95998a2e` | 8804 |
 | `c3.final` | C3 | canonical | `NULL` | `6073ec1c8aa130ef1aa06e73c87db1df571edbd49986d2e6d5e2e57113c0fc60` | 5650 |

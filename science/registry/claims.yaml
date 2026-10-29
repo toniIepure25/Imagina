@@ -8,6 +8,7 @@ review_note: >-
   is therefore BLOCKED, and the perception-content claim is PILOT, not VALIDATED. Stage 0 of the
   source-monitoring program adds three claims; all are UNVALIDATED or BLOCKED because no human data
   exist. Stage 0B of the Active Reality Testing extension adds three more claims; all are
+  UNVALIDATED or BLOCKED. Stage 0C of Counterfactual Reality Testing adds three more claims; all are
   UNVALIDATED or BLOCKED. No claim above L1_BEHAVIORAL_ASSISTED is authorized.
 
 claims:
@@ -280,3 +281,66 @@ claims:
       - "Medical device"
     last_reviewed: "2026-10-29"
     notes: "No clinical sample or clinical claim is authorized in this program."
+
+  - claim_id: claim.counterfactual_reality_testing_measurement
+    statement: >-
+      Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence
+      of a source-diagnostic test and uses prediction error to revise a seen/imagined/described/new
+      attribution, with reported uncertainty and explicit low-information states.
+    status: UNVALIDATED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "Stage 0C specification and simulation only; no human reliability or validity data"
+    forbidden_interpretations:
+      - "Validated reality-testing instrument"
+      - "Measures imagery strength"
+      - "Diagnoses psychosis"
+      - "Predicts hallucinations"
+      - "Decodes imagined content"
+      - "Improves reality testing"
+      - "First or revolutionary"
+    last_reviewed: "2026-10-29"
+    notes: >-
+      Stage 0C adds the forward-model extension, a deterministic simulator, recovery and power checks,
+      and a preregistration draft. The claim remains UNVALIDATED until a registered study passes
+      reliability, invariance, incremental-validity, discriminant, and prediction-ablation gates.
+
+  - claim_id: claim.counterfactual_reality_testing_training
+    statement: >-
+      Counterfactual Reality Testing training improves source calibration or prediction accuracy
+      beyond a yoked prediction control.
+    status: BLOCKED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "Conditional on measurement validation; no training RCT has been executed"
+    forbidden_interpretations:
+      - "Improves imagination"
+      - "Treats hallucinations"
+      - "Generalizes beyond the trained task"
+      - "Clinically effective"
+    last_reviewed: "2026-10-29"
+    notes: "Blocked until the Stage 1 measurement gates pass and a separate RCT is registered."
+
+  - claim_id: claim.counterfactual_reality_testing_clinical
+    statement: >-
+      Counterfactual Reality Testing diagnoses, predicts, or treats a clinical condition.
+    status: BLOCKED
+    ceiling: L3_CLOSED_LOOP
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "No clinical sample, no diagnostic accuracy study, no regulatory review"
+    forbidden_interpretations:
+      - "Diagnoses psychosis"
+      - "Predicts hallucinations"
+      - "Clinical biomarker"
+      - "Medical device"
+    last_reviewed: "2026-10-29"
+    notes: "No clinical sample or clinical claim is authorized."

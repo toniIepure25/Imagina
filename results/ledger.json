@@ -109,6 +109,42 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p5.crt.power",
+      "authority": "canonical",
+      "bytes": 996,
+      "gate_id": "ANIMUS_P5_CRT_POWER",
+      "note": "Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95% bound above 0.60 is 0.961 under a normal approximation. Not human evidence.",
+      "path": "results/crt/CRT_STAGE0_POWER.json",
+      "raw_status": "CRT_STAGE0_POWER_PASS",
+      "sha256": "daa13c992968be65b04fe0711dadfc700d9232c6baecc5e9ba5152e395a70d5a",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.recovery",
+      "authority": "canonical",
+      "bytes": 7565,
+      "gate_id": "ANIMUS_P5_CRT_RECOVERY",
+      "note": "Policy, prediction-precision, and imagination-inflation recovery with 60 simulated participants and 120 trials. Policy parameters and prediction precision recover within tolerance (beta bias -0.016, lambda bias -0.033, tau bias 0.227, pi bias -0.010). The imagination-inflation parameter is secondary and has a 0.105 RMSE; it is not a clinical process estimate. Not a human validation.",
+      "path": "results/crt/CRT_MODEL_RECOVERY.json",
+      "raw_status": "CRT_STAGE0_RECOVERY_PASS",
+      "sha256": "d5976cd23bb3081c69f9f8f01f1becf724472507b35e5f96fdd1b83b1a4c462b",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.sim",
+      "authority": "canonical",
+      "bytes": 5442,
+      "gate_id": "ANIMUS_P5_CRT_SIM",
+      "note": "Stage 0C simulation with 120 simulated participants and 120 trials across the four CRT cells plus the observe baseline. The prospective-prediction contrast is positive and counterfactual-discrimination efficiency is high. The active-versus-yoked calibration contrast is near zero under matched-sequence yoking, so the active-selection claim is not supported by this artifact. Design evidence only; not human validation.",
+      "path": "results/crt/CRT_STAGE0_SIMULATION.json",
+      "raw_status": "CRT_STAGE0_SIMULATION_REVIEW",
+      "sha256": "3b9c89ae29d29fed7b736dfba713cce3bc28b9f3f8c5d0042013847fe172219b",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "c1.final",
       "authority": "canonical",
       "bytes": 9737,
@@ -384,6 +420,39 @@
       "statement": "The Source and Imagination Monitor diagnoses, predicts, or treats a clinical condition.",
       "status": "BLOCKED",
       "uncertainty": "No clinical sample, no diagnostic accuracy study, no regulatory review"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.counterfactual_reality_testing_measurement",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence of a source-diagnostic test and uses prediction error to revise a seen/imagined/described/new attribution, with reported uncertainty and explicit low-information states.",
+      "status": "UNVALIDATED",
+      "uncertainty": "Stage 0C specification and simulation only; no human reliability or validity data"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.counterfactual_reality_testing_training",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Counterfactual Reality Testing training improves source calibration or prediction accuracy beyond a yoked prediction control.",
+      "status": "BLOCKED",
+      "uncertainty": "Conditional on measurement validation; no training RCT has been executed"
+    },
+    {
+      "ceiling": "L3_CLOSED_LOOP",
+      "claim_id": "claim.counterfactual_reality_testing_clinical",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Counterfactual Reality Testing diagnoses, predicts, or treats a clinical condition.",
+      "status": "BLOCKED",
+      "uncertainty": "No clinical sample, no diagnostic accuracy study, no regulatory review"
     }
   ],
   "errors": [],
@@ -494,6 +563,30 @@
       "gate_id": "ANIMUS_P4_ART_RECOVERY",
       "name": "Active Reality Testing policy recovery",
       "note": "Simulation-only model-recovery gate. A PASS means the policy parameters are recovered within the stated tolerance conditional on the known EIG feature matrix; it does not validate the task or the full hierarchical measurement model.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.sim",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_SIM",
+      "name": "Counterfactual Reality Testing Stage 0C simulation",
+      "note": "Simulation-only design gate. A PASS means the prospective-prediction contrast and the meta-EIG policy clear the stated thresholds in simulation; it is not human validation and does not authorize a measurement claim. A REVIEW preserves the prediction contrast as provisional and blocks the active-selection claim.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.recovery",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_RECOVERY",
+      "name": "Counterfactual Reality Testing policy and precision recovery",
+      "note": "Simulation-only recovery gate. A PASS means policy, prediction-precision, and imagination-inflation parameters are recovered within the stated tolerance under the Stage 0C fixed-parameter conditions; it does not validate the task or the human analysis model.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.power",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_POWER",
+      "name": "Counterfactual Reality Testing Stage 1 power check",
+      "note": "Simulation-only planning gate. A PASS means N=180 has at least 80% power for the reliability lower-bound target under the stated approximation; it is not human evidence.",
       "status": "PASS"
     }
   ],

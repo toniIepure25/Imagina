@@ -86,3 +86,30 @@ gates:
       Simulation-only model-recovery gate. A PASS means the policy parameters are recovered within
       the stated tolerance conditional on the known EIG feature matrix; it does not validate the
       task or the full hierarchical measurement model.
+
+  - gate_id: ANIMUS_P5_CRT_SIM
+    name: Counterfactual Reality Testing Stage 0C simulation
+    canonical_artifact: animus.p5.crt.sim
+    claim_ids: []
+    note: >-
+      Simulation-only design gate. A PASS means the prospective-prediction contrast and the meta-EIG
+      policy clear the stated thresholds in simulation; it is not human validation and does not
+      authorize a measurement claim. A REVIEW preserves the prediction contrast as provisional and
+      blocks the active-selection claim.
+
+  - gate_id: ANIMUS_P5_CRT_RECOVERY
+    name: Counterfactual Reality Testing policy and precision recovery
+    canonical_artifact: animus.p5.crt.recovery
+    claim_ids: []
+    note: >-
+      Simulation-only recovery gate. A PASS means policy, prediction-precision, and
+      imagination-inflation parameters are recovered within the stated tolerance under the Stage 0C
+      fixed-parameter conditions; it does not validate the task or the human analysis model.
+
+  - gate_id: ANIMUS_P5_CRT_POWER
+    name: Counterfactual Reality Testing Stage 1 power check
+    canonical_artifact: animus.p5.crt.power
+    claim_ids: []
+    note: >-
+      Simulation-only planning gate. A PASS means N=180 has at least 80% power for the reliability
+      lower-bound target under the stated approximation; it is not human evidence.

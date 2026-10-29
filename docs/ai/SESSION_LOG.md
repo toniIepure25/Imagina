@@ -5515,3 +5515,57 @@ simulation-only.
 not recover the full hierarchical measurement model or validate the task in humans. The human yoked
 control, pilot N=40, main N=180, invariance testing, and clinical extension are not executed. No
 human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.
+
+---
+
+## 2026-10-29 - Stage 0C: Counterfactual Reality Testing specification and simulation
+
+**Task:** add the prospective forward-model extension approved for IMAGINA 4.0, without an API, UI,
+human data, clinical sample, or neural data.
+
+**Built:**
+- `backend/app/research/crt/`: dependency-free six-test model with prediction precision `pi` and
+  imagination-inflation bias `b_pi`; 2x2 design; metrics; deterministic simulator; policy, precision,
+  and bias recovery; power.
+- `backend/app/cli/crt_simulate.py`, `crt_recover.py`, and `crt_power.py`.
+- `backend/app/tests/test_crt_stage0.py`: 35 tests covering nested `pi=0` equivalence, meta-EIG,
+  counterfactual discrimination, the fluency trap, schedule balance, yoking, determinism, metrics,
+  policy comparison, recovery, power, and invalid configuration.
+- `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md`, `docs/program/CRT_PREREGISTRATION.md`,
+  `docs/program/CRT_ANALYSIS_PLAN.md`, and `science/protocols/crt-v1.yaml`.
+- ADR-069, an evidence-map addendum, and updates to the task brief, project context, and context index.
+- Three CRT claims (measurement UNVALIDATED; training and clinical BLOCKED), three simulation-only
+  gates, and three canonical artifacts.
+- Fixed the ART default-EIG helpers to use the full four-card menu; added a regression test.
+
+**Full artifacts:**
+- `results/crt/CRT_STAGE0_SIMULATION.json`: 120 participants x 120 trials, seed 20261029.
+  `active_predict` accuracy 0.484 vs `active_intervene` 0.344 (prediction advantage 0.140);
+  `CRTE_meta` 0.545; prediction accuracy 0.628; prediction ECE 0.027; confounded-test rate 0.000;
+  d' 0.881. Active calibration advantage -0.004 under matched-sequence yoking.
+  Decision `CRT_STAGE0_SIMULATION_REVIEW`.
+- `results/crt/CRT_MODEL_RECOVERY.json`: 60 participants x 120 trials. Beta bias -0.016, lambda
+  -0.033, gamma -0.009, tau 0.227, pi -0.010, b_pi 0.010; b_pi RMSE 0.105.
+  Decision `CRT_STAGE0_RECOVERY_PASS`.
+- `results/crt/CRT_STAGE0_POWER.json`: N=180, 2,000 simulations; power 0.961 at true ICC 0.75.
+  Decision `CRT_STAGE0_POWER_PASS`.
+
+**Verification (actually run):**
+- `python -m pytest app/tests/test_crt_stage0.py -q`: 35 passed.
+- `python -m pytest app/tests/test_art_stage0.py -q`: 27 passed.
+- `ruff check` on CRT and ART packages/CLIs/tests: clean.
+- `python -m app.cli.crt_simulate --check`: PASS.
+- `python -m app.cli.crt_recover` and `crt_power`: generated the canonical artifacts.
+- `python -m app.cli.art_simulate --check` and `art_power --check`: PASS.
+- `python -m app.cli.science_ledger --check`: 20 artifacts, 15 gates, 17 claims; CRT gates
+  `SIM=LIMITED`, `RECOVERY=PASS`, `POWER=PASS`.
+
+**Decisions:** ADR-069 records CRT as a separate construct, keeps AgRT as the `active_intervene` arm,
+requires the nested `pi=0` test, and treats matched-sequence yoking as unable to identify
+active-selection superiority. The simulation REVIEW is therefore retained rather than forced to PASS.
+Training and clinical claims remain blocked.
+
+**Known gaps:** the simulator uses a known likelihood table and fixed `alpha`, `d`, `guess`, and
+`bias`; it does not recover the full hierarchical measurement model or validate the task in humans.
+The human pilot N=40, main N=180, invariance testing, random-passive control, and clinical extension are
+not executed. No human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.
