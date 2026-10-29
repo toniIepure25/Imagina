@@ -1806,3 +1806,58 @@ non-exhaustive search, not a priority claim.
 ---
 
 *Last updated: 2026-10-29 - ADR-068 Active Reality Testing as the active-inquiry extension*
+
+---
+
+## ADR-069: Counterfactual Reality Testing and the prospective forward-model extension
+
+**Status:** Proposed (Stage 0C only)
+**Date:** 2026-10-29
+**Context:** ART measures active selection of source-diagnostic evidence, but it does not ask whether
+the person can **predict** the consequence of a test before observing it. A prospective prediction
+turns the test into a counterfactual comparison: the person commits to an expected outcome, observes
+the actual outcome, and revises the source attribution in light of the prediction error. The relevant
+evidence spans source monitoring (Johnson et al., 1993; Kwon et al., 2022), the epistemic status of
+counterfactual alternatives (Espino & Byrne, 2021), agency (Kulakova et al., 2017), forward models in
+imagery (Tian & Poeppel, 2010; Okanou et al., 2026), and sensory attenuation (Mifsud et al., 2018).
+Counterfactual imagination can itself contaminate source memory (Dhammapeera et al., 2024; Libby,
+2003), so CRT uses a sparse, experimenter-defined test consequence rather than a rich autobiographical
+episode.
+
+**Decision:**
+
+1. Add **Counterfactual Reality Testing (CRT)** as a separate construct: prospective prediction of a
+   test outcome plus precision-weighted prediction-error attribution to a seen/imagined/described/new
+   source.
+2. CRT uses a 2x2 design: active versus yoked test selection, crossed with intervention-only versus
+   prediction. The primary contrast is `active_predict` minus `active_intervene`. AgRT is retained as
+   the `active_intervene` arm; ART v1 is the observational comparator.
+3. The formal model adds prediction precision `pi` and imagination-inflation bias `b_pi`. When
+   `pi = 0`, CRT reduces to AgRT. The nested relation is a model constraint and a testable ablation.
+4. Meta-EIG is the primary policy target: `EIG_meta(a) = H(S) - E[P,O|a] H(S | P,O,a)`. Outcome EIG
+   and counterfactual discrimination are reported alongside it. The fluency test is a
+   zero-diagnosticity trap.
+5. Stage 0C is specification, simulation, recovery, and power only. No API, migration, frontend,
+   human data, or claim upgrade is authorized.
+6. `claim.counterfactual_reality_testing_measurement` is `UNVALIDATED`; training and clinical claims
+   are `BLOCKED`.
+7. The Stage 0C artifacts are allowed to return `REVIEW`. A REVIEW is a design result, not a reason to
+   force a PASS. In particular, matched-sequence yoking cannot identify active-selection superiority,
+   and `b_pi` is weakly identified in Stage 0C recovery.
+
+**Consequences:**
+
+- New module `backend/app/research/crt/` with model, design, metrics, simulation, recovery, and power.
+- New protocol `ANIMUS-CRT-v1`, draft preregistration and analysis plan, and Stage 0C artifacts.
+- `ANIMUS_P5_CRT_SIM`, `ANIMUS_P5_CRT_RECOVERY`, and `ANIMUS_P5_CRT_POWER` are simulation-only gates.
+  A PASS or REVIEW does not validate the instrument.
+- The active-selection claim requires a random-passive control matched on the number of tests; the
+  matched-sequence yoked arm remains necessary for the prediction contrast.
+- The imagination-inflation parameter is secondary and must be estimated hierarchically with SBC and
+  sensitivity analyses.
+- A registered validation study is required before any training RCT or product surface.
+- The claim ceiling did not change.
+
+---
+
+*Last updated: 2026-10-29 - ADR-069 Counterfactual Reality Testing and the prospective forward-model extension*

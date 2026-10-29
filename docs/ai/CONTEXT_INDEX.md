@@ -157,6 +157,22 @@
 
 ---
 
+---
+
+## Source Monitoring / ART / CRT
+
+1. `docs/animus/SOURCE_MONITORING_SPEC.md` — passive source-monitoring construct
+2. `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md` — active evidence selection and `ARTE`
+3. `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md` — prospective prediction, meta-EIG, and `CRTE`
+4. `docs/program/PRM_PREREGISTRATION.md`, `ART_PREREGISTRATION.md`, `CRT_PREREGISTRATION.md` — draft registered reports
+5. `docs/program/PRM_ANALYSIS_PLAN.md`, `ART_ANALYSIS_PLAN.md`, `CRT_ANALYSIS_PLAN.md` — draft statistical analysis plans
+6. `science/protocols/prm-v1.yaml`, `art-v1.yaml`, `crt-v1.yaml` — machine-readable protocols
+7. `backend/app/research/prm/`, `art/`, `crt/` — simulation cores; no API, DB, or human-data surface
+8. `results/prm/`, `results/art/`, `results/crt/` — canonical Stage 0 artifacts
+9. `science/registry/claims.yaml`, `gates.yaml`, `artifacts.yaml` — claim/gate/artifact registry
+
+---
+
 ## Writing Tests
 
 1. `docs/ai/TASK_BRIEF.md` — acceptance criteria and verification
@@ -175,4 +191,4 @@
 
 ---
 
-*Last updated: 2026-10-23*
+*Last updated: 2026-10-29*

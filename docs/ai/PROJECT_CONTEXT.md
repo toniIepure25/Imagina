@@ -271,7 +271,10 @@ Interpretation thresholds:
 | `science/registry/`, `science/schemas/` | Canonical claim/gate/artifact registry and JSON Schemas |
 | `backend/app/research/ledger.py`, `backend/app/cli/science_ledger.py` | Validates the registry and generates the program status document |
 | `backend/app/research/prm/`, `backend/app/cli/prm_simulate.py`, `backend/app/cli/prm_power.py` | Stage 0 source-monitoring model, adaptive design, metrics, simulation, and power; no API or DB |
-| `docs/animus/SOURCE_MONITORING_SPEC.md`, `docs/program/PRM_*`, `science/protocols/prm-v1.yaml` | Source-monitoring specification, draft preregistration/analysis plan, and machine-readable protocol |
+| `backend/app/research/art/`, `backend/app/cli/art_*.py` | Stage 0B Active Reality Testing model, design, metrics, simulation, recovery, and power; no API or DB |
+| `backend/app/research/crt/`, `backend/app/cli/crt_*.py` | Stage 0C Counterfactual Reality Testing model, design, metrics, simulation, recovery, and power; no API or DB |
+| `docs/animus/SOURCE_MONITORING_SPEC.md`, `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md`, `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md` | Source-monitoring, ART, and CRT specifications |
+| `docs/program/PRM_*`, `docs/program/ART_*`, `docs/program/CRT_*`, `science/protocols/prm-v1.yaml`, `art-v1.yaml`, `crt-v1.yaml` | Draft preregistrations, analysis plans, and machine-readable protocols |
 | `docs/program/PROGRAM_STATUS.md`, `results/ledger.json` | Generated canonical gate/claim status; never edit by hand |
 | `docs/animus/` | Vision, architecture, API contract, interface principles, claims boundary, roadmap, demo, README |
 

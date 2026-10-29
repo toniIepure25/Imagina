@@ -1,0 +1,210 @@
+protocol_id: ANIMUS-CRT-v1
+version: 0.1.0
+status: draft
+claim_ceiling: L1_BEHAVIORAL_ASSISTED
+registered: false
+registration_note: >-
+  Stage 0C specification only. No human data may be collected under this protocol until the
+  preregistration is registered and ethics approval is documented.
+
+construct:
+  name: counterfactual_reality_testing
+  definition: >-
+    The accuracy, calibration, and efficiency with which a person prospectively predicts the
+    consequence of a source-diagnostic test and uses prediction error to revise a seen, imagined,
+    described, or new attribution.
+  not:
+    - neural_decoding
+    - diagnostic_classification
+    - imagery_strength
+    - composite_score
+    - clinical_prediction
+    - autobiographical_counterfactual_imagination
+
+sources: [seen, imagined, described, new]
+
+tests:
+  - test_id: viewpoint
+    name: Viewpoint shift
+    likelihood_positive: {seen: 0.80, imagined: 0.40, described: 0.25, new: 0.20}
+    cost: 1.5
+    complexity: 2
+    agency_value: 0.30
+  - test_id: generation
+    name: Generation check
+    likelihood_positive: {seen: 0.30, imagined: 0.75, described: 0.55, new: 0.20}
+    cost: 1.0
+    complexity: 1
+    agency_value: 0.40
+  - test_id: context
+    name: Context check
+    likelihood_positive: {seen: 0.70, imagined: 0.65, described: 0.60, new: 0.20}
+    cost: 1.0
+    complexity: 1
+    agency_value: 0.30
+  - test_id: intend
+    name: Intention check
+    likelihood_positive: {seen: 0.20, imagined: 0.70, described: 0.25, new: 0.20}
+    cost: 2.0
+    complexity: 3
+    agency_value: 0.70
+  - test_id: description
+    name: Description check
+    likelihood_positive: {seen: 0.25, imagined: 0.50, described: 0.80, new: 0.20}
+    cost: 1.0
+    complexity: 1
+    agency_value: 0.30
+  - test_id: fluency
+    name: Fluency check
+    likelihood_positive: {seen: 0.55, imagined: 0.55, described: 0.55, new: 0.55}
+    cost: 0.5
+    complexity: 1
+    agency_value: 0.30
+    zero_diagnosticity_trap: true
+
+design:
+  task: prospective_counterfactual_prediction_with_source_judgment
+  confidence_range: [0.05, 1.0]
+  abstention_allowed: true
+  trials_per_occasion: 60
+  observe_trials_per_occasion: 10
+  cells:
+    - active_intervene
+    - active_predict
+    - yoked_intervene
+    - yoked_predict
+  trials_per_cell_per_occasion: 15
+  max_tests_per_trial: 2
+  test_replacement: false
+  budget_points: 80
+  occasions_days: [0, 14]
+  blocks: [observe, active_intervene, active_predict, yoked_intervene, yoked_predict]
+  order: counterbalanced
+  training_trials: 12
+  meta_d_prime_min_trials: 200
+  yoked:
+    match: test_sequence_from_matched_donor_item_order_time_on_task
+    fallback: stratified_random
+    fallback_logged: true
+  prediction:
+    timing: before_outcome_reveal
+    report_confidence: true
+    prediction_is_not_a_source_judgment: true
+
+model:
+  evidence_model: bayesian_source_posterior_with_forward_model
+  evidence_gain: logit_scaled
+  prediction_model: logit_scaled_forward_model
+  policy: normalized_meta_expected_information_gain_minus_cost
+  utility: "beta * (EIG_meta / max(EIG_meta) - lambda * cost - gamma * complexity) + alpha * agency"
+  stopping: "softmax_includes_tau"
+  source_choice: "MAP plus guess and externalization mixture"
+  baselines: [greedy_meta_eig, random_meta_eig, greedy_eig, positive_testing, fixed, heuristic, random]
+  parameters: [d, pi, b_pi, beta, lambda, gamma, tau, guess, bias, mix, alpha, lapse]
+  crte_meta:
+    numerator: human_meta_eig_minus_random_meta_eig
+    denominator: greedy_meta_eig_minus_random_meta_eig
+    bounds: [0, 1]
+    insufficient_tests: null
+  crte_eig:
+    numerator: human_eig_minus_random_eig
+    denominator: greedy_eig_minus_random_eig
+    bounds: [0, 1]
+    insufficient_tests: null
+
+estimands:
+  primary:
+    - prediction_advantage
+    - crte_meta
+    - prediction_ece
+    - d_prime_seen_imagined
+    - brier_score
+  secondary:
+    - active_calibration_advantage
+    - active_accuracy_advantage
+    - crte_eig
+    - criterion_c
+    - externalization_rate
+    - imagination_inflation_rate
+    - confounded_test_rate
+    - sampling_quality
+    - termination_quality
+    - number_of_tests
+    - cost_sensitivity
+    - mutual_information_test_source
+    - meta_d_prime
+  forbidden:
+    - composite_reality_score
+    - diagnosis
+    - imagery_strength
+    - neural_content
+    - clinical_prediction
+    - priority_claim
+
+reliability:
+  model: ICC(2,1)
+  target: 0.75
+  lower_ci_target: 0.60
+  sem: true
+  mdc95: true
+  occasion_pair_days: [0, 14]
+
+validation:
+  framework: COSMIN
+  content_validity_n: 24
+  target_n: 180
+  pilot_n: 40
+  strata:
+    aphantasia_or_hypophantasia: 60
+    typical: 60
+    hyperphantasia: 60
+  convergent: [sim_d_prime, sim_meta_d_prime, vviq2, siaq]
+  discriminant: [beads_draws, working_memory]
+  invariance:
+    delta_cfi_max: 0.01
+    delta_rmsea_max: 0.015
+
+gates:
+  feasibility:
+    completion_min: 0.80
+    comprehension_min: 0.90
+    serious_adverse_events_max: 0
+  reliability:
+    icc_min: 0.75
+    lower_ci_min: 0.60
+  prediction:
+    advantage_min: 0.03
+    crte_meta_min: 0.30
+    prediction_ece_max: 0.15
+    fluency_choice_max: 0.10
+  active_selection:
+    status: exploratory
+    matched_yoking_cannot_identify_superiority: true
+    random_passive_control_required_for_superiority: true
+  policy:
+    out_of_sample_advantage_required: true
+  incremental_validity:
+    required: true
+  discriminant:
+    beads_r_max: 0.70
+  training:
+    blocked_until_measurement_pass: true
+  clinical:
+    blocked: true
+
+boundaries:
+  clinical_sample: false
+  neural_data: false
+  diagnosis: false
+  llm_in_loop: false
+  external_api: false
+  priority_claim: false
+  revolutionary_language: false
+
+stage0c:
+  simulation_artifact: results/crt/CRT_STAGE0_SIMULATION.json
+  power_artifact: results/crt/CRT_STAGE0_POWER.json
+  recovery_artifact: results/crt/CRT_MODEL_RECOVERY.json
+  note: >-
+    Simulation-only design gates. A PASS or REVIEW does not validate the task in humans and does not
+    authorize a measurement claim.

@@ -77,6 +77,35 @@ Design decisions that follow:
 18. **Clinical language is blocked.** The Garrison null and the Damiani clinical effect are both
     retained; no continuum or diagnostic claim is licensed.
 
+## Counterfactual Reality Testing addendum
+
+This addendum covers the Stage 0C CRT extension. It is a design aid, not a systematic review.
+
+| Claim | Evidence status | What CRT may say | What it must not say |
+|---|---|---|---|
+| Reality monitoring involves more than a single sensory cue | Review argues for higher-order evaluation of first-order signals (Dijkstra et al., 2022) | Predict a test consequence and compare prediction with outcome | "We have identified the reality monitor" |
+| Memory precision is linked to source misattribution | Empirical association (Kwon et al., 2022) | Estimate prediction precision and source attribution separately | "Prediction precision is a diagnostic marker" |
+| People track the epistemic status of counterfactual alternatives | Experimental evidence (Espino & Byrne, 2021) | Ask whether the predicted outcome was real or imagined | "CRT reads counterfactual content" |
+| Counterfactual comparison informs agency | Experimental evidence (Kulakova et al., 2017) | Include agency value in the policy model | "CRT measures free will" |
+| Counterfactual imagination can contaminate source memory | Experimental evidence (Dhammapeera et al., 2024; Libby, 2003) | Keep the prediction sparse and experimenter-defined | "Rich counterfactual imagination is safe" |
+| Forward models support imagery and sensory attenuation | Empirical and theoretical work (Okanou et al., 2026; Mifsud et al., 2018; Tian & Poeppel, 2010) | Use a forward-model precision parameter | "Imagery is a forward model" |
+| Corollary discharge is associated with reality-monitoring deficits | Clinical evidence (Samantaray et al., 2025) | Motivate a future clinical collaboration | "CRT diagnoses psychosis" |
+| Confidence alone distinguishes imagination from reality | Contradicted by Dijkstra et al. (2024) | Do not use confidence as the sole index | "Confidence proves reality" |
+| Prospective counterfactual prediction with meta-EIG scoring is established | No indexed report found in a non-exhaustive search | Treat as a design hypothesis and test it | "First" / "revolutionary" / "proven" |
+
+Design decisions that follow:
+
+19. **CRT is a separate construct.** Prospective prediction, source attribution, and active selection
+    are measured and reported separately; no composite score.
+20. **Prediction is sparse.** The participant predicts a test consequence, not a rich autobiographical
+    counterfactual episode. This reduces source contamination.
+21. **Meta-EIG has an outcome-EIG companion.** `CRTE_meta` and `CRTE_eig` are both reported, and the
+    nested `pi = 0` model is tested. This reduces circularity and tests whether prediction adds
+    information beyond outcome evidence.
+22. **Matched yoking cannot identify active-selection superiority.** The yoked arm receives the same
+    test distribution, so accuracy and calibration differences are expected to be near zero. A
+    random-passive control is required before an active-selection claim.
+
 ## Open questions
 
 - Are the five dimensions separable, or do they collapse into one general factor?
@@ -141,3 +170,23 @@ experimental.
 - Maiello, G., et al. (2024). Individual differences in visual mental imagery assessed through
   standard and evolutionary classification images. *Journal of Vision*.
   https://doi.org/10.1167/jov.24.10.534
+- Kwon, M., et al. (2022). Memory precision and reality monitoring.
+  https://doi.org/10.1162/jocn_a_01814
+- Espino, O., & Byrne, R. M. J. (2021). The epistemic status of counterfactual alternatives.
+  https://doi.org/10.1037/xlm0000965
+- Kulakova, E., et al. (2017). Counterfactual comparison and sense of agency.
+  https://doi.org/10.1016/j.concog.2017.01.013
+- Dhammapeera, P., et al. (2024). Counterfactual imagination and memory for true actions.
+  https://doi.org/10.1080/17588928.2024.2315814
+- Libby, L. K. (2003). Imagination inflation and imagery perspective.
+  https://doi.org/10.3758/bf03196128
+- Okanou, T., et al. (2026). Visual motor imagery and forward models.
+  https://doi.org/10.1016/j.neuroscience.2026.07.015
+- Mifsud, N. G., et al. (2018). Visual sensory attenuation for self-initiated stimuli.
+  https://doi.org/10.1016/j.cognition.2018.06.005
+- Tian, X., & Poeppel, D. (2010). Mental imagery as internal forward models.
+  https://doi.org/10.3389/fpsyg.2010.00166
+- Samantaray, S., et al. (2025). Corollary discharge and reality monitoring.
+  https://doi.org/10.1016/j.schres.2025.07.003
+- Dijkstra, N., et al. (2024). Confidence does not distinguish imagination from reality.
+  https://doi.org/10.1167/jov.24.5.13

@@ -445,3 +445,24 @@ human-participant studies (after further validation work).
 ---
 
 *Created: 2026-07-10*
+
+---
+
+## 2026-10-29 - CRT Stage 0C
+
+**Goal:** implement Counterfactual Reality Testing (CRT) Stage 0C as a simulation/specification
+slice, with no human data, API, DB, UI, clinical sample, or neural data.
+
+**Acceptance criteria:**
+
+- [x] Fix the ART default card menu and add a regression test.
+- [x] Add `backend/app/research/crt/` with model, design, metrics, simulation, recovery, and power.
+- [x] Add deterministic CLIs for simulation, recovery, and power.
+- [x] Add `backend/app/tests/test_crt_stage0.py` with 35 tests.
+- [x] Add `ANIMUS-CRT-v1`, draft preregistration, draft analysis plan, ADR-069, and evidence-map
+      addendum.
+- [x] Add CRT claims (UNVALIDATED/BLOCKED), simulation-only gates, and canonical artifacts.
+- [x] Regenerate the ledger/status and run the focused verification.
+
+**Non-goals:** human pilot or main study, API, migration, frontend, clinical sample, neural data,
+training RCT, claim upgrade, priority claim, or "revolutionary" language.
