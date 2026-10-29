@@ -1805,10 +1805,6 @@ non-exhaustive search, not a priority claim.
 
 ---
 
-*Last updated: 2026-10-29 - ADR-068 Active Reality Testing as the active-inquiry extension*
-
----
-
 ## ADR-069: Counterfactual Reality Testing and the prospective forward-model extension
 
 **Status:** Proposed (Stage 0C only)
