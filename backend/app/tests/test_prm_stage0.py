@@ -34,6 +34,7 @@ from app.research.prm.model import (
     response_distribution,
     simulate_trial,
 )
+from app.research.prm.power import PowerConfig, icc_2_1, run_power
 from app.research.prm.simulate import (
     SimulationConfig,
     _simulate_participant,
@@ -194,3 +195,15 @@ def test_compare_designs_reports_both_arms() -> None:
     assert comparison["fixed"]["mean_final_entropy"] > 0.0
     assert comparison["gate"] in {"PASS", "REVIEW"}
     assert "yoked" in comparison["note"]
+
+
+def test_icc_is_one_for_identical_occasions() -> None:
+    values = [0.1, -0.4, 0.7, 1.2, -1.0, 0.3, 0.9, -0.2]
+    assert icc_2_1(values, values) == pytest.approx(1.0)
+
+
+def test_power_gate_passes_at_the_planned_n() -> None:
+    report = run_power(PowerConfig(n_participants=180, n_simulations=300, seed=7))
+    assert report["decision"] == "PRM_STAGE0_POWER_PASS"
+    target = next(item for item in report["scenarios"] if item["true_icc"] == 0.75)
+    assert target["power"] >= 0.80
