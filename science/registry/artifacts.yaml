@@ -1,0 +1,151 @@
+version: 1
+description: >-
+  Canonical artifact map for the scientific ledger. Historical artifacts are preserved unmodified
+  and are linked by supersession; they are never rewritten to fit the current schema.
+
+artifacts:
+  - artifact_id: c1.final
+    path: results/c1_final_decision.json
+    gate_id: C1
+    authority: canonical
+    status_path: C1
+    status_map:
+      COMPLETE_WITH_NULL_RESULT_MECHANISM_UNRESOLVED: "NULL"
+    required_fields: [code_sha, created_at, dataset_id, C1]
+    note: >-
+      Null on incremental behavioural validity; mechanism unresolved because temporal and channel
+      controls reproduce the effect.
+
+  - artifact_id: c2.final
+    path: results/c2_final_decision.json
+    gate_id: C2
+    authority: canonical
+    status_path: C2
+    status_map:
+      COMPLETE_WITH_NULL_RESULT: "NULL"
+    required_fields: [code_sha, created_at, dataset_id, C2]
+    note: >-
+      Null content and transfer result within sensitivity; compact architectures at or below
+      chance under LOSO.
+
+  - artifact_id: c3.realdata
+    path: results/c3_final_decision_realdata.json
+    gate_id: C3
+    authority: historical
+    status_path: superseded_status
+    status_map:
+      SUPERSEDED_BY_AUTHORITATIVE_ROW_MAPPING_RESOLUTION: SUPERSEDED
+    required_fields: [gate, superseded_status, superseded_by]
+    superseded_by: c3.final
+    note: >-
+      Earlier real-data decision blocked by unresolved imagery row provenance. Preserved
+      unmodified; superseded after the NSD row mapping was resolved.
+
+  - artifact_id: c3.final
+    path: results/c3_final_decision_realdata_v2.json
+    gate_id: C3
+    authority: canonical
+    status_path: C3
+    status_map:
+      COMPLETE_WITH_IMAGERY_TRANSFER_NULL: "NULL"
+    required_fields: [gate, C3, supersedes]
+    supersedes: [c3.realdata]
+    note: >-
+      Perception decoding passes; zero-shot imagery transfer is null within sensitivity;
+      reconstruction readiness blocked.
+
+  - artifact_id: c3m.final
+    path: results/c3m_final_decision.json
+    gate_id: C3M
+    authority: canonical
+    status_path: C3M
+    status_map:
+      COMPLETE_WITH_STATE_SPECIFIC_IMAGERY_NULL: "NULL"
+    required_fields: [gate, C3M, protocol_self_hash, source_sha]
+    note: >-
+      Cross-session alignment restores seen-image decoding but imagery remains degenerate
+      (dominant fraction 0.510). Single subject, not population evidence.
+
+  - artifact_id: c3xat.r1.blocked1
+    path: results/c3xat_r1/C3XAT_R1_DECISION.json
+    gate_id: C3XAT_R1
+    authority: historical
+    status_path: decision
+    status_map:
+      C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE: BLOCKED
+    required_fields: [gate, decision]
+    superseded_by: c3xat.r1.final
+    note: "Execution-incomplete blocker; superseded by the completed run."
+
+  - artifact_id: c3xat.r1.blocked2
+    path: results/c3xat_r1/C3XAT_R1_FINAL_DECISION_v2.json
+    gate_id: C3XAT_R1
+    authority: historical
+    status_path: decision
+    status_map:
+      C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND: BLOCKED
+    required_fields: [gate, decision]
+    superseded_by: c3xat.r1.final
+    note: "Perception-estimand blocker; superseded by the completed run."
+
+  - artifact_id: c3xat.r1.final
+    path: results/c3xat_r1/C3XAT_R1_FINAL_DECISION_COMPLETE.json
+    gate_id: C3XAT_R1
+    authority: canonical
+    status_path: final_decision
+    status_map:
+      C3XAT_D2_ATLAS_IMAGERY_LIMITED: LIMITED
+    required_fields: [gate, final_decision, pass_count]
+    supersedes: [c3xat.r1.blocked1, c3xat.r1.blocked2]
+    note: >-
+      One of six subjects passes; C3XAG preparation is not authorized. This is a limited result,
+      not a validation.
+
+  - artifact_id: animus.p1
+    path: results/animus_p1/ANIMUS_P1_DECISION.json
+    gate_id: ANIMUS_P1
+    authority: canonical
+    status_path: decision
+    status_map:
+      ANIMUS_P1_VERTICAL_SLICE_PASS: PASS
+    required_fields: [artifact, decision, self_hash]
+    note: >-
+      Engineering vertical slice: adaptive loop beats static and random under simulation. Not a
+      human efficacy result.
+
+  - artifact_id: animus.p2
+    path: results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json
+    gate_id: ANIMUS_P2
+    authority: historical
+    status_path: decision
+    status_map:
+      ANIMUS_P2_PERCEPTION_DECODER_VALIDATED: PILOT
+    required_fields: [artifact, decision]
+    superseded_by: animus.p2r
+    note: >-
+      Historical pilot gate (2/6 passes). Its VALIDATED label is not canonical; P2R establishes
+      that the confirmatory cohort was not executed.
+
+  - artifact_id: animus.p2e
+    path: results/animus_p2e/ANIMUS_P2E_DECISION_SNAPSHOT.json
+    gate_id: ANIMUS_P2
+    authority: historical
+    status_path: decision
+    status_map:
+      ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE: BLOCKED
+    required_fields: [artifact, decision]
+    superseded_by: animus.p2r
+    note: "Spatial-provenance blocker; resolved in method, not in data."
+
+  - artifact_id: animus.p2r
+    path: results/animus_p2r/ANIMUS_P2R_EXECUTION_DECISION.json
+    gate_id: ANIMUS_P2
+    authority: canonical
+    status_path: perception_status
+    status_map:
+      BLOCKED: BLOCKED
+    required_fields: [artifact, perception_status, self_hash, no_fabrication]
+    supersedes: [animus.p2, animus.p2e]
+    note: >-
+      Canonical: confirmatory compute blocked; 1/6 subjects preprocessed; no neural outcome
+      computed. Imagery remains unauthorized.

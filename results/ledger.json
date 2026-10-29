@@ -1,0 +1,339 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "animus.p1",
+      "authority": "canonical",
+      "bytes": 1163,
+      "gate_id": "ANIMUS_P1",
+      "note": "Engineering vertical slice: adaptive loop beats static and random under simulation. Not a human efficacy result.",
+      "path": "results/animus_p1/ANIMUS_P1_DECISION.json",
+      "raw_status": "ANIMUS_P1_VERTICAL_SLICE_PASS",
+      "sha256": "3568af04d443e438cd148f04c603a451c7416bcc999dbf4f8bb2d5bf1e7424d2",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p2",
+      "authority": "historical",
+      "bytes": 2005,
+      "gate_id": "ANIMUS_P2",
+      "note": "Historical pilot gate (2/6 passes). Its VALIDATED label is not canonical; P2R establishes that the confirmatory cohort was not executed.",
+      "path": "results/animus_p2/ANIMUS_P2_SCIENTIFIC_DECISION.json",
+      "raw_status": "ANIMUS_P2_PERCEPTION_DECODER_VALIDATED",
+      "sha256": "e268f6acd4df1992c8e803bb0a7f19744f5cdb9c66c862b4d6ac9966b16bfcca",
+      "status": "PILOT",
+      "superseded_by": "animus.p2r"
+    },
+    {
+      "artifact_id": "animus.p2e",
+      "authority": "historical",
+      "bytes": 2570,
+      "gate_id": "ANIMUS_P2",
+      "note": "Spatial-provenance blocker; resolved in method, not in data.",
+      "path": "results/animus_p2e/ANIMUS_P2E_DECISION_SNAPSHOT.json",
+      "raw_status": "ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE",
+      "sha256": "b1dce7a92e27901662632910d6cad3a508dff9c9e1edf76d1a750553232a7541",
+      "status": "BLOCKED",
+      "superseded_by": "animus.p2r"
+    },
+    {
+      "artifact_id": "animus.p2r",
+      "authority": "canonical",
+      "bytes": 1308,
+      "gate_id": "ANIMUS_P2",
+      "note": "Canonical: confirmatory compute blocked; 1/6 subjects preprocessed; no neural outcome computed. Imagery remains unauthorized.",
+      "path": "results/animus_p2r/ANIMUS_P2R_EXECUTION_DECISION.json",
+      "raw_status": "BLOCKED",
+      "sha256": "173620c625e8cb70338d4806b45fab428fddb82c498f36a35ba98382bd4d9cab",
+      "status": "BLOCKED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "c1.final",
+      "authority": "canonical",
+      "bytes": 9737,
+      "gate_id": "C1",
+      "note": "Null on incremental behavioural validity; mechanism unresolved because temporal and channel controls reproduce the effect.",
+      "path": "results/c1_final_decision.json",
+      "raw_status": "COMPLETE_WITH_NULL_RESULT_MECHANISM_UNRESOLVED",
+      "sha256": "1f412b5216d37664a54078ace6e9bc5aaf084ef24830607732a77d1006632c3b",
+      "status": "NULL",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "c2.final",
+      "authority": "canonical",
+      "bytes": 8804,
+      "gate_id": "C2",
+      "note": "Null content and transfer result within sensitivity; compact architectures at or below chance under LOSO.",
+      "path": "results/c2_final_decision.json",
+      "raw_status": "COMPLETE_WITH_NULL_RESULT",
+      "sha256": "e02e6c961302614380333e572d221b17bc11d8f14603d412784e709f95998a2e",
+      "status": "NULL",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "c3.final",
+      "authority": "canonical",
+      "bytes": 5650,
+      "gate_id": "C3",
+      "note": "Perception decoding passes; zero-shot imagery transfer is null within sensitivity; reconstruction readiness blocked.",
+      "path": "results/c3_final_decision_realdata_v2.json",
+      "raw_status": "COMPLETE_WITH_IMAGERY_TRANSFER_NULL",
+      "sha256": "6073ec1c8aa130ef1aa06e73c87db1df571edbd49986d2e6d5e2e57113c0fc60",
+      "status": "NULL",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "c3.realdata",
+      "authority": "historical",
+      "bytes": 3849,
+      "gate_id": "C3",
+      "note": "Earlier real-data decision blocked by unresolved imagery row provenance. Preserved unmodified; superseded after the NSD row mapping was resolved.",
+      "path": "results/c3_final_decision_realdata.json",
+      "raw_status": "SUPERSEDED_BY_AUTHORITATIVE_ROW_MAPPING_RESOLUTION",
+      "sha256": "ca552078dd9d034e97350cf835d86997f82702e5cc31c56f2dc2f4b971bf0b5e",
+      "status": "SUPERSEDED",
+      "superseded_by": "c3.final"
+    },
+    {
+      "artifact_id": "c3m.final",
+      "authority": "canonical",
+      "bytes": 4637,
+      "gate_id": "C3M",
+      "note": "Cross-session alignment restores seen-image decoding but imagery remains degenerate (dominant fraction 0.510). Single subject, not population evidence.",
+      "path": "results/c3m_final_decision.json",
+      "raw_status": "COMPLETE_WITH_STATE_SPECIFIC_IMAGERY_NULL",
+      "sha256": "a53d926c0c4981594d68e656fa5f1a68fe55130ae49cba46407bbfae39cb6154",
+      "status": "NULL",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "c3xat.r1.blocked1",
+      "authority": "historical",
+      "bytes": 2680,
+      "gate_id": "C3XAT_R1",
+      "note": "Execution-incomplete blocker; superseded by the completed run.",
+      "path": "results/c3xat_r1/C3XAT_R1_DECISION.json",
+      "raw_status": "C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE",
+      "sha256": "db6b5ef0baf650ad33acf93ee2cea449ac1a0526facebea98d01c98e2ad2e3f0",
+      "status": "BLOCKED",
+      "superseded_by": "c3xat.r1.final"
+    },
+    {
+      "artifact_id": "c3xat.r1.blocked2",
+      "authority": "historical",
+      "bytes": 3110,
+      "gate_id": "C3XAT_R1",
+      "note": "Perception-estimand blocker; superseded by the completed run.",
+      "path": "results/c3xat_r1/C3XAT_R1_FINAL_DECISION_v2.json",
+      "raw_status": "C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND",
+      "sha256": "ff4a9880f75c182c90624a893b47d6373851ba48f0167ae0a1fead8408d112f1",
+      "status": "BLOCKED",
+      "superseded_by": "c3xat.r1.final"
+    },
+    {
+      "artifact_id": "c3xat.r1.final",
+      "authority": "canonical",
+      "bytes": 7570,
+      "gate_id": "C3XAT_R1",
+      "note": "One of six subjects passes; C3XAG preparation is not authorized. This is a limited result, not a validation.",
+      "path": "results/c3xat_r1/C3XAT_R1_FINAL_DECISION_COMPLETE.json",
+      "raw_status": "C3XAT_D2_ATLAS_IMAGERY_LIMITED",
+      "sha256": "cf0a8aecaf61b3117a7fcfb59ab534bfe42da41caeb4fadf39beade5c136126c",
+      "status": "LIMITED",
+      "superseded_by": null
+    }
+  ],
+  "claims": [
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.behavioral_imagery_assistance",
+      "effect": "Engineering vertical slice; no human validation",
+      "evidence": [
+        "animus.p1"
+      ],
+      "gate_refs": [
+        "ANIMUS_P1"
+      ],
+      "n": null,
+      "statement": "The platform can scaffold scene authoring and adaptive behavioural practice and can report uncertainty, without claiming that it improves imagery strength or clinical outcomes.",
+      "status": "LIMITED",
+      "uncertainty": "No psychometric validation, no efficacy estimate"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.scene_threshold_measurement",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Scene Threshold estimates a within-scene 2-AFC discrimination threshold and d-prime with calibrated uncertainty.",
+      "status": "UNVALIDATED",
+      "uncertainty": "No test-retest, convergent, or known-groups validation in humans"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.scene_reconstruction_accuracy",
+      "effect": "C3XAT-R1 passed 1 of 6 subjects; not a validation",
+      "evidence": [
+        "c3xat.r1.final"
+      ],
+      "gate_refs": [
+        "C3XAT_R1"
+      ],
+      "n": null,
+      "statement": "The epistemic interview reconstructs probe-variable beliefs with reported uncertainty, not a picture of what a person imagined.",
+      "status": "UNVALIDATED",
+      "uncertainty": "Single-subject pass; no population estimate"
+    },
+    {
+      "ceiling": "L2_NEURAL_CONTENT",
+      "claim_id": "claim.perception_neural_content",
+      "effect": "2 of 6 pilot passes; confirmatory cohort not executed",
+      "evidence": [
+        "animus.p2",
+        "animus.p2r"
+      ],
+      "gate_refs": [
+        "ANIMUS_P2"
+      ],
+      "n": 2,
+      "statement": "A perception-trained decoder can recover seen-image content above chance in a held-out subject under the sealed ANIMUS protocol.",
+      "status": "PILOT",
+      "uncertainty": "No confirmatory estimate; P2R blocked on compute"
+    },
+    {
+      "ceiling": "L2_NEURAL_CONTENT",
+      "claim_id": "claim.imagery_neural_content",
+      "effect": "C3 and C3M null; C3XAT-R1 pass in 1/6 subjects",
+      "evidence": [
+        "c3.final",
+        "c3m.final",
+        "c3xat.r1.final"
+      ],
+      "gate_refs": [
+        "C3",
+        "C3M",
+        "C3XAT_R1"
+      ],
+      "n": 1,
+      "statement": "A decoder can recover imagined scene content above chance from held-out neural data, beyond session, cue, and state confounds.",
+      "status": "BLOCKED",
+      "uncertainty": "Single-subject evidence; degenerate predictions in the imagery arm"
+    },
+    {
+      "ceiling": "L2_NEURAL_CONTENT",
+      "claim_id": "claim.neural_geometry",
+      "effect": "C3XAG preparation not authorized",
+      "evidence": [
+        "c3xat.r1.final"
+      ],
+      "gate_refs": [
+        "C3XAT_R1"
+      ],
+      "n": null,
+      "statement": "Imagery-related neural geometry can be estimated and used to authorize a new acquisition or closed-loop geometry experiment.",
+      "status": "BLOCKED",
+      "uncertainty": "Atlas imagery limited; 1/6 subject pass"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.legacy_pid_iqi",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "PID and IQI are composite proxy scores that summarize simulated or demonstrated session signals.",
+      "status": "DEPRECATED",
+      "uncertainty": "Unvalidated composites; no construct validity"
+    },
+    {
+      "ceiling": "L3_CLOSED_LOOP",
+      "claim_id": "claim.clinical_or_diagnostic",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "The platform diagnoses, treats, or clinically validates a mental-health or neurological condition.",
+      "status": "BLOCKED",
+      "uncertainty": "No clinical study, no regulatory review"
+    }
+  ],
+  "errors": [],
+  "gates": [
+    {
+      "canonical_artifact": "c1.final",
+      "claims": [],
+      "gate_id": "C1",
+      "name": "Neural-behavioural alignment",
+      "note": "Null on incremental validity; mechanism unresolved.",
+      "status": "NULL"
+    },
+    {
+      "canonical_artifact": "c2.final",
+      "claims": [],
+      "gate_id": "C2",
+      "name": "Neural content and state disentanglement",
+      "note": "Null content and transfer within sensitivity.",
+      "status": "NULL"
+    },
+    {
+      "canonical_artifact": "c3.final",
+      "claims": [
+        "claim.imagery_neural_content"
+      ],
+      "gate_id": "C3",
+      "name": "Zero-shot imagery transfer",
+      "note": "Perception passes; imagery transfer null.",
+      "status": "NULL"
+    },
+    {
+      "canonical_artifact": "c3m.final",
+      "claims": [
+        "claim.imagery_neural_content"
+      ],
+      "gate_id": "C3M",
+      "name": "Cross-session alignment mechanism",
+      "note": "Alignment works for seen images; imagery remains degenerate.",
+      "status": "NULL"
+    },
+    {
+      "canonical_artifact": "c3xat.r1.final",
+      "claims": [
+        "claim.scene_reconstruction_accuracy",
+        "claim.imagery_neural_content",
+        "claim.neural_geometry"
+      ],
+      "gate_id": "C3XAT_R1",
+      "name": "Atlas imagery qualification (replication 1)",
+      "note": "1/6 subject pass; C3XAG not authorized.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p1",
+      "claims": [
+        "claim.behavioral_imagery_assistance"
+      ],
+      "gate_id": "ANIMUS_P1",
+      "name": "ANIMUS closed-loop vertical slice",
+      "note": "Engineering pass under simulation; not a human validation.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p2r",
+      "claims": [
+        "claim.perception_neural_content"
+      ],
+      "gate_id": "ANIMUS_P2",
+      "name": "Perception decoder confirmation",
+      "note": "Confirmatory compute blocked; pilot only.",
+      "status": "BLOCKED"
+    }
+  ],
+  "generated_from": "science/registry",
+  "operating_ceiling": "L1_BEHAVIORAL_ASSISTED",
+  "reviewed_at": "2026-10-29",
+  "schema_version": "1.0",
+  "warnings": []
+}

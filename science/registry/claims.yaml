@@ -1,0 +1,156 @@
+version: 1
+operating_ceiling: L1_BEHAVIORAL_ASSISTED
+reviewed_at: "2026-10-29"
+review_note: >-
+  Canonical claim statuses after reconciling ANIMUS P2, P2E, and P2R. P2 reported an internal
+  pilot gate as VALIDATED; P2R showed that the confirmatory cohort was never executed because the
+  spatial-provenance blocker was resolved only in method, not in data. The canonical ANIMUS_P2 gate
+  is therefore BLOCKED, and the perception-content claim is PILOT, not VALIDATED. No claim above
+  L1_BEHAVIORAL_ASSISTED is authorized.
+
+claims:
+  - claim_id: claim.behavioral_imagery_assistance
+    statement: >-
+      The platform can scaffold scene authoring and adaptive behavioural practice and can report
+      uncertainty, without claiming that it improves imagery strength or clinical outcomes.
+    status: LIMITED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: [ANIMUS_P1]
+    evidence: [animus.p1]
+    n: null
+    effect: "Engineering vertical slice; no human validation"
+    uncertainty: "No psychometric validation, no efficacy estimate"
+    forbidden_interpretations:
+      - "Improves imagery strength"
+      - "Clinically effective"
+      - "Neurofeedback treatment"
+    last_reviewed: "2026-10-29"
+    notes: "Functional capability only; the L1 ceiling is an operating limit, not an efficacy claim."
+
+  - claim_id: claim.scene_threshold_measurement
+    statement: >-
+      Scene Threshold estimates a within-scene 2-AFC discrimination threshold and d-prime with
+      calibrated uncertainty.
+    status: UNVALIDATED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "No test-retest, convergent, or known-groups validation in humans"
+    forbidden_interpretations:
+      - "Measures imagery strength"
+      - "Normed or comparable across scenes"
+      - "Diagnostic threshold"
+    last_reviewed: "2026-10-29"
+    notes: "Thresholds are within-scene normalized units; lower means finer discrimination."
+
+  - claim_id: claim.scene_reconstruction_accuracy
+    statement: >-
+      The epistemic interview reconstructs probe-variable beliefs with reported uncertainty, not a
+      picture of what a person imagined.
+    status: UNVALIDATED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: [C3XAT_R1]
+    evidence: [c3xat.r1.final]
+    n: null
+    effect: "C3XAT-R1 passed 1 of 6 subjects; not a validation"
+    uncertainty: "Single-subject pass; no population estimate"
+    forbidden_interpretations:
+      - "Reconstructs the imagined image"
+      - "Decodes mental content"
+      - "Reads thoughts"
+    last_reviewed: "2026-10-29"
+
+  - claim_id: claim.perception_neural_content
+    statement: >-
+      A perception-trained decoder can recover seen-image content above chance in a held-out
+      subject under the sealed ANIMUS protocol.
+    status: PILOT
+    ceiling: L2_NEURAL_CONTENT
+    gate_refs: [ANIMUS_P2]
+    evidence: [animus.p2, animus.p2r]
+    n: 2
+    effect: "2 of 6 pilot passes; confirmatory cohort not executed"
+    uncertainty: "No confirmatory estimate; P2R blocked on compute"
+    forbidden_interpretations:
+      - "Validated perception decoder"
+      - "Imagery decoder"
+      - "Works across subjects"
+    last_reviewed: "2026-10-29"
+    notes: >-
+      P2's internal VALIDATED label is retained only as historical evidence of a pilot gate; it is
+      not a canonical validation.
+
+  - claim_id: claim.imagery_neural_content
+    statement: >-
+      A decoder can recover imagined scene content above chance from held-out neural data, beyond
+      session, cue, and state confounds.
+    status: BLOCKED
+    ceiling: L2_NEURAL_CONTENT
+    gate_refs: [C3, C3M, C3XAT_R1]
+    evidence: [c3.final, c3m.final, c3xat.r1.final]
+    n: 1
+    effect: "C3 and C3M null; C3XAT-R1 pass in 1/6 subjects"
+    uncertainty: "Single-subject evidence; degenerate predictions in the imagery arm"
+    forbidden_interpretations:
+      - "Reads imagined content"
+      - "Reconstructs dreams"
+      - "Mind reading"
+      - "Validated imagery decoder"
+    last_reviewed: "2026-10-29"
+    notes: >-
+      C3M found a state-specific imagery null with a non-degeneracy guard failure
+      (dominant fraction 0.510 > 0.5). No population claim is permitted.
+
+  - claim_id: claim.neural_geometry
+    statement: >-
+      Imagery-related neural geometry can be estimated and used to authorize a new acquisition or
+      closed-loop geometry experiment.
+    status: BLOCKED
+    ceiling: L2_NEURAL_CONTENT
+    gate_refs: [C3XAT_R1]
+    evidence: [c3xat.r1.final]
+    n: null
+    effect: "C3XAG preparation not authorized"
+    uncertainty: "Atlas imagery limited; 1/6 subject pass"
+    forbidden_interpretations:
+      - "Geometry validated"
+      - "Closed-loop neural control authorized"
+    last_reviewed: "2026-10-29"
+
+  - claim_id: claim.legacy_pid_iqi
+    statement: >-
+      PID and IQI are composite proxy scores that summarize simulated or demonstrated session
+      signals.
+    status: DEPRECATED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "Unvalidated composites; no construct validity"
+    forbidden_interpretations:
+      - "Measures imagination ability"
+      - "Validated biomarker"
+      - "Clinical score"
+    last_reviewed: "2026-10-29"
+    notes: "Legacy demo surface only; must not appear in primary research surfaces."
+
+  - claim_id: claim.clinical_or_diagnostic
+    statement: >-
+      The platform diagnoses, treats, or clinically validates a mental-health or neurological
+      condition.
+    status: BLOCKED
+    ceiling: L3_CLOSED_LOOP
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "No clinical study, no regulatory review"
+    forbidden_interpretations:
+      - "Diagnoses aphantasia"
+      - "Treats PTSD"
+      - "Clinically validated"
+      - "Medical device"
+    last_reviewed: "2026-10-29"

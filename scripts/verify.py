@@ -138,6 +138,19 @@ def backend_checks(runner: Runner, mode: str) -> None:
         timeout=180,
     )
 
+    runner.run(
+        "science ledger",
+        [py, "-m", "app.cli.science_ledger", "--check"],
+        cwd=BACKEND,
+        timeout=120,
+    )
+
+    pytest_env = None
+    if IS_WINDOWS:
+        tmp_root = ROOT / ".pytest_tmp"
+        tmp_root.mkdir(parents=True, exist_ok=True)
+        pytest_env = {"TMP": str(tmp_root), "TEMP": str(tmp_root)}
+
     markers = "core or research"
     if mode == "full":
         runner.run(
@@ -145,6 +158,7 @@ def backend_checks(runner: Runner, mode: str) -> None:
             [py, "-m", "pytest", "app/tests", "-q", "--timeout=600"],
             cwd=BACKEND,
             timeout=3600,
+            env=pytest_env,
         )
     else:
         runner.run(
@@ -152,6 +166,7 @@ def backend_checks(runner: Runner, mode: str) -> None:
             [py, "-m", "pytest", "app/tests", "-m", markers, "-q", "--timeout=300"],
             cwd=BACKEND,
             timeout=1800,
+            env=pytest_env,
         )
 
     if runner.ci:

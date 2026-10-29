@@ -5372,3 +5372,43 @@ governance). No scientific claim changed.
 **Remaining risks:** no Python lockfile yet; Windows temp ACL still requires the env workaround;
 release images are unverified locally; 146 modified + ~100 untracked feature paths are still
 uncommitted and will be committed as a separate checkpoint after review.
+
+---
+
+## 2026-10-29 - Phase 1: canonical claim registry and result ledger
+
+**Task:** make scientific status machine-readable and stop hand-maintained contradictions.
+
+**Built:**
+- `science/registry/claims.yaml`: 8 claims with controlled statuses, evidence links, claim levels,
+  and forbidden interpretations; operating ceiling L1_BEHAVIORAL_ASSISTED.
+- `science/registry/artifacts.yaml`: 12 artifacts across 7 gates, each with a dotted status path,
+  explicit raw-to-canonical status map, required provenance fields, and supersession links.
+- `science/schemas/{claim,result,ledger}.schema.json`; the result envelope is for new artifacts and
+  does not rewrite history.
+- `backend/app/research/ledger.py` and `backend/app/cli/science_ledger.py`: validation, deterministic
+  Markdown/JSON generation, and `--check`/`--write`/`--json` modes.
+- `backend/app/tests/test_science_ledger.py`: 10 contract tests, including duplicate canonical gate,
+  unmapped status, missing provenance, supersession cycle, claim-outruns-evidence, deterministic
+  render, and "generated document is current".
+- `docs/program/PROGRAM_STATUS.md` and `results/ledger.json` generated from the registry.
+- `scripts/verify.py` now runs the ledger check and sets a workspace-local TMP/TEMP for pytest on
+  Windows, so the ACL workaround is automatic.
+- `ANIMUS_CLAIMS_BOUNDARY.md`, `implementation_status.md`, `AGENTS.md`, `CONTEXT_INDEX.md`, and
+  `PROJECT_CONTEXT.md` now point to the registry as canonical.
+
+**Reconciliation:** ANIMUS-P2's `PERCEPTION_NEURAL_CONTENT=VALIDATED` is retained only as a
+historical pilot label and is superseded by P2R. Canonical ANIMUS_P2 is `BLOCKED` (1/6 subjects
+preprocessed, no confirmatory outcome). Perception content is `PILOT`; imagery content is `BLOCKED`;
+C3XAT-R1 is `LIMITED` (1/6 pass); C1/C2/C3/C3M are `NULL`.
+
+**Verification (actually run):**
+- `python -m app.cli.science_ledger --check`: pass (12 artifacts, 7 gates, 8 claims).
+- `python -m app.cli.science_ledger --write`: generated both documents; no errors.
+- `pytest app/tests/test_science_ledger.py`: 10 passed.
+- `ruff check .` in backend: clean.
+- Generated-document equality test passes, so the committed Markdown is current with the registry.
+
+**Known gaps:** the ledger registers canonical gate artifacts, not all 378 result JSONs; there is no
+automatic discovery of unregistered result files yet. `frontend/lib/claims.json` remains separate.
+No human data, no ethics approval, no new neural result.

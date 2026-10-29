@@ -66,10 +66,30 @@
 - No real acquisition worker, no real LSL lifecycle, no spectral validation.
 
 ### Testing
-- 43 backend test files, 266 core+research tests passing.
-- 280 additional tests (legacy/artifact/hardware/external) in separate markers.
-- 5 frontend test files, 11 Vitest tests passing.
-- CI classified: backend-core (hermetic), backend-legacy-validation (manual), frontend, docker-config.
+- 1,090 core/research backend tests pass in the merge gate (2026-10-29); 1,063 tests are deselected
+  by marker and run in the full/legacy lanes.
+- The full unfiltered suite includes environment- and artifact-dependent tests; on Windows, set
+  `TMP`/`TEMP` to a workspace-local `.pytest_tmp/` directory (the verifier does this automatically).
+- Frontend: 29 Vitest files / 124 tests in the committed Lumen checkpoint; lint, typecheck, build,
+  claim audit, bundle budget, and Playwright are separate CI jobs.
+- CI: 70+ jobs including hermetic backend-core, legacy-validation, frontend, Docker compose, and
+  release-image build/start/health/non-root checks.
+
+## Canonical scientific status
+
+Machine-generated from `science/registry/`:
+
+- [PROGRAM_STATUS.md](program/PROGRAM_STATUS.md) — gate and claim status, supersessions, provenance
+  hashes, and forbidden interpretations.
+- `results/ledger.json` — the same snapshot in machine-readable form.
+- `python -m app.cli.science_ledger --check` (from `backend/`) fails if a result is missing, a
+  status is unmapped, a gate has two canonical artifacts, a supersession link is broken, or a claim
+  outruns its evidence.
+
+This section replaces hand-maintained status prose. In particular, ANIMUS-P2's historical
+`VALIDATED` label is a **pilot** gate only: P2R records the confirmatory cohort as not executed and
+the canonical ANIMUS_P2 status as `BLOCKED`. The perception-content claim is `PILOT`; the
+imagery-content claim is `BLOCKED`.
 
 ## Simulated (not experimental evidence)
 

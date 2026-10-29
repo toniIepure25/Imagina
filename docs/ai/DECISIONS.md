@@ -1671,3 +1671,51 @@ syntax but never built the release images.
 ---
 
 *Last updated: 2026-10-29 - ADR-065 repository governance baseline*
+
+---
+
+## ADR-066: One claim registry and one hash-chained result ledger
+
+**Status:** Accepted
+**Date:** 2026-10-29
+**Context:** Scientific status was maintained by hand in at least five places: result JSONs, the
+ANIMUS claims boundary, `implementation_status.md`, the evidence registry, and agent context files.
+They disagreed. ANIMUS-P2 recorded `PERCEPTION_NEURAL_CONTENT=VALIDATED`, while P2R recorded the
+confirmatory cohort as not executed and the gate blocked; the claims boundary said "not validated".
+C3XAT-R1 had three decision artifacts (two blocked, one limited) with no machine-readable
+supersession. A reader could not tell which file was authoritative.
+
+**Decision:**
+
+1. One claim registry (`science/registry/claims.yaml`) with a controlled status vocabulary
+   (`UNVALIDATED`, `PILOT`, `LIMITED`, `VALIDATED`, `REPLICATED`, `DEPRECATED`, `BLOCKED`), explicit
+   forbidden interpretations, evidence links, and claim level.
+2. One artifact registry (`science/registry/artifacts.yaml`) that maps each registered result file
+   to a gate, a dotted status path, an explicit raw-to-canonical status map, required provenance
+   fields, and explicit supersession.
+3. Gate status is derived, never typed in prose: exactly one canonical artifact per gate; historical
+   artifacts are preserved unmodified and must point to their successor.
+4. Claims cannot outrun evidence. `VALIDATED`/`REPLICATED` require passing evidence;
+   `LIMITED`/`PILOT` require limited or pilot evidence. A claim above
+   `L1_BEHAVIORAL_ASSISTED` cannot be marked validated while the operating ceiling is L1.
+5. `backend/app/research/ledger.py` validates the registries and generates
+   `docs/program/PROGRAM_STATUS.md` and `results/ledger.json` deterministically. The generated
+   document says it does not validate a claim.
+6. The reconciliation is explicit: P2 is historical `PILOT` and superseded by P2R; canonical
+   ANIMUS_P2 is `BLOCKED`; perception content is `PILOT`; imagery content, geometry, and clinical
+   use are `BLOCKED`.
+
+**Consequences:**
+
+- A stale or contradictory status is now a failing command/test, not a documentation defect.
+- New result artifacts must add a registry entry (or carry the result envelope) before they can
+  influence a claim.
+- The ledger covers canonical gate artifacts, not every one of the 378 JSON files under `results/`;
+  supporting artifacts remain evidence only.
+- `frontend/lib/claims.json` is a separate presentation registry and is not yet generated from
+  `science/registry/`; unifying it is follow-up work.
+- The claim ceiling did not change.
+
+---
+
+*Last updated: 2026-10-29 - ADR-066 canonical claim registry and result ledger*

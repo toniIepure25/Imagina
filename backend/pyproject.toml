@@ -20,6 +20,8 @@ science = [
     "scipy>=1.11,<2",
     "pandas>=2.0,<3",
     "statsmodels>=0.14,<1",
+    "PyYAML>=6.0,<7",
+    "jsonschema>=4.20,<5",
 ]
 neural = [
     "numpy>=1.24,<3",

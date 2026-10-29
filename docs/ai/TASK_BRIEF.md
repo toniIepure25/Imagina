@@ -31,7 +31,9 @@ them.
 - `docs/program/PROGRAM_STATUS.md` is generated and matches the ledger.
 - Ruff, merge-gate tests, and the claim audit pass.
 
-**Status:** in progress.
+**Status:** implemented. Evidence: `science/registry/`, `backend/app/research/ledger.py`,
+`docs/program/PROGRAM_STATUS.md`, ADR-066, 2026-10-29 session-log entry. Verified by 10 ledger tests
+and `python -m app.cli.science_ledger --check`.
 
 ---
 

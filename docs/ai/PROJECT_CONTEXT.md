@@ -201,7 +201,7 @@ Interpretation thresholds:
 | `backend/app/signals/base.py` | Signal provider interface |
 | `backend/app/storage/database.py` | SQLite init |
 | `backend/app/storage/event_store.py` | Event sourcing store |
-| `backend/app/tests/` | Test suite (11 files) |
+| `backend/app/tests/` | Backend test suite (merge gate: `-m "core or research"`) |
 | `frontend/app/session/page.tsx` | Session flow page |
 | `frontend/components/scene/DreamCorridorScene.tsx` | 3D corridor |
 | `frontend/components/metrics/MetricsDashboard.tsx` | Live metrics dashboard |
@@ -265,6 +265,9 @@ Interpretation thresholds:
 | `frontend/components/charts/ChartFrame.tsx`, `components/common/VirtualList.tsx` | Chart-plus-table fallback and virtualized long lists |
 | `frontend/scripts/audit-claims.cjs`, `check-bundle-budget.cjs` | Static claim/evidence audit and production bundle regression check |
 | `frontend/scripts/verify-animus-ui.cjs` | Playwright end-to-end loop + screenshots |
+| `science/registry/`, `science/schemas/` | Canonical claim/gate/artifact registry and JSON Schemas |
+| `backend/app/research/ledger.py`, `backend/app/cli/science_ledger.py` | Validates the registry and generates the program status document |
+| `docs/program/PROGRAM_STATUS.md`, `results/ledger.json` | Generated canonical gate/claim status; never edit by hand |
 | `docs/animus/` | Vision, architecture, API contract, interface principles, claims boundary, roadmap, demo, README |
 
 The Studio is additive: it does not replace the IMAGINA session stack or the P1 ANIMUS research API. The claim

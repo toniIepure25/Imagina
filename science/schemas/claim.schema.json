@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://imagina.local/schemas/claim.schema.json",
+  "title": "Claim registry entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "claim_id",
+    "statement",
+    "status",
+    "ceiling",
+    "forbidden_interpretations",
+    "evidence"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "pattern": "^claim\\.[a-z0-9_.-]+$"
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 20
+    },
+    "status": {
+      "enum": [
+        "UNVALIDATED",
+        "PILOT",
+        "LIMITED",
+        "VALIDATED",
+        "REPLICATED",
+        "DEPRECATED",
+        "BLOCKED"
+      ]
+    },
+    "ceiling": {
+      "enum": [
+        "L0_STRUCTURAL",
+        "L1_BEHAVIORAL_ASSISTED",
+        "L2_NEURAL_CONTENT",
+        "L3_CLOSED_LOOP"
+      ]
+    },
+    "gate_refs": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "n": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "effect": {
+      "type": ["string", "null"]
+    },
+    "uncertainty": {
+      "type": ["string", "null"]
+    },
+    "forbidden_interpretations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"}
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": ["string", "null"]
+    }
+  }
+}

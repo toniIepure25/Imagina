@@ -2,6 +2,13 @@
 
 ANIMUS-P1 makes **no** neural-content-decoding claim. This document is the contract; the code enforces it.
 
+> **Canonical status:** [PROGRAM_STATUS.md](../program/PROGRAM_STATUS.md), generated from
+> `science/registry/`. If this prose and the registry disagree, the registry wins.
+>
+> ANIMUS-P2's historical `PERCEPTION_NEURAL_CONTENT=VALIDATED` label is a **pilot** gate only.
+> P2R established that the confirmatory cohort was not executed and records the canonical gate as
+> `BLOCKED`; the perception-content claim is `PILOT`, and the imagery-content claim is `BLOCKED`.
+
 ## Claim levels (machine-readable, `claims.py`)
 | Level | Meaning | Allowed in P1 |
 |---|---|---|

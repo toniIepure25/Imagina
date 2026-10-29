@@ -8,6 +8,20 @@
 
 1. `AGENTS.md` — coding rules, safety rules, privacy rules, definition of done
 2. `docs/ai/PROJECT_CONTEXT.md` — architecture, modules, data flow, important files
+3. `docs/program/PROGRAM_STATUS.md` — canonical gate and claim status (generated)
+
+---
+
+## Scientific status, claim, or result change
+
+1. `docs/program/PROGRAM_STATUS.md` — generated gate/claim status, supersessions, provenance hashes
+2. `science/registry/claims.yaml` — what may be claimed, forbidden interpretations, evidence links
+3. `science/registry/artifacts.yaml` — canonical artifact per gate, status mapping, supersession
+4. `science/schemas/` — claim, result-envelope, and ledger schemas
+5. `docs/animus/ANIMUS_CLAIMS_BOUNDARY.md` — enforced product claim ceiling
+6. `backend/app/research/ledger.py` — validation rules; run
+   `python -m app.cli.science_ledger --check` from `backend/`
+7. Never update a gate status in prose. Change the registry or add a superseding artifact first.
 
 ---
 

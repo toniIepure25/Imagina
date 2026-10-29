@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://imagina.local/schemas/result.schema.json",
+  "title": "Result artifact envelope (v1)",
+  "description": "Envelope for new, ledger-registered result artifacts. Historical artifacts are mapped by science/registry/artifacts.yaml instead of being rewritten.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "artifact_id",
+    "gate_id",
+    "status",
+    "created_at",
+    "code_sha",
+    "protocol_hash",
+    "dataset_manifest_hash",
+    "seed",
+    "decision_rule",
+    "multiplicity_family",
+    "supersedes",
+    "self_hash"
+  ],
+  "properties": {
+    "artifact_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]+$"},
+    "gate_id": {"type": "string", "minLength": 1},
+    "status": {
+      "enum": [
+        "NOT_STARTED",
+        "BLOCKED",
+        "RUNNING",
+        "PASS",
+        "NULL",
+        "FAIL",
+        "LIMITED",
+        "PILOT",
+        "SUPERSEDED"
+      ]
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "code_sha": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"},
+    "protocol_hash": {"type": "string", "pattern": "^[0-9a-f]{16,64}$"},
+    "dataset_manifest_hash": {"type": "string", "pattern": "^[0-9a-f]{16,64}$"},
+    "seed": {"type": "integer"},
+    "decision_rule": {"type": "string", "minLength": 3},
+    "multiplicity_family": {"type": "string", "minLength": 3},
+    "supersedes": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "self_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claim_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "uncertainty": {"type": ["string", "null"]},
+    "sensitivity": {"type": ["string", "null"]},
+    "notes": {"type": ["string", "null"]}
+  }
+}

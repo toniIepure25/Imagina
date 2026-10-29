@@ -1,0 +1,45 @@
+version: 1
+description: Gate definitions. A gate status is always derived from its canonical artifact.
+
+gates:
+  - gate_id: C1
+    name: Neural-behavioural alignment
+    canonical_artifact: c1.final
+    claim_ids: []
+    note: "Null on incremental validity; mechanism unresolved."
+
+  - gate_id: C2
+    name: Neural content and state disentanglement
+    canonical_artifact: c2.final
+    claim_ids: []
+    note: "Null content and transfer within sensitivity."
+
+  - gate_id: C3
+    name: Zero-shot imagery transfer
+    canonical_artifact: c3.final
+    claim_ids: [claim.imagery_neural_content]
+    note: "Perception passes; imagery transfer null."
+
+  - gate_id: C3M
+    name: Cross-session alignment mechanism
+    canonical_artifact: c3m.final
+    claim_ids: [claim.imagery_neural_content]
+    note: "Alignment works for seen images; imagery remains degenerate."
+
+  - gate_id: C3XAT_R1
+    name: Atlas imagery qualification (replication 1)
+    canonical_artifact: c3xat.r1.final
+    claim_ids: [claim.scene_reconstruction_accuracy, claim.imagery_neural_content, claim.neural_geometry]
+    note: "1/6 subject pass; C3XAG not authorized."
+
+  - gate_id: ANIMUS_P1
+    name: ANIMUS closed-loop vertical slice
+    canonical_artifact: animus.p1
+    claim_ids: [claim.behavioral_imagery_assistance]
+    note: "Engineering pass under simulation; not a human validation."
+
+  - gate_id: ANIMUS_P2
+    name: Perception decoder confirmation
+    canonical_artifact: animus.p2r
+    claim_ids: [claim.perception_neural_content]
+    note: "Confirmatory compute blocked; pilot only."

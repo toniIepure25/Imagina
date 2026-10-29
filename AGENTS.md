@@ -6,9 +6,11 @@
 
 ## Project Overview
 
-IMAGINA is a **closed-loop mental imagery training research prototype** — not a mind-reading system. It estimates proxy metrics related to attention stability, self-reported vividness, behavioral consistency, and simulated EEG-like signal patterns. The system adapts visual/audio/generative feedback as a scaffold for mental imagery practice, then reports session outcomes.
+IMAGINA is a **closed-loop mental imagery research platform** — not a mind-reading system. The legacy Dream Corridor surface estimates proxy metrics from simulated EEG-like signals; the newer ANIMUS instrument surface adds behavioural tasks, a symbolic scene studio, an epistemic interview, and a Scene Threshold observatory without claiming decoded neural content.
 
-**Flagship MVP:** Dream Corridor Scene Stabilizer (3D corridor that responds to estimated imagery state).
+**Canonical scientific status:** [`docs/program/PROGRAM_STATUS.md`](docs/program/PROGRAM_STATUS.md), generated from `science/registry/`. If prose and the registry disagree, the registry wins.
+
+**Flagship research question:** can a behavioural-assisted, uncertainty-aware instrument improve the *quality of inquiry* into mental imagery without overclaiming neural decoding? The operating claim ceiling is `L1_BEHAVIORAL_ASSISTED`.
 
 ---
 
@@ -20,7 +22,7 @@ IMAGINA is a **closed-loop mental imagery training research prototype** — not 
 - "IMAGINA adapts visual feedback based on estimated imagery stability."
 - "IMAGINA is a research prototype for closed-loop mental imagery training."
 - "IMAGINA does not decode thoughts or dreams."
-- "PID and IQI are experimental proxy metrics that require validation."
+- "PID and IQI are deprecated legacy proxy scores; they are not validated measures of imagination, and they must not appear in primary research surfaces."
 
 ### Prohibited Claims (MUST NEVER APPEAR)
 
@@ -81,8 +83,7 @@ scripts/   — Verification scripts
 
 | Concept | Definition |
 |---------|-----------|
-| **PID** (Perception-Imagination Distance) | Composite proxy: 0.45*neural_proxy_dist + 0.35*behavioral_dist + 0.20*uncertainty. Range 0–1, lower is better. |
-| **IQI** (Imagery Quality Index) | Composite proxy: 0.35*attention + 0.30*engagement + 0.20*behavioral + 0.15*relaxation, weighted by confidence. Range 0–1, higher is better. |
+| **Legacy PID / IQI** (deprecated) | Hand-tuned composite proxy scores from the Dream Corridor demo. Not validated, not a measure of imagination ability, and excluded from primary research surfaces. See `claim.legacy_pid_iqi`. |
 | **Attention Stability** | Inverse theta/beta style proxy from simulated/simulated features + self-report. |
 | **Relaxation** | Relative alpha-band proxy from simulated features + self-report relaxation. |
 | **Imagery Engagement** | Task-related parietal/gamma proxy engagement from features + vividness/self-report. |
@@ -102,7 +103,7 @@ See `docs/metrics.md` for full formulas and interpretations.
 3. **No comments unless asked.** Code should be self-documenting.
 4. **Use existing libraries.** Check imports in neighboring files before introducing new dependencies.
 5. **Check existing configs.** `backend/pyproject.toml` defines lint rules (ruff, line-length=120, E/F/I/N/W). `frontend/package.json` defines scripts (dev, build, lint).
-6. **Test your changes.** Always run `scripts/verify.sh` after making changes.
+6. **Test your changes.** Always run `python scripts/verify.py --quick` (or `--ci`) after making changes.
 7. **Update docs after major tasks.** See Documentation Rules below.
 
 ---
@@ -134,23 +135,19 @@ See `docs/metrics.md` for full formulas and interpretations.
 
 ```bash
 cd backend
-python3 -m pytest app/tests/ -q        # 34 test files, ~400 tests
-python3 -m ruff check .                 # lint
-python3 -m mypy app/ --ignore-missing-imports  # type check (optional, not in CI)
+python -m pytest app/tests -m "core or research" -q   # merge gate: ~1,090 tests
+python -m ruff check .                                # lint
+python -m app.cli.science_ledger --check              # claim/gate registry consistency
 ```
 
 Key test files:
-- `test_pid_iqi_engine.py` — PID/IQI computation correctness
-- `test_curriculum_manager.py` — Staircase progression/regression
-- `test_safety_monitor.py` — Fatigue, effort, dissociation checks
-- `test_feedback_policy.py` — Scene parameter mapping
-- `test_signal_providers.py` — Signal provider interfaces
-- `test_replay_determinism.py` — Seeded replay reproducibility
-- `test_calibration_service.py` — Calibration profiles
-- `test_report_service.py` — Report aggregation
-- `test_session_service.py` — Session lifecycle
-- `test_evaluation_harness.py` — Offline evaluation tools
-- `test_profile_experiment_exports.py` — Profile and experiment exports
+- `test_science_ledger.py` — registry schema, supersession, claim-evidence consistency
+- `test_animus_*` — instrument, studio, observatory, epistemic interview contracts
+- `test_safety_monitor.py` — fatigue, effort, dissociation checks
+- `test_feedback_policy.py` — scene parameter mapping
+- `test_signal_providers.py` — signal provider interfaces
+- `test_replay_determinism.py` — seeded replay reproducibility
+- `test_session_service.py` — session lifecycle
 
 ### Frontend
 
@@ -169,7 +166,8 @@ docker compose config   # Validate compose file
 ### Full verification
 
 ```bash
-bash scripts/verify.sh
+python scripts/verify.py --ci     # lint, ledger, backend gate, frontend, docker config
+python scripts/verify.py --full   # --ci plus the complete backend suite
 ```
 
 ---
@@ -181,7 +179,7 @@ When working on a task in this repository:
 1. **Read relevant context files** (see `docs/ai/CONTEXT_INDEX.md` for which docs to read).
 2. **Create/update a task brief** in `docs/ai/TASK_BRIEF.md` if the task is complex.
 3. **Make changes** following coding rules above.
-4. **Run `bash scripts/verify.sh`** before considering the task done.
+4. **Run `python scripts/verify.py --quick`** before considering the task done.
 5. **Update `docs/ai/SESSION_LOG.md`** with what was done, decisions made, tests run, remaining risks.
 6. **Update `docs/ai/DECISIONS.md`** if any architectural decision was made or changed.
 7. **Check scientific claims** — any new UI text, API field, or doc must not make prohibited claims.
@@ -210,7 +208,7 @@ Do not modify `docs/architecture.md`, `docs/metrics.md`, `docs/scientific_claims
 
 A task is done when:
 1. All acceptance criteria are met.
-2. `scripts/verify.sh` passes (or skipped checks are explained).
+2. `python scripts/verify.py --quick` passes (or skipped checks are explained).
 3. No prohibited claims appear in code, UI, or docs.
 4. Safety boundaries are respected (no bypassed monitors, no removed disclaimers).
 5. `docs/ai/SESSION_LOG.md` is updated.
@@ -222,6 +220,9 @@ A task is done when:
 
 | Need | File |
 |------|------|
+| Canonical gate/claim status | `docs/program/PROGRAM_STATUS.md` |
+| Claim and artifact registry | `science/registry/` |
+| Ledger command | `python -m app.cli.science_ledger --check` (from `backend/`) |
 | Architecture overview | `docs/architecture.md` |
 | Metric formulas | `docs/metrics.md` |
 | Allowed/prohibited claims | `docs/scientific_claims.md` |

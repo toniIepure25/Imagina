@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://imagina.local/schemas/ledger.schema.json",
+  "title": "Generated scientific ledger snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "gates", "claims", "artifacts", "errors", "warnings"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "generated_from": {"type": "string"},
+    "operating_ceiling": {"type": "string"},
+    "reviewed_at": {"type": ["string", "null"]},
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gate_id", "status", "canonical_artifact", "claims"],
+        "properties": {
+          "gate_id": {"type": "string"},
+          "name": {"type": "string"},
+          "status": {"type": "string"},
+          "canonical_artifact": {"type": "string"},
+          "claims": {"type": "array", "items": {"type": "string"}},
+          "note": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "status", "ceiling", "evidence"],
+        "properties": {
+          "claim_id": {"type": "string"},
+          "statement": {"type": "string"},
+          "status": {"type": "string"},
+          "ceiling": {"type": "string"},
+          "gate_refs": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "n": {"type": ["integer", "null"]},
+          "effect": {"type": ["string", "null"]},
+          "uncertainty": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["artifact_id", "path", "gate_id", "authority", "status", "sha256"],
+        "properties": {
+          "artifact_id": {"type": "string"},
+          "path": {"type": "string"},
+          "gate_id": {"type": "string"},
+          "authority": {"enum": ["canonical", "historical", "supporting"]},
+          "raw_status": {"type": "string"},
+          "status": {"type": "string"},
+          "superseded_by": {"type": ["string", "null"]},
+          "sha256": {"type": "string"},
+          "bytes": {"type": "integer"},
+          "note": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "warnings": {"type": "array", "items": {"type": "string"}}
+  }
+}
