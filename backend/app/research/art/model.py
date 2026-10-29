@@ -144,7 +144,7 @@ def _best_card(
 def greedy_eig(
     prior: Sequence[float],
     max_queries: int,
-    cards: Sequence[int] = (PERCEPTUAL, GENERATION, CONTEXT),
+    cards: Sequence[int] = tuple(range(len(CARD_IDS))),
     likelihoods: Sequence[Sequence[float]] = CARD_LIKELIHOODS,
 ) -> float:
     """Cumulative EIG of a one-step-greedy policy without replacement.
@@ -172,7 +172,7 @@ def greedy_eig(
 def expected_random_eig(
     prior: Sequence[float],
     max_queries: int,
-    cards: Sequence[int] = (PERCEPTUAL, GENERATION, CONTEXT),
+    cards: Sequence[int] = tuple(range(len(CARD_IDS))),
     likelihoods: Sequence[Sequence[float]] = CARD_LIKELIHOODS,
 ) -> float:
     """Expected cumulative EIG when cards are sampled uniformly without replacement."""

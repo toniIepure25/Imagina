@@ -20,6 +20,7 @@ from app.research.art.model import (
     CONTEXT,
     DEFAULT_PRIOR,
     DESCRIBED,
+    GENERATION,
     IMAGINED,
     NEW,
     PERCEPTUAL,
@@ -104,6 +105,19 @@ def test_greedy_eig_beats_random_sampling() -> None:
     random_gain = expected_random_eig(DEFAULT_PRIOR, 3)
     assert greedy > random_gain
     assert greedy_eig(DEFAULT_PRIOR, 0) == 0.0
+
+
+def test_default_eig_helpers_use_the_full_four_card_menu() -> None:
+    all_cards = tuple(range(len(CARD_IDS)))
+    assert greedy_eig(DEFAULT_PRIOR, 2) == pytest.approx(
+        greedy_eig(DEFAULT_PRIOR, 2, all_cards)
+    )
+    assert expected_random_eig(DEFAULT_PRIOR, 2) == pytest.approx(
+        expected_random_eig(DEFAULT_PRIOR, 2, all_cards)
+    )
+    assert greedy_eig(DEFAULT_PRIOR, 2) > greedy_eig(
+        DEFAULT_PRIOR, 2, (PERCEPTUAL, GENERATION, CONTEXT)
+    )
 
 
 def test_softmax_is_a_distribution() -> None:
