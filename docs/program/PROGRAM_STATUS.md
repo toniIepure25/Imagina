@@ -19,6 +19,9 @@
 | ANIMUS_P2 | Perception decoder confirmation | `BLOCKED` | `animus.p2r` | Confirmatory compute blocked; pilot only. |
 | ANIMUS_P3_SIM | Source-monitoring Stage 0 simulation | `PASS` | `animus.p3.sim` | Simulation-only design gate for the Source and Imagination Monitor. A PASS means parameter recovery and the coverage constraints are acceptable in simulation; it is not human validation and does not authorize a measurement claim. |
 | ANIMUS_P3_POWER | Source-monitoring Stage 1 power check | `PASS` | `animus.p3.power` | Simulation-only planning gate. A PASS means the planned N=180 has at least 80% power for the reliability lower-bound target under the stated approximation; it is not human evidence. |
+| ANIMUS_P4_ART_SIM | Active Reality Testing Stage 0B simulation | `PASS` | `animus.p4.art.sim` | Simulation-only design gate. A PASS means the EIG agent is above chance and its query choices are efficient under the stated model; it is not human validation and does not authorize a measurement claim. |
+| ANIMUS_P4_ART_POWER | Active Reality Testing Stage 2 power check | `PASS` | `animus.p4.art.power` | Simulation-only planning gate. A PASS means N=180 has at least 80% power for the ARTE reliability lower-bound target under the stated approximation; it is not human evidence. |
+| ANIMUS_P4_ART_RECOVERY | Active Reality Testing policy recovery | `PASS` | `animus.p4.art.recovery` | Simulation-only model-recovery gate. A PASS means the policy parameters are recovered within the stated tolerance conditional on the known EIG feature matrix; it does not validate the task or the full hierarchical measurement model. |
 
 ## Claims
 
@@ -33,6 +36,9 @@
 | `claim.legacy_pid_iqi` | `DEPRECATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | PID and IQI are composite proxy scores that summarize simulated or demonstrated session signals. |
 | `claim.clinical_or_diagnostic` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | The platform diagnoses, treats, or clinically validates a mental-health or neurological condition. |
 | `claim.source_monitoring_measurement` | `UNVALIDATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | The Source and Imagination Monitor estimates source discrimination and source calibration for seen, imagined, described, and new content, with reported uncertainty and explicit insufficient-data states. |
+| `claim.active_reality_testing_measurement` | `UNVALIDATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Active Reality Testing estimates the efficiency with which a person selects source-diagnostic evidence before judging whether an experience was seen, imagined, described, or new, with reported uncertainty and explicit insufficient-data states. |
+| `claim.active_reality_testing_training` | `BLOCKED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Adaptive Active Reality Testing feedback improves source-inquiry efficiency or source calibration beyond a yoked active control. |
+| `claim.active_reality_testing_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | Active Reality Testing diagnoses, predicts, or treats a clinical condition. |
 | `claim.source_monitoring_training` | `BLOCKED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Adaptive source-monitoring feedback improves source calibration or source discrimination beyond a yoked active control. |
 | `claim.source_monitoring_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | The Source and Imagination Monitor diagnoses, predicts, or treats a clinical condition. |
 
@@ -54,6 +60,9 @@
 | `animus.p2r` | ANIMUS_P2 | canonical | `BLOCKED` | `173620c625e8cb70338d4806b45fab428fddb82c498f36a35ba98382bd4d9cab` | 1308 |
 | `animus.p3.power` | ANIMUS_P3_POWER | canonical | `PASS` | `5d44b4362cc2989484a2e566bbb1ec29a6baba2d1011101f1df4ebc5d47353f3` | 996 |
 | `animus.p3.sim` | ANIMUS_P3_SIM | canonical | `PASS` | `68a1a41df0f78b21e787b42bb6ed3eb3e184b7da2cec55c0005f9bb640dd79cc` | 1934 |
+| `animus.p4.art.power` | ANIMUS_P4_ART_POWER | canonical | `PASS` | `3e68343aa70239b7fcd1518708675a3bca61baa5dc47fd56453681bfa253fc1e` | 996 |
+| `animus.p4.art.recovery` | ANIMUS_P4_ART_RECOVERY | canonical | `PASS` | `6c6da963106c4ce4219794c738624ceb3a24e0a5c7c841a6e8b7a74f8f787674` | 5986 |
+| `animus.p4.art.sim` | ANIMUS_P4_ART_SIM | canonical | `PASS` | `812b6001986b50debfd2ddeb7dc66770f4a5ced641e2529c7517199fd6acdb4d` | 1582 |
 | `c1.final` | C1 | canonical | `NULL` | `1f412b5216d37664a54078ace6e9bc5aaf084ef24830607732a77d1006632c3b` | 9737 |
 | `c2.final` | C2 | canonical | `NULL` | `e02e6c961302614380333e572d221b17bc11d8f14603d412784e709f95998a2e` | 8804 |
 | `c3.final` | C3 | canonical | `NULL` | `6073ec1c8aa130ef1aa06e73c87db1df571edbd49986d2e6d5e2e57113c0fc60` | 5650 |

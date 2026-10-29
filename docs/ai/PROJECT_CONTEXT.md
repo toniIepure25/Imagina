@@ -19,6 +19,7 @@ Imagina/
 │   │   ├── api/               # REST endpoints (11 routers)
 │   │   ├── core/              # Config, constants, time, errors
 │   │   ├── evaluation/        # Cohort simulator, replay validator, metric sanity
+│   │   ├── research/          # Claim ledger, PRM/ART models, simulation, power
 │   │   ├── reports/           # JSON and HTML report generators
 │   │   ├── schemas/           # Pydantic v2 models
 │   │   ├── services/          # Business logic (pid_iqi, curriculum, safety, etc.)
@@ -44,6 +45,8 @@ Imagina/
 │   ├── package.json
 │   └── tsconfig.json
 ├── docs/                      # Architecture, metrics, ethics, claims, demo, experiments, evaluation
+│   ├── animus/                # ANIMUS specs, including SIM and ART
+│   ├── program/               # Preregistration, analysis plans, generated program status
 │   └── ai/                    # AI agent context files
 ├── data/                      # Local SQLite DB, session data, exports
 ├── research/                  # Config files (curriculum_v1.yaml, demo_session.yaml), notebooks

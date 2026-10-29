@@ -7,7 +7,8 @@ review_note: >-
   spatial-provenance blocker was resolved only in method, not in data. The canonical ANIMUS_P2 gate
   is therefore BLOCKED, and the perception-content claim is PILOT, not VALIDATED. Stage 0 of the
   source-monitoring program adds three claims; all are UNVALIDATED or BLOCKED because no human data
-  exist. No claim above L1_BEHAVIORAL_ASSISTED is authorized.
+  exist. Stage 0B of the Active Reality Testing extension adds three more claims; all are
+  UNVALIDATED or BLOCKED. No claim above L1_BEHAVIORAL_ASSISTED is authorized.
 
 claims:
   - claim_id: claim.behavioral_imagery_assistance
@@ -178,6 +179,70 @@ claims:
     notes: >-
       Stage 0 adds a protocol, a generative model, and a simulation harness. The claim remains
       UNVALIDATED until a registered study passes reliability, invariance, and construct gates.
+
+  - claim_id: claim.active_reality_testing_measurement
+    statement: >-
+      Active Reality Testing estimates the efficiency with which a person selects source-diagnostic
+      evidence before judging whether an experience was seen, imagined, described, or new, with
+      reported uncertainty and explicit insufficient-data states.
+    status: UNVALIDATED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "Stage 0B specification and simulation only; no human reliability or validity data"
+    forbidden_interpretations:
+      - "Validated reality-testing instrument"
+      - "Measures imagery strength"
+      - "Diagnoses psychosis"
+      - "Predicts hallucinations"
+      - "Decodes imagined content"
+      - "Generic evidence-gathering ability"
+    last_reviewed: "2026-10-29"
+    notes: >-
+      Stage 0B adds a formal model, a deterministic simulator, a power check, and a policy-recovery
+      artifact. The claim remains UNVALIDATED until a registered study passes reliability,
+      invariance, incremental-validity, and discriminant gates.
+
+  - claim_id: claim.active_reality_testing_training
+    statement: >-
+      Adaptive Active Reality Testing feedback improves source-inquiry efficiency or source
+      calibration beyond a yoked active control.
+    status: BLOCKED
+    ceiling: L1_BEHAVIORAL_ASSISTED
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "Conditional on measurement validation; no training RCT has been executed"
+    forbidden_interpretations:
+      - "Improves imagination"
+      - "Treats hallucinations"
+      - "Generalizes beyond the trained task"
+      - "Clinically effective"
+    last_reviewed: "2026-10-29"
+    notes: "Blocked until the Stage 2 measurement gates pass and a separate RCT is registered."
+
+  - claim_id: claim.active_reality_testing_clinical
+    statement: >-
+      Active Reality Testing diagnoses, predicts, or treats a clinical condition.
+    status: BLOCKED
+    ceiling: L3_CLOSED_LOOP
+    gate_refs: []
+    evidence: []
+    n: null
+    effect: null
+    uncertainty: "No clinical sample, no diagnostic accuracy study, no regulatory review"
+    forbidden_interpretations:
+      - "Diagnoses psychosis"
+      - "Predicts hallucinations"
+      - "Clinical biomarker"
+      - "Medical device"
+    last_reviewed: "2026-10-29"
+    notes: >-
+      No clinical sample or clinical claim is authorized. The clinical source-monitoring literature
+      and the healthy hallucination-prone null are both retained; no continuum claim follows.
 
   - claim_id: claim.source_monitoring_training
     statement: >-

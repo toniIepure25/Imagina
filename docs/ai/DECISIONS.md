@@ -1757,4 +1757,52 @@ the platform can generate controlled seen/imagined/described/new items from its 
 
 ---
 
-*Last updated: 2026-10-29 - ADR-067 source monitoring as the next scientific object*
+*Last updated: 2026-10-29 - ADR-068 Active Reality Testing as the active-inquiry extension*
+
+---
+
+## ADR-068: Active Reality Testing as the active-inquiry extension
+
+**Status:** Proposed (Stage 0B only)
+**Date:** 2026-10-29
+**Context:** The Stage 0 Source and Imagination Monitor measures a passive post-hoc source judgment.
+That leaves out a question the source-monitoring and metacognitive-control literatures both make
+central: how does a person **select** evidence before deciding what is real? The information-search
+literature shows that confidence and metacognitive sensitivity regulate sampling, but no indexed
+report was found that combines source monitoring with active source-diagnostic evidence selection and
+scores query choice against an expected-information-gain policy. This is a design hypothesis from a
+non-exhaustive search, not a priority claim.
+
+**Decision:**
+
+1. Add **Active Reality Testing (ART)** as a separate construct: the accuracy, calibration, and
+   efficiency with which a person selects and uses evidence to resolve source uncertainty.
+2. The task gives the participant a source-neutral probe, a menu of four evidence cards with known
+   likelihoods and costs, at most two samples per trial, and a four-source judgment. Active blocks are
+   compared with yoked passive blocks at equal information. The four-card/two-query design is required
+   because sampling every card would make cumulative EIG order-independent and `ARTE` undefined.
+3. The policy model uses normalized EIG:
+   `u_q = beta * (EIG_q / max(EIG) - lambda * cost_q)`, with a softmax stop option `tau`. The
+   normalization is fixed before human data because raw EIG in bits is small relative to a one-point
+   cost and makes the policy weakly identified.
+4. `ARTE` is reported with a model-free mutual-information companion and an explicit
+   `insufficient_queries` state. It is not a composite score.
+5. Stage 0B is specification, simulation, recovery, and power only. No API, migration, frontend,
+   human data, or claim upgrade is authorized.
+6. `claim.active_reality_testing_measurement` is `UNVALIDATED`; training and clinical claims are
+   `BLOCKED`. The clinical source-monitoring literature and the healthy hallucination-prone null are
+   both retained; no continuum or diagnostic claim follows.
+
+**Consequences:**
+
+- New module `backend/app/research/art/` with model, design, metrics, simulation, and power.
+- New protocol `ANIMUS-ART-v1`, draft preregistration and analysis plan, and Stage 0B artifacts.
+- `ANIMUS_P4_ART_SIM`, `ANIMUS_P4_ART_POWER`, and `ANIMUS_P4_ART_RECOVERY` are simulation-only gates.
+  A PASS does not validate the instrument.
+- The yoked passive condition is mandatory in the human study; a fixed schedule is not a substitute.
+- A registered validation study is required before any training RCT or product surface.
+- The claim ceiling did not change.
+
+---
+
+*Last updated: 2026-10-29 - ADR-068 Active Reality Testing as the active-inquiry extension*

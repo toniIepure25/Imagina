@@ -177,3 +177,44 @@ artifacts:
       Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95%
       bound above 0.60 is 0.961 under a normal approximation. Not human evidence; the registered
       analysis will use the actual ICC confidence-interval method.
+
+  - artifact_id: animus.p4.art.sim
+    path: results/art/ART_STAGE0_SIMULATION.json
+    gate_id: ANIMUS_P4_ART_SIM
+    authority: canonical
+    status_path: decision
+    status_map:
+      ART_STAGE0_SIMULATION_PASS: PASS
+      ART_STAGE0_SIMULATION_REVIEW: LIMITED
+    required_fields: [protocol, decision, config, measurement]
+    note: >-
+      Stage 0B simulation with 120 simulated participants and 120 trials, four cards and at most
+      two samples per trial. Mean accuracy 0.458, mean ARTE 0.444, and mean queries 1.79. This is a
+      design artifact, not human evidence.
+
+  - artifact_id: animus.p4.art.power
+    path: results/art/ART_STAGE0_POWER.json
+    gate_id: ANIMUS_P4_ART_POWER
+    authority: canonical
+    status_path: decision
+    status_map:
+      ART_STAGE0_POWER_PASS: PASS
+      ART_STAGE0_POWER_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, scenarios]
+    note: >-
+      Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95%
+      bound above 0.60 is 0.961 under a normal approximation. Not human evidence.
+
+  - artifact_id: animus.p4.art.recovery
+    path: results/art/ART_MODEL_RECOVERY.json
+    gate_id: ANIMUS_P4_ART_RECOVERY
+    authority: canonical
+    status_path: decision
+    status_map:
+      ART_STAGE0_RECOVERY_PASS: PASS
+      ART_STAGE0_RECOVERY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, recovery, comparison]
+    note: >-
+      Policy-parameter recovery with 60 simulated participants and 80 trials. Beta bias -0.131,
+      lambda bias -0.035, tau bias -0.025. Conditional on the known EIG feature matrix; not a
+      human validation and not a full hierarchical recovery.

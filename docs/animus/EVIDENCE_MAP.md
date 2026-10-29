@@ -51,6 +51,32 @@ inherits their findings.
     unidentifiable; the observatory says `insufficient` rather than reporting a misleading coefficient.
 14. **No composite.** d′, threshold, side bias, Brier, coverage, and reliability stay separate.
 
+## Active Reality Testing addendum
+
+This addendum covers the Stage 0B ART extension. It is a design aid, not a systematic review.
+
+| Claim | Evidence status | What ART may say | What it must not say |
+|---|---|---|---|
+| Source monitoring is a measurable attribution process | Supported framework (Johnson et al., 1993) and meta-analytic evidence in psychosis (Damiani et al., 2024) | Measure source discrimination, bias, and calibration separately | "Validated clinical test" |
+| Reality monitoring is not solved by a single sensory cue | Review argues for higher-order evaluation of first-order signals (Dijkstra et al., 2022) | Compare models; do not assume SDT is the mechanism | "We have identified the reality monitor" |
+| Confidence can regulate information search | Theoretical and empirical work (Schulz et al., 2023; Hu et al., 2026) | Test whether query selection tracks expected information gain | "Confidence proves the source judgment is correct" |
+| Evidence gathering is altered in delusions | Meta-analysis of jumping-to-conclusions (Dudley et al., 2016) | Use beads task as a discriminant and future clinical bridge | "ART diagnoses psychosis" |
+| Source-monitoring deficits are large in clinical psychosis | Meta-analysis, discrimination d≈−0.65 (Damiani et al., 2024) | Support future clinical collaboration | "ART predicts hallucinations" |
+| Healthy hallucination-prone people do not show the same deficit | Null result in two experiments (Garrison et al., 2017) | Avoid a simple continuum claim | "ART measures psychosis risk" |
+| Classification images can index imagery objectively | Standard and evolutionary paradigms, test-retest r=.58/.42 (Maiello et al., 2024) | Use as a convergent criterion in a subsample | "Classification images are ground truth" |
+| Active source monitoring with EIG scoring is established | No indexed report found in a non-exhaustive search | Treat as a design hypothesis and test it | "First" / "revolutionary" / "proven" |
+
+Design decisions that follow:
+
+15. **ART is a separate construct.** Passive source monitoring and active evidence selection are
+    measured and reported separately; no composite score.
+16. **Yoked passive is mandatory.** Active-versus-passive comparisons control information quantity,
+    time, and motor engagement.
+17. **ARTE has a model-free companion.** Mutual-information sampling quality is reported alongside the
+    model-based EIG metric to reduce circularity.
+18. **Clinical language is blocked.** The Garrison null and the Damiani clinical effect are both
+    retained; no continuum or diagnostic claim is licensed.
+
 ## Open questions
 
 - Are the five dimensions separable, or do they collapse into one general factor?
@@ -96,3 +122,22 @@ experimental.
 - Challenge Point scoping review (2025). *Journal of Motor Behavior*.
   https://doi.org/10.1080/00222895.2025.2508283
 - Butler, A. J., et al. (2012). MIQ-RS. https://doi.org/10.1155/2012/497289
+- Johnson, M. K., Hashtroudi, S., & Lindsay, D. S. (1993). Source monitoring.
+  *Psychological Bulletin*. https://doi.org/10.1037/0033-2909.114.1.3
+- Dijkstra, N., Kok, P., & Fleming, S. M. (2022). Perceptual reality monitoring.
+  *Neuroscience & Biobehavioral Reviews*. https://doi.org/10.1016/j.neubiorev.2022.104557
+- Dijkstra, N., & Fleming, S. M. (2025). Perceptual reality monitoring as higher-order inference on
+  sensory precision. Preprint. https://doi.org/10.31234/osf.io/36xdz_v2
+- Schulz, L., Fleming, S. M., & Dayan, P. (2023). Metacognitive computations for information search.
+  *Psychological Review*. https://doi.org/10.1037/rev0000401
+- Hu, X., et al. (2026). Metacognitive sensitivity predicts the quality of information search.
+  *Cognition*. https://doi.org/10.1016/j.cognition.2025.106410
+- Damiani, S., et al. (2024). The noise in our brain: source monitoring in psychosis.
+  *Journal of Psychiatric Research*. https://doi.org/10.1016/j.jpsychires.2023.11.036
+- Garrison, J. R., et al. (2017). No reduction in source monitoring ability in healthy individuals
+  prone to auditory hallucinations. *Cortex*. https://doi.org/10.1016/j.cortex.2016.11.011
+- Dudley, R., et al. (2016). Psychosis, delusions and the jumping-to-conclusions reasoning bias.
+  *Schizophrenia Bulletin*. https://doi.org/10.1093/schbul/sbv150
+- Maiello, G., et al. (2024). Individual differences in visual mental imagery assessed through
+  standard and evolutionary classification images. *Journal of Vision*.
+  https://doi.org/10.1167/jov.24.10.534

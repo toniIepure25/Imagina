@@ -73,6 +73,42 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p4.art.power",
+      "authority": "canonical",
+      "bytes": 996,
+      "gate_id": "ANIMUS_P4_ART_POWER",
+      "note": "Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95% bound above 0.60 is 0.961 under a normal approximation. Not human evidence.",
+      "path": "results/art/ART_STAGE0_POWER.json",
+      "raw_status": "ART_STAGE0_POWER_PASS",
+      "sha256": "3e68343aa70239b7fcd1518708675a3bca61baa5dc47fd56453681bfa253fc1e",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p4.art.recovery",
+      "authority": "canonical",
+      "bytes": 5986,
+      "gate_id": "ANIMUS_P4_ART_RECOVERY",
+      "note": "Policy-parameter recovery with 60 simulated participants and 80 trials. Beta bias -0.131, lambda bias -0.035, tau bias -0.025. Conditional on the known EIG feature matrix; not a human validation and not a full hierarchical recovery.",
+      "path": "results/art/ART_MODEL_RECOVERY.json",
+      "raw_status": "ART_STAGE0_RECOVERY_PASS",
+      "sha256": "6c6da963106c4ce4219794c738624ceb3a24e0a5c7c841a6e8b7a74f8f787674",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p4.art.sim",
+      "authority": "canonical",
+      "bytes": 1582,
+      "gate_id": "ANIMUS_P4_ART_SIM",
+      "note": "Stage 0B simulation with 120 simulated participants and 120 trials, four cards and at most two samples per trial. Mean accuracy 0.458, mean ARTE 0.444, and mean queries 1.79. This is a design artifact, not human evidence.",
+      "path": "results/art/ART_STAGE0_SIMULATION.json",
+      "raw_status": "ART_STAGE0_SIMULATION_PASS",
+      "sha256": "812b6001986b50debfd2ddeb7dc66770f4a5ced641e2529c7517199fd6acdb4d",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "c1.final",
       "authority": "canonical",
       "bytes": 9737,
@@ -296,6 +332,39 @@
     },
     {
       "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.active_reality_testing_measurement",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Active Reality Testing estimates the efficiency with which a person selects source-diagnostic evidence before judging whether an experience was seen, imagined, described, or new, with reported uncertainty and explicit insufficient-data states.",
+      "status": "UNVALIDATED",
+      "uncertainty": "Stage 0B specification and simulation only; no human reliability or validity data"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
+      "claim_id": "claim.active_reality_testing_training",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Adaptive Active Reality Testing feedback improves source-inquiry efficiency or source calibration beyond a yoked active control.",
+      "status": "BLOCKED",
+      "uncertainty": "Conditional on measurement validation; no training RCT has been executed"
+    },
+    {
+      "ceiling": "L3_CLOSED_LOOP",
+      "claim_id": "claim.active_reality_testing_clinical",
+      "effect": null,
+      "evidence": [],
+      "gate_refs": [],
+      "n": null,
+      "statement": "Active Reality Testing diagnoses, predicts, or treats a clinical condition.",
+      "status": "BLOCKED",
+      "uncertainty": "No clinical sample, no diagnostic accuracy study, no regulatory review"
+    },
+    {
+      "ceiling": "L1_BEHAVIORAL_ASSISTED",
       "claim_id": "claim.source_monitoring_training",
       "effect": null,
       "evidence": [],
@@ -401,6 +470,30 @@
       "gate_id": "ANIMUS_P3_POWER",
       "name": "Source-monitoring Stage 1 power check",
       "note": "Simulation-only planning gate. A PASS means the planned N=180 has at least 80% power for the reliability lower-bound target under the stated approximation; it is not human evidence.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p4.art.sim",
+      "claims": [],
+      "gate_id": "ANIMUS_P4_ART_SIM",
+      "name": "Active Reality Testing Stage 0B simulation",
+      "note": "Simulation-only design gate. A PASS means the EIG agent is above chance and its query choices are efficient under the stated model; it is not human validation and does not authorize a measurement claim.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p4.art.power",
+      "claims": [],
+      "gate_id": "ANIMUS_P4_ART_POWER",
+      "name": "Active Reality Testing Stage 2 power check",
+      "note": "Simulation-only planning gate. A PASS means N=180 has at least 80% power for the ARTE reliability lower-bound target under the stated approximation; it is not human evidence.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p4.art.recovery",
+      "claims": [],
+      "gate_id": "ANIMUS_P4_ART_RECOVERY",
+      "name": "Active Reality Testing policy recovery",
+      "note": "Simulation-only model-recovery gate. A PASS means the policy parameters are recovered within the stated tolerance conditional on the known EIG feature matrix; it does not validate the task or the full hierarchical measurement model.",
       "status": "PASS"
     }
   ],

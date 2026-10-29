@@ -25,6 +25,18 @@
 
 ---
 
+## Research protocol or simulation change
+
+1. `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md` — ART construct, task, model, and boundaries
+2. `docs/program/ART_PREREGISTRATION.md` and `docs/program/ART_ANALYSIS_PLAN.md` — draft study and
+   statistical plan
+3. `science/protocols/art-v1.yaml` — machine-readable `ANIMUS-ART-v1`
+4. `backend/app/research/art/` — model, design, metrics, simulator, power
+5. Run `python -m app.cli.art_simulate --check` and `python -m app.cli.art_power --check` from
+   `backend/`; regenerate artifacts only with the documented CLI commands.
+
+---
+
 ## Multimodal acquisition / closed-loop work
 
 1. `docs/multimodal_platform.md` — architecture, status table, limitations

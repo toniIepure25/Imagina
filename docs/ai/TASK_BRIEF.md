@@ -1,6 +1,39 @@
 # TASK_BRIEF.md
 
-## Current task — Phase 3: Stage 0 epistemic source monitoring (2026-10-29)
+## Current task — Phase 3B: Stage 0B Active Reality Testing (2026-10-29)
+
+**Goal:** implement the approved active-inquiry extension as a simulation-only slice: formal model,
+deterministic simulator, power and policy recovery, Stage 0 tests, protocol and registry entries. No
+human data, API, migration, or UI.
+
+**Scope**
+- `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md`, `docs/program/ART_PREREGISTRATION.md`,
+  `docs/program/ART_ANALYSIS_PLAN.md`, `science/protocols/art-v1.yaml`.
+- `backend/app/research/art/` model, design, metrics, simulator, power; `app/cli/art_simulate.py`,
+  `app/cli/art_power.py`, `app/cli/art_recover.py`.
+- `backend/app/tests/test_art_stage0.py`.
+- `results/art/ART_STAGE0_SIMULATION.json`, `ART_STAGE0_POWER.json`, `ART_MODEL_RECOVERY.json`; three
+  simulation-only registry gates and three claims.
+- ADR-068, evidence-map addendum, and session log.
+
+**Non-goals**
+- No API, database migration, frontend route, human recruitment, clinical sample, or neural data.
+- No claim above `L1_BEHAVIORAL_ASSISTED`; no diagnosis, imagery-strength, decoding, or
+  "revolutionary"/"first" claim.
+- No training RCT or clinical extension; both remain blocked.
+
+**Acceptance**
+- `art_simulate --check`, `art_power --check`, and the 26 Stage 0 tests pass.
+- `ANIMUS_P4_ART_SIM=PASS`, `ANIMUS_P4_ART_POWER=PASS`, and `ANIMUS_P4_ART_RECOVERY=PASS` in the
+  ledger.
+- Ruff clean; `verify.py --quick` passes; docs links pass.
+- Each artifact is reproducible from the documented CLI command.
+
+**Status:** implemented; verification recorded in the 2026-10-29 ART session-log entry.
+
+---
+
+## Previous task — Phase 3: Stage 0 epistemic source monitoring (2026-10-29)
 
 **Goal:** implement the approved first slice of the source-monitoring program: specification,
 preregistration draft, analysis plan, machine-readable protocol, claim-registry entries, and a

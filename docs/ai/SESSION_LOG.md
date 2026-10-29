@@ -5458,3 +5458,60 @@ to specification and simulation.
 **Known gaps:** the simulator uses a fixed stratified schedule as a stand-in for the human yoked
 control; the human study implements true yoking. `meta_d_prime` is gated but not estimated in Stage 0.
 No human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.
+
+---
+
+## 2026-10-29 - Stage 0B: Active Reality Testing specification and simulation
+
+**Task:** implement the active-inquiry extension approved in IMAGINA 4.0 without adding an API, UI,
+human-data surface, or clinical claim.
+
+**Built:**
+- `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md`: construct definition, four-source task, three
+  evidence cards, active/yoked design, normalized-EIG policy, `ARTE`, estimands, COSMIN matrix, and
+  explicit non-goals.
+- `docs/program/ART_PREREGISTRATION.md` and `docs/program/ART_ANALYSIS_PLAN.md`: draft registered-
+  report protocol and statistical analysis plan; both marked DRAFT and not registered.
+- `science/protocols/art-v1.yaml`: machine-readable `ANIMUS-ART-v1` protocol.
+- `backend/app/research/art/`: dependency-free model, design, metrics, simulator, and power.
+- `backend/app/cli/art_simulate.py`, `app/cli/art_power.py`, and `app/cli/art_recover.py`.
+- `backend/app/tests/test_art_stage0.py`: 26 tests covering likelihood normalization, posterior
+  direction, EIG bounds and ordering, greedy-versus-random sampling, softmax, schedule balance,
+  yoking, determinism, query limits, costs, ARTE bounds, metric bounds, recovery, policy comparison,
+  power, and invalid configuration.
+- `results/art/ART_STAGE0_SIMULATION.json`: 120 simulated participants x 120 trials, four cards and
+  at most two samples per trial. Mean accuracy 0.458, mean ARTE 0.444, mean queries 1.79, mean
+  sampling quality 0.875, PASS.
+- `results/art/ART_MODEL_RECOVERY.json`: 60 participants x 80 trials. Beta bias -0.131 (RMSE 0.595),
+  lambda bias -0.035 (RMSE 0.198), tau bias -0.025 (RMSE 0.471), PASS. Policy comparison: EIG ARTE
+  0.446 versus fixed 0.354, heuristic 0.077, random 0.325.
+- `results/art/ART_STAGE0_POWER.json`: 2,000 simulations at N=180; power 0.961 for true ICC 0.75
+  with a lower bound above 0.60, PASS.
+- Registry: three claims (`claim.active_reality_testing_measurement` UNVALIDATED,
+  `claim.active_reality_testing_training` BLOCKED, `claim.active_reality_testing_clinical` BLOCKED),
+  three simulation-only gates (`ANIMUS_P4_ART_SIM`, `ANIMUS_P4_ART_POWER`,
+  `ANIMUS_P4_ART_RECOVERY`), and three canonical artifacts.
+- ADR-068 and an evidence-map addendum covering source monitoring, information search, JTC, the
+  Garrison null, and the classification-image test-retest evidence.
+
+**Verification (actually run):**
+- `python -m app.cli.art_simulate --check`: PASS.
+- `python -m app.cli.art_power --check`: PASS.
+- `pytest app/tests/test_art_stage0.py`: 26 passed.
+- `ruff check app/research/art app/cli/art_simulate.py app/cli/art_power.py app/cli/art_recover.py app/tests/test_art_stage0.py`: clean.
+- `python -m app.cli.science_ledger --check`: 17 artifacts, 12 gates, 14 claims; all three ART gates
+  `PASS`.
+- `python -m app.cli.science_ledger --write`: regenerated `PROGRAM_STATUS.md` and `ledger.json`.
+- `python scripts/verify.py --quick`: docs links and ruff passed; the backend gate initially failed
+  only because the status document was stale after the registry edit. `--write` fixed it and the
+  focused `test_generated_status_document_is_current` passed. The full quick gate is re-run before
+  sign-off.
+
+**Decisions:** ADR-068 records ART as a separate construct, fixes the normalized-EIG policy, requires
+yoked passive blocks, and keeps training and clinical claims blocked. The Stage 0B gates are
+simulation-only.
+
+**Known gaps:** the simulator uses a known likelihood table and a known EIG feature matrix; it does
+not recover the full hierarchical measurement model or validate the task in humans. The human yoked
+control, pilot N=40, main N=180, invariance testing, and clinical extension are not executed. No
+human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.

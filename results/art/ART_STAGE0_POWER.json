@@ -1,0 +1,39 @@
+{
+  "analysis": "two_occasion_icc_2_1_normal_approximation",
+  "config": {
+    "alpha": 0.05,
+    "lower_bound_target": 0.6,
+    "n_participants": 180,
+    "n_simulations": 2000,
+    "seed": 20261029
+  },
+  "decision": "ART_STAGE0_POWER_PASS",
+  "note": "Planning approximation only. The registered analysis will use the actual ICC confidence-interval method and the observed variance components.",
+  "protocol": "ANIMUS-ART-v1",
+  "scenarios": [
+    {
+      "mean_estimate": 0.648494,
+      "mean_lower_bound": 0.555216,
+      "power": 0.1915,
+      "true_icc": 0.65
+    },
+    {
+      "mean_estimate": 0.698502,
+      "mean_lower_bound": 0.615364,
+      "power": 0.645,
+      "true_icc": 0.7
+    },
+    {
+      "mean_estimate": 0.748565,
+      "mean_lower_bound": 0.676571,
+      "power": 0.961,
+      "true_icc": 0.75
+    },
+    {
+      "mean_estimate": 0.798692,
+      "mean_lower_bound": 0.738877,
+      "power": 1.0,
+      "true_icc": 0.8
+    }
+  ]
+}

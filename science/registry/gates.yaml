@@ -60,3 +60,29 @@ gates:
     note: >-
       Simulation-only planning gate. A PASS means the planned N=180 has at least 80% power for the
       reliability lower-bound target under the stated approximation; it is not human evidence.
+
+  - gate_id: ANIMUS_P4_ART_SIM
+    name: Active Reality Testing Stage 0B simulation
+    canonical_artifact: animus.p4.art.sim
+    claim_ids: []
+    note: >-
+      Simulation-only design gate. A PASS means the EIG agent is above chance and its query choices
+      are efficient under the stated model; it is not human validation and does not authorize a
+      measurement claim.
+
+  - gate_id: ANIMUS_P4_ART_POWER
+    name: Active Reality Testing Stage 2 power check
+    canonical_artifact: animus.p4.art.power
+    claim_ids: []
+    note: >-
+      Simulation-only planning gate. A PASS means N=180 has at least 80% power for the ARTE
+      reliability lower-bound target under the stated approximation; it is not human evidence.
+
+  - gate_id: ANIMUS_P4_ART_RECOVERY
+    name: Active Reality Testing policy recovery
+    canonical_artifact: animus.p4.art.recovery
+    claim_ids: []
+    note: >-
+      Simulation-only model-recovery gate. A PASS means the policy parameters are recovered within
+      the stated tolerance conditional on the known EIG feature matrix; it does not validate the
+      task or the full hierarchical measurement model.
