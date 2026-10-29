@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use IMAGINA or ANIMUS in research, cite this repository and the specific study artifacts you used."
+title: "IMAGINA: a local-first research platform for mental imagery measurement and scene interaction"
+abstract: >-
+  IMAGINA is a local-first research platform for mental imagery measurement,
+  symbolic scene authoring, and evidence-gated neural research. ANIMUS is the
+  product surface. The project separates behavioural measurement from neural
+  decoding claims and reports uncertainty, evidence status, and limitations.
+  It does not read thoughts or dreams, and it does not provide clinical advice.
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/toniIepure25/Imagina"
+url: "https://github.com/toniIepure25/Imagina"
+version: "0.5.0"
+date-released: "2026-10-29"
+keywords:
+  - mental imagery
+  - psychometrics
+  - neuroimaging
+  - reproducibility
+  - research software
+  - scene authoring
+authors:
+  - name: "The IMAGINA Authors"
+    affiliation: "IMAGINA project"
+preferred-citation:
+  type: generic
+  title: "IMAGINA: a local-first research platform for mental imagery measurement and scene interaction"
+  authors:
+    - name: "The IMAGINA Authors"
+  year: 2026
+  notes: "Repository citation; replace with the study-specific article once published."

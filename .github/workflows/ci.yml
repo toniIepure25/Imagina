@@ -5,6 +5,13 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend-core:
     runs-on: ubuntu-latest
@@ -230,6 +237,55 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down -v
+
+  release-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [backend-core]
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release images
+        run: |
+          docker build -f backend/Dockerfile.release -t imagina-backend:ci backend
+          docker build -f frontend/Dockerfile.release -t imagina-frontend:ci frontend
+
+      - name: Start release backend and wait for health
+        run: |
+          docker run -d --name imagina-backend-ci -p 8000:8000 imagina-backend:ci
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/api/health >/dev/null 2>&1; then
+              echo "release backend healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs imagina-backend-ci
+          exit 1
+
+      - name: Start release frontend and wait for HTTP 200
+        run: |
+          docker run -d --name imagina-frontend-ci -p 3000:3000 imagina-frontend:ci
+          for i in $(seq 1 45); do
+            if curl -sf http://localhost:3000/ >/dev/null 2>&1; then
+              echo "release frontend healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs imagina-frontend-ci
+          exit 1
+
+      - name: Assert containers run as non-root
+        run: |
+          test "$(docker exec imagina-backend-ci id -u)" != "0"
+          test "$(docker exec imagina-frontend-ci id -u)" != "0"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm -f imagina-backend-ci imagina-frontend-ci || true
 
   science-unit:
     runs-on: ubuntu-latest

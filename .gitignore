@@ -1,5 +1,5 @@
 # ============================================================
-# IMAGINA — L1 .gitignore
+# IMAGINA â€” L1 .gitignore
 # ============================================================
 
 # ---- Python ----
@@ -105,3 +105,6 @@ results/.download_lock
 # Its weights_hash is recorded in results/c3_h2_unblinding_manifest.json.
 results/c3_subj01_frozen_perception_decoder.pkl
 results/.c3_strict_replay_checkpoint.pkl
+
+# Local pytest temp root (Windows ACL workaround)
+.pytest_tmp/

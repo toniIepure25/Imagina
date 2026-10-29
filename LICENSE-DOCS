@@ -1,0 +1,17 @@
+Documentation, figures, and written research artifacts in this repository are
+licensed under the Creative Commons Attribution 4.0 International License
+(CC BY 4.0): https://creativecommons.org/licenses/by/4.0/legalcode
+
+Code is licensed under Apache License 2.0; see LICENSE.
+
+Third-party datasets, instruments, and figures retain their original licenses.
+Where a file or dataset carries its own license or terms, those terms take
+precedence. In particular:
+
+- Public neuroimaging/EEG datasets (for example OpenNeuro ds005815) are not
+  redistributed here and remain governed by their dataset licenses.
+- Published psychometric instruments (for example VVIQ-2) are not reproduced;
+  only metadata and administration notes are stored.
+- Project screenshots in docs/ depict the project's own interface.
+
+If you believe a file is misattributed, open an issue and it will be reviewed.

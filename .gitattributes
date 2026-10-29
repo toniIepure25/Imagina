@@ -1,0 +1,41 @@
+# Normalize text files on commit; keep binaries untouched.
+* text=auto
+
+# Source and configuration
+*.py   text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.cjs  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.css  text eol=lf
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+
+# Binary assets
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.wav  binary
+*.mp3  binary
+*.pdf  binary
+*.pkl  binary
+*.npy  binary
+*.npz  binary
+*.pt   binary
+*.pth  binary
+*.sqlite binary
+*.db   binary
+*.zip  binary
+*.gz   binary
+*.tar  binary
+
+# Generated/vendored content: no diff churn
+package-lock.json linguist-generated=true
+*.min.js linguist-generated=true

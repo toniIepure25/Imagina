@@ -1,0 +1,26 @@
+# Keep the container build context small and free of local data.
+data/
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+*.sqlite
+*.db
+*.db-wal
+*.db-shm
+*.pkl
+*.pt
+*.pth
+*.npy
+*.npz
+*.log
+*.tar.gz
+.c3_*
+results/
+reports/
+.env
+.env.*
+.git/
