@@ -13,6 +13,12 @@ class Settings(BaseSettings):
     window_interval_seconds: float = 2.0
     enable_experimental_lsl: bool = False
     study_mode: str = "demo"  # demo | benchmark | pilot | approved_study
+    imagine_enable_remote_diffusion: bool = False
+    imagine_diffusion_url: str = ""
+    imagine_diffusion_token: str = ""
+    imagine_diffusion_timeout_seconds: int = 180
+    imagine_asset_ttl_hours: int = 24
+    imagine_data_dir: str = "./data/imagine"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

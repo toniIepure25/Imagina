@@ -8,7 +8,7 @@ export function Panel({ title, hint, children }: { title: string; hint?: string;
     <section className="rounded-xl border border-surface-border bg-surface/30 p-4 space-y-3">
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="text-[11px] uppercase tracking-[0.2em] text-accent-glow/70">{title}</h2>
-        {hint && <span className="text-[10px] text-foreground/40">{hint}</span>}
+        {hint && <span className="text-[11px] text-foreground/40">{hint}</span>}
       </div>
       {children}
     </section>
@@ -23,7 +23,7 @@ const SOURCE_STYLE: Record<SourceKind, string> = {
 
 export function SourceBadge({ kind }: { kind: SourceKind }) {
   return (
-    <span className={`rounded border px-2 py-0.5 text-[10px] font-mono tracking-wider ${SOURCE_STYLE[kind]}`}>
+    <span className={`rounded border px-2 py-0.5 text-[11px] font-mono tracking-wider ${SOURCE_STYLE[kind]}`}>
       {SOURCE_LABELS[kind]}
     </span>
   );
@@ -41,7 +41,7 @@ export function EvidenceBadge({ evidence }: { evidence: EvidenceClass }) {
   const proxy = evidence === "EXPERIMENTAL_PROXY";
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] ${
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${
         proxy ? "border-warning/40 text-warning/90" : "border-surface-border text-foreground/60"
       }`}
     >
@@ -72,7 +72,7 @@ export function DimensionBar({ name, value, uncertainty, evidence }: {
           <div className="absolute inset-y-0 w-1 -ml-0.5 rounded bg-accent-glow" style={{ left: `${pct}%` }} />
         )}
       </div>
-      <div className="text-[10px] text-foreground/45 font-mono">
+      <div className="text-[11px] text-foreground/45 font-mono">
         {value === null ? "not estimated" : `${value.toFixed(2)}${uncertainty !== null ? ` ± ${uncertainty.toFixed(2)}` : ""}`}
       </div>
     </div>

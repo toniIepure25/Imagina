@@ -4,8 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ImagerySelfReportTaskProps {
   stimulusId: string;
+  stimulusLabel?: string;
   trialIndex: number;
   onComplete: (result: SelfReportTrialResult) => void;
+  onAbort?: () => void;
+  fixationMs?: number;
 }
 
 export interface SelfReportTrialResult {
@@ -38,8 +41,11 @@ function nowUtc(): string {
 
 export default function ImagerySelfReportTask({
   stimulusId,
+  stimulusLabel,
   trialIndex,
   onComplete,
+  onAbort,
+  fixationMs = 3000,
 }: ImagerySelfReportTaskProps) {
   const [phase, setPhase] = useState<"fixation" | "imagine" | "rate">("fixation");
   const [vividness, setVividness] = useState(4);
@@ -59,14 +65,14 @@ export default function ImagerySelfReportTask({
     fixationOnsetMs.current = nowMs();
     fixationOnsetUtc.current = nowUtc();
 
-    const fixationTimer = setTimeout(() => {
+    const fixationTimer = window.setTimeout(() => {
       imageryOnsetMs.current = nowMs();
       imageryOnsetUtc.current = nowUtc();
       setPhase("imagine");
-    }, 3000);
+    }, fixationMs);
 
-    return () => clearTimeout(fixationTimer);
-  }, []);
+    return () => window.clearTimeout(fixationTimer);
+  }, [fixationMs]);
 
   const handleImageFormed = useCallback(() => {
     imageFormedMs.current = nowMs();
@@ -99,95 +105,121 @@ export default function ImagerySelfReportTask({
       rating_screen_onset_utc: ratingScreenOnsetUtc.current,
       rating_submission_utc: submissionUtc,
     });
-  }, [trialIndex, stimulusId, vividness, confidence, effort, onComplete]);
-
-  if (phase === "fixation") {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <div className="text-4xl mb-4">+</div>
-        <p className="text-sm text-gray-400">Focus on the cross. Trial begins shortly...</p>
-      </div>
-    );
-  }
-
-  if (phase === "imagine") {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <p className="text-lg font-medium">Close your eyes and imagine:</p>
-        <p className="text-2xl text-emerald-400 font-semibold">
-          {stimulusId.replace(/_/g, " ")}
-        </p>
-        <p className="text-sm text-gray-400 mt-8">
-          When you have formed the image, click the button below.
-        </p>
-        <button
-          onClick={handleImageFormed}
-          className="mt-4 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-xl font-medium transition-colors"
-        >
-          Image Formed
-        </button>
-      </div>
-    );
-  }
+  }, [confidence, effort, onComplete, stimulusId, trialIndex, vividness]);
 
   return (
-    <div className="max-w-md mx-auto space-y-6 p-6 bg-white/5 rounded-2xl border border-white/10">
-      <h3 className="text-lg font-semibold">Rate Your Experience</h3>
-      <p className="text-xs text-gray-500">
-        These are subjective self-report ratings, not objective behavioral measures.
-      </p>
-
-      <div>
-        <label className="block text-sm mb-2">
-          Vividness: How vivid was your mental image? ({vividness}/7)
-        </label>
-        <input
-          type="range"
-          min={1} max={7} value={vividness}
-          onChange={(e) => setVividness(Number(e.target.value))}
-          className="w-full"
-        />
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>No image</span><span>Perfectly vivid</span>
+    <div aria-live="polite">
+      {phase === "fixation" ? (
+        <div className="flex min-h-64 flex-col items-center justify-center rounded-xl border border-surface-border bg-white/[0.025] p-6 text-center">
+          <div className="grid h-14 w-14 place-items-center rounded-full border border-surface-border font-mono text-2xl text-signal">
+            +
+          </div>
+          <p className="mt-4 text-sm text-foreground/55">Focus on the cross. The imagery prompt begins shortly.</p>
+          <p className="mt-1 font-mono text-[11px] text-foreground/30">
+            Trial {trialIndex + 1} · fixation {Math.round(fixationMs / 1000)} s
+          </p>
         </div>
-      </div>
+      ) : null}
 
-      <div>
-        <label className="block text-sm mb-2">
-          Confidence: How confident are you? ({confidence}/7)
-        </label>
-        <input
-          type="range"
-          min={1} max={7} value={confidence}
-          onChange={(e) => setConfidence(Number(e.target.value))}
-          className="w-full"
-        />
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>Not at all</span><span>Very confident</span>
+      {phase === "imagine" ? (
+        <div className="flex min-h-64 flex-col items-center justify-center gap-4 rounded-xl border border-surface-border bg-white/[0.025] p-6 text-center">
+          <p className="text-sm text-foreground/55">Close your eyes, or look away, and imagine:</p>
+          <p className="text-2xl font-semibold text-signal">{stimulusLabel ?? stimulusId.replaceAll("_", " ")}</p>
+          <p className="max-w-sm text-[11px] leading-5 text-foreground/35">
+            There is no correct image and no image is recorded. This is a self-report demonstration.
+          </p>
+          <button
+            type="button"
+            onClick={handleImageFormed}
+            className="mt-2 inline-flex min-h-11 items-center rounded-lg border border-signal/35 bg-signal/[0.09] px-5 text-sm font-medium text-signal hover:bg-signal/[0.14]"
+          >
+            Image formed
+          </button>
+          {onAbort ? (
+            <button
+              type="button"
+              onClick={onAbort}
+              className="min-h-11 rounded-lg px-3 text-[11px] text-foreground/40 hover:text-foreground/70"
+            >
+              Stop demonstration
+            </button>
+          ) : null}
         </div>
-      </div>
+      ) : null}
 
-      <div>
-        <label className="block text-sm mb-2">
-          Effort: How much effort? ({effort}/7)
-        </label>
-        <input
-          type="range"
-          min={1} max={7} value={effort}
-          onChange={(e) => setEffort(Number(e.target.value))}
-          className="w-full"
-        />
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>No effort</span><span>Maximum effort</span>
+      {phase === "rate" ? (
+        <div className="mx-auto max-w-md space-y-6 rounded-xl border border-surface-border bg-white/[0.025] p-6">
+          <div>
+            <h2 className="text-lg font-semibold">Rate the experience</h2>
+            <p className="mt-1 text-[11px] leading-5 text-foreground/40">
+              Subjective self-report only. Not an objective measure of imagery.
+            </p>
+          </div>
+
+          {[
+            {
+              id: "vividness",
+              label: "Vividness",
+              value: vividness,
+              set: setVividness,
+              low: "No image",
+              high: "Perfectly vivid",
+            },
+            {
+              id: "confidence",
+              label: "Confidence",
+              value: confidence,
+              set: setConfidence,
+              low: "Not at all",
+              high: "Very confident",
+            },
+            {
+              id: "effort",
+              label: "Effort",
+              value: effort,
+              set: setEffort,
+              low: "No effort",
+              high: "Maximum effort",
+            },
+          ].map((item) => (
+            <div key={item.id}>
+              <label htmlFor={`rating-${item.id}`} className="block text-sm text-foreground/70">
+                {item.label}: {item.value}/7
+              </label>
+              <input
+                id={`rating-${item.id}`}
+                type="range"
+                min={1}
+                max={7}
+                value={item.value}
+                onChange={(event) => item.set(Number(event.target.value))}
+                className="mt-2 h-11 w-full accent-[var(--signal)]"
+              />
+              <div className="flex justify-between text-[11px] text-foreground/35">
+                <span>{item.low}</span>
+                <span>{item.high}</span>
+              </div>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-signal/35 bg-signal/[0.09] px-4 text-sm font-medium text-signal hover:bg-signal/[0.14]"
+          >
+            Submit ratings
+          </button>
+          {onAbort ? (
+            <button
+              type="button"
+              onClick={onAbort}
+              className="min-h-11 w-full rounded-lg px-3 text-[11px] text-foreground/40 hover:text-foreground/70"
+            >
+              Stop demonstration
+            </button>
+          ) : null}
         </div>
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 rounded-xl font-medium transition-colors"
-      >
-        Submit Ratings
-      </button>
+      ) : null}
     </div>
   );
 }

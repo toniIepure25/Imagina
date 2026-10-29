@@ -15,6 +15,13 @@ const BROWSERS = [
 const executablePath = BROWSERS.find((candidate) => fs.existsSync(candidate));
 let browser;
 
+async function revealScene(page) {
+  await page.waitForSelector('[data-testid="first-look-reveal"], [data-testid="animus-scene"]', { timeout: 45000 });
+  const firstLookReveal = page.locator('[data-testid="first-look-reveal"]');
+  if (await firstLookReveal.isVisible().catch(() => false)) await firstLookReveal.click();
+  await page.waitForSelector('[data-testid="animus-scene"]');
+}
+
 async function main() {
   if (!executablePath) throw new Error("No local Chrome/Edge executable found");
   fs.mkdirSync(OUT, { recursive: true });
@@ -32,7 +39,7 @@ async function main() {
   await page.fill('[data-testid="animus-intention"]', "a white castle above a dark ocean at dusk");
   await page.click('[data-testid="enter-studio"]');
   await page.waitForURL(/\/animus\/studio\/ast_/, { timeout: 45000 });
-  await page.waitForSelector('[data-testid="animus-scene"]');
+  await revealScene(page);
   await page.waitForTimeout(2500);
   const initialVersion = (await page.textContent('[data-testid="studio-version"]')).trim();
   await page.waitForFunction(
@@ -50,7 +57,121 @@ async function main() {
     { timeout: 30000 },
   );
   await page.waitForTimeout(700);
+  const receiptCopy = await page.getByTestId("intent-receipt").innerText();
+  if (!receiptCopy.toLowerCase().includes("applied")) {
+    throw new Error("intent receipt did not report applied commands");
+  }
   await page.screenshot({ path: path.join(OUT, "03-studio-corrected.png") });
+
+  await page.waitForSelector('[data-testid="version-timecode"]');
+  const timecodeCount = await page.locator('[data-testid="version-timecode"] button').count();
+  if (timecodeCount < 2) throw new Error("timecode did not expose prior versions");
+  await page.locator('[data-testid="studio-version"]').click();
+  await page.keyboard.press("[");
+  await page.waitForSelector('[data-testid="preview-banner"]');
+  await page.waitForSelector('[data-testid="scene-lens-legend"]');
+  const diffBasis = (await page.locator('[data-testid="diff-basis"]').innerText()).trim();
+  if (!diffBasis.toLowerCase().includes("since head")) {
+    throw new Error(`preview did not state a head-relative diff basis: ${JSON.stringify(diffBasis)}`);
+  }
+  const lensCopy = await page.locator('[data-testid="scene-lens-legend"]').innerText();
+  if (!lensCopy.includes("added") || !lensCopy.includes("changed")) {
+    throw new Error("scene lens did not report spatial diff counts");
+  }
+  if (!lensCopy.includes("solid") || !lensCopy.includes("dashed")) {
+    throw new Error("scene lens did not explain the solid/dashed diff rings");
+  }
+  const previewUrl = page.url();
+  if (!previewUrl.includes("version=")) throw new Error("version preview did not update the local URL");
+
+  const blink = page.getByTestId("preview-panel").getByTestId("blink-button");
+  await blink.waitFor({ state: "visible", timeout: 15000 });
+  await blink.click();
+  if ((await blink.getAttribute("aria-pressed")) !== "true") throw new Error("blink comparison did not start");
+  await page.waitForTimeout(1300);
+  const blinkCopy = (await page.locator('[data-testid="preview-panel"]').innerText()).toLowerCase();
+  if (!blinkCopy.includes("blink")) throw new Error("blink comparison did not report its state");
+  await page.screenshot({ path: path.join(OUT, "03e-studio-blink.png") });
+  await blink.click();
+  if ((await blink.getAttribute("aria-pressed")) !== "false") throw new Error("blink comparison did not stop");
+
+  await page.getByTestId("compare-banner-button").click();
+  await page.waitForSelector('[data-testid="compare-chamber"]');
+  const chamberCopy = await page.locator('[data-testid="compare-chamber"]').innerText();
+  if (!chamberCopy.toLowerCase().includes("head") || !chamberCopy.toLowerCase().includes("preview")) {
+    throw new Error("comparison chamber did not label both sides");
+  }
+  const chamberBasis = await page.locator('[data-testid="compare-basis"]').innerText();
+  if (!chamberBasis.toLowerCase().includes("since head")) {
+    throw new Error("comparison chamber did not state the head-relative basis");
+  }
+  const chamberLegend = await page.locator('[data-testid="compare-legend"]').innerText();
+  if (!chamberLegend.includes("solid") || !chamberLegend.includes("dashed") || !chamberLegend.includes("trace")) {
+    throw new Error("comparison chamber did not explain the diff encoding");
+  }
+  const chamberPanes = page.locator('[data-testid="compare-chamber"] [data-testid="animus-scene"]');
+  if ((await chamberPanes.count()) !== 2) throw new Error("comparison chamber did not render two panes");
+  for (let index = 0; index < 2; index += 1) {
+    const box = await chamberPanes.nth(index).boundingBox();
+    if (!box || box.width < 100 || box.height < 100) {
+      throw new Error(`comparison pane ${index} did not have a usable size`);
+    }
+  }
+  if (!(await page.locator('[data-testid="compare-scene-note"]').count())) {
+    throw new Error("scene-level change did not explain why element filtering stays off");
+  }
+  await page.getByTestId("compare-only-differences").check();
+  if (!(await page.getByTestId("compare-only-differences").isChecked())) {
+    throw new Error("Only differences did not become active");
+  }
+  await page.waitForTimeout(350);
+  await page.screenshot({ path: path.join(OUT, "03d-studio-chamber.png") });
+  await page.setViewportSize({ width: 640, height: 900 });
+  const stackedHead = await chamberPanes.nth(0).boundingBox();
+  const stackedPreview = await chamberPanes.nth(1).boundingBox();
+  if (!stackedHead || !stackedPreview || stackedPreview.y <= stackedHead.y + 10) {
+    throw new Error("comparison panes did not stack on a narrow viewport");
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.keyboard.press("Escape");
+  await page.waitForSelector('[data-testid="compare-chamber"]', { state: "detached" });
+  if (!(await page.locator('[data-testid="preview-banner"]').count())) {
+    throw new Error("closing the comparison chamber also closed the preview");
+  }
+
+  await page.getByRole("button", { name: "Top", exact: true }).click();
+  if ((await page.getByRole("button", { name: "Top", exact: true }).getAttribute("aria-pressed")) !== "true") {
+    throw new Error("shot deck did not mark the active shot");
+  }
+  await page.screenshot({ path: path.join(OUT, "03c-studio-palimpsest.png") });
+  await page.reload({ waitUntil: "networkidle" });
+  await page.waitForSelector('[data-testid="preview-banner"]');
+  const linkedPreview = (await page.locator('[data-testid="preview-banner"]').innerText()).trim();
+  if (!linkedPreview.includes("Previewing")) throw new Error("reload did not restore the linked preview");
+  await page.keyboard.press("Escape");
+  await page.waitForSelector('[data-testid="preview-banner"]', { state: "detached" });
+  if (page.url().includes("version=")) throw new Error("returning to head did not clear the preview URL");
+
+  await page.locator('[data-testid="animus-scene"]').click();
+  await page.keyboard.press("4");
+  await page.waitForSelector('[data-testid="trace-list"]', { timeout: 15000 });
+  const traceRows = page.locator('[data-testid^="trace-entry-"]');
+  if ((await traceRows.count()) < 1) throw new Error("trace view did not expose persisted events");
+  await page.getByTestId("trace-filter-intent").click();
+  if ((await page.getByTestId("trace-filter-intent").getAttribute("aria-pressed")) !== "true") {
+    throw new Error("trace intent lens did not activate");
+  }
+  await page.waitForTimeout(200);
+  await page.getByTestId("trace-filter-all").click();
+  await traceRows.first().click();
+  const traceDetail = await page.getByTestId("trace-detail").innerText();
+  if (!traceDetail.toLowerCase().includes("trace") && !traceDetail.toLowerCase().includes("intent")) {
+    throw new Error("trace detail did not describe the selected event");
+  }
+  await page.screenshot({ path: path.join(OUT, "03f-studio-trace.png") });
+  await page.getByTestId("trace-filter-all").click();
+  await page.keyboard.press("1");
+  await page.waitForSelector('[data-testid="animus-scene"]');
 
   await page.locator('[data-testid="entity-row"]').first().click();
   await page.getByRole("button", { name: "Lock element" }).click();
@@ -83,7 +204,7 @@ async function main() {
   await page
     .locator('[data-testid="candidate-card"]')
     .first()
-    .getByRole("button", { name: "Keep this" })
+    .getByRole("button", { name: /^Keep candidate/ })
     .click();
   await page.waitForFunction(
     () => document.querySelector('[data-testid="studio-version"]')?.textContent === "v4",
@@ -115,7 +236,10 @@ async function main() {
   const branchRoundTrip = true;
 
   await page.getByRole("button", { name: "Save world" }).first().click();
-  await page.waitForTimeout(1200);
+  await page.waitForSelector('[data-testid="save-world-dialog"]');
+  await page.getByRole("button", { name: "Save locally" }).click();
+  await page.waitForSelector('[data-testid="save-world-dialog"]', { state: "detached", timeout: 30000 });
+  await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(OUT, "05-studio-saved.png") });
 
   await page.reload({ waitUntil: "networkidle" });
@@ -129,7 +253,7 @@ async function main() {
   if (worldCards < 1) throw new Error("saved world did not appear in the world library");
   await page.getByRole("button", { name: "Open studio" }).first().click();
   await page.waitForURL(/\/animus\/studio\/ast_/, { timeout: 45000 });
-  await page.waitForSelector('[data-testid="animus-scene"]');
+  await revealScene(page);
   const openedWorldVersion = (await page.textContent('[data-testid="studio-version"]')).trim();
 
   await page.goto(`${BASE}/animus/worlds`, { waitUntil: "networkidle" });
@@ -189,7 +313,10 @@ async function main() {
     legacy_redirect: legacyRedirect,
     mobile_overflow_px: mobileOverflow,
     console_errors: errors,
-    screenshots: fs.readdirSync(OUT).sort(),
+    screenshots: fs
+      .readdirSync(OUT)
+      .filter((name) => name.endsWith(".png"))
+      .sort(),
   };
   console.log(JSON.stringify(result, null, 2));
   await browser.close();

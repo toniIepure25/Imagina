@@ -17,18 +17,18 @@ interface BGPProps { onSelectTemplate: (payload: Record<string, unknown>) => voi
 
 export function BenchmarkScenarioGalleryPanel({ onSelectTemplate }: BGPProps) {
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-amber-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-amber-500/50">
       <div className="text-foreground/40 uppercase tracking-[0.1em]">Scenario Gallery (V39)</div>
       <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
         {GALLERY.map(t => (
           <div key={t.scenario_id} className="p-2 rounded bg-surface/30 space-y-1 cursor-pointer hover:bg-surface/50" onClick={() => onSelectTemplate(t.payload)}>
-            <div className="text-foreground/60 text-[9px]">{t.title}</div>
-            <div className="text-foreground/30 text-[7px]">{t.purpose?.slice(0, 60)}</div>
-            <button className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[8px]">Load</button>
+            <div className="text-foreground/60 text-[11px]">{t.title}</div>
+            <div className="text-foreground/30 text-[11px]">{t.purpose?.slice(0, 60)}</div>
+            <button className="px-2 py-0.5 rounded bg-lock/10 border border-amber-500/30 text-lock text-[11px]">Load</button>
           </div>
         ))}
       </div>
-      <div className="text-foreground/20 text-[7px]">Templates test symbolic scene adaptation. Not BCI, not neurofeedback validation.</div>
+      <div className="text-foreground/20 text-[11px]">Templates test symbolic scene adaptation. Not BCI, not neurofeedback validation.</div>
     </div>
   );
 }

@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
+import PageHeader from "@/components/platform/PageHeader";
+import BoundaryNote from "@/components/platform/BoundaryNote";
+import EvidenceMark from "@/components/evidence/EvidenceMark";
+import { apiFetch } from "@/lib/api";
 
 interface AnalysisResult {
   estimand_id: string;
@@ -25,25 +29,52 @@ interface AnalysisResult {
   primary_estimator_status: string;
 }
 
+interface AnalysisRun {
+  id: number;
+  status: string;
+  results?: Record<string, AnalysisResult>;
+}
+
+async function pollAnalysis(id: number): Promise<AnalysisRun> {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const run = await apiFetch<AnalysisRun>(`/api/research-science/analyses/${id}`);
+    if (["completed", "failed", "aborted"].includes(run.status)) return run;
+    await new Promise((resolve) => window.setTimeout(resolve, 900));
+  }
+  return apiFetch<AnalysisRun>(`/api/research-science/analyses/${id}`);
+}
+
+function primaryResult(run: AnalysisRun): AnalysisResult | null {
+  if (!run.results) return null;
+  return run.results.primary ?? Object.values(run.results)[0] ?? null;
+}
+
 export default function AnalysisPage() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [run, setRun] = useState<AnalysisRun | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const runAnalysis = async () => {
     setLoading(true);
     setError(null);
+    setResult(null);
+    setRun(null);
     try {
-      const res = await fetch("/api/research-science/analyses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
-      if (!res.ok) {
-        setError(`Analysis API returned ${res.status}`);
+      const queued = await apiFetch<AnalysisRun>("/api/research-science/analyses", {
+        method: "POST",
+        body: JSON.stringify({ scenario_id: "medium_adaptive", seed: 42, n_participants: 18 }),
+      });
+      setRun(queued);
+      if (queued.status === "completed") {
+        setResult(primaryResult(queued));
         return;
       }
-      const data = await res.json();
-      const r = data.result?.primary || data.primary || data;
-      setResult(r);
-    } catch {
-      setError("Analysis endpoint not available.");
+      const finished = await pollAnalysis(queued.id);
+      setRun(finished);
+      if (finished.status === "completed") setResult(primaryResult(finished));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Analysis endpoint not available.");
     } finally {
       setLoading(false);
     }
@@ -51,94 +82,131 @@ export default function AnalysisPage() {
 
   return (
     <AppShell>
-      <div className="max-w-5xl mx-auto space-y-8 p-6">
-        <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 text-sm text-amber-900">
-          <strong>Research Disclaimer:</strong> Synthetic engineering and statistical
-          validation only. No human efficacy or neuroscientific claim.
-        </div>
+      <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-8 md:px-6 lg:py-10">
+        <PageHeader
+          eyebrow="Research console · analysis"
+          title="Confirmatory analysis workbench"
+          description="One pre-specified primary contrast on synthetic data: adaptive versus yoked, on standardized objective reconstruction error. Exploratory output is labeled and never promoted to confirmatory."
+          meta={
+            <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/35">
+              estimand frozen · no human data
+            </span>
+          }
+        />
 
-        <h1 className="text-2xl font-bold">Analysis Workbench</h1>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-3">Primary Estimand</h2>
-          <div className="border rounded-lg p-4 bg-white space-y-2">
-            <p className="text-sm">
-              <strong>Estimand:</strong> Within-participant ATE of adaptive vs. yoked on
-              standardized objective imagery reconstruction error
-            </p>
-            <p className="text-sm font-mono">
-              E[Y(adaptive) - Y(yoked)]
-            </p>
-            <p className="text-sm text-gray-600">
-              Negative effect = adaptive produces lower (better) error
-            </p>
+        <section className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="mono-label text-accent-glow/65">Primary estimand</p>
+              <h2 className="mt-1 text-lg font-semibold text-foreground">Within-participant ATE</h2>
+            </div>
+            <code className="rounded border border-white/10 bg-black/25 px-2 py-1 font-mono text-[11px] text-foreground/55">
+              adaptive · yoked
+            </code>
           </div>
+          <p className="mt-2 font-mono text-sm text-foreground/65">
+            E[Y(adaptive) − Y(yoked)] on standardized objective imagery reconstruction error
+          </p>
+          <p className="mt-1 text-xs leading-5 text-foreground/45">
+            A negative effect means adaptive produces lower, better reconstruction error. The 8-level curriculum and
+            safety monitor are part of the adaptive condition, not separate interventions.
+          </p>
         </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-3">Confirmatory Analysis</h2>
-          <button
-            onClick={runAnalysis}
-            disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 text-sm mb-4"
-          >
-            {loading ? "Running..." : "Run Analysis on Synthetic Data"}
-          </button>
+        <section className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="mono-label text-foreground/45">Synthetic analysis</p>
+              <h2 className="mt-1 text-lg font-semibold text-foreground">Medium adaptive scenario</h2>
+              <p className="mt-1 text-[11px] text-foreground/40">18 participants · seed 42 · queued for local worker</p>
+            </div>
+            <button
+              type="button"
+              onClick={runAnalysis}
+              disabled={loading}
+              className="inline-flex min-h-11 items-center rounded-lg bg-accent px-4 text-sm font-medium text-white hover:bg-accent-glow hover:text-background disabled:opacity-50"
+            >
+              {loading ? "Queuing and checking…" : "Queue analysis"}
+            </button>
+          </div>
 
-          {error && <p className="text-sm text-amber-600">{error}</p>}
+          {error ? (
+            <p role="alert" className="mt-3 rounded-lg border border-danger/25 bg-danger/[0.06] px-3 py-2 text-xs text-danger/85">
+              {error}
+            </p>
+          ) : null}
 
-          {result && (
-            <div className="border rounded-lg p-4 bg-white space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-500">Effect Estimate</span>
-                  <p className="font-mono font-bold">{result.effect_estimate.toFixed(4)}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">SE</span>
-                  <p className="font-mono">{result.standard_error.toFixed(4)}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">95% CI</span>
-                  <p className="font-mono">[{result.ci_lower.toFixed(4)}, {result.ci_upper.toFixed(4)}]</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">p-value</span>
-                  <p className="font-mono">{result.p_value < 0.001 ? "<0.001" : result.p_value.toFixed(4)}</p>
-                </div>
+          {run ? (
+            <div className="mt-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs leading-5 text-foreground/55">
+              Run <span className="font-mono text-foreground/75">#{run.id}</span> · status{" "}
+              <span className={`font-mono ${run.status === "completed" ? "text-signal" : "text-lock"}`}>{run.status}</span>
+              {run.status === "queued" ? (
+                <span className="mt-1 block text-[11px] text-foreground/35">
+                  No worker claimed this run. Start the local analysis worker to produce estimates.
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+
+          {result ? (
+            <div className="mt-3 space-y-4">
+              <div className="flex items-start gap-2 rounded-lg border border-surface-border bg-white/[0.025] p-3">
+                <EvidenceMark evidenceId="synthetic.estimate" />
+                <p className="text-[11px] leading-5 text-foreground/45">
+                  These values come from a synthetic scenario, not human participants. They check the analysis
+                  pipeline and cannot support a claim about IMAGINA or a clinical population.
+                </p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm border-t pt-3">
-                <div>
-                  <span className="text-gray-500">Participants</span>
-                  <p>{result.n_participants}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Trials</span>
-                  <p>{result.n_trials}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Population</span>
-                  <p>{result.analysis_population}</p>
-                </div>
-              </div>
+              <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {[
+                  ["Effect estimate", result.effect_estimate.toFixed(4)],
+                  ["Standard error", result.standard_error.toFixed(4)],
+                  ["95% CI", `[${result.ci_lower.toFixed(4)}, ${result.ci_upper.toFixed(4)}]`],
+                  ["p-value", result.p_value < 0.001 ? "<0.001" : result.p_value.toFixed(4)],
+                  ["Participants", String(result.n_participants)],
+                  ["Trials", String(result.n_trials)],
+                  ["Missing", String(result.n_missing)],
+                  ["Population", result.analysis_population],
+                ].map(([term, value]) => (
+                  <div key={term} className="rounded-lg border border-white/8 bg-black/15 p-3">
+                    <dt className="text-[11px] text-foreground/40">{term}</dt>
+                    <dd className="mt-1 truncate font-mono text-sm text-foreground/75">{value}</dd>
+                  </div>
+                ))}
+              </dl>
 
-              <div className="text-sm border-t pt-3 space-y-1">
-                <p><strong>Model:</strong> <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">{result.model_formula}</code></p>
-                <p><strong>Converged:</strong> {result.converged ? "Yes" : "No"}</p>
-                <p><strong>Classification:</strong> {result.is_fallback ? "Fallback (exploratory)" : "Confirmatory"}</p>
-                {result.singularity_warning && (
-                  <p className="text-amber-600">Singularity warning — random effects may be underestimated</p>
-                )}
+              <div className="rounded-lg border border-white/8 bg-black/15 p-3 text-xs leading-6 text-foreground/55">
+                <p>
+                  <span className="text-foreground/40">Model:</span>{" "}
+                  <code className="font-mono text-[11px] text-foreground/65">{result.model_formula}</code>
+                </p>
+                <p>
+                  <span className="text-foreground/40">Converged:</span> {result.converged ? "yes" : "no"} ·{" "}
+                  <span className="text-foreground/40">Classification:</span>{" "}
+                  {result.is_fallback ? "fallback / exploratory" : "confirmatory"}
+                </p>
+                {result.singularity_warning ? (
+                  <p className="text-lock/80">Singularity warning: random effects may be underestimated.</p>
+                ) : null}
               </div>
             </div>
-          )}
+          ) : null}
         </section>
 
-        <section className="text-xs text-gray-500 space-y-1">
-          <p>Confirmatory analysis: one primary contrast (adaptive vs. yoked) with Holm correction for key secondary.</p>
-          <p>Exploratory analyses are labeled as such and do not receive confirmatory interpretation.</p>
+        <section className="rounded-xl border border-white/10 bg-white/[0.025] p-4 text-xs leading-6 text-foreground/45">
+          <h2 className="mono-label text-foreground/45">Inference discipline</h2>
+          <ul className="mt-2 space-y-1.5">
+            <li>· One primary contrast (adaptive versus yoked), with Holm correction for key secondary endpoints.</li>
+            <li>· Exploratory analyses are labeled and receive no confirmatory interpretation.</li>
+            <li>· A synthetic result is a property of the simulation assumptions, not of IMAGINA in humans.</li>
+          </ul>
         </section>
+
+        <BoundaryNote>
+          This workbench runs statistical machinery on synthetic data. It does not establish human efficacy, a
+          neuroscientific mechanism, or a clinical benefit.
+        </BoundaryNote>
       </div>
     </AppShell>
   );

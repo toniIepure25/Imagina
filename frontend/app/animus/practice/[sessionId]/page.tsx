@@ -1,15 +1,30 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
-import AppShell from "@/components/layout/AppShell";
+import AnimusShell from "@/components/animus/AnimusShell";
 import Button from "@/components/common/Button";
-import AnimusScene from "@/components/animus/AnimusScene";
+
+const AnimusScene = dynamic(() => import("@/components/animus/AnimusScene"), {
+  ssr: false,
+  loading: () => (
+    <div
+      role="status"
+      aria-label="Loading 3D scene"
+      className="flex min-h-[320px] items-center justify-center rounded-xl border border-white/10 bg-[#050711] font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/35"
+    >
+      Loading scene…
+    </div>
+  ),
+});
 import ReconstructionBoard from "@/components/animus/ReconstructionBoard";
+import SceneSketch from "@/components/animus/SceneSketch";
 import {
   getStudioSession,
   startStudioPractice,
   submitStudioPractice,
+  type PracticeAdaptive,
   type PracticePlacement,
   type PracticeResponse,
   type PracticeSubmit,
@@ -46,6 +61,7 @@ export default function AnimusPracticePage() {
   const [confidence, setConfidence] = useState(55);
   const [result, setResult] = useState<PracticeSubmit | null>(null);
   const [nextTask, setNextTask] = useState<PracticeTask | null>(null);
+  const [adaptive, setAdaptive] = useState<PracticeAdaptive | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const questionStarted = useRef<number>(0);
@@ -98,6 +114,7 @@ export default function AnimusPracticePage() {
       setTask(started.task);
       setProfile(started.profile);
       setSourceVersionId(started.source_version_id);
+      setAdaptive(started.adaptive);
       setPhase("preview");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : String(caught));
@@ -139,6 +156,7 @@ export default function AnimusPracticePage() {
       setResult(response);
       setProfile(response.profile);
       setNextTask(response.next_task ?? null);
+      setAdaptive(response.adaptive ?? null);
       setPhase("feedback");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : String(caught));
@@ -187,11 +205,11 @@ export default function AnimusPracticePage() {
   };
 
   return (
-    <AppShell>
+    <AnimusShell sessionId={sessionId} active="practice">
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="inline-flex rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-accent-glow/75">
+            <span className="inline-flex rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-glow/75">
               ANIMUS · adaptive practice
             </span>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight">Practice the loop, not the prompt.</h1>
@@ -223,7 +241,7 @@ export default function AnimusPracticePage() {
           <section className="overflow-hidden rounded-2xl border border-white/10 bg-[#070a12]">
             {phase === "idle" ? (
               <div className="flex min-h-[420px] flex-col items-center justify-center p-8 text-center">
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-foreground/40">
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-foreground/40">
                   {session?.title ?? "Loading session"}
                 </span>
                 <h2 className="mt-4 text-xl font-medium">A short adaptive session</h2>
@@ -247,7 +265,7 @@ export default function AnimusPracticePage() {
                 />
                 <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-t from-black/80 to-transparent px-5 pb-5 pt-16">
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-accent-glow/70">Inspect</p>
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-accent-glow/70">Inspect</p>
                     <p className="mt-1 text-sm text-foreground/75">
                       Hold the scene in mind. It hides in {task.preview_seconds}s.
                     </p>
@@ -260,7 +278,7 @@ export default function AnimusPracticePage() {
             ) : phase === "question" && task ? (
               <div className="p-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-accent-glow/65">
+                  <span className="text-[11px] uppercase tracking-[0.18em] text-accent-glow/65">
                     {dimensionLabel(profile, task.dimension)} · difficulty {Math.round(task.difficulty * 100)}%
                   </span>
                   <span className="text-[11px] text-foreground/35">
@@ -301,17 +319,15 @@ export default function AnimusPracticePage() {
                         }`}
                       >
                         {option.scene ? (
-                          <AnimusScene
+                          <SceneSketch
                             scene={option.scene}
-                            selectedId={null}
-                            onSelect={() => undefined}
-                            showOverlay={false}
-                            className="pointer-events-none h-56"
+                            className="pointer-events-none h-56 w-full"
+                            showLabels
                           />
                         ) : null}
                         <div className="flex items-center justify-between px-4 py-3">
                           <span className="text-sm">{option.label}</span>
-                          <span className="text-[10px] uppercase tracking-wide text-foreground/35">
+                          <span className="text-[11px] uppercase tracking-wide text-foreground/35">
                             {selected === option.id ? "Selected" : "Choose"}
                           </span>
                         </div>
@@ -331,7 +347,7 @@ export default function AnimusPracticePage() {
                             : "border-white/10 text-foreground/70 hover:border-white/25"
                         }`}
                       >
-                        <span className="mr-3 text-[10px] uppercase tracking-wide text-foreground/35">
+                        <span className="mr-3 text-[11px] uppercase tracking-wide text-foreground/35">
                           {option.id}
                         </span>
                         {option.label}
@@ -370,7 +386,7 @@ export default function AnimusPracticePage() {
             ) : phase === "feedback" && result ? (
               <div className="flex min-h-[420px] flex-col items-center justify-center p-8 text-center">
                 <span
-                  className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.18em] ${
+                  className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.18em] ${
                     result.feedback?.correct
                       ? "border-emerald-300/25 bg-emerald-300/[0.06] text-emerald-200/75"
                       : "border-amber-300/25 bg-amber-300/[0.06] text-amber-200/75"
@@ -425,7 +441,7 @@ export default function AnimusPracticePage() {
 
           <aside className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">Local profile</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">Local profile</p>
               <div className="mt-3 flex items-baseline justify-between">
                 <span className="text-sm text-foreground/65">Trials recorded</span>
                 <span className="text-2xl font-semibold tabular-nums">{profile?.trial_count ?? 0}</span>
@@ -435,17 +451,31 @@ export default function AnimusPracticePage() {
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">Current dimension</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">Why this task</p>
               <p className="mt-2 text-sm text-foreground/75">
                 {task ? dimensionLabel(profile, task.dimension) : "Chosen adaptively when you start"}
               </p>
-              <p className="mt-2 text-[11px] leading-relaxed text-foreground/35">
-                Selection starts with a coverage floor, then favours expected information gain. Difficulty
-                adjusts after a short rolling window; there is no engagement streak or leaderboard.
+              {adaptive ? (
+                <>
+                  <p className="mt-2 text-[11px] leading-relaxed text-foreground/45">{adaptive.reason}</p>
+                  <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/30">
+                    {adaptive.task_type} · difficulty {adaptive.difficulty.toFixed(2)}
+                    {typeof adaptive.expected_gain === "number"
+                      ? ` · expected gain ${adaptive.expected_gain.toFixed(3)}`
+                      : ""}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-2 text-[11px] leading-relaxed text-foreground/35">
+                  Selection starts with a coverage floor, then favours expected information gain.
+                </p>
+              )}
+              <p className="mt-2 text-[11px] leading-relaxed text-foreground/30">
+                Difficulty adjusts after a short rolling window; there is no engagement streak or leaderboard.
               </p>
             </div>
             <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[0.035] p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-amber-200/55">Boundary</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-amber-200/55">Boundary</p>
               <p className="mt-2 text-[11px] leading-relaxed text-foreground/45">
                 This is behavioural scene practice, not a diagnosis, treatment, or neural decoder. Stop if
                 you feel fatigued or frustrated. Aphantasia is a variation, not a deficit.
@@ -454,6 +484,6 @@ export default function AnimusPracticePage() {
           </aside>
         </div>
       </div>
-    </AppShell>
+    </AnimusShell>
   );
 }

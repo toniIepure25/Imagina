@@ -2,19 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-interface DatasetInfo {
-  dataset_id: string;
-  name: string;
-  source?: string;
-  status: string;
-  format?: string;
-  real_signal: boolean;
-  download_supported: boolean;
-  requires_manual_download: boolean;
-  estimated_size_gb?: number | null;
-  notes?: string;
-}
-
 interface FinalDemoStatus {
   release_candidate: string;
   demo_status: string;
@@ -32,15 +19,9 @@ interface FinalDemoStatus {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function DatasetReadinessPanel() {
-  const [catalog, setCatalog] = useState<DatasetInfo[]>([]);
   const [status, setStatus] = useState<FinalDemoStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/datasets/catalog`)
-      .then((r) => r.json())
-      .then(setCatalog)
-      .catch(() => setError("Backend unavailable"));
     fetch(`${API_URL}/api/datasets/final-demo-status`)
       .then((r) => r.json())
       .then(setStatus)
@@ -55,7 +36,7 @@ export default function DatasetReadinessPanel() {
             <span className="text-lg font-bold text-accent-glow">
               {status.release_candidate}
             </span>
-            <span className="rounded-full bg-green-500/20 px-3 py-1 text-xs text-green-300">
+            <span className="rounded-full bg-signal/10 px-3 py-1 text-xs text-signal">
               {status.demo_status}
             </span>
           </div>
@@ -75,7 +56,7 @@ export default function DatasetReadinessPanel() {
       {status?.next_required_action && (
         <div className="text-xs text-foreground/50">{status.next_required_action}</div>
       )}
-      <div className="rounded-lg border border-yellow-400/20 bg-yellow-400/5 p-3 text-[11px] text-yellow-100/70">
+      <div className="rounded-lg border border-yellow-400/20 bg-lock/[0.05] p-3 text-[11px] text-lock/70">
         Experimental proxy features only. Not clinical EEG analysis. No raw EEG samples are exposed.
       </div>
     </div>

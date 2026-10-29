@@ -14,6 +14,7 @@ from app.api.exports import router as exports_router
 from app.api.feedback import router as feedback_router
 from app.api.health import router as health_router
 from app.api.imagina.routes import router as imagina_router
+from app.api.imagine import router as imagine_router
 from app.api.multimodal import router as multimodal_router
 from app.api.replay import router as replay_router
 from app.api.reports import router as reports_router
@@ -79,7 +80,7 @@ app.add_middleware(
 async def studio_response_headers(request, call_next):
     """Keep local scene responses out of browser caches and MIME-sniffing paths."""
     response = await call_next(request)
-    if request.url.path.startswith("/animus/studio"):
+    if request.url.path.startswith("/animus/studio") or request.url.path.startswith("/animus/imagine"):
         response.headers.setdefault("Cache-Control", "no-store")
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
     return response
@@ -94,6 +95,7 @@ app.include_router(signals_router)
 app.include_router(tasks_router)
 app.include_router(users_router)
 app.include_router(imagina_router)
+app.include_router(imagine_router)
 app.include_router(state_router)
 app.include_router(feedback_router)
 app.include_router(replay_router)

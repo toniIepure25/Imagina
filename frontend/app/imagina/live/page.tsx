@@ -1,10 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import AppShell from "@/components/layout/AppShell";
+import PageHeader from "@/components/platform/PageHeader";
+import BoundaryNote from "@/components/platform/BoundaryNote";
 import { useLiveNeuroadaptiveDemo } from "@/hooks/useLiveNeuroadaptiveDemo";
 
-function Badge({ label, color }: { label: string; color: string }) {
-  return <span className={`px-2 py-0.5 rounded text-[8px] ${color}`}>{label}</span>;
+function Badge({ label, tone }: { label: string; tone: "ok" | "warn" | "muted" }) {
+  const styles = {
+    ok: "border-signal/25 bg-signal/10 text-signal/90",
+    warn: "border-lock/30 bg-lock/10 text-lock/90",
+    muted: "border-white/10 bg-white/[0.03] text-foreground/55",
+  };
+  return <span className={`inline-flex rounded-full border px-2 py-0.5 font-mono text-[11px] ${styles[tone]}`}>{label}</span>;
+}
+
+function downloadJson(value: unknown) {
+  const blob = new Blob([JSON.stringify(value, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "imagina-live-safe-pack.json";
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 export default function LivePage() {
@@ -16,106 +34,162 @@ export default function LivePage() {
   const active = demo.liveSession?.status === "active";
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] p-6 space-y-4 max-w-4xl mx-auto text-sm">
-      <div className="text-center space-y-1 py-4">
-        <div className="text-2xl font-bold text-foreground">Live Neuroadaptive Control Room</div>
-        <div className="text-foreground/50 text-[10px]">Derived engineering telemetry — not BCI, not neurofeedback validation, not mind-reading</div>
-        <div className="text-foreground/30 text-[8px]">Raw EEG included: false</div>
-      </div>
+    <AppShell status={active ? "live" : "idle"}>
+      <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-8 md:px-6">
+        <PageHeader
+          eyebrow="Lab · technical preview"
+          title="Live neuroadaptive control room"
+          description="Derived engineering telemetry from a local simulated stream. This is not BCI output, validated neurofeedback, mental-content reconstruction, or mind-reading."
+          actions={
+            <Badge label="Raw EEG: false" tone="muted" />
+          }
+        />
 
-      {demo.error && <div className="glass p-2 text-red-400 text-[10px]">{demo.error}</div>}
+        {demo.error ? (
+          <div role="alert" className="rounded-lg border border-danger/25 bg-danger/[0.05] px-4 py-3 text-sm text-danger/85">
+            {demo.error}
+          </div>
+        ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        {!active && (
-          <button onClick={() => demo.startDemo()} className="px-4 py-2 rounded bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/30">
-            Start Live Demo
+        <div className="flex flex-wrap gap-2">
+          {!active ? (
+            <button
+              type="button"
+              onClick={() => demo.startDemo()}
+              className="inline-flex min-h-11 items-center rounded-lg border border-signal/30 bg-signal/10 px-4 text-sm font-medium text-signal hover:bg-signal/15"
+            >
+              Start live demo
+            </button>
+          ) : (
+            <>
+              <button type="button" onClick={demo.stepDemo} className="inline-flex min-h-11 items-center rounded-lg border border-accent/30 bg-accent/15 px-4 text-sm text-accent-glow hover:bg-accent/25">
+                Step
+              </button>
+              <button type="button" onClick={() => demo.submitCheckin(checkin)} className="inline-flex min-h-11 items-center rounded-lg border border-lock/30 bg-lock/10 px-4 text-sm text-lock hover:bg-lock/15">
+                Submit check-in
+              </button>
+              <button type="button" onClick={demo.completeDemo} className="inline-flex min-h-11 items-center rounded-lg border border-signal/25 bg-signal/10 px-4 text-sm text-signal hover:bg-signal/15">
+                Complete
+              </button>
+              <button type="button" onClick={() => demo.abortDemo()} className="inline-flex min-h-11 items-center rounded-lg border border-danger/30 bg-danger/10 px-4 text-sm text-danger hover:bg-danger/15">
+                Abort
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAutoPoll(true);
+                  demo.setAutoPoll(true);
+                }}
+                disabled={autoPoll}
+                className="inline-flex min-h-11 items-center rounded-lg border border-white/12 px-4 text-sm text-foreground/55 hover:text-foreground disabled:opacity-40"
+              >
+                {autoPoll ? "Auto-poll on" : "Auto-poll"}
+              </button>
+            </>
+          )}
+          <button type="button" onClick={demo.refresh} className="inline-flex min-h-11 items-center rounded-lg border border-white/12 px-4 text-sm text-foreground/55 hover:text-foreground">
+            Refresh
           </button>
-        )}
-        {active && (
-          <>
-            <button onClick={demo.stepDemo} className="px-4 py-2 rounded bg-accent/20 border border-accent/30 text-accent-glow hover:bg-accent/30">Step</button>
-            <button onClick={() => demo.submitCheckin(checkin)} className="px-4 py-2 rounded bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30">Submit Check-in</button>
-            <button onClick={demo.completeDemo} className="px-4 py-2 rounded bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30">Complete</button>
-            <button onClick={() => demo.abortDemo()} className="px-4 py-2 rounded bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30">Abort</button>
-            <button onClick={() => { setAutoPoll(true); demo.setAutoPoll(true); }} className="px-4 py-2 rounded bg-surface border border-surface-border text-foreground/50 hover:bg-surface/50">Auto-Poll</button>
-          </>
-        )}
-        <button onClick={demo.refresh} className="px-4 py-2 rounded bg-surface border border-surface-border text-foreground/50 hover:bg-surface/50">Refresh</button>
-        <button onClick={async () => { const r = await demo.exportDemo(); alert(JSON.stringify(r, null, 2)); }} className="px-4 py-2 rounded bg-violet-500/20 border border-violet-500/30 text-violet-300 hover:bg-violet-500/30">Export Safe Pack</button>
-      </div>
+          <button
+            type="button"
+            onClick={async () => downloadJson(await demo.exportDemo())}
+            className="inline-flex min-h-11 items-center rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 text-sm text-violet-200 hover:bg-violet-400/15"
+          >
+            Export safe pack
+          </button>
+        </div>
 
-      <div className="grid grid-cols-4 gap-3">
-        <div className="glass p-2 text-center text-[10px]">
-          <div className="text-foreground/30">Session</div>
-          <div className="text-foreground/60">{demo.liveSession ? String((demo.liveSession as Record<string, unknown>).live_session_id || "").slice(0, 12) : "—"}</div>
-        </div>
-        <div className="glass p-2 text-center text-[10px]">
-          <div className="text-foreground/30">Status</div>
-          <div className="text-foreground/60">{active ? "Active" : "Idle"}</div>
-        </div>
-        <div className="glass p-2 text-center text-[10px]">
-          <div className="text-foreground/30">Events</div>
-          <div className="text-foreground/60">{demo.summary?.n_events ?? 0}</div>
-        </div>
-        <div className="glass p-2 text-center text-[10px]">
-          <div className="text-foreground/30">State</div>
-          <div className="text-foreground/60">{String(demo.summary?.latest_adaptive_state || "—").replace(/_/g, " ")}</div>
-        </div>
-      </div>
-
-      {f && (
-        <div className="grid grid-cols-3 gap-3">
-          <div className="glass p-3 space-y-2 border-l-2 border-cyan-500/50">
-            <div className="text-foreground/40 uppercase text-[9px] tracking-[0.1em]">Signal</div>
-            <div className="text-cyan-300 text-lg font-mono">{f.sqi?.toFixed(2)}</div>
-            <Badge label={f.gate_state} color={f.gate_state === "open" || f.gate_state === "excellent" ? "bg-green-500/20 text-green-400" : "bg-amber-500/20 text-amber-400"} />
-            <div className="text-foreground/20 text-[7px]">Raw EEG: false</div>
-          </div>
-          <div className="glass p-3 space-y-2 border-l-2 border-emerald-500/50">
-            <div className="text-foreground/40 uppercase text-[9px] tracking-[0.1em]">State</div>
-            <div className="text-emerald-300 text-lg font-mono">{f.adaptive_state?.replace(/_/g, " ")}</div>
-            <Badge label={`conf: ${(f.state_confidence || 0).toFixed(2)}`} color="bg-emerald-500/20 text-emerald-400" />
-            <div className="text-foreground/20 text-[7px]">Not neural decoding</div>
-          </div>
-          <div className="glass p-3 space-y-2 border-l-2 border-amber-500/50">
-            <div className="text-foreground/40 uppercase text-[9px] tracking-[0.1em]">Policy</div>
-            <div className="text-amber-300 text-lg font-mono">{f.policy_action?.replace(/_/g, " ")}</div>
-            <Badge label="preview only" color="bg-amber-500/20 text-amber-400" />
-            <div className="text-foreground/20 text-[7px]">No auto-intervention</div>
-          </div>
-        </div>
-      )}
-
-      {active && (
-        <div className="glass p-3 space-y-2">
-          <div className="text-foreground/40 uppercase text-[9px] tracking-[0.1em]">Check-in</div>
-          <div className="grid grid-cols-3 gap-2 text-[9px]">
-            {(["vividness", "stability", "effort", "fatigue", "confidence", "discomfort"] as const).map(k => (
-              <div key={k}>
-                <label className="text-foreground/50">{k} ({checkin[k]})</label>
-                <input type="range" min="1" max="10" value={checkin[k]} onChange={e => setCheckin({ ...checkin, [k]: Number(e.target.value) })}
-                  className="w-full h-1 bg-surface-border rounded" />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {demo.events.length > 0 && (
-        <div className="glass p-3 space-y-1 border-l-2 border-violet-500/50 max-h-64 overflow-y-auto">
-          <div className="text-foreground/40 uppercase text-[9px] tracking-[0.1em]">Event Timeline ({demo.events.length})</div>
-          {demo.events.slice(-12).reverse().map((e, i) => (
-            <div key={i} className="flex gap-2 text-[8px]">
-              <span className="text-foreground/40 w-20 truncate">{(typeof e.event_type === "string" ? e.event_type : "").replace(/_/g, " ")}</span>
-              <span className="text-foreground/60 flex-1 truncate">{String(e.payload ?? "").slice(0, 40)}</span>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            ["Session", demo.liveSession ? String((demo.liveSession as Record<string, unknown>).live_session_id || "").slice(0, 12) : "—"],
+            ["Status", active ? "Active" : "Idle"],
+            ["Events", String(demo.summary?.n_events ?? 0)],
+            ["State", String(demo.summary?.latest_adaptive_state || "—").replace(/_/g, " ")],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-lg border border-white/10 bg-white/[0.025] p-3">
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/40">{label}</p>
+              <p className="mt-1 truncate text-sm text-foreground/75">{value}</p>
             </div>
           ))}
         </div>
-      )}
 
-      <div className="text-center text-foreground/20 text-[7px] space-y-1">
-        <div>Live dashboard events are local engineering telemetry. They are not neural decoding, mental content reconstruction, BCI output, or validated neurofeedback.</div>
+        {f ? (
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-lg border border-signal/20 bg-signal/[0.04] p-3">
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/45">Signal</p>
+              <p className="mt-2 font-mono text-2xl text-signal">{f.sqi?.toFixed(2)}</p>
+              <div className="mt-2">
+                <Badge
+                  label={f.gate_state}
+                  tone={f.gate_state === "open" || f.gate_state === "excellent" ? "ok" : "warn"}
+                />
+              </div>
+              <p className="mt-2 text-[11px] text-foreground/40">Raw EEG: false</p>
+            </div>
+            <div className="rounded-lg border border-signal/25 bg-signal/[0.06] p-3">
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/45">State</p>
+              <p className="mt-2 font-mono text-2xl text-signal">{f.adaptive_state?.replace(/_/g, " ")}</p>
+              <div className="mt-2">
+                <Badge label={`conf: ${(f.state_confidence || 0).toFixed(2)}`} tone="ok" />
+              </div>
+              <p className="mt-2 text-[11px] text-foreground/40">Not neural decoding</p>
+            </div>
+            <div className="rounded-lg border border-lock/20 bg-lock/[0.04] p-3">
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/45">Policy</p>
+              <p className="mt-2 font-mono text-2xl text-lock">{f.policy_action?.replace(/_/g, " ")}</p>
+              <div className="mt-2">
+                <Badge label="preview only" tone="warn" />
+              </div>
+              <p className="mt-2 text-[11px] text-foreground/40">No auto-intervention</p>
+            </div>
+          </div>
+        ) : null}
+
+        {active ? (
+          <section className="rounded-lg border border-white/10 bg-white/[0.025] p-4">
+            <h2 className="mono-label text-foreground/45">Check-in</h2>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              {(["vividness", "stability", "effort", "fatigue", "confidence", "discomfort"] as const).map((key) => (
+                <div key={key}>
+                  <label htmlFor={`live-${key}`} className="text-xs capitalize text-foreground/60">
+                    {key} ({checkin[key]})
+                  </label>
+                  <input
+                    id={`live-${key}`}
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={checkin[key]}
+                    onChange={(event) => setCheckin({ ...checkin, [key]: Number(event.target.value) })}
+                    className="mt-1 h-1 w-full cursor-pointer rounded bg-surface-border accent-accent"
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {demo.events.length > 0 ? (
+          <section className="rounded-lg border border-white/10 bg-white/[0.025] p-4">
+            <h2 className="mono-label text-foreground/45">Event timeline · {demo.events.length}</h2>
+            <div className="mt-2 max-h-64 space-y-1 overflow-y-auto">
+              {demo.events.slice(-12).reverse().map((event, index) => (
+                <div key={index} className="flex gap-2 border-b border-white/[0.06] py-1.5 text-[11px] last:border-0">
+                  <span className="w-24 shrink-0 truncate font-mono text-foreground/40">
+                    {(typeof event.event_type === "string" ? event.event_type : "").replace(/_/g, " ")}
+                  </span>
+                  <span className="flex-1 truncate text-foreground/60">{String(event.payload ?? "").slice(0, 80)}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <BoundaryNote>
+          Live dashboard events are local engineering telemetry. They are not neural decoding, mental-content
+          reconstruction, BCI output, or validated neurofeedback.
+        </BoundaryNote>
       </div>
-    </div>
+    </AppShell>
   );
 }

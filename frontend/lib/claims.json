@@ -1,0 +1,25 @@
+{
+  "claimCeiling": "L1_BEHAVIORAL_ASSISTED",
+  "platformBoundary": "IMAGINA is a local-first research prototype. It estimates experimental proxy metrics from self-report, behaviour, and simulated signals; it does not read thoughts, decode dreams, diagnose, or reconstruct mental imagery.",
+  "sceneBoundary": "The scene is a symbolic, procedural scaffold. It is not a decoded or generated image of what a person is imagining.",
+  "traceBoundary": "Trace records what the local system did — not why a person made a choice, and not a clinical or neural explanation.",
+  "measurementBoundary": "PID and IQI are experimental composite proxies. They require validation and should not guide medical decisions.",
+  "prohibitedClaims": [
+    "reads your mind",
+    "mind reading",
+    "decodes your dreams",
+    "dream decoding",
+    "shows what you are imagining",
+    "reconstructs mental imagery",
+    "reconstruction of mental imagery",
+    "cures aphantasia",
+    "guarantees lucid dreaming",
+    "clinically validated",
+    "measures consciousness objectively",
+    "imagery score",
+    "trains your brain",
+    "improves attention",
+    "proves that",
+    "works for everyone"
+  ]
+}

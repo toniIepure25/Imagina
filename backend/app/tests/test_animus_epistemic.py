@@ -138,7 +138,7 @@ def test_probe_scoring_and_summary_keep_calibration_separate_from_accuracy():
     summary = summarize_interview(records)
     assert summary["object_accuracy"] == 1.0
     assert summary["coverage"] == pytest.approx(len(answered) / (len(answered) + 1))
-    assert summary["abstention_rate"] == pytest.approx(1 / (len(answered) + 1))
+    assert summary["abstention_rate"] == pytest.approx(round(1 / (len(answered) + 1), 6))
     assert summary["mean_brier"] == pytest.approx(0.01)
     assert "composite" not in summary
     assert records[0]["correct"] is True

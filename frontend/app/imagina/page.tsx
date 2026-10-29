@@ -2,16 +2,24 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import AppShell from "@/components/layout/AppShell";
 import { useImaginaSession } from "@/hooks/useImaginaSession";
 
 const DreamCorridorScene = dynamic(() => import("@/components/scene/DreamCorridorScene"), { ssr: false });
 import { DEFAULT_SCENE_PARAMS } from "@/lib/feedbackMapping";
 
+const METRIC_COLORS: Record<string, string> = {
+  accent: "text-accent-glow",
+  green: "text-signal",
+  yellow: "text-lock",
+  red: "text-danger",
+};
+
 function Metric({ label, value, unit = "", color = "accent" }: { label: string; value: number; unit?: string; color?: string }) {
   return (
-    <div className="flex flex-col items-center p-2 rounded-lg bg-surface/30 border border-surface-border">
-      <span className="text-[9px] uppercase tracking-wider text-foreground/40">{label}</span>
-      <span className={`text-lg font-mono font-bold text-${color}-glow`}>
+    <div className="flex flex-col items-center rounded-lg border border-surface-border bg-surface/30 p-2">
+      <span className="text-[11px] uppercase tracking-wider text-foreground/45">{label}</span>
+      <span className={`font-mono text-lg font-bold ${METRIC_COLORS[color] ?? METRIC_COLORS.accent}`}>
         {typeof value === "number" ? value.toFixed(3) : value}{unit}
       </span>
     </div>
@@ -23,14 +31,14 @@ function SliderField({ label, value, onChange, min = 0, max = 10, step = 1, hint
 }) {
   return (
     <div className="space-y-1">
-      <div className="flex justify-between text-[10px]">
-        <span className="text-foreground/60">{label}</span>
-        <span className="text-foreground/40 font-mono">{value}</span>
+      <div className="flex justify-between text-[11px]">
+        <span className="text-foreground/65">{label}</span>
+        <span className="font-mono text-foreground/45">{value}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value}
              onChange={e => onChange(Number(e.target.value))}
-             className="w-full h-1 bg-surface-border rounded-lg appearance-none cursor-pointer accent-accent" />
-      {hint && <div className="text-[9px] text-foreground/30">{hint}</div>}
+             className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-surface-border accent-accent" />
+      {hint && <div className="text-[11px] text-foreground/40">{hint}</div>}
     </div>
   );
 }
@@ -38,18 +46,18 @@ function SliderField({ label, value, onChange, min = 0, max = 10, step = 1, hint
 export default function ImaginaPage() {
   const s = useImaginaSession();
   const [sr, setSr] = useState({ vividness: 6, stability: 6, effort: 4, fatigue: 3, comfort: 7 });
-  const srKeys = ["vividness", "stability", "effort", "fatigue", "comfort"] as const;
-  type SrKey = typeof srKeys[number];
+  type SrKey = keyof typeof sr;
   const getSr = (k: string): number => sr[k as SrKey] ?? 5;
 
   return (
-    <main className="min-h-screen bg-background text-foreground pb-20">
+    <AppShell>
+    <div className="bg-background pb-20 text-foreground">
       {/* Hero */}
       <div className="border-b border-surface-border bg-surface/20 px-6 py-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-accent-glow/60">IMAGINA Lab</div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-accent-glow/60">IMAGINA Lab</div>
               <h1 className="text-3xl font-bold mt-1">Mental Imagery Training</h1>
               <p className="text-sm text-foreground/40 mt-2 max-w-lg">
                 Closed-loop guided imagery with experimental IQI/PID proxy metrics.
@@ -57,10 +65,10 @@ export default function ImaginaPage() {
               </p>
             </div>
             <div className="text-right space-y-2">
-              <div className={`text-[10px] px-2 py-1 rounded-full ${s.sessionId ? "bg-green-500/20 text-green-300" : "bg-amber-500/20 text-amber-300"}`}>
+              <div className={`text-[11px] px-2 py-1 rounded-full ${s.sessionId ? "bg-signal/10 text-signal" : "bg-lock/10 text-lock"}`}>
                 {s.sessionId ? `Session active` : "No session"}
               </div>
-              {s.error && <div className="text-[10px] text-red-400">{s.error}</div>}
+              {s.error && <div className="text-[11px] text-danger">{s.error}</div>}
             </div>
           </div>
         </div>
@@ -71,7 +79,7 @@ export default function ImaginaPage() {
         <div className="lg:col-span-1 space-y-4">
           {/* Setup */}
           <div className="glass panel-glow p-4 border-l-2 border-accent space-y-3">
-            <div className="text-[10px] uppercase tracking-[0.16em] text-foreground/40">Session Setup</div>
+            <div className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">Session Setup</div>
 
             {!s.sessionId ? (
               <>
@@ -85,7 +93,7 @@ export default function ImaginaPage() {
                 </button>
               </>
             ) : (
-              <div className="text-[10px] text-foreground/50 font-mono break-all">{s.sessionId}</div>
+              <div className="text-[11px] text-foreground/50 font-mono break-all">{s.sessionId}</div>
             )}
 
             {s.sessionId && (
@@ -105,7 +113,7 @@ export default function ImaginaPage() {
           {/* Self-report */}
           {s.sessionId && (
             <div className="glass panel-glow p-4 border-l-2 border-accent space-y-3">
-              <div className="text-[10px] uppercase tracking-[0.16em] text-foreground/40">Self-Report</div>
+              <div className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">Self-Report</div>
               {[
                 ["vividness", "How clear is the image?"],
                 ["stability", "How stable does it remain?"],
@@ -126,14 +134,14 @@ export default function ImaginaPage() {
 
           {/* Scientific Boundaries */}
           <div className="p-3 rounded border border-amber-500/20 bg-amber-500/5">
-            <div className="text-[9px] uppercase tracking-[0.1em] text-amber-400/70">Scientific Boundaries</div>
-            <div className="mt-2 text-[9px] text-foreground/40 space-y-1">
-              <div className="text-green-400/60">✓ Guided imagery practice</div>
-              <div className="text-green-400/60">✓ Proxy state estimation</div>
-              <div className="text-green-400/60">✓ Local-first session tracking</div>
-              <div className="text-red-400/60 mt-1">✗ Mind reading / dream decoding</div>
-              <div className="text-red-400/60">✗ Clinical therapy / diagnosis</div>
-              <div className="text-red-400/60">✗ Production BCI</div>
+            <div className="text-[11px] uppercase tracking-[0.1em] text-lock/70">Scientific Boundaries</div>
+            <div className="mt-2 text-[11px] text-foreground/40 space-y-1">
+              <div className="text-signal/60">✓ Guided imagery practice</div>
+              <div className="text-signal/60">✓ Proxy state estimation</div>
+              <div className="text-signal/60">✓ Local-first session tracking</div>
+              <div className="text-danger/60 mt-1">✗ Mind reading / dream decoding</div>
+              <div className="text-danger/60">✗ Clinical therapy / diagnosis</div>
+              <div className="text-danger/60">✗ Production BCI</div>
             </div>
           </div>
         </div>
@@ -144,7 +152,7 @@ export default function ImaginaPage() {
           <div className="glass panel-glow p-4 grid grid-cols-2 gap-3">
             <Metric label="IQI" value={s.lastStep?.iqi_score ?? 0} />
             <Metric label="PID" value={s.lastStep?.pid_score ?? 0} />
-            <div className="col-span-2 text-[9px] text-foreground/30 text-center">
+            <div className="col-span-2 text-[11px] text-foreground/30 text-center">
               {s.lastStep?.iqi_interpretation || "Run a step to compute metrics"}
             </div>
           </div>
@@ -152,10 +160,10 @@ export default function ImaginaPage() {
           {/* State */}
           {s.lastStep?.state && (
             <div className="glass panel-glow p-4 space-y-2">
-              <div className="text-[10px] uppercase tracking-[0.16em] text-foreground/40">State Estimate</div>
+              <div className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">State Estimate</div>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(s.lastStep.state).map(([k, v]) => (
-                  <div key={k} className="text-[10px]">
+                  <div key={k} className="text-[11px]">
                     <span className="text-foreground/40">{k.replace(/_/g, " ")}</span>
                     <div className="w-full h-1 bg-surface-border rounded-full mt-1">
                       <div className="h-1 bg-accent rounded-full" style={{ width: `${((Number(v)) * 100).toFixed(0)}%` }} />
@@ -170,18 +178,18 @@ export default function ImaginaPage() {
           {s.lastStep && (
             <div className="glass panel-glow p-4 space-y-3">
               <div>
-                <span className="text-[10px] uppercase tracking-[0.16em] text-foreground/40">Curriculum</span>
-                <div className={`text-sm font-mono mt-1 ${s.lastStep.curriculum_action === "advance" ? "text-green-400" : s.lastStep.curriculum_action === "stop" ? "text-red-400" : "text-amber-300"}`}>
+                <span className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">Curriculum</span>
+                <div className={`text-sm font-mono mt-1 ${s.lastStep.curriculum_action === "advance" ? "text-signal" : s.lastStep.curriculum_action === "stop" ? "text-danger" : "text-lock"}`}>
                   {s.lastStep.curriculum_action}
                 </div>
-                <div className="text-[9px] text-foreground/50">{s.lastStep.curriculum_message}</div>
+                <div className="text-[11px] text-foreground/50">{s.lastStep.curriculum_message}</div>
               </div>
               <div>
-                <span className="text-[10px] uppercase tracking-[0.16em] text-foreground/40">Safety</span>
-                <div className={`text-sm font-mono mt-1 ${s.lastStep.safety_action !== "continue" ? "text-red-400" : "text-green-400"}`}>
+                <span className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">Safety</span>
+                <div className={`text-sm font-mono mt-1 ${s.lastStep.safety_action !== "continue" ? "text-danger" : "text-signal"}`}>
                   {s.lastStep.safety_action}
                 </div>
-                <div className="text-[9px] text-foreground/50">{s.lastStep.safety_message}</div>
+                <div className="text-[11px] text-foreground/50">{s.lastStep.safety_message}</div>
               </div>
             </div>
           )}
@@ -191,7 +199,7 @@ export default function ImaginaPage() {
         <div className="lg:col-span-1 space-y-4">
           {/* Scene */}
           <div className="glass panel-glow overflow-hidden rounded-lg" style={{ height: 300 }}>
-            <div className="absolute top-2 left-2 z-10 text-[8px] text-foreground/30">Simulated proxy feedback</div>
+            <div className="absolute top-2 left-2 z-10 text-[11px] text-foreground/30">Simulated proxy feedback</div>
             <DreamCorridorScene
               params={{
                 ...DEFAULT_SCENE_PARAMS,
@@ -211,20 +219,20 @@ export default function ImaginaPage() {
           {/* Summary + controls */}
           {s.sessionId && (
             <div className="space-y-2">
-              <button onClick={s.refresh} className="w-full px-3 py-2 rounded bg-surface border border-surface-border text-[10px] text-foreground/50 hover:bg-surface/50">
+              <button onClick={s.refresh} className="w-full px-3 py-2 rounded bg-surface border border-surface-border text-[11px] text-foreground/50 hover:bg-surface/50">
                 Refresh Summary
               </button>
-              <button onClick={() => { s.updateProfile(); s.loadAnalytics(); }} className="w-full px-3 py-2 rounded bg-accent/20 border border-accent/30 text-[10px] text-accent-glow hover:bg-accent/30">
+              <button onClick={() => { s.updateProfile(); s.loadAnalytics(); }} className="w-full px-3 py-2 rounded bg-accent/20 border border-accent/30 text-[11px] text-accent-glow hover:bg-accent/30">
                 Update Profile & Analytics
               </button>
-              <button onClick={s.reset} className="w-full px-3 py-2 rounded text-[10px] text-red-400/70 hover:bg-red-500/5">
+              <button onClick={s.reset} className="w-full px-3 py-2 rounded text-[11px] text-danger/70 hover:bg-danger/[0.04]">
                 Reset Session
               </button>
             </div>
           )}
 
           {s.summary && (
-            <div className="glass panel-glow p-4 space-y-2 text-[10px]">
+            <div className="glass panel-glow p-4 space-y-2 text-[11px]">
               <div className="text-foreground/40 uppercase tracking-[0.1em]">Summary</div>
               <div>Steps: {s.summary.total_steps} | IQI: {s.summary.mean_iqi} | PID: {s.summary.mean_pid}</div>
               <div className="text-foreground/30">{s.summary.disclaimer}</div>
@@ -233,7 +241,7 @@ export default function ImaginaPage() {
 
           {/* Profile */}
           {s.profile && (
-            <div className="glass panel-glow p-4 space-y-2 text-[10px] border-l-2 border-blue-500/50">
+            <div className="glass panel-glow p-4 space-y-2 text-[11px] border-l-2 border-blue-500/50">
               <div className="text-foreground/40 uppercase tracking-[0.1em]">Profile</div>
               <div className="grid grid-cols-2 gap-2">
                 <div>Sessions: {s.profile.session_count}</div>
@@ -257,7 +265,7 @@ export default function ImaginaPage() {
 
           {/* Analytics */}
           {s.analytics && (
-            <div className="glass panel-glow p-4 space-y-2 text-[10px] border-l-2 border-green-500/50">
+            <div className="glass panel-glow p-4 space-y-2 text-[11px] border-l-2 border-green-500/50">
               <div className="text-foreground/40 uppercase tracking-[0.1em]">Session Analytics</div>
               <div>Steps: {s.analytics.n_steps} | Best IQI: {s.analytics.best_iqi?.toFixed(3)} (step {s.analytics.best_step})</div>
               <div>IQI slope: {s.analytics.iqi_slope > 0 ? "+" : ""}{s.analytics.iqi_slope?.toFixed(4)}</div>
@@ -268,11 +276,11 @@ export default function ImaginaPage() {
 
           {/* Recommendations */}
           {s.profile?.recommendations && s.profile.recommendations.length > 0 && (
-            <div className="glass panel-glow p-4 space-y-2 text-[10px] border-l-2 border-amber-500/50">
+            <div className="glass panel-glow p-4 space-y-2 text-[11px] border-l-2 border-amber-500/50">
               <div className="text-foreground/40 uppercase tracking-[0.1em]">Recommendations</div>
               {s.profile.recommendations.slice(0, 4).map((r: { priority: string; message: string }, i: number) => (
                 <div key={i} className="flex gap-2 items-start">
-                  <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${r.priority === "high" ? "bg-red-400" : r.priority === "medium" ? "bg-amber-400" : "bg-blue-400"}`} />
+                  <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${r.priority === "high" ? "bg-danger" : r.priority === "medium" ? "bg-lock" : "bg-accent-glow"}`} />
                   <span className="text-foreground/60">{r.message}</span>
                 </div>
               ))}
@@ -280,11 +288,12 @@ export default function ImaginaPage() {
           )}
 
           {/* Local-first privacy */}
-          <div className="p-2 rounded border border-surface-border text-[8px] text-foreground/25 text-center">
+          <div className="p-2 rounded border border-surface-border text-[11px] text-foreground/25 text-center">
             Local-first · Profiles stored locally · No upload · Experimental proxy metrics only
           </div>
         </div>
       </div>
-    </main>
+    </div>
+    </AppShell>
   );
 }

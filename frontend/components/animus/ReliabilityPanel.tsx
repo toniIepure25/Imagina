@@ -20,24 +20,24 @@ export default function ReliabilityPanel({ reliability }: { reliability: Observa
         <>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">r</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">r</p>
               <p className="mt-1 text-2xl font-semibold tabular-nums">{number(reliability.r)}</p>
               <p className="mt-1 text-[11px] text-foreground/40">
                 {reliability.r_ci ? `95% CI ${number(reliability.r_ci[0])} to ${number(reliability.r_ci[1])}` : "no interval"}
               </p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">SEM</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">SEM</p>
               <p className="mt-1 text-2xl font-semibold tabular-nums">{number(reliability.sem)}</p>
               <p className="mt-1 text-[11px] text-foreground/40">measurement error</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">MDC95</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">MDC95</p>
               <p className="mt-1 text-2xl font-semibold tabular-nums">{number(reliability.mdc95)}</p>
               <p className="mt-1 text-[11px] text-foreground/40">minimal detectable change</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">Δ d′</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">Δ d′</p>
               <p className="mt-1 text-2xl font-semibold tabular-nums">
                 {number(reliability.dprime_change)}
               </p>

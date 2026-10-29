@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import Button from "@/components/common/Button";
-import Header from "@/components/layout/Header";
+import AnimusShell from "@/components/animus/AnimusShell";
 
 export default function StudioError({
   error,
@@ -17,9 +17,8 @@ export default function StudioError({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header status="local" />
-      <main className="flex flex-1 items-center justify-center p-6">
+    <AnimusShell active="studio" workspace>
+      <div className="flex min-h-[70vh] flex-1 items-center justify-center p-6">
         <section className="glass max-w-md space-y-4 p-6 text-center" role="alert">
           <h1 className="text-lg font-semibold">The studio stopped unexpectedly</h1>
           <p className="text-xs leading-relaxed text-foreground/50">
@@ -27,7 +26,7 @@ export default function StudioError({
             scene list without losing durable history.
           </p>
           {error.digest && (
-            <p className="text-[10px] text-foreground/30">
+            <p className="text-[11px] text-foreground/30">
               Reference: <code>{error.digest}</code>
             </p>
           )}
@@ -43,7 +42,7 @@ export default function StudioError({
             </Link>
           </div>
         </section>
-      </main>
-    </div>
+      </div>
+    </AnimusShell>
   );
 }

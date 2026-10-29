@@ -105,7 +105,7 @@ export default function BaselineCalibration({ sessionId, providerId, onComplete 
                 <span className="font-mono text-accent-glow">{pct(calibration.calibration_quality_score)}</span>
               </div>
               {calibration.warnings.length > 0 && (
-                <div className="mt-2 text-xs text-yellow-200">
+                <div className="mt-2 text-xs text-lock">
                   Warnings: {calibration.warnings.join(", ")}. You can continue, but results may be noisier.
                 </div>
               )}

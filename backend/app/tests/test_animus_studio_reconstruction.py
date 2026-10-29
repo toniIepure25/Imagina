@@ -8,7 +8,6 @@ from app.core.animus.studio.reconstruction import (
     SPATIAL_TASK,
     build_reconstruction_plan,
     score_spatial_placement,
-    score_token_selection,
 )
 from app.core.animus.studio.tasks import build_task, score_response
 

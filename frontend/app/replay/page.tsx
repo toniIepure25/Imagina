@@ -2,8 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import Button from "@/components/common/Button";
+import PageHeader from "@/components/platform/PageHeader";
+import BoundaryNote from "@/components/platform/BoundaryNote";
 import MetricsDashboard from "@/components/metrics/MetricsDashboard";
 import CurriculumTimeline from "@/components/metrics/CurriculumTimeline";
 import GuidedPromptPanel from "@/components/session/GuidedPromptPanel";
@@ -47,6 +50,7 @@ export default function ReplayPage() {
   const [interpretation, setInterpretation] = useState("unknown");
   const [level, setLevel] = useState(1);
   const [timeline, setTimeline] = useState<{ window: number; iqi: number; pid: number; attention: number; fatigue: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const socketRef = useRef<ImaginaSocket | null>(null);
   const phase = replayPhase(timeline.length, level, iqi, pid);
@@ -114,6 +118,7 @@ export default function ReplayPage() {
   const startDemo = async () => {
     resetReplay();
     setLoading(true);
+    setError(null);
     try {
       const res = await apiFetch<{ session_id: string }>("/api/replay/demo", { method: "POST" });
       const sid = res.session_id;
@@ -128,6 +133,8 @@ export default function ReplayPage() {
         sock.send("start_replay", { speed: 2.0 });
         setPlaying(true);
       }, 500);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The replay demo could not be generated.");
     } finally {
       setLoading(false);
     }
@@ -153,24 +160,61 @@ export default function ReplayPage() {
   return (
     <AppShell level={level} status={playing ? (paused ? "paused" : "replaying") : undefined}>
       {!playing ? (
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="glass panel-glow p-8 text-center space-y-5 max-w-lg">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-accent-glow/80">Deterministic Demo</div>
-            <h1 className="text-3xl font-bold glow-text">Dream Corridor Replay</h1>
-            <p className="text-sm text-foreground/65 leading-relaxed">
-              Watch a pre-generated &quot;improving user&quot; demo session with deterministic signals.
-              The corridor is adaptive feedback, not decoded imagery.
-            </p>
-            <Button onClick={startDemo} disabled={loading} size="lg">
-              {loading ? "Generating..." : "Start Demo"}
-            </Button>
+        <div className="mx-auto grid w-full max-w-5xl gap-5 px-4 py-10 md:px-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
+          <div>
+            <PageHeader
+              eyebrow="Deterministic demo"
+              title="Dream Corridor replay"
+              description="Watch a pre-generated improving-user session with deterministic signals. The corridor is adaptive feedback, not decoded imagery, and the replay is the same on every run."
+            />
+            <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.025] p-5">
+              <h2 className="text-lg font-semibold text-foreground/85">What this replay demonstrates</h2>
+              <ul className="mt-3 space-y-2 text-sm leading-6 text-foreground/55">
+                <li>· A full closed loop from simulated signal to scene parameter.</li>
+                <li>· Curriculum progression, proxy metrics, and safety events in one timeline.</li>
+                <li>· Deterministic reproducibility: no hidden model, no external service.</li>
+              </ul>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <Button onClick={startDemo} disabled={loading} size="lg">
+                  {loading ? "Generating…" : "Start replay"}
+                </Button>
+                <Link
+                  href="/science"
+                  className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm text-foreground/55 hover:text-foreground"
+                >
+                  Read boundaries
+                </Link>
+              </div>
+              {error ? (
+                <p role="alert" className="mt-3 rounded-lg border border-danger/25 bg-danger/[0.06] px-3 py-2 text-xs text-danger/85">
+                  {error}
+                </p>
+              ) : null}
+            </div>
           </div>
+          <aside className="space-y-3">
+            <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
+              <p className="mono-label text-foreground/40">Narrative beats</p>
+              <ol className="mt-3 space-y-2">
+                {NARRATIVE.map((item, index) => (
+                  <li key={item} className="flex gap-2.5 text-xs leading-5 text-foreground/55">
+                    <span className="font-mono text-[11px] text-accent-glow/60">{String(index + 1).padStart(2, "0")}</span>
+                    {item}
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <BoundaryNote>
+              The replay is a deterministic demonstration of the engineering loop. It is not evidence that the proxy
+              metrics track a person&apos;s imagery, and it does not reconstruct mental content.
+            </BoundaryNote>
+          </aside>
         </div>
       ) : (
         <div className="flex-1 flex flex-col min-h-0">
           {sessionId && (
             <div className="px-4 py-3 text-xs text-foreground/50 border-b border-surface-border bg-background/70 backdrop-blur flex flex-wrap items-center gap-3">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-accent-glow/80">Replay Phase</span>
+              <span className="text-[11px] uppercase tracking-[0.18em] text-accent-glow/80">Replay Phase</span>
               <span className="text-foreground/85 font-semibold">{phase}</span>
               <span className="font-mono text-foreground/35">session {sessionId.slice(0, 8)}</span>
               <div className="flex-1" />
@@ -185,7 +229,7 @@ export default function ReplayPage() {
             </div>
             <div className="w-full xl:w-[390px] border-l border-surface-border overflow-y-auto bg-background/68 backdrop-blur-md">
               <div className="glass m-3 p-4 panel-glow">
-                <div className="mb-2 text-[10px] uppercase tracking-[0.18em] text-accent-glow/80">Demo Narrative</div>
+                <div className="mb-2 text-[11px] uppercase tracking-[0.18em] text-accent-glow/80">Demo Narrative</div>
                 <ol className="space-y-2 text-xs text-foreground/62">
                   {NARRATIVE.map((item, index) => (
                     <li key={item} className={`flex gap-2 ${index < Math.min(NARRATIVE.length, Math.max(1, Math.ceil(timeline.length / 4))) ? "text-foreground/88" : ""}`}>

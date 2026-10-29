@@ -1,8 +1,6 @@
-"use client";
-
 import { ReactNode } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
+import PlatformFooter from "@/components/platform/PlatformFooter";
+import PlatformHeader from "@/components/platform/PlatformHeader";
 
 export default function AppShell({
   children,
@@ -14,10 +12,12 @@ export default function AppShell({
   status?: string;
 }) {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header level={level} status={status} />
-      <main className="flex-1 flex">{children}</main>
-      <Footer />
+    <div className="platform-root flex min-h-screen flex-col">
+      <PlatformHeader level={level} status={status} />
+      <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
+        {children}
+      </main>
+      <PlatformFooter />
     </div>
   );
 }

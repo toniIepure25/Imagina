@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import AppShell from "@/components/layout/AppShell";
+import PageHeader from "@/components/platform/PageHeader";
 import Button from "@/components/common/Button";
+import EvidenceMark from "@/components/evidence/EvidenceMark";
 import { DimensionBar, Panel, SourceBadge, Sparkline } from "@/components/multimodal/Widgets";
 import { DEFAULT_SCENE_PARAMS, feedbackToScene } from "@/lib/feedbackMapping";
 import {
@@ -117,27 +119,38 @@ export default function MultimodalCommandCenter() {
 
   return (
     <AppShell status={status ? status.controller_state : undefined}>
-      <div className="w-full max-w-7xl mx-auto p-4 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-semibold">Multimodal Research Command Center</h1>
-            <p className="text-xs text-foreground/50">Acquisition · synchronization · estimates · safety-gated feedback</p>
-          </div>
-          <div className="flex gap-1">
-            {TABS.map((t) => (
-              <button key={t} onClick={() => setTab(t)}
-                className={`rounded-lg px-3 py-1.5 text-xs ${tab === t ? "bg-accent text-white" : "text-foreground/60 hover:bg-surface"}`}>
-                {t}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-4 md:px-6">
+        <PageHeader
+          eyebrow="Multimodal research"
+          title="Acquisition command center"
+          description="Synchronized synthetic streams feed proxy estimates and safety-gated feedback. Every decision records its evidence class; nothing here decodes thoughts or imagery."
+          actions={
+            <div role="tablist" aria-label="Multimodal sections" className="flex flex-wrap gap-1">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === t}
+                  onClick={() => setTab(t)}
+                  className={`min-h-9 rounded-lg px-3 text-xs ${
+                    tab === t
+                      ? "bg-accent text-white"
+                      : "border border-white/10 text-foreground/55 hover:bg-white/[0.04] hover:text-foreground"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          }
+        />
 
-        <div className="rounded-lg border border-warning/40 bg-warning/5 px-4 py-2 text-xs text-foreground/70">
+        <div className="rounded-lg border border-warning/40 bg-warning/5 px-4 py-2.5 text-xs leading-5 text-foreground/70">
           {simulated
-            ? "SYNTHETIC / REPLAY data. Waveforms come from deterministic generators or recorded files; they are not measurements of a person, and the participant ratings come from a scripted synthetic responder."
-            : "REAL SENSOR stream present. Participant-facing feedback stays disabled (ACTIVE_SHADOW) unless a complete authorization is on file."}
-          {" "}IMAGINA does not decode thoughts or imagery; estimates below are proxies with stated evidence classes.
+            ? "SYNTHETIC / REPLAY data. Waveforms come from deterministic generators or recorded files; they are not measurements of a person, and participant ratings come from a scripted synthetic responder."
+            : "REAL SENSOR stream present. Participant-facing feedback stays disabled (ACTIVE_SHADOW) unless a complete authorization is on file."}{" "}
+          IMAGINA does not decode thoughts or imagery; estimates below are proxies with stated evidence classes.
         </div>
 
         {tab === "Live session" && (
@@ -218,10 +231,17 @@ export default function MultimodalCommandCenter() {
                     {Object.entries(last.dimensions).map(([k, d]) => (
                       <DimensionBar key={k} name={k} value={d.value} uncertainty={d.uncertainty} evidence={d.evidence} />
                     ))}
-                    <div className="text-[11px] text-foreground/50 border-t border-surface-border pt-2">
-                      IQI (experimental proxy): {last.iqi === null ? "—" : last.iqi.toFixed(2)} · overall confidence{" "}
-                      {last.confidence.toFixed(2)} · PID research metric (not a control target):{" "}
-                      {last.pid_research_metric === null ? "—" : last.pid_research_metric.toFixed(2)}
+                    <div className="flex flex-wrap items-center gap-2 border-t border-surface-border pt-2 text-[11px] text-foreground/50">
+                      <span className="inline-flex items-center gap-1.5">
+                        IQI (experimental proxy): {last.iqi === null ? "—" : last.iqi.toFixed(2)}
+                        <EvidenceMark evidenceId="iqi.proxy" />
+                      </span>
+                      <span>overall confidence {last.confidence.toFixed(2)}</span>
+                      <span className="inline-flex items-center gap-1.5">
+                        PID research metric (not a control target):{" "}
+                        {last.pid_research_metric === null ? "—" : last.pid_research_metric.toFixed(2)}
+                        <EvidenceMark evidenceId="pid.proxy" />
+                      </span>
                     </div>
                   </div>
                 ) : <p className="text-xs text-foreground/40">Start a simulation to see estimates.</p>}
@@ -344,7 +364,7 @@ function ProtocolsTab() {
                 }}>{busy === id ? "Running…" : "Run (synthetic)"}</Button>
             </div>
             <p className="text-foreground/60">Primary: {String(s.primary)}</p>
-            {results[id] && <pre className="whitespace-pre-wrap text-[10px] text-foreground/60 max-h-48 overflow-y-auto">{results[id]}</pre>}
+            {results[id] && <pre className="whitespace-pre-wrap text-[11px] text-foreground/60 max-h-48 overflow-y-auto">{results[id]}</pre>}
           </div>
         ))}
       </div>

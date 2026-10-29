@@ -38,6 +38,7 @@ _FILE_MARKERS: dict[str, list[str]] = {
     "test_session_service": ["core", "integration"],
     "test_signal_providers": ["core"],
     "test_dataset_acquire_real": ["core"],
+    "test_imagine_api": ["core"],
 
     "test_biosignal_acquisition": ["research"],
     "test_experiment_engine": ["research"],

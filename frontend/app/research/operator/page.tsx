@@ -1,7 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import AppShell from "@/components/layout/AppShell";
+import AsyncState from "@/components/platform/AsyncState";
+import BoundaryNote from "@/components/platform/BoundaryNote";
+import PageHeader from "@/components/platform/PageHeader";
+import Panel from "@/components/platform/Panel";
 import OperatorDashboard from "@/components/research/OperatorDashboard";
 import { getStudyMode } from "@/lib/research-api";
 
@@ -9,48 +14,71 @@ export default function OperatorPage() {
   const [studyMode, setStudyMode] = useState<string>("loading");
 
   useEffect(() => {
+    let active = true;
     getStudyMode()
-      .then((data) => setStudyMode(data.study_mode))
-      .catch(() => setStudyMode("unavailable"));
+      .then((data) => {
+        if (active) setStudyMode(data.study_mode);
+      })
+      .catch(() => {
+        if (active) setStudyMode("unavailable");
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
     <AppShell>
-      <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Operator Dashboard</h1>
-          <p className="text-gray-400 mt-2">
-            Study management, instrument registry, and system capability status.
-          </p>
-        </div>
+      <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-8 md:px-6 lg:py-10">
+        <PageHeader
+          eyebrow="Research operations"
+          title="Operator dashboard"
+          description="Study management, instrument registry, and system capability status. Human collection stays default-denied in this build."
+          meta={
+            <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/35">
+              application mode · {studyMode}
+            </span>
+          }
+          actions={
+            <Link
+              href="/method"
+              className="inline-flex h-11 items-center rounded-lg border border-surface-border px-3 text-[11px] text-foreground/60 hover:bg-white/[0.04] hover:text-foreground"
+            >
+              Method &amp; claims
+            </Link>
+          }
+        />
 
-        {studyMode === "demo" && (
-          <div className="mb-6 p-4 bg-yellow-900/30 rounded-xl border border-yellow-700/50 text-sm">
-            <p className="font-medium text-yellow-300">Demo Mode Active</p>
-            <p className="text-gray-400 mt-1">
-              Set <code className="text-yellow-400">IMAGINA_STUDY_MODE=pilot</code> to enable
-              study creation and participant management. Demo mode prevents research data collection.
+        {studyMode === "loading" ? (
+          <AsyncState kind="loading" title="Reading local study mode" body="Checking the local backend configuration." />
+        ) : null}
+
+        {studyMode === "demo" ? (
+          <Panel className="border-lock/30 bg-lock/[0.045] p-4">
+            <p className="text-sm font-medium text-lock">Demo mode active</p>
+            <p className="mt-1 text-sm leading-6 text-foreground/55">
+              Set <code className="font-mono text-[11px] text-lock">IMAGINA_STUDY_MODE=pilot</code> to enable study
+              creation and participant management. Demo mode prevents research data collection.
             </p>
-          </div>
-        )}
+          </Panel>
+        ) : null}
 
-        {studyMode === "unavailable" && (
-          <div className="mb-6 p-4 bg-red-900/30 rounded-xl border border-red-700/50 text-sm">
-            <p className="font-medium text-red-300">Backend Unavailable</p>
-            <p className="text-gray-400 mt-1">
-              Cannot connect to the IMAGINA backend. Ensure the server is running on port 8000.
+        {studyMode === "unavailable" ? (
+          <Panel className="border-danger/30 bg-danger/[0.045] p-4">
+            <p className="text-sm font-medium text-danger">Backend unavailable</p>
+            <p className="mt-1 text-sm leading-6 text-foreground/55">
+              Cannot connect to the local IMAGINA backend. Start it on port 8000, then reload this page.
             </p>
-          </div>
-        )}
+          </Panel>
+        ) : null}
 
-        <OperatorDashboard />
+        {studyMode !== "loading" ? <OperatorDashboard /> : null}
 
-        <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 text-xs text-gray-500">
-          <p>
-            IMAGINA is a research prototype. PID and IQI are experimental proxy metrics.
-            All default signals are simulated. This system does not decode thoughts or dreams.
-          </p>
-        </div>
+        <BoundaryNote>
+          IMAGINA is a research prototype. PID and IQI are experimental proxy metrics, default signals are simulated,
+          and this system does not decode thoughts or dreams. Capability flags describe the local build, not a
+          scientific validation.
+        </BoundaryNote>
       </div>
     </AppShell>
   );

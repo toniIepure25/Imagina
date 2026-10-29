@@ -65,7 +65,7 @@ export default function DreamCorridorScene({ params = DEFAULT_SCENE_PARAMS }: Pr
   return (
     <div className="cinematic-frame w-full h-full relative overflow-hidden bg-[#050711]">
       <div className="absolute left-4 bottom-4 z-20 max-w-xs rounded-lg border border-white/10 bg-background/65 p-3 text-[11px] text-foreground/72 backdrop-blur-md panel-glow">
-        <div className="mb-1 text-[10px] uppercase tracking-[0.18em] text-accent-glow/80">Scene Mapping</div>
+        <div className="mb-1 text-[11px] uppercase tracking-[0.18em] text-accent-glow/80">Scene Mapping</div>
         <div>Clarity = IQI proxy</div>
         <div>Fog = uncertainty/fatigue</div>
         <div>Wall distortion = instability</div>

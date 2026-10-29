@@ -20,7 +20,7 @@ interface ATProps {
 export function AdaptiveTrainingPanel({ plan, improved, pidTrend, onGenerate, onRegenerate }: ATProps) {
   if (!plan) {
     return (
-      <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-violet-500/50">
+      <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-violet-500/50">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Adaptive Training (V14)</div>
         <div className="text-foreground/50">No adaptive plan yet. Complete PID v2 calibrations first.</div>
         <button onClick={onGenerate} className="px-3 py-1.5 rounded bg-violet-500/20 border border-violet-500/30 text-violet-300 hover:bg-violet-500/30">
@@ -36,12 +36,12 @@ export function AdaptiveTrainingPanel({ plan, improved, pidTrend, onGenerate, on
     ? "Needs attention" : "Stable";
 
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-violet-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-violet-500/50">
       <div className="flex justify-between items-center">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Adaptive Training (V14)</div>
-        <span className={`px-2 py-0.5 rounded text-[8px] ${
-          improved ? "bg-green-500/20 text-green-400" : pidTrend === "insufficient_data"
-          ? "bg-gray-500/20 text-gray-400" : "bg-amber-500/20 text-amber-400"
+        <span className={`px-2 py-0.5 rounded text-[11px] ${
+          improved ? "bg-signal/10 text-signal" : pidTrend === "insufficient_data"
+          ? "bg-foreground/10 text-foreground/50" : "bg-lock/10 text-lock"
         }`}>
           {improved ? "Improved" : pidTrend === "insufficient_data" ? "No data" : trendLabel}
         </span>
@@ -51,15 +51,15 @@ export function AdaptiveTrainingPanel({ plan, improved, pidTrend, onGenerate, on
         <div className="text-foreground/50">Plan: <span className="text-foreground">{plan.plan_title}</span></div>
         <div className="text-foreground/50">Focus: <span className="text-violet-400">{plan.training_focus?.replace(/_/g, " ") || "—"}</span></div>
         <div className="text-foreground/50">Mean PID: <span className="text-accent-glow">{plan.source?.mean_pid_v2?.toFixed(3) || "?"}</span></div>
-        <div className="text-foreground/50">Weakest: <span className="text-amber-400">{plan.source?.weakest_dimension?.replace(/_/g, " ") || "—"}</span></div>
+        <div className="text-foreground/50">Weakest: <span className="text-lock">{plan.source?.weakest_dimension?.replace(/_/g, " ") || "—"}</span></div>
       </div>
 
-      <div className="text-foreground/40 text-[9px] leading-relaxed">{plan.plan_rationale}</div>
+      <div className="text-foreground/40 text-[11px] leading-relaxed">{plan.plan_rationale}</div>
 
       <div className="space-y-1">
         <div className="text-foreground/50 tracking-[0.05em]">Daily Schedule</div>
         {plan.daily_plan?.slice(0, 7).map((d) => (
-          <div key={d.day} className="flex gap-2 text-[9px] p-1.5 rounded bg-surface/30">
+          <div key={d.day} className="flex gap-2 text-[11px] p-1.5 rounded bg-surface/30">
             <span className="text-foreground/30 w-6">D{d.day}</span>
             <span className="text-foreground/60 flex-1">{d.title}</span>
             <span className="text-foreground/30">{d.duration_minutes}m</span>
@@ -70,7 +70,7 @@ export function AdaptiveTrainingPanel({ plan, improved, pidTrend, onGenerate, on
       <div className="space-y-1">
         <div className="text-foreground/50 tracking-[0.05em]">Calibration Checkpoints</div>
         {plan.checkpoint_schedule?.map((cp, i) => (
-          <div key={cp.day} className="flex gap-2 text-[9px] p-1.5 rounded bg-surface/30">
+          <div key={cp.day} className="flex gap-2 text-[11px] p-1.5 rounded bg-surface/30">
             <span className="text-violet-400">{checkpoints[i] || cp.type}</span>
             <span className="text-foreground/30">Day {cp.day}</span>
             <span className="text-foreground/40 ml-auto font-mono">{cp.task_id}</span>
@@ -78,7 +78,7 @@ export function AdaptiveTrainingPanel({ plan, improved, pidTrend, onGenerate, on
         ))}
       </div>
 
-      <div className="text-foreground/30 text-[9px]">
+      <div className="text-foreground/30 text-[11px]">
         Expected: {plan.expected_change?.target_metric} {plan.expected_change?.desired_direction} by &ge;{plan.expected_change?.minimum_meaningful_change}
       </div>
 
@@ -91,7 +91,7 @@ export function AdaptiveTrainingPanel({ plan, improved, pidTrend, onGenerate, on
         </button>
       </div>
 
-      <div className="text-foreground/20 text-[7px] leading-relaxed">{plan.scientific_boundary}</div>
+      <div className="text-foreground/20 text-[11px] leading-relaxed">{plan.scientific_boundary}</div>
     </div>
   );
 }

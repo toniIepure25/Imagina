@@ -98,13 +98,17 @@ export function useAnimusStudio(sessionId: string) {
     mutationAbortRef.current = null;
     mutationSeqRef.current += 1;
     busyRef.current = false;
-    setBusy(false);
+    const timer = window.setTimeout(() => setBusy(false), 0);
+    return () => window.clearTimeout(timer);
   }, [sessionId]);
 
   useEffect(() => {
     const controller = new AbortController();
-    void load(false, controller.signal);
+    const timer = window.setTimeout(() => {
+      void load(false, controller.signal);
+    }, 0);
     return () => {
+      window.clearTimeout(timer);
       controller.abort();
     };
   }, [load]);

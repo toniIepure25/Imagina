@@ -23,7 +23,7 @@ interface ITBProps {
 }
 
 const DIFF_COLORS: Record<number, string> = {
-  1: "text-green-400", 2: "text-emerald-400", 3: "text-amber-400", 4: "text-orange-400", 5: "text-red-400",
+  1: "text-signal", 2: "text-signal", 3: "text-lock", 4: "text-lock", 5: "text-danger",
 };
 
 export function ImageryTaskBatteryPanel({ tasks, categories, activeSession, onStartTask, onSubmitRating, onComplete, onRefresh }: ITBProps) {
@@ -38,7 +38,7 @@ export function ImageryTaskBatteryPanel({ tasks, categories, activeSession, onSt
 
   if (!tasks) {
     return (
-      <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-emerald-500/50">
+      <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-emerald-500/50">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Imagery Task Battery (V19)</div>
         <div className="text-foreground/50">Loading tasks...</div>
       </div>
@@ -46,22 +46,22 @@ export function ImageryTaskBatteryPanel({ tasks, categories, activeSession, onSt
   }
 
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-emerald-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-emerald-500/50">
       <div className="flex justify-between items-center">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Imagery Tasks (V19)</div>
-        <span className="text-foreground/30 text-[8px]">{tasks.length} tasks</span>
+        <span className="text-foreground/30 text-[11px]">{tasks.length} tasks</span>
       </div>
 
       <select value={selCat} onChange={(e) => setSelCat(e.target.value)}
-        className="px-2 py-1 rounded bg-surface border border-surface-border text-foreground/60 text-[9px] w-full">
+        className="px-2 py-1 rounded bg-surface border border-surface-border text-foreground/60 text-[11px] w-full">
         <option value="">All Categories</option>
         {categories?.map(c => <option key={c} value={c}>{c.replace(/_/g, " ")}</option>)}
       </select>
 
       {activeSession ? (
-        <div className="p-3 rounded bg-emerald-500/10 space-y-2">
-          <div className="text-emerald-400 text-[9px]">Active: {activeSession.task_metadata?.title}</div>
-          <div className="grid grid-cols-2 gap-2 text-[8px]">
+        <div className="p-3 rounded bg-signal/[0.06] space-y-2">
+          <div className="text-signal text-[11px]">Active: {activeSession.task_metadata?.title}</div>
+          <div className="grid grid-cols-2 gap-2 text-[11px]">
             {["vividness", "stability", "color_control", "spatial_control", "detail", "motion"].map(k => (
               <div key={k}>
                 <label className="text-foreground/40">{k.replace(/_/g, " ")} ({form[k]})</label>
@@ -72,16 +72,16 @@ export function ImageryTaskBatteryPanel({ tasks, categories, activeSession, onSt
           </div>
           <div className="flex gap-2">
             <button onClick={() => { onSubmitRating(activeSession.session_id, form); onComplete(activeSession.session_id); }}
-              className="px-3 py-1 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/30 text-[9px]">
+              className="px-3 py-1 rounded bg-signal/10 border border-signal/25 text-signal hover:bg-signal/20 text-[11px]">
               Rate & Complete
             </button>
-            <button onClick={onRefresh} className="px-3 py-1 rounded bg-surface border border-surface-border text-foreground/50 text-[9px]">Cancel</button>
+            <button onClick={onRefresh} className="px-3 py-1 rounded bg-surface border border-surface-border text-foreground/50 text-[11px]">Cancel</button>
           </div>
         </div>
       ) : (
         <div className="space-y-1 max-h-64 overflow-y-auto">
           {filtered.slice(0, 12).map(t => (
-            <div key={t.task_id} className="flex gap-2 text-[8px] p-1.5 rounded bg-surface/30 items-center">
+            <div key={t.task_id} className="flex gap-2 text-[11px] p-1.5 rounded bg-surface/30 items-center">
               <span className={DIFF_COLORS[t.difficulty] || "text-foreground/30"}>L{t.difficulty}</span>
               <span className="text-foreground/60 flex-1 truncate">{t.title}</span>
               <span className="text-foreground/30">{t.category?.replace(/_/g, " ")}</span>
@@ -98,7 +98,7 @@ export function ImageryTaskBatteryPanel({ tasks, categories, activeSession, onSt
         Refresh Tasks
       </button>
 
-      <div className="text-foreground/20 text-[7px]">{tasks[0]?.scientific_boundary}</div>
+      <div className="text-foreground/20 text-[11px]">{tasks[0]?.scientific_boundary}</div>
     </div>
   );
 }

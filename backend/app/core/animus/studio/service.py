@@ -28,21 +28,25 @@ from app.core.animus.scene.regenerate import RegenerationConfig, regenerate_vari
 from app.core.animus.scene.revisions import MAIN_BRANCH, RevisionStore
 from app.core.animus.studio.adaptive import action_payload
 from app.core.animus.studio.bus import AnimusEventBus, animus_bus
-from app.core.animus.studio.contrast import (
-    CONTRAST_PROTOCOL_VERSION,
-    DEFAULT_MAX_TRIALS,
-    MAX_MAX_TRIALS,
-    MIN_MAX_TRIALS,
-    next_trial as next_contrast_trial,
-    score_trial as score_contrast_trial,
-    summarize_contrast,
-    validate_reflection,
-)
 from app.core.animus.studio.claims import (
     StudioClaimError,
     capability_envelope,
     claim_envelope,
     enforce_studio_text,
+)
+from app.core.animus.studio.contrast import (
+    CONTRAST_PROTOCOL_VERSION,
+    DEFAULT_MAX_TRIALS,
+    MAX_MAX_TRIALS,
+    MIN_MAX_TRIALS,
+    summarize_contrast,
+    validate_reflection,
+)
+from app.core.animus.studio.contrast import (
+    next_trial as next_contrast_trial,
+)
+from app.core.animus.studio.contrast import (
+    score_trial as score_contrast_trial,
 )
 from app.core.animus.studio.epistemic import (
     DEFAULT_MAX_PROBES,
@@ -180,7 +184,7 @@ class AnimusStudioService:
 
     async def _create_runtime(self, *, scene: SceneGraph, title: str, intention: str, seed: int) -> StudioRuntime:
         session_id = "ast_" + uuid.uuid4().hex[:12]
-        store = RevisionStore.with_root(scene, intention=intention)
+        store = RevisionStore.with_root(scene, intention=intention, scope=session_id)
         root = store.head()
         now = _now()
         session = {
@@ -248,6 +252,7 @@ class AnimusStudioService:
                 "versions": versions, "branches": branches, "redo": redo,
                 "next_number": max(int(v["number"]) for v in versions) + 1,
             })
+            store.scope = session_id
             if active_branch_id not in {branch["branch_id"] for branch in branches}:
                 raise StudioNotFound(f"unknown studio branch {active_branch_id!r}")
             head = store.head(active_branch_id)

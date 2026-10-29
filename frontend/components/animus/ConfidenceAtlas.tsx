@@ -87,13 +87,13 @@ function AtlasMap({ scene, evidence }: { scene: SceneGraph; evidence: EvidenceIt
             fillOpacity={0.35 + item.posterior * 0.5}
             stroke="rgba(255,255,255,0.45)"
           />
-          <text x={x + 7} y={y + 3} fill="rgba(255,255,255,0.62)" fontSize="6">
+          <text x={x + 7} y={y + 3} fill="rgba(255,255,255,0.62)" fontSize="11">
             {item.label.slice(0, 18)}
           </text>
         </g>
       ))}
       {placed.length === 0 ? (
-        <text x="150" y="66" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="8">
+        <text x="150" y="66" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="11">
           No mapped evidence yet
         </text>
       ) : null}
@@ -127,7 +127,7 @@ export default function ConfidenceAtlas({
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[560px] text-left text-xs">
           <caption className="sr-only">Accessible tabular view of the confidence atlas</caption>
-          <thead className="text-[10px] uppercase tracking-[0.14em] text-foreground/35">
+          <thead className="text-[11px] uppercase tracking-[0.14em] text-foreground/35">
             <tr>
               <th className="pb-2 pr-3 font-normal">Feature</th>
               <th className="pb-2 pr-3 font-normal">Provenance</th>

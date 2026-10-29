@@ -41,7 +41,8 @@ gap. See [API_CONTRACT.md](API_CONTRACT.md).
 | Route | Purpose |
 |---|---|
 | `/animus` | Intention composer, recent sessions, saved worlds |
-| `/animus/studio/[sessionId]` | Scene canvas, prompt bar, candidates, inspector, history |
+| `/animus/studio/[sessionId]` | Versioned workbench: Stage, Structure, Ledger, direct transforms, candidate/version preview |
+| `/animus/imagine` | Imagine 2.0: stage-first first-person lab, 16D conditioning, adaptive trace/scenarios, fail-closed diffusion lane |
 | `/animus/practice/[sessionId]` | Adaptive scene practice; deterministic tasks and local scoring |
 | `/animus/interview/[sessionId]` | Epistemic interview; binary probes, posterior reconstruction, and uncertainty |
 | `/animus/observatory/[sessionId]` | Scene Threshold contrast task, confidence atlas, evidence trail, and test–retest reliability |
@@ -51,6 +52,28 @@ gap. See [API_CONTRACT.md](API_CONTRACT.md).
 
 The legacy `/imagina/animus` route redirects to `/animus`. The P1 research API under `/animus/*` is
 unchanged and remains available for its own clients.
+
+## Workbench
+
+The Studio is three synchronized views over one immutable version graph. **Stage** supports orbit, selection,
+direct transform, lock, and correction; **Structure** is a top-down, keyboard-operable move and relation editor;
+**Ledger** shows branch lanes, preview, and branching. Preview is explicitly read-only: a candidate or historical
+version can be inspected without changing the head. Keep commits a candidate; Branch creates a branch from a
+previewed version; Return restores the head. A first-look gate asks for a starting image before a new scene is
+revealed, and its notes never leave the tab.
+
+Stage also carries a **Timecode** strip for in-place version preview, spatial **Changes/Sources** rings, a
+**Palimpsest** trace of moved and removed entities’ previous positions, a **Comparison Chamber** for a
+shared-camera side-by-side look at head and preview, and a **Shot** deck (Wide, Eye, Detail, Top). Preview
+comparisons are explicitly head-relative, and a local `?version=…` link restores the inspected state after reload.
+The chamber can be opened from the preview banner/panel, the command palette, or `C`; it never discards or commits
+the preview. The research basis and its limits are in [RESEARCH_2_0.md](RESEARCH_2_0.md) and
+[COMPARISON_RESEARCH.md](COMPARISON_RESEARCH.md).
+
+Keyboard: `1/2/3` switch views, `[`/`]` step versions, `C` compare preview with head, `G/R/S` select transform
+mode, `F` focus, `L` lock, `Esc` close the chamber before the preview, `?` shortcuts, `Ctrl/Cmd+K` command palette.
+Transform commands clamp position to `±256` and scale to `0.01–64`; failed commands restore the prior visual state.
+See [WORKBENCH_SPEC.md](WORKBENCH_SPEC.md) for the state model, accessibility contract, and verification matrix.
 
 ## Experimental measurement
 
@@ -109,19 +132,25 @@ Frontend (from `frontend/`):
 ```powershell
 node node_modules/typescript/bin/tsc --noEmit --incremental false
 node node_modules/eslint/bin/eslint.js app/animus components/animus lib/animusStudioApi.ts lib/useAnimusStudio.ts
-node node_modules/vitest/vitest.mjs run lib/__tests__/animus-studio.test.ts
+node node_modules/vitest/vitest.mjs run
 node node_modules/next/dist/bin/next build
 node scripts/verify-animus-ui.cjs
 ```
 
 `verify-animus-ui.cjs` drives a real local Chrome/Edge through the full loop (intention, correction,
-element lock, candidate generation, keep, undo, save world, reload, worlds library, redirect, about page,
-mobile overflow) and fails on browser console errors. It writes screenshots to
-`docs/animus/01–06-*.png`.
+element lock, candidate generation, comparison chamber, keep, undo, save world, reload, worlds library, redirect,
+about page, mobile overflow) and fails on browser console errors. It writes screenshots to
+`docs/animus/01–06-*.png`, including `03d-studio-chamber.png`. The Imagine lab captures are
+`07-imagine-desktop.png`, `07b-animus-imagine-entry.png`, `07c-imagine-mobile.png`, and
+`07d-imagine-adaptive.png`.
 
 ## Documentation
 
 - [Product vision](ANIMUS_PRODUCT_VISION.md)
+- [Interface principles](INTERFACE_PRINCIPLES.md)
+- [Comparison chamber research](COMPARISON_RESEARCH.md)
+- [Imagine lab and diffusion handoff](IMAGINE_LAB.md)
+- [A100 diffusion worker runbook](DIFFUSION_WORKER.md)
 - [Architecture](ANIMUS_ARCHITECTURE.md)
 - [API contract](API_CONTRACT.md)
 - [Reconstruction spec](RECONSTRUCTION_SPEC.md)

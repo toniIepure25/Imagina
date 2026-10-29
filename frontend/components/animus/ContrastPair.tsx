@@ -51,7 +51,7 @@ export default function ContrastPair({
               disabled={disabled}
             >
               <span>{option.label}</span>
-              <span className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">
+              <span className="text-[11px] uppercase tracking-[0.18em] text-foreground/40">
                 {active ? "selected" : "choose"}
               </span>
             </button>

@@ -1,14 +1,28 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import AppShell from "@/components/layout/AppShell";
+import AnimusShell from "@/components/animus/AnimusShell";
 import Button from "@/components/common/Button";
-import AnimusScene from "@/components/animus/AnimusScene";
+
+const AnimusScene = dynamic(() => import("@/components/animus/AnimusScene"), {
+  ssr: false,
+  loading: () => (
+    <div
+      role="status"
+      aria-label="Loading 3D scene"
+      className="flex min-h-[320px] items-center justify-center rounded-xl border border-white/10 bg-[#050711] font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/35"
+    >
+      Loading scene…
+    </div>
+  ),
+});
 import ContrastPair from "@/components/animus/ContrastPair";
 import ConfidenceAtlas from "@/components/animus/ConfidenceAtlas";
 import ReliabilityPanel from "@/components/animus/ReliabilityPanel";
 import EvidenceTrail from "@/components/animus/EvidenceTrail";
+import EvidenceMark from "@/components/evidence/EvidenceMark";
 import {
   getStudioObservatory,
   getStudioSession,
@@ -65,14 +79,19 @@ function ResultMetric({
   label,
   value,
   note,
+  evidenceId,
 }: {
   label: string;
   value: string;
   note: string;
+  evidenceId?: string;
 }) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-      <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">{label}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">{label}</p>
+        {evidenceId ? <EvidenceMark evidenceId={evidenceId} /> : null}
+      </div>
       <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
       <p className="mt-1 text-[11px] leading-relaxed text-foreground/40">{note}</p>
     </div>
@@ -255,11 +274,11 @@ export default function AnimusObservatoryPage() {
   const evidence = observatory?.evidence ?? [];
 
   return (
-    <AppShell>
+    <AnimusShell sessionId={sessionId} active="observatory">
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="inline-flex rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-accent-glow/75">
+            <span className="inline-flex rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-glow/75">
               ANIMUS · scene threshold
             </span>
             <h1 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">
@@ -271,7 +290,7 @@ export default function AnimusObservatoryPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="secondary" onClick={() => router.push(`/animus/session/${sessionId}`)}>
+            <Button variant="secondary" onClick={() => router.push(`/animus/studio/${sessionId}`)}>
               Back to Studio
             </Button>
             <Button variant="ghost" onClick={() => router.push("/animus/profile")}>
@@ -337,7 +356,7 @@ export default function AnimusObservatoryPage() {
             />
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-white/[0.02] px-4 py-3">
               <p className="text-sm text-foreground/65">Study the scene. The first pair appears when the preview ends.</p>
-              <span className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">
+              <span className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">
                 fixed view · no orbit
               </span>
             </div>
@@ -348,7 +367,7 @@ export default function AnimusObservatoryPage() {
           <section className="mt-8 space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35">Trial</p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-foreground/35">Trial</p>
                 <p className="mt-1 text-lg font-medium tabular-nums">
                   {trial.trial_index + 1} <span className="text-sm font-normal text-foreground/35">of {contrast?.max_trials ?? 16}</span>
                 </p>
@@ -409,7 +428,7 @@ export default function AnimusObservatoryPage() {
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent-glow/70">Session complete</p>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-accent-glow/70">Session complete</p>
                   <h2 className="mt-1 text-2xl font-semibold">Your discrimination profile</h2>
                   <p className="mt-1 text-xs text-foreground/45">
                     {result.n_answered} answered of {result.n_trials} · {Math.round((result.coverage ?? 0) * 100)}% coverage
@@ -425,12 +444,13 @@ export default function AnimusObservatoryPage() {
                 </div>
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <ResultMetric label="d′" value={number(result.dprime)} note="overall 2-AFC sensitivity" />
+                <ResultMetric label="d′" value={number(result.dprime)} note="overall 2-AFC sensitivity" evidenceId="threshold.dprime" />
                 <ResultMetric label="Side bias" value={number(result.side_bias, 3)} note="A share minus 0.5; signed, descriptive" />
                 <ResultMetric
                   label="Brier"
                   value={number(result.calibration.brier, 3)}
                   note="lower means confidence tracks performance"
+                  evidenceId="calibration.brier"
                 />
                 <ResultMetric
                   label="Type-2 AUC"
@@ -438,6 +458,25 @@ export default function AnimusObservatoryPage() {
                   note="confidence separation; withheld when sparse"
                 />
               </div>
+              <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/8 pt-3 sm:grid-cols-4">
+                {[
+                  ["Trials", String(result.n_trials)],
+                  ["Answered", String(result.n_answered)],
+                  ["Coverage", `${Math.round((result.coverage ?? 0) * 100)}%`],
+                  ["Calibration n", String(result.calibration.n)],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/30">{label}</p>
+                    <p className="mt-0.5 font-mono text-sm tabular-nums text-foreground/65">{value}</p>
+                  </div>
+                ))}
+              </div>
+              {thresholds.some(([, item]) => item.censored) ? (
+                <p className="mt-3 text-[11px] leading-relaxed text-lock/65">
+                  A censored threshold is shown as an inequality. It records the direction of the evidence, not a
+                  precise crossing point.
+                </p>
+              ) : null}
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
@@ -531,7 +570,7 @@ export default function AnimusObservatoryPage() {
           </section>
         ) : null}
       </div>
-    </AppShell>
+    </AnimusShell>
   );
 }
 

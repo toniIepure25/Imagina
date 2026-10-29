@@ -21,7 +21,7 @@ export default function EvidenceTrail({ items }: { items: EvidenceItem[] }) {
             <summary className="cursor-pointer list-none">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-medium text-foreground/80">{item.label}</span>
-                <span className="text-[10px] uppercase tracking-[0.14em] text-foreground/35">
+                <span className="text-[11px] uppercase tracking-[0.14em] text-foreground/35">
                   {item.provenance.replace(/_/g, " ")} · {item.n_sources} source
                   {item.n_sources === 1 ? "" : "s"}
                 </span>

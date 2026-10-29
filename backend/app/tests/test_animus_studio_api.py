@@ -221,6 +221,7 @@ def test_event_history_is_ordered_and_cursorable(client):
     created = _create(client)
     session_id = created["session_id"]
     client.post(f"/animus/studio/sessions/{session_id}/intent", json={"text": "make the sky deep violet"})
+    client.post(f"/animus/studio/sessions/{session_id}/intent", json={"text": "add a second moon"})
 
     response = client.get(f"/animus/studio/sessions/{session_id}/events")
     assert response.status_code == 200, response.text

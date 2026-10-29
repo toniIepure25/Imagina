@@ -80,7 +80,8 @@ def test_interview_start_submit_and_summary_contract(client):
     body = started
     recorded = 0
     for index in range(6):
-        probe = body["probe"]
+        probe = body.get("probe") or body.get("next_probe")
+        assert probe is not None
         response = client.post(
             f"/animus/studio/sessions/{session_id}/interviews/{interview_id}/probes",
             json=_probe_body(probe, f"eri-client-{index}"),

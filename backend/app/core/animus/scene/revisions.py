@@ -116,12 +116,22 @@ class RevisionStore:
         self._branches: dict[str, BranchInfo] = {}
         self._redo: dict[str, list[str]] = {}
         self._next_number = 1
+        self._scope = ""
+
+    @property
+    def scope(self) -> str:
+        return self._scope
+
+    @scope.setter
+    def scope(self, value: str) -> None:
+        self._scope = value or ""
 
     @classmethod
     def with_root(cls, scene: SceneGraph, *, intention: str | None = None,
                   claim_level: str = "L1_BEHAVIORAL_ASSISTED",
-                  generator: str = "compose.v1") -> "RevisionStore":
+                  generator: str = "compose.v1", scope: str = "") -> "RevisionStore":
         store = cls()
+        store.scope = scope
         root = store._make_version(
             scene=scene, branch_id=MAIN_BRANCH, parent_version_id=None,
             commands=(), diff={}, source="compose", label="Initial scene",
@@ -154,7 +164,7 @@ class RevisionStore:
                       commands: list[dict] | tuple[dict, ...], diff: dict, source: str, label: str,
                       intention: str | None, claim_level: str, generator: str) -> SceneVersion:
         number = self._next_number
-        version_id = "ver_" + _digest(branch_id, parent_version_id, scene.content_hash(), number)[:12]
+        version_id = "ver_" + _digest(self._scope, branch_id, parent_version_id, scene.content_hash(), number)[:12]
         return SceneVersion(
             version_id=version_id, number=number, branch_id=branch_id,
             parent_version_id=parent_version_id, _scene=scene.copy(), commands=tuple(commands),

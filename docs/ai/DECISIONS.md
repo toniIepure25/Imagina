@@ -1276,5 +1276,398 @@ and feature-level test–retest r/SEM/MDC95, with `insufficient` when fewer than
 
 ---
 
+## ADR-055: ANIMUS is presented as an instrument, not an oracle
+
+**Status:** Accepted
+**Date:** 2026-10-24
+**Context:** The Studio and measurement surfaces had accumulated strong backend contracts but inherited a
+generic app shell and a navigation model that mixed ANIMUS with unrelated product routes. Research on generative
+AI and co-creativity shows that these systems shift work into monitoring, evaluation, and control; that semantic
+diversity matters more than visual volume; and that uncertainty displays can change trust without resolving
+interpretation. The interface therefore has to carry the epistemic discipline, not just the visual polish.
+
+**Decision:** Give ANIMUS a dedicated interface frame and interaction grammar. The frame includes a persistent
+local-only status and claim ceiling, a session-level rail across Studio / Recall / Beliefs / Threshold, a
+keyboard command palette, and a capability-focused home map. The studio scene gains a top-down entity index for
+direct spatial selection. The inspector gains a state-aware “Next move” card that recommends an evaluation step
+without executing it. The visual system is restrained and instrument-like: fine rules, mono metadata, quiet
+motion, no composite score, no implied neural authority.
+
+**Consequences:**
+- ANIMUS routes no longer inherit global product navigation; the global shell remains for non-ANIMUS routes.
+- Navigation and command discovery are keyboard-accessible; focus, skip link, reduced motion, and responsive
+  behavior are treated as part of the instrument.
+- The UI shows separate evidence registers — count, interval/censoring, scope — rather than collapsing them into
+  one index.
+- Candidate cards lead with semantic diffs and preserved locks; the scene index is not a decorative minimap.
+- The interface remains an interaction hypothesis. No usability, efficacy, or validation claim follows from it.
+- No new runtime dependency, API surface, neural input, image model, telemetry, or cloud call is introduced.
+- `docs/animus/INTERFACE_PRINCIPLES.md` records the research basis and the proposed evaluation plan.
+
+---
+
+## ADR-056: The Studio is a versioned workbench with preview as a first-class state
+
+**Status:** Accepted
+**Date:** 2026-10-24
+**Context:** Direct manipulation, candidate selection, and history were each individually present, but the
+Studio still behaved like a form beside a 3D preview. A user could not inspect a candidate or historical version
+without making it the active head, could not see the whole version graph, and could not move an element on the
+ground plane with a keyboard. Research on metacognition and co-creativity points in the opposite direction:
+the user needs to compare, defer commitment, and preserve authorship. The backend already exposes immutable
+versions, branches, diffs, and transform commands; the interface needed to use those contracts rather than add
+new ones.
+
+**Decision:** Treat the Studio as a workbench with three synchronized views — **Stage**, **Structure**, and
+**Ledger** — over one immutable version graph. Preview is an explicit, read-only state for a candidate or a
+historical version, never an implicit change to the head. “Keep” commits a candidate; “Branch” creates a branch
+from a previewed version; “Return” restores the head. Stage uses the existing transform command path with
+clamped, rounded values. Structure adds a top-down, keyboard-operable move surface and relation editor. Ledger
+shows branch lanes, parent edges, recent versions, intentions, and branch controls. A deliberate first-look gate
+asks the user to write a starting image before the first scene appears. Candidate thumbnails are static SVGs
+rather than extra WebGL canvases. All controls remain local-only and operate on the symbolic scene graph.
+
+**Consequences:**
+- Preview is read-only: transforms, relations, locks, prompts, and world saves are disabled while previewing.
+- A failed transform or relation command restores the prior visual state and surfaces an error; the head is not
+  partially mutated on the client.
+- The version graph is derived from `VersionSummary` and `BranchSummary` only; no new endpoint or schema.
+- `TransformControls` is attached only to unlocked, selected entities. Attribute locks do not disable the
+  whole-entity transform.
+- The first-look notes live in component state and are never persisted or uploaded.
+- The workbench is an interaction hypothesis; no usability, efficacy, or validation claim follows from it.
+- `docs/animus/WORKBENCH_SPEC.md` records the state model, keyboard map, and verification contract.
+
+---
+
+## ADR-057: History and provenance are spatial surfaces on Stage
+
+**Status:** Accepted
+**Date:** 2026-10-24
+**Context:** The versioned workbench made history inspectable in the Ledger, but the common question - "what did
+this look like one move ago?" - still required leaving Stage. The `changes` and `provenance` layer toggles existed
+in state but had no visual effect. A review of creative version-control, provenance-badge, metacognition, and
+creative-medium research supported keeping version access and source marks close to the scene, while warning
+against turning either into a score or a new dashboard.
+
+**Decision:** Add a **Timecode** strip to Stage for the active branch, with in-place preview and `[` / `]` stepping.
+Make `Changes` draw outer rings for added and changed entities and make `Sources` draw provenance rings, with one
+compact legend and no composite score. Replace the hidden View dropdown with a visible **Shot** deck (Wide, Eye,
+Detail, Top); Detail frames the selected entity. These are client-only interactions over the existing scene graph
+and version endpoints.
+
+**Consequences:**
+- Timecode preview is the same read-only preview state as Ledger; it never commits and never bypasses locks.
+- Removed entities are reported by count and label; ADR-058 later adds a stored-position trace.
+- Rings sit outside selection/lock rings so marks do not overwrite one another.
+- The layers remain independent toggles; no automatic recommendation or "best version" ranking is added.
+- `docs/animus/RESEARCH_2_0.md` records the sources, claim limits, and proposed evaluation.
+- No new runtime dependency, API surface, schema, telemetry, or cloud call is introduced.
+
+---
+
+## ADR-058: Head-relative preview comparison and previous-position trace
+
+**Status:** Accepted
+**Date:** 2026-10-24
+**Context:** ADR-057 made diff and provenance spatial on Stage, but two gaps remained. First, a historical
+version's backend `diff` is relative to its parent, while the current head may be several versions later; the
+preview panel could describe a comparison the user was not making. Second, removed entities and prior positions
+had no spatial representation, so the Stage could show that something changed but not where it used to be. The
+scene graph already stores the old transform, so no backend change is needed.
+
+**Decision:** For version previews, compute a deterministic client-side `compareScenes(head, preview)` and state
+the basis as **Since head**. Keep the backend candidate diff for candidate previews because it is relative to the
+declared source version and carries the semantic explanation; state that basis as **Since source version**. Draw a
+capped, non-interactive **Palimpsest** trace at the stored previous positions of moved and removed entities, with a
+dashed connector for moves. Use solid rings for added and dashed rings for changed. Add local URL links for
+version, candidate, and view state. Add Tab trapping and focus return to the command palette and shortcut overlay.
+
+**Consequences:**
+- The preview panel and Stage agree on the comparison basis; a parent-relative diff is no longer presented as a
+  head diff.
+- The trace uses only stored transforms and is capped at 16 with a visible shown/total count. No geometry is
+  invented and no hidden image is implied.
+- Attribute-only changes do not produce a trace; they remain visible through the dashed ring and path rows.
+- The client comparison is not a replacement for the backend's canonical diff or content hash.
+- URL links are local-only and use `history.replaceState`; they are not a sharing service and create no history
+  spam.
+- No new runtime dependency, API surface, schema, telemetry, or claim above `L1_BEHAVIORAL_ASSISTED`.
+- `docs/animus/RESEARCH_2_0.md` §9 records the limits and proposed evaluation.
+
+---
+
+## ADR-059: A transient Comparison Chamber for head-to-preview inspection
+
+**Status:** Accepted
+**Date:** 2026-10-24
+**Context:** The Palimpsest trace and change rings made history spatial, but comparing two states still required
+alternating attention between the live scene and a remembered one. A second view could help, but it could also
+double rendering cost and introduce a misleading comparison if the camera, basis, or filter were not controlled.
+The scene graph, camera, and diff are already available on the client; no backend or persistence change is needed.
+
+**Decision:** Add a transient, full-screen **Comparison Chamber** with two static panes: head on the left and the
+inspected preview/candidate on the right. Both use the head `cameraView`, no interaction, `frameloop="demand"`, no
+animation, and a capped DPR. The header states the basis (**Since head** for historical previews, **Head vs
+candidate** for candidates, with the panel retaining source-relative candidate detail). Add a default-off
+**Only differences** filter, a text/colour legend, a screen-reader summary, Tab trapping, focus return, body scroll
+lock, and Escape that closes the chamber before the preview. Extend the client comparison with scene-level rows
+(`entity_id: null`) so sky/lighting/camera changes cannot produce a false "No differences"; when only those rows
+exist, the filter keeps all elements visible and explains why.
+
+**Consequences:**
+- The chamber is available from the preview banner/panel, the command palette, and `C`; it never commits, branches,
+  or discards.
+- Shared camera is a control, not a navigation surface; both panes are static and read-only.
+- Scene-level changes count as changed rows but have no ring or focus target; the UI says so rather than inventing
+  a spatial marker.
+- Filtered panes still render the full trace from the head scene; counts remain full-comparison counts.
+- Two canvases cost more than one; the documented fallback is a single-pane toggle if a target device measures
+  poorly.
+- Manual orbit now clears the active Shot label, fixing the 2.1 limitation where a named shot could remain shown
+  after the camera moved.
+- No new runtime dependency, API surface, schema, telemetry, or claim above `L1_BEHAVIORAL_ASSISTED`.
+- `docs/animus/COMPARISON_RESEARCH.md` and `RESEARCH_2_0.md` section 10 record the evidence, limits, and proposed
+  studies.
+
+---
+
 *Last updated: 2026-10-24 - ADR-051 reconstruction proxy, ADR-052 information-gain policy, ADR-053
-epistemic interview, ADR-054 Scene Threshold 2-AFC*
+epistemic interview, ADR-054 Scene Threshold 2-AFC, ADR-055 instrument interface, ADR-056 versioned workbench,
+ADR-057 spatial history and provenance, ADR-058 head-relative comparison and trace, ADR-059 comparison chamber*
+
+---
+
+## ADR-060: One instrument, two modes — a shared platform shell for IMAGINA 3.0
+
+**Status:** Accepted
+**Date:** 2026-10-25
+**Context:** The Studio had become a coherent instrument, but the surrounding platform routes still used ad-hoc
+headers, tiny labels, light-on-dark research tables, hardcoded API hosts, and no shared loading/error/empty language.
+The product needed to read as one instrument with two modes — a participant Studio and a Research Console — without
+erasing ANIMUS's immersive workbench or changing any URL, API, schema, or scientific claim.
+
+**Decision:** Introduce a shared `PlatformHeader`/`PlatformFooter`/`PageHeader`/`Panel`/`AsyncState`/`ClaimBadge`
+system plus semantic type tokens (`--text-micro/meta/body/prose`) and a single ⌘K palette. Keep ANIMUS on its own
+`AnimusShell` for workspace immersion, but add explicit links back to the platform and to the scientific framing.
+Migrate every non-workspace route into the shared shell. Establish an 11px visible-text floor (enforced by
+`scripts/raise-type-floor.cjs`), 24px icon targets, and 44px primary mobile actions. Add three instrument features
+that use existing APIs only: a read-only event **Trace** (dedupe by `seq`, merge on `last_event_seq`, load older),
+an **Intent Lens** receipt for applied commands/warnings/clarifications, and a **manual Blink** comparison using the
+head camera with overlays hidden. Use `apiFetch` and `NEXT_PUBLIC_API_URL` everywhere; no relative API calls.
+
+**Consequences:**
+- URLs remain stable; `/imagina/animus` still redirects to `/animus`; no route is deleted.
+- No backend, schema, database, telemetry, or runtime dependency change. Trace reads the existing events endpoint.
+- Blink never runs automatically, never strobes, is capped at six alternations, and is disabled under reduced motion.
+- The research simulation/analysis pages surface the backend's asynchronous `queued` state rather than inventing a
+  result; a local worker is required for estimates.
+- Printed reports switch to a paper dossier surface and hide platform chrome.
+- ANIMUS keeps a distinct shell but is visually and navigationally joined to the platform.
+- Claim ceiling stays `L1_BEHAVIORAL_ASSISTED`; no composite imagery score, decoding, diagnosis, or clinical claim.
+
+---
+
+*Last updated: 2026-10-25 - ADR-060 shared platform shell and instrument features (Trace, Intent Lens, Blink)*
+
+---
+
+## ADR-061: The falsifiable instrument - Glass Box evidence, study design, and participant mode
+
+**Status:** Accepted
+**Date:** 2026-10-26
+**Context:** IMAGINA 3.0 unified the platform visually, but metric provenance still lived in prose. A reader could see
+an IQI or Brier value without seeing its method, uncertainty, or what it cannot support. Research planning was also
+split between static docs and backend simulation surfaces, so a local user could not commit a falsifiable plan before
+seeing data. The frontend needed to make evidence a first-class object without changing any API, schema, database, or
+claim.
+
+**Decision:** Introduce a frontend evidence layer with a single JSON registry (`lib/evidence/registry.json`), a
+typed lookup, a Glass Box context/store, per-metric `EvidenceMark` controls, a focus-trapped drawer, a `/method`
+Method Atlas, and a static negation-aware claim audit that emits `lib/evidence/audit.json`. Add a five-step
+Falsification Studio at `/research/design` with `IMAGINA-PREREG-v1` plans, deterministic allocation previews,
+planning precision (explicitly not power), local SHA-256 locking, and local export. Add a local-only Participant Mode
+demonstration at `/research/participant` with no persistence or network. Add instrument-grade foundations:
+`ChartFrame` chart-plus-table fallbacks, `VirtualList` for long timelines, lazy 3D routes, DPR caps, visibility
+pause, WebGL context-loss recovery, semantic-token cleanup, and a production bundle-budget script.
+
+**Consequences:**
+- Evidence ids are literal props and are audited; an unknown id renders a visible `?` rather than silently
+  disappearing.
+- The audit fails on affirmative prohibited phrases and unknown evidence ids. It cannot understand every rhetorical
+  form; human review remains required.
+- Study Designer never claims power, p-values, efficacy, ethics approval, or registry deposition. Its ceiling is set
+  by mode and cannot be raised by export.
+- Participant Mode is a demonstration, not a live study; it stores nothing and contacts nothing.
+- `/method` is a stable public route and is linked from the header, footer, palette, science page, and evidence
+  drawer.
+- Charts without a table, and 3D canvases without context-loss handling, are considered incomplete.
+- Bundle budgets are measured regression ceilings for the current Next 16 / React 19 baseline (shared 220 KB,
+  non-3D 340 KB, 3D 540 KB gzip), not the original aspirational 120/180/350 targets.
+- No backend, database, API, telemetry, or new runtime dependency was added. Claim ceiling stays
+  `L1_BEHAVIORAL_ASSISTED`.
+- ADR-060 remains valid: ANIMUS keeps its shell and visual identity while platform research surfaces become more
+  instrument-like.
+
+---
+
+## ADR-062: Imagine lab — first-person, diffusion-ready, honestly local
+
+**Status:** Accepted
+**Date:** 2026-10-25
+**Context:** The next product direction is scene generation through diffusion conditioned on more neuro/physiological
+signals plus an initial text description, with adaptive feedback and a first-person view. The remote A100 pod is not
+available, so no diffusion model can run. The current demo must therefore show the target architecture without
+pretending to execute it, while still materially improving the scene experience.
+
+**Decision:** Add a new `/animus/imagine` surface, separate from the Studio editing workbench, with:
+
+- a deterministic local `SceneGraph` composer driven by a text brief and a 12-channel demo signal vector;
+- a `cameraMode="firstPerson"` path in `AnimusScene` using WASD/arrow movement and drag look, with an orbit fallback;
+- an adaptive preview that moves the demo vector toward a declared Calm/Immersion/Exploration target;
+- a visible engine status that distinguishes `local procedural` from `diffusion offline`;
+- a downloadable `IMAGINA-DIFFUSION-JOB-v1` handoff contract with `status: "blocked"`, model slot, conditioning,
+  render settings, and boundary text;
+- an evidence entry (`imagine.scene`, kind `simulated`) and a route-level boundary statement;
+- unit, E2E, claim-audit, bundle, and UI-audit coverage.
+
+**Consequences:**
+- The route is a design instrument, not a diffusion-backed generator. The UI must never label the local scene as
+  generated imagery or as a measurement/reconstruction.
+- The signal vector is a control surface. No EEG, HRV, EDA, or other device data is read.
+- The adaptive loop is a demo and must not be described as live neurofeedback or as evidence of efficacy.
+- The job contract is the integration seam for a future GPU worker; changing it is an interface decision, not a
+  cosmetic one.
+- First-person mode is additive; existing Studio, comparison, and observatory camera paths stay unchanged.
+- No backend, database, API, dependency, or telemetry change was made. Claim ceiling stays
+  `L1_BEHAVIORAL_ASSISTED`.
+- The target pipeline is documented in `docs/animus/IMAGINE_LAB.md`.
+
+---
+
+## ADR-063: Imagine 2.0 — fail-closed diffusion seam, 16D conditioning, hybrid skybox
+
+**Status:** Accepted
+**Date:** 2026-10-25
+**Context:** ADR-062 shipped a local first-person demo with a blocked JSON handoff. The next step is a real integration
+seam: richer derived conditioning, an adaptive policy with safety limits, a backend job state machine, and a future
+generated environment texture. The A100 pod is still unavailable, so no model can run in this build.
+
+**Decision:** Additive Imagine 2.0 changes:
+
+- 16D conditioning (6 state, 4 band, 2 physiology, 4 meta) with a quality gate and eight aesthetic controls; text
+  remains the only semantic input.
+- A deterministic v0 adaptive policy with `0.12/s` cap, deadband, two-window hysteresis, `2500 ms` dwell, fatigue
+  stop, and quality hold. Simulated scenarios exercise the policy without a device.
+- Stage-first UI with composer and instrument rails, first-person pointer lock, drag fallback, touch joystick,
+  collision, reset, fullscreen, and capture.
+- A FastAPI `/animus/imagine` surface with `capabilities`, `jobs`, cancel/delete, and local asset serving. The remote
+  provider is disabled by default and performs no network request.
+- A file-backed job store under `data/imagine/`; no database migration.
+- A future `IMAGINA-DIFFUSION-REQUEST-v2` / `MANIFEST-v1` contract returning a 4096×2048 skybox and 1280×720
+  preview. Only the environment texture is generated; geometry, collision, and navigation stay local.
+- Evidence entry `imagine.diffusion`, kind `simulated`, with an explicit cannot-show boundary.
+
+**Consequences:**
+- Blocked `POST /jobs` returns `503 diffusion_unavailable` and writes no job. Enabling the lane is a configuration
+  change, not a frontend code change.
+- Browser code never receives the worker token or talks to the worker origin. Only derived values, prompt, and
+  controls are sent; no raw signals, session id, or participant id.
+- A generated skybox is an aesthetic environment texture, never a reconstruction, measurement, or validated imagery
+  score.
+- The local procedural path remains the default and the fallback. The stage stays usable when the API or worker is
+  absent.
+- `httpx` becomes a backend runtime dependency. No GPU, model weights, or new frontend dependency is added.
+- The worker contract and security acceptance are documented in `docs/animus/DIFFUSION_WORKER.md`.
+- Claim ceiling stays `L1_BEHAVIORAL_ASSISTED`.
+
+---
+
+## ADR-064: Lumen world grammar — text owns semantics, signals tune the perceptual budget
+
+**Status:** Accepted
+**Date:** 2026-10-26
+**Context:** The first Imagine lab composed a flat scatter of primitives from prompt keywords. It was walkable, but it
+did not read as a place: no terrain/path hierarchy, no architecture grammar, no consistent foreground/midground/
+horizon, and little architectural differentiation between a library, a coast, and an observatory. The final target is
+still diffusion on a remote A100, which is unavailable. A stronger local engine is required so the interface, camera,
+collision, provenance, and diffusion contract can be developed against a credible place rather than a placeholder.
+
+**Decision:** Add an additive Lumen layer:
+
+- `frontend/lib/imagine/world.ts` defines a deterministic `WorldSpec`: six biomes (`grove`, `coast`, `interior`,
+  `ruin`, `observatory`, `void`), eight archetypes, time, weather, mood, style priors, palette, budgets, camera,
+  seven semantic layers (`spawn`, `approach`, `threshold`, `flank`, `midground`, `horizon`, `detail`), focal object,
+  and prompt/archetype/style provenance.
+- `frontend/lib/imagine/composeWorld.ts` turns the spec into a capped (40-entity) `SceneGraph` with semantic
+  attributes on every entity: `semantic_source`, `layer`, `collidable`, `variant`, `anchor`. A clear central approach
+  path is preserved; the focal object sits beyond the walkable end.
+- `frontend/components/animus/world/` adds procedural sky, terrain/path shader, practical lights, ambient motes,
+  architecture bodies, and a bloom `EffectComposer`. These use only the existing `three` dependency and its bundled
+  post-processing examples.
+- `frontend/lib/imagine/presets.ts` ships five starter worlds and `?preset=` as the only new public route parameter.
+  Invalid values fall back without changing the world.
+- First-person movement adds velocity smoothing and subtle head bob; collision now respects the `collidable`
+  attribute instead of treating every visible object as an obstacle.
+- The existing diffusion contract is unchanged. No generated imagery is claimed, and no model or weights are added.
+
+**Consequences:**
+- Signals change perceptual budgets (fog, emissive light, detail count, palette, path width) but cannot choose
+  objects, people, or meaning. Prompt/style/seed remain the semantic authority.
+- Entity count is bounded for bundle, draw-call, and collision predictability; the metadata records whether the cap
+  truncated detail.
+- New `SceneGraph` entity kinds (`library`, `table`, `lantern`, `column`, `colonnade`, `ring`, `observatory`,
+  `monolith`, `mote`, `firefly`, `path`, `shrine`) are renderer-local and remain valid opaque kinds for older
+  consumers.
+- The `?preset=` values are presentation state, not saved worlds; saved Studio worlds and backend contracts are
+  untouched.
+- Bloom is desktop-only when motion is allowed and falls back to the normal renderer under reduced motion or a lost
+  context.
+- Claim ceiling stays `L1_BEHAVIORAL_ASSISTED`. The stage copy and evidence registry continue to say that the scene
+  is a symbolic composition, not generated or reconstructed imagery.
+
+---
+
+*Last updated: 2026-10-25 - ADR-063 Imagine 2.0 fail-closed diffusion seam*
+
+---
+
+## ADR-065: Repository governance baseline and cross-platform verification
+
+**Status:** Accepted
+**Date:** 2026-10-29
+**Context:** The repository had no license, citation metadata, contribution/security/governance
+documents, Python lockfile, or cross-platform verification entry point. `scripts/verify.sh` assumed
+`python3`, `timeout`, and a bash environment, which fails on the project's primary Windows
+workstation. The two "release" Dockerfiles were not release-grade: the backend copied a nonexistent
+`requirements.txt`, and the frontend ran `npm run dev` from an unpinned image. CI validated compose
+syntax but never built the release images.
+
+**Decision:**
+
+1. License code under Apache-2.0 and documentation under CC BY 4.0, with a `NOTICE` file and
+   `CITATION.cff`. Third-party datasets and instruments keep their own terms.
+2. Adopt `GOVERNANCE.md` with explicit claim authority: claim status changes only through a sealed,
+   preregistered result, not consensus or product pressure.
+3. Replace `scripts/verify.sh` with `scripts/verify.py` and thin `.sh`/`.ps1` wrappers. Modes:
+   `--quick`, `--ci`, `--full`; every check reports PASS/FAIL/SKIP; `--ci` treats a missing critical
+   tool as failure.
+4. Rebuild the release images from project metadata, run them as UID 10001, add healthchecks, and
+   build/start/health-check/assert-non-root them in a new CI `release-images` job.
+5. Add `.dockerignore` files and least-privilege/concurrency settings to CI.
+6. Treat the Windows pytest temp-ACL failure as an environment defect, not a test result: the
+   documented workaround is to point `TMP`/`TEMP` at a workspace-local `.pytest_tmp/` directory.
+
+**Consequences:**
+
+- The repository now has a reviewable legal and contribution baseline.
+- `verify.py --ci` is the single verification contract for local and CI use; Docker and npm are
+  explicit skips locally and failures in CI.
+- Release images are tested on every PR/main build rather than assumed.
+- The full merge gate passes on Windows only with the temp-root workaround; a permanent fix
+  (pytest `--basetemp` or ACL repair) remains follow-up work.
+- No scientific claim or claim ceiling changed.
+
+---
+
+*Last updated: 2026-10-29 - ADR-065 repository governance baseline*

@@ -14,7 +14,7 @@ export function SessionAnalyticsPanel({ analytics }: AnalyticsProps) {
   if (!analytics || analytics.n_steps === 0) return null;
   const fmt = (v: number) => (v > 0 ? "+" : "") + v.toFixed(4);
   return (
-    <div className="glass panel-glow p-4 space-y-2 text-[10px] border-l-2 border-green-500/50">
+    <div className="glass panel-glow p-4 space-y-2 text-[11px] border-l-2 border-green-500/50">
       <div className="text-foreground/40 uppercase tracking-[0.1em]">Session Analytics</div>
       <div className="grid grid-cols-2 gap-2">
         <div>Steps: <span className="font-mono">{analytics.n_steps}</span></div>

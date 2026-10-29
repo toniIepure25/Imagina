@@ -29,7 +29,7 @@ const BG_MAP: Record<string, string> = {
 export function MentalSceneRendererPanel({ sceneState, template, onRefresh }: MSRProps) {
   if (!sceneState) {
     return (
-      <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-pink-500/50">
+      <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-pink-500/50">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Scene Renderer (V22)</div>
         <div className="text-foreground/50">Run a guided session to see the symbolic scene.</div>
         <button onClick={onRefresh} className="px-3 py-1.5 rounded bg-surface border border-surface-border text-foreground/50 hover:bg-surface/50">Refresh</button>
@@ -53,10 +53,10 @@ export function MentalSceneRendererPanel({ sceneState, template, onRefresh }: MS
   } as React.CSSProperties;
 
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-pink-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-pink-500/50">
       <div className="flex justify-between">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Scene Renderer (V22)</div>
-        <span className="text-pink-300 text-[8px]">{template?.title || sceneState.template_id}</span>
+        <span className="text-pink-300 text-[11px]">{template?.title || sceneState.template_id}</span>
       </div>
       <div style={{ ...csx, width: "100%", height: 120, borderRadius: 8, overflow: "hidden", position: "relative" }}>
         <div style={{ width: "100%", height: "100%", background: "var(--bg-gradient)", filter: `brightness(${0.5 + p.brightness * 0.8}) blur(${p.fog * 8}px)`, transition: "filter 0.5s" }} />
@@ -67,13 +67,13 @@ export function MentalSceneRendererPanel({ sceneState, template, onRefresh }: MS
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: `linear-gradient(180deg, rgba(0,0,0,${p.fog.toFixed(2)}) 0%, transparent 50%)` }} />
       </div>
 
-      <div className="grid grid-cols-3 gap-1 text-center text-[8px]">
+      <div className="grid grid-cols-3 gap-1 text-center text-[11px]">
         <div className="p-1 rounded bg-surface/30"><span className="text-foreground/30">IQI</span><br /><span className="text-foreground/60">{px.iqi_proxy?.toFixed(2)}</span></div>
         <div className="p-1 rounded bg-surface/30"><span className="text-foreground/30">PID</span><br /><span className="text-foreground/60">{px.pid_proxy?.toFixed(2)}</span></div>
         <div className="p-1 rounded bg-surface/30"><span className="text-foreground/30">Phase</span><br /><span className="text-foreground/60">{sceneState.phase}</span></div>
       </div>
 
-      <div className="text-foreground/20 text-[7px]">{sceneState.visualization_boundary}</div>
+      <div className="text-foreground/20 text-[11px]">{sceneState.visualization_boundary}</div>
     </div>
   );
 }

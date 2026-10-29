@@ -67,7 +67,7 @@ export default function ReconstructionBoard({
     return (
       <div className="mt-5">
         <p className="text-xs text-foreground/45">
-          Select every object you remember. Decoys are present; don't select an object just because it looks
+          Select every object you remember. Decoys are present; do not select an object just because it looks
           plausible.
         </p>
         <div role="group" aria-label="Object tokens" className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -93,11 +93,11 @@ export default function ReconstructionBoard({
                 />
                 <span className="min-w-0">
                   <span className="block truncate text-sm text-foreground/85">{token.label}</span>
-                  <span className="mt-0.5 block text-[10px] uppercase tracking-wide text-foreground/35">
+                  <span className="mt-0.5 block text-[11px] uppercase tracking-wide text-foreground/35">
                     {token.role} · {token.kind}
                   </span>
                 </span>
-                <span className="ml-auto text-[10px] uppercase tracking-wide text-foreground/40">
+                <span className="ml-auto text-[11px] uppercase tracking-wide text-foreground/40">
                   {selected ? "Selected" : "Add"}
                 </span>
               </button>
@@ -121,7 +121,7 @@ export default function ReconstructionBoard({
           <button
             type="button"
             onClick={onClearPlacements}
-            className="rounded-lg border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-wide text-foreground/45 transition hover:border-white/25 hover:text-foreground/70"
+            className="rounded-lg border border-white/10 px-2.5 py-1 text-[11px] uppercase tracking-wide text-foreground/45 transition hover:border-white/25 hover:text-foreground/70"
           >
             Clear placements
           </button>
@@ -151,7 +151,7 @@ export default function ReconstructionBoard({
                 style={{ backgroundColor: swatch(token.color) }}
               />
               {token.label}
-              <span className="text-[9px] uppercase tracking-wide text-foreground/35">
+              <span className="text-[11px] uppercase tracking-wide text-foreground/35">
                 {placed ? "placed" : "place"}
               </span>
             </button>
@@ -193,7 +193,7 @@ export default function ReconstructionBoard({
                 {occupants.map((token) => (
                   <span
                     key={token.token_id}
-                    className="w-full truncate text-[8px] leading-tight text-foreground/65 sm:text-[9px]"
+                    className="w-full truncate text-[11px] leading-tight text-foreground/65 sm:text-[11px]"
                   >
                     {token.label}
                   </span>

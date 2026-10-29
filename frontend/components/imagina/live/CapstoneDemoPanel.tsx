@@ -13,14 +13,14 @@ export function CapstoneDemoPanel({ userId = "demo_user" }: { userId?: string })
   useEffect(() => { cap.refreshAll(); }, [cap.refreshAll]);
 
   return (
-    <div className="space-y-4 text-[10px]">
-      {cap.error && <div className="glass p-2 text-red-400 text-[10px]">{cap.error}</div>}
+    <div className="space-y-4 text-[11px]">
+      {cap.error && <div className="glass p-2 text-danger text-[11px]">{cap.error}</div>}
 
       <div className="text-foreground/40 uppercase tracking-[0.1em]">Capstone Reviewer Demo (V44)</div>
-      <div className="text-foreground/30 text-[9px] leading-relaxed">
+      <div className="text-foreground/30 text-[11px] leading-relaxed">
         One-click unified demo: live demo → scene replay → benchmark → scorecard → Scenario SDK → policy matrix → leaderboard → export.
-        <span className="px-1.5 py-0.5 ml-1 rounded bg-cyan-500/20 text-cyan-400 text-[7px]">raw_eeg: false</span>
-        <span className="px-1.5 py-0.5 ml-1 rounded bg-green-500/20 text-green-400 text-[7px]">not BCI</span>
+        <span className="px-1.5 py-0.5 ml-1 rounded bg-cyan-500/20 text-cyan-400 text-[11px]">raw_eeg: false</span>
+        <span className="px-1.5 py-0.5 ml-1 rounded bg-signal/10 text-signal text-[11px]">not BCI</span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

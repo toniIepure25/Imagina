@@ -1,10 +1,23 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import AppShell from "@/components/layout/AppShell";
+import AnimusShell from "@/components/animus/AnimusShell";
 import Button from "@/components/common/Button";
-import AnimusScene from "@/components/animus/AnimusScene";
+
+const AnimusScene = dynamic(() => import("@/components/animus/AnimusScene"), {
+  ssr: false,
+  loading: () => (
+    <div
+      role="status"
+      aria-label="Loading 3D scene"
+      className="flex min-h-[320px] items-center justify-center rounded-xl border border-white/10 bg-[#050711] font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/35"
+    >
+      Loading scene…
+    </div>
+  ),
+});
 import EpistemicProbe from "@/components/animus/EpistemicProbe";
 import {
   getStudioInterview,
@@ -172,11 +185,11 @@ export default function AnimusInterviewPage() {
   const relationEntropy = reconstruction?.uncertainty.relation_entropy;
 
   return (
-    <AppShell>
+    <AnimusShell sessionId={sessionId} active="interview">
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="inline-flex rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-accent-glow/75">
+            <span className="inline-flex rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-glow/75">
               ANIMUS · epistemic interview
             </span>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight">Ask better questions, not more.</h1>
@@ -209,7 +222,7 @@ export default function AnimusInterviewPage() {
           <section className="overflow-hidden rounded-2xl border border-white/10 bg-[#070a12]">
             {phase === "idle" ? (
               <div className="flex min-h-[430px] flex-col items-center justify-center p-8 text-center">
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-foreground/40">
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-foreground/40">
                   {session?.title ?? "Loading session"}
                 </span>
                 <h2 className="mt-4 text-xl font-medium">A short, adaptive interview</h2>
@@ -238,7 +251,7 @@ export default function AnimusInterviewPage() {
                   </div>
                 )}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-[#050711] via-[#050711]/85 to-transparent px-6 pb-6 pt-16">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent-glow/70">Encoding</p>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-accent-glow/70">Encoding</p>
                   <p className="mt-1 text-lg font-medium">Hold the scene in mind.</p>
                   <p className="mt-1 text-sm text-foreground/45">
                     It hides in {probe?.preview_seconds ?? 4} seconds. The view is fixed. You will not see the
@@ -274,7 +287,7 @@ export default function AnimusInterviewPage() {
             ) : phase === "complete" && reconstruction ? (
               <div className="p-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-emerald-200/65">
+                  <span className="text-[11px] uppercase tracking-[0.18em] text-emerald-200/65">
                     Interview complete
                   </span>
                   <span className="text-[11px] text-foreground/35">
@@ -289,7 +302,7 @@ export default function AnimusInterviewPage() {
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">
                       Objects · P(present)
                     </p>
                     <ul className="mt-3 space-y-3">
@@ -305,13 +318,13 @@ export default function AnimusInterviewPage() {
                               style={{ width: `${Math.round(item.probability * 100)}%` }}
                             />
                           </div>
-                          <p className="mt-1 text-[10px] text-foreground/30">{item.status.replaceAll("_", " ")}</p>
+                          <p className="mt-1 text-[11px] text-foreground/30">{item.status.replaceAll("_", " ")}</p>
                         </li>
                       ))}
                     </ul>
                   </div>
                   <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">
                       Spatial relations · P(left)
                     </p>
                     {reconstruction.relations.length ? (
@@ -368,7 +381,7 @@ export default function AnimusInterviewPage() {
 
           <aside className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">Local profile</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">Local profile</p>
               <div className="mt-3 flex items-baseline justify-between">
                 <span className="text-sm text-foreground/65">Interviews</span>
                 <span className="text-2xl font-semibold tabular-nums">{profile?.epistemic?.n_interviews ?? 0}</span>
@@ -382,7 +395,7 @@ export default function AnimusInterviewPage() {
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35">How selection works</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/35">How selection works</p>
               <p className="mt-2 text-[11px] leading-relaxed text-foreground/45">
                 A coverage floor asks one object and one spatial probe first. After that the next probe is the
                 one with the highest expected reduction in binary entropy. The model is a mean-field Beta
@@ -390,7 +403,7 @@ export default function AnimusInterviewPage() {
               </p>
             </div>
             <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[0.035] p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-amber-200/55">Boundary</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-amber-200/55">Boundary</p>
               <p className="mt-2 text-[11px] leading-relaxed text-foreground/45">
                 This is behavioural scene reconstruction, not a diagnosis, treatment, or neural decoder. It
                 does not show what you imagined. Stop if you feel fatigued or frustrated. Aphantasia is a
@@ -400,14 +413,14 @@ export default function AnimusInterviewPage() {
           </aside>
         </div>
       </div>
-    </AppShell>
+    </AnimusShell>
   );
 }
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2">
-      <p className="text-[10px] uppercase tracking-wide text-foreground/30">{label}</p>
+      <p className="text-[11px] uppercase tracking-wide text-foreground/30">{label}</p>
       <p className="mt-1 text-sm tabular-nums text-foreground/75">{value}</p>
     </div>
   );

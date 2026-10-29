@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 120000,
   retries: 0,
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
   },
   projects: [
@@ -14,18 +14,20 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: [
-    {
-      command: "cd ../backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000",
-      url: "http://localhost:8000/api/health",
-      reuseExistingServer: true,
-      timeout: 30000,
-    },
-    {
-      command: "npm run dev",
-      url: "http://localhost:3000",
-      reuseExistingServer: true,
-      timeout: 30000,
-    },
-  ],
+  webServer: process.env.PLAYWRIGHT_BASE_URL
+    ? undefined
+    : [
+        {
+          command: "cd ../backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000",
+          url: "http://localhost:8000/api/health",
+          reuseExistingServer: true,
+          timeout: 30000,
+        },
+        {
+          command: "npm run dev",
+          url: "http://localhost:3000",
+          reuseExistingServer: true,
+          timeout: 30000,
+        },
+      ],
 });

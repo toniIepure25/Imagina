@@ -20,6 +20,7 @@ counts, and limits instead of a single “imagery score.”
 | Layer | What it provides | What it deliberately is not |
 |---|---|---|
 | **ANIMUS Studio** | Intention → symbolic scene → correction → version → regenerate → keep / branch / save world | Not an image generator; not neural reconstruction |
+| **Lumen** | Text brief + signal budget → layered first-person world with five local starters | Not diffusion, generated imagery, or mental-content reconstruction |
 | **Scene practice** | Deterministic reconstruction and placement tasks with adaptive selection | Not a diagnosis or a measure of imagery strength |
 | **Epistemic interview** | Binary probes, Beta posteriors, expected-information-gain selection, uncertainty | Not a read-out of a mental image |
 | **Scene Threshold** | 2-AFC contrast discrimination, adaptive staircase, d′, thresholds, calibration | Not a criterion measure, norm, or clinical instrument |
@@ -129,6 +130,10 @@ test–retest reliability. Censored thresholds are reported as boundaries, not p
   export.
 - **Uncertainty is first-class.** Counts, intervals, censoring, coverage, and abstention are part of the
   interface — not footnotes.
+- **Authorship is a control surface.** Locks, explicit commands, immutable versions, and branch points stay
+  visible; the system proposes candidates but never quietly overwrites the user's decisions.
+- **A calibrated mirror, not an oracle.** The interface is designed around inspection and correction, not
+  spectacle or a single composite score.
 
 The backend defaults to `127.0.0.1`, validates the `Host` header, and marks Studio responses `no-store`.
 Before a non-empty database is upgraded, it writes and integrity-checks a recovery copy under
@@ -164,6 +169,7 @@ API documentation is available at **http://127.0.0.1:8000/docs**.
 | Route | Purpose |
 |---|---|
 | `/animus` | Intention composer, recent sessions, saved worlds |
+| `/animus/imagine` | Lumen first-person world lab: presets, composer, signals, adaptive policy, blocked diffusion lane |
 | `/animus/studio/[sessionId]` | Scene canvas, prompt bar, candidates, inspector, history |
 | `/animus/practice/[sessionId]` | Adaptive scene practice and local scoring |
 | `/animus/interview/[sessionId]` | Epistemic interview and posterior reconstruction |
@@ -176,28 +182,20 @@ API documentation is available at **http://127.0.0.1:8000/docs**.
 
 ## Verification
 
-From `backend/`:
+The cross-platform entry point is `scripts/verify.py` (wrappers: `verify.sh`, `verify.ps1`):
 
-```powershell
-python -m pytest app/tests/test_animus_scene_model.py app/tests/test_animus_scene_commands.py `
-  app/tests/test_animus_scene_revisions.py app/tests/test_animus_studio_intent.py `
-  app/tests/test_animus_studio_persistence.py app/tests/test_animus_studio_api.py `
-  app/tests/test_animus_studio_integrity.py app/tests/test_animus_studio_claims.py `
-  app/tests/test_animus_studio_reconstruction.py app/tests/test_animus_studio_adaptive.py `
-  app/tests/test_animus_studio_simulation.py app/tests/test_animus_epistemic.py `
-  app/tests/test_animus_epistemic_api.py app/tests/test_animus_epistemic_sim.py `
-  app/tests/test_animus_contrast.py app/tests/test_animus_contrast_api.py `
-  app/tests/test_animus_observatory.py app/tests/test_animus_contrast_sim.py `
-  -q -p no:cacheprovider
-python -m ruff check --no-cache app/core/animus app/api/animus_studio.py app/schemas/animus_studio.py
+```bash
+python scripts/verify.py --quick   # lint + focused backend tests
+python scripts/verify.py --ci      # lint, core/research tests, frontend, claims, compose
+python scripts/verify.py --full    # full backend suite + CI profile
 ```
 
-From `frontend/`:
+It reports every check as PASS, FAIL, or SKIP and exits non-zero on failure. In `--ci` mode, a missing
+critical tool (npm, Docker) is a failure rather than a skip.
+
+From `frontend/`, the browser-driven check remains available:
 
 ```powershell
-npm run typecheck
-npm run lint
-npm run build
 node scripts/verify-animus-ui.cjs
 ```
 
@@ -255,6 +253,8 @@ scripts/                    verification and UI-driving scripts
 | Document | Why read it |
 |---|---|
 | [ANIMUS product vision](docs/animus/ANIMUS_PRODUCT_VISION.md) | The loop, the north star, and what is real today |
+| [Interface principles](docs/animus/INTERFACE_PRINCIPLES.md) | Research synthesis, interaction North Star, and testable next experiments |
+| [Lumen world engine](docs/animus/LUMEN_WORLD_ENGINE.md) | World grammar, layered composer, presets, renderer, and staged diffusion path |
 | [Architecture](docs/animus/ANIMUS_ARCHITECTURE.md) | Scene graph, Studio service, measurement layers |
 | [API contract](docs/animus/API_CONTRACT.md) | Wire formats, concurrency, errors, and WebSocket behavior |
 | [Measurement model](docs/animus/MEASUREMENT_MODEL.md) | What the five dimensions mean and do not mean |
@@ -265,6 +265,21 @@ scripts/                    verification and UI-driving scripts
 | [Observatory](docs/animus/OBSERVATORY_SPEC.md) | Provenance, leave-one-out sensitivity, and reliability |
 | [Claims boundary](docs/animus/ANIMUS_CLAIMS_BOUNDARY.md) | The exact claim ceiling and forbidden interpretations |
 | [Roadmap](docs/animus/ANIMUS_ROADMAP.md) | What comes next and what remains blocked |
+
+---
+
+## License, citation, and contributing
+
+- **Code:** [Apache License 2.0](LICENSE).
+- **Documentation and figures:** [CC BY 4.0](LICENSE-DOCS).
+- **Citation:** see [CITATION.cff](CITATION.cff). Cite the repository version and the specific study
+  artifacts you used; do not cite a demo as validation.
+- **Contributing:** read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+- **Security:** see [SECURITY.md](SECURITY.md); do not open a public issue for a vulnerability.
+- **Governance and claims:** see [GOVERNANCE.md](GOVERNANCE.md). Claim status changes only through a sealed,
+  preregistered result, not through consensus or product pressure.
+
+Third-party datasets and instruments retain their own licenses and are not redistributed here.
 
 ---
 

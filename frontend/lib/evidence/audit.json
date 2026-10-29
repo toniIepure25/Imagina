@@ -1,0 +1,101 @@
+{
+  "schema": "IMAGINA-EVIDENCE-AUDIT-v1",
+  "generatedAt": "2026-10-25T22:25:00.790Z",
+  "filesScanned": 194,
+  "entries": 22,
+  "evidenceIds": [
+    "attention.proxy",
+    "calibration.brier",
+    "curriculum.level",
+    "dataset.readiness",
+    "fatigue.proxy",
+    "imagine.scene",
+    "iqi.proxy",
+    "pid.proxy",
+    "selfreport.vividness",
+    "synthetic.estimate",
+    "threshold.dprime"
+  ],
+  "evidenceIdCount": 11,
+  "orphanIds": [],
+  "findings": [
+    {
+      "file": "app/animus/about/page.tsx",
+      "line": 17,
+      "phrase": "dream decoding",
+      "text": "No dream decoding, neural reconstruction, or interpretation",
+      "negated": true
+    },
+    {
+      "file": "app/animus/page.tsx",
+      "line": 311,
+      "phrase": "imagery score",
+      "text": "Each instrument answers a different question. None of them is a composite imagery score, and none of them leaves this machine.",
+      "negated": true
+    },
+    {
+      "file": "app/experiments/page.tsx",
+      "line": 122,
+      "phrase": "dream decoding",
+      "text": "Research-mode notice: some trials may hold feedback constant for validation. This is disclosed control feedback, not hidden dream decoding.",
+      "negated": true
+    },
+    {
+      "file": "app/imagina/page.tsx",
+      "line": 142,
+      "phrase": "mind reading",
+      "text": "✗ Mind reading / dream decoding",
+      "negated": true
+    },
+    {
+      "file": "app/imagina/page.tsx",
+      "line": 142,
+      "phrase": "dream decoding",
+      "text": "✗ Mind reading / dream decoding",
+      "negated": true
+    },
+    {
+      "file": "app/page.tsx",
+      "line": 238,
+      "phrase": "clinically validated",
+      "text": "Provide clinically validated neurofeedback or measure consciousness.",
+      "negated": true
+    },
+    {
+      "file": "app/reports/[sessionId]/page.tsx",
+      "line": 121,
+      "phrase": "imagery score",
+      "text": "This report summarizes experimental proxy metrics. It does not represent decoded mental content, a composite imagery score, or clinical evaluation. Values are descriptive for this ",
+      "negated": true
+    },
+    {
+      "file": "app/science/page.tsx",
+      "line": 18,
+      "phrase": "imagery score",
+      "text": "The weights are design choices, not psychometric loadings. Do not read IQI as an imagery score.",
+      "negated": true
+    },
+    {
+      "file": "components/imagine/ConsentDialog.tsx",
+      "line": 79,
+      "phrase": "imagery score",
+      "text": "Output is a generated environment texture. It is an aesthetic aid, not a reconstruction, a measurement, or a validated imagery score.",
+      "negated": true
+    },
+    {
+      "file": "components/imagine/ImagineLab.tsx",
+      "line": 649,
+      "phrase": "dream decoding",
+      "text": "Symbolic scene instrument. No thought decoding, dream decoding, imagery reconstruction, diagnosis, or validated imagery score. Claim ceiling L1 behavioural-assisted.",
+      "negated": true
+    },
+    {
+      "file": "components/imagine/ImagineLab.tsx",
+      "line": 649,
+      "phrase": "imagery score",
+      "text": "Symbolic scene instrument. No thought decoding, dream decoding, imagery reconstruction, diagnosis, or validated imagery score. Claim ceiling L1 behavioural-assisted.",
+      "negated": true
+    }
+  ],
+  "status": "pass"
+}

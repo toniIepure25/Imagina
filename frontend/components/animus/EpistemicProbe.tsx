@@ -31,7 +31,7 @@ export default function EpistemicProbe({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-accent-glow/65">
+        <span className="text-[11px] uppercase tracking-[0.18em] text-accent-glow/65">
           {probe.probe_type === "spatial_relation" ? "Spatial relation" : "Object presence"}
           {" · "}
           difficulty {Math.round(probe.difficulty * 100)}%
@@ -56,7 +56,7 @@ export default function EpistemicProbe({
                 : "border-white/10 text-foreground/70 hover:border-white/25"
             }`}
           >
-            <span className="mr-3 text-[10px] uppercase tracking-wide text-foreground/35">
+            <span className="mr-3 text-[11px] uppercase tracking-wide text-foreground/35">
               {option.id}
             </span>
             {option.label}

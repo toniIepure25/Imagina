@@ -607,5 +607,38 @@ Adding feature types or occasions is the correct fix, not lowering the threshold
 
 ---
 
-*Last updated: 2026-10-24 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
-RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits*
+## RISK-054: A generated skybox can be mistaken for reconstructed imagery
+
+**Risk:** Once a diffusion worker exists, a realistic environment texture may be read as what the person imagined,
+as neural decoding, or as a validated improvement. The hybrid bundle keeps geometry symbolic, but the skybox alone
+can dominate perception.
+**Impact:** High for scientific credibility and for vulnerable users.
+**Mitigation:** The lane is disabled by default and fails closed; consent names the exact payload; the stage badges
+`local procedural` vs `diffusion skybox`; provenance names the model slot/hash/seed and states that geometry,
+collision, and navigation stay local; the claim ceiling remains `L1_BEHAVIORAL_ASSISTED`; `imagine.diffusion` records
+what it cannot show; the worker contract forbids raw signals and participant ids.
+**Status:** Mitigated in contract, UI, and docs; no worker has been attached or evaluated, and no human study has
+tested whether the skybox helps or misleads.
+
+---
+
+## RISK-055: A convincing procedural world can be mistaken for generated or remembered imagery
+
+**Risk:** Lumen layers, bloom, architecture, and preset thumbnails can look more authored than a keyword demo. A person
+may read the result as a generated image, a reconstruction of what they imagined, or evidence that the signal vector
+carries semantic content.
+**Impact:** High for scientific credibility, authorship, and the meaning of the signal controls.
+**Mitigation:** `metadata.world` records prompt/archetype/style provenance; every entity carries a semantic source and
+layer; the scene-read panel says the composition is symbolic and not generated imagery; signals are documented as a
+perceptual budget only; presets are labelled local starters; the diffusion lane remains blocked; `/science` records
+the local-composition claim with its boundary; no image model or neural decoder is loaded.
+**Status:** Mitigated in UI, metadata, tests, and docs; no comprehension study has measured whether people read the
+boundary correctly.
+
+---
+
+*Last updated: 2026-10-26 - RISK-055 procedural-world overclaiming*
+
+*Prior update: 2026-10-25 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
+RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits, RISK-054 generated-skybox
+overclaiming*

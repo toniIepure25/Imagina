@@ -18,20 +18,20 @@ export function LiveImageryFeedbackPanel({ feedback, onRefresh }: LFPProps) {
   ];
 
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-pink-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-pink-500/50">
       <div className="text-foreground/40 uppercase tracking-[0.1em]">Live Feedback (V20)</div>
-      <div className="text-pink-300 text-[9px]">{feedback.guidance_text?.slice(0, 120)}</div>
-      <div className="text-foreground/30 text-[8px]">Type: {feedback.feedback_type} · Safety: {feedback.safety_state}</div>
+      <div className="text-pink-300 text-[11px]">{feedback.guidance_text?.slice(0, 120)}</div>
+      <div className="text-foreground/30 text-[11px]">Type: {feedback.feedback_type} · Safety: {feedback.safety_state}</div>
       <div className="space-y-1">
         {bars.map(([label, val]) => (
-          <div key={label} className="flex gap-2 text-[8px] items-center">
+          <div key={label} className="flex gap-2 text-[11px] items-center">
             <span className="text-foreground/40 w-16">{label}</span>
             <div className="flex-1 bg-surface-border rounded h-1"><div className="bg-pink-400 h-1 rounded" style={{ width: `${(val || 0) * 100}%` }} /></div>
           </div>
         ))}
       </div>
       <button onClick={onRefresh} className="px-3 py-1.5 rounded bg-surface border border-surface-border text-foreground/50 hover:bg-surface/50">Refresh</button>
-      <div className="text-foreground/20 text-[7px]">Self-report proxy — not neural measurement, not BCI, not mind-reading.</div>
+      <div className="text-foreground/20 text-[11px]">Self-report proxy — not neural measurement, not BCI, not mind-reading.</div>
     </div>
   );
 }

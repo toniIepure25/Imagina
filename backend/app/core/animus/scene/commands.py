@@ -253,7 +253,8 @@ def _set_scene_value(scene: SceneGraph, path: str, value: Any) -> None:
         return
     if path == "camera.target":
         scene.camera.target = _parse_vec3(value, path)
-        return    if path == "camera.fov":
+        return
+    if path == "camera.fov":
         scene.camera.fov = float(clamp(finite_number(value, field_name=path), 20, 90))
         return
     if path == "camera.motion":

@@ -1,10 +1,13 @@
 "use client";
 
-import AppShell from "@/components/layout/AppShell";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import AppShell from "@/components/layout/AppShell";
+import BoundaryNote from "@/components/platform/BoundaryNote";
+import EvidenceMark from "@/components/evidence/EvidenceMark";
+import PageHeader from "@/components/platform/PageHeader";
+import Panel from "@/components/platform/Panel";
+import { apiFetch } from "@/lib/api";
 
 interface RunStatus {
   run_id: string;
@@ -16,6 +19,22 @@ interface RunStatus {
   export_ready: boolean;
   replay_verified: boolean;
   error: string | null;
+}
+
+const TERMINAL = new Set(["completed", "completed_with_failures", "failed", "aborted"]);
+
+function emptyRun(runId: string, studyId: string): RunStatus {
+  return {
+    run_id: runId,
+    study_id: studyId,
+    status: "accepted",
+    sessions_completed: 0,
+    sessions_failed: 0,
+    total_sessions: 0,
+    export_ready: false,
+    replay_verified: false,
+    error: null,
+  };
 }
 
 export default function SyntheticDemoPage() {
@@ -31,7 +50,7 @@ export default function SyntheticDemoPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE}/api/synthetic-runtime/studies`, {
+      const created = await apiFetch<{ run_id: string }>("/api/synthetic-runtime/studies", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,162 +64,175 @@ export default function SyntheticDemoPage() {
           windows_per_trial: 3,
         }),
       });
-      if (!res.ok) {
-        const detail = await res.json().catch(() => ({}));
-        throw new Error(detail.detail || `HTTP ${res.status}`);
-      }
-      const data = await res.json();
-      setRunStatus({ ...runStatus!, run_id: data.run_id, study_id: studyId, status: "accepted" } as RunStatus);
+      setRunStatus(emptyRun(created.run_id, studyId));
       setPolling(true);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Unknown error");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The synthetic study could not be started.");
     } finally {
       setLoading(false);
     }
-  }, [studyId, participantCount, seed, runStatus]);
+  }, [participantCount, seed, studyId]);
 
   useEffect(() => {
     if (!polling || !runStatus?.run_id) return;
-    const interval = setInterval(async () => {
+    let active = true;
+    const poll = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/synthetic-runtime/runs/${runStatus.run_id}`);
-        if (res.ok) {
-          const data: RunStatus = await res.json();
-          setRunStatus(data);
-          if (data.status === "completed" || data.status === "completed_with_failures" || data.status === "failed" || data.status === "aborted") {
-            setPolling(false);
-          }
-        }
+        const data = await apiFetch<RunStatus>(`/api/synthetic-runtime/runs/${runStatus.run_id}`);
+        if (!active) return;
+        setRunStatus(data);
+        if (TERMINAL.has(data.status)) setPolling(false);
       } catch {
-        /* polling failure is transient */
+        // Polling is best-effort; the local server may still be starting the run.
       }
-    }, 2000);
-    return () => clearInterval(interval);
+    };
+    const interval = window.setInterval(poll, 2000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
   }, [polling, runStatus?.run_id]);
 
   return (
     <AppShell>
-      <div className="max-w-3xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-2">Synthetic Runtime Operator</h1>
-        <p className="text-sm text-amber-400 bg-amber-900/20 border border-amber-700/40 rounded-lg px-4 py-2 mb-6">
-          Synthetic engineering validation only — not human-subject, behavioral, or neuroscientific evidence.
-        </p>
+      <div className="mx-auto w-full max-w-4xl space-y-5 px-4 py-8 md:px-6 lg:py-10">
+        <PageHeader
+          eyebrow="Synthetic runtime"
+          title="Three-condition engineering run"
+          description="A deterministic synthetic study that exercises the runtime, export, and replay pipeline. It is not human-subject, behavioural, or neuroscientific evidence."
+          meta={
+            <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/35">
+              synthetic · not human data
+              <EvidenceMark evidenceId="synthetic.estimate" />
+            </span>
+          }
+          actions={
+            <Link
+              href="/research"
+              className="inline-flex h-11 items-center rounded-lg border border-surface-border px-3 text-[11px] text-foreground/60 hover:bg-white/[0.04] hover:text-foreground"
+            >
+              Research platform
+            </Link>
+          }
+        />
 
-        {!runStatus && (
-          <div className="space-y-4 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
-            <h2 className="text-lg font-semibold">Configure Synthetic Study</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <label className="space-y-1">
-                <span className="text-sm text-gray-400">Study ID</span>
+        {!runStatus ? (
+          <Panel className="p-5">
+            <h2 className="text-base font-semibold">Configure the synthetic run</h2>
+            <p className="mt-1 text-sm leading-6 text-foreground/50">
+              Participants here are simulated agents generated from a seed. No human data is collected.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <label className="block">
+                <span className="mono-label text-foreground/45">Study ID</span>
                 <input
-                  className="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm"
                   value={studyId}
-                  onChange={(e) => setStudyId(e.target.value)}
+                  onChange={(event) => setStudyId(event.target.value)}
+                  className="mt-1 h-11 w-full rounded-lg border border-surface-border bg-white/[0.03] px-3 text-sm outline-none focus:border-signal/40"
                 />
               </label>
-              <label className="space-y-1">
-                <span className="text-sm text-gray-400">Participants</span>
+              <label className="block">
+                <span className="mono-label text-foreground/45">Synthetic participants</span>
                 <input
                   type="number"
-                  className="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm"
-                  value={participantCount}
-                  onChange={(e) => setParticipantCount(Number(e.target.value))}
                   min={2}
                   max={60}
+                  value={participantCount}
+                  onChange={(event) => setParticipantCount(Number(event.target.value))}
+                  className="mt-1 h-11 w-full rounded-lg border border-surface-border bg-white/[0.03] px-3 text-sm outline-none focus:border-signal/40"
                 />
               </label>
-              <label className="space-y-1">
-                <span className="text-sm text-gray-400">Seed</span>
+              <label className="block">
+                <span className="mono-label text-foreground/45">Seed</span>
                 <input
                   type="number"
-                  className="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm"
                   value={seed}
-                  onChange={(e) => setSeed(Number(e.target.value))}
+                  onChange={(event) => setSeed(Number(event.target.value))}
+                  className="mt-1 h-11 w-full rounded-lg border border-surface-border bg-white/[0.03] px-3 font-mono text-sm outline-none focus:border-signal/40"
                 />
               </label>
             </div>
             <button
+              type="button"
               onClick={startStudy}
               disabled={loading}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 rounded-lg text-sm font-medium"
+              className="mt-4 inline-flex min-h-11 items-center rounded-lg border border-signal/35 bg-signal/[0.09] px-4 text-sm font-medium text-signal hover:bg-signal/[0.14] disabled:opacity-40"
             >
-              {loading ? "Starting..." : "Start Synthetic Study"}
+              {loading ? "Starting…" : "Start synthetic run"}
             </button>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-          </div>
-        )}
-
-        {runStatus && (
-          <div className="space-y-4">
-            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
-              <h2 className="text-lg font-semibold mb-3">Run Progress</h2>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <span className="text-gray-400">Status:</span>{" "}
-                  <span className={
-                    runStatus.status === "completed" ? "text-emerald-400" :
-                    runStatus.status === "failed" ? "text-red-400" :
-                    "text-blue-400"
-                  }>
-                    {runStatus.status}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Run ID:</span>{" "}
-                  <span className="font-mono text-xs">{runStatus.run_id?.slice(0, 8)}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Sessions:</span>{" "}
-                  {runStatus.sessions_completed}/{runStatus.total_sessions}
-                </div>
-                <div>
-                  <span className="text-gray-400">Failed:</span>{" "}
-                  <span className={runStatus.sessions_failed > 0 ? "text-red-400" : ""}>
-                    {runStatus.sessions_failed}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Export:</span>{" "}
-                  {runStatus.export_ready ? "Ready" : "Pending"}
-                </div>
-                <div>
-                  <span className="text-gray-400">Replay:</span>{" "}
-                  {runStatus.replay_verified ? "Verified" : "Pending"}
-                </div>
+            {error ? (
+              <p role="alert" className="mt-3 rounded-lg border border-danger/30 bg-danger/[0.05] px-3 py-2 text-sm text-danger">
+                {error}
+              </p>
+            ) : null}
+          </Panel>
+        ) : (
+          <Panel className="p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-semibold">Run progress</h2>
+                <p className="mt-1 font-mono text-[11px] text-foreground/35">
+                  {runStatus.study_id} · {runStatus.run_id.slice(0, 8)}
+                </p>
               </div>
-
-              {runStatus.status === "completed" && (
-                <div className="mt-4 p-3 bg-emerald-900/20 border border-emerald-700/40 rounded-lg">
-                  <p className="text-emerald-400 text-sm font-medium">
-                    Synthetic study completed successfully.
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {runStatus.sessions_completed} sessions across 3 conditions (adaptive, fixed, yoked).
-                  </p>
-                </div>
-              )}
-
-              {runStatus.error && (
-                <div className="mt-4 p-3 bg-red-900/20 border border-red-700/40 rounded-lg">
-                  <p className="text-red-400 text-sm">{runStatus.error}</p>
-                </div>
-              )}
+              <span
+                className={`rounded-full border px-2.5 py-1 font-mono text-[11px] ${
+                  TERMINAL.has(runStatus.status)
+                    ? runStatus.status === "completed"
+                      ? "border-signal/30 bg-signal/[0.07] text-signal"
+                      : "border-lock/30 bg-lock/[0.07] text-lock"
+                    : "border-accent/30 bg-accent/[0.07] text-accent-glow"
+                }`}
+              >
+                {runStatus.status}
+              </span>
             </div>
 
+            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+              {[
+                ["Sessions", `${runStatus.sessions_completed}/${runStatus.total_sessions || "—"}`],
+                ["Failed", String(runStatus.sessions_failed)],
+                ["Export", runStatus.export_ready ? "ready" : "pending"],
+                ["Replay", runStatus.replay_verified ? "verified" : "pending"],
+                ["Polling", polling ? "active" : "stopped"],
+              ].map(([term, value]) => (
+                <div key={term} className="rounded-lg border border-surface-border bg-white/[0.025] p-3">
+                  <dt className="mono-label text-foreground/35">{term}</dt>
+                  <dd className="mt-1 font-mono text-foreground/75">{value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            {runStatus.status === "completed" ? (
+              <p className="mt-4 rounded-lg border border-signal/30 bg-signal/[0.05] p-3 text-sm text-signal">
+                Synthetic run completed. Completion is an engineering check, not evidence of efficacy.
+              </p>
+            ) : null}
+
+            {runStatus.error ? (
+              <p role="alert" className="mt-4 rounded-lg border border-danger/30 bg-danger/[0.05] p-3 text-sm text-danger">
+                {runStatus.error}
+              </p>
+            ) : null}
+
             <button
-              onClick={() => { setRunStatus(null); setError(null); }}
-              className="text-sm text-gray-400 hover:text-white"
+              type="button"
+              onClick={() => {
+                setRunStatus(null);
+                setError(null);
+                setPolling(false);
+              }}
+              className="mt-4 inline-flex min-h-11 items-center rounded-lg border border-surface-border px-4 text-sm text-foreground/60 hover:bg-white/[0.04]"
             >
-              Start New Study
+              Start a new run
             </button>
-          </div>
+          </Panel>
         )}
 
-        <div className="mt-8">
-          <Link href="/research" className="text-sm text-emerald-400 hover:underline">
-            &larr; Back to Research Platform
-          </Link>
-        </div>
+        <BoundaryNote>
+          Synthetic participants are generated by code. Their results test the runtime and analysis plumbing only;
+          they cannot establish a human effect, clinical benefit, or a neural mechanism.
+        </BoundaryNote>
       </div>
     </AppShell>
   );

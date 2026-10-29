@@ -24,7 +24,7 @@ export function ProtocolStudioPanel({
   compiled: { protocol_id?: string } | null;
 }) {
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-violet-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-violet-500/50">
       <div className="text-foreground/40 uppercase tracking-[0.1em]">Protocol Studio</div>
 
       {/* Templates */}
@@ -33,7 +33,7 @@ export function ProtocolStudioPanel({
         <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
           {templates.slice(0, 6).map(t => (
             <button key={t.id} onClick={() => onSelectTemplate(t.id)}
-                    className="text-left p-2 rounded bg-surface/50 border border-surface-border hover:bg-surface/70 text-[9px]">
+                    className="text-left p-2 rounded bg-surface/50 border border-surface-border hover:bg-surface/70 text-[11px]">
               <div className="text-foreground">{t.name}</div>
               <div className="text-foreground/40">{t.planned_n_sessions} sessions · {t.design_type}</div>
             </button>
@@ -61,30 +61,30 @@ export function ProtocolStudioPanel({
       {validation && (
         <div className="p-2 rounded bg-surface/30 space-y-1">
           <div className="flex gap-2 items-center">
-            <span className={validation.valid ? "text-green-400" : "text-red-400"}>
+            <span className={validation.valid ? "text-signal" : "text-danger"}>
               {validation.valid ? "✓" : "✗"}
             </span>
             <span>Score: {validation.quality_score}/100 · {validation.confidence_level} confidence</span>
           </div>
           {validation.warnings.map((w, i) => (
-            <div key={i} className="text-amber-400/70 text-[9px]">⚠ {w}</div>
+            <div key={i} className="text-lock/70 text-[11px]">⚠ {w}</div>
           ))}
           {validation.errors.map((e, i) => (
-            <div key={i} className="text-red-400/70 text-[9px]">✗ {e}</div>
+            <div key={i} className="text-danger/70 text-[11px]">✗ {e}</div>
           ))}
         </div>
       )}
 
       {/* Compilation */}
       {compiled?.protocol_id && (
-        <div className="p-2 rounded bg-green-500/10 border border-green-500/20 text-[9px] text-green-400">
+        <div className="p-2 rounded bg-green-500/10 border border-green-500/20 text-[11px] text-signal">
           ✓ Protocol compiled: {compiled.protocol_id?.slice(0, 8)}...
         </div>
       )}
 
       {/* Designs list */}
       {designs && designs.length > 0 && (
-        <div className="text-foreground/40 text-[9px]">
+        <div className="text-foreground/40 text-[11px]">
           {designs.length} saved design(s)
         </div>
       )}

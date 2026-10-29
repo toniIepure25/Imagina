@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import AppShell from "@/components/layout/AppShell";
+import AnimusShell from "@/components/animus/AnimusShell";
 
 export const metadata: Metadata = {
   title: "About ANIMUS — boundaries, loop, and claims",
@@ -35,11 +35,11 @@ const LOOP = [
 
 export default function AnimusAboutPage() {
   return (
-    <AppShell>
+    <AnimusShell active="about">
       <div className="mx-auto w-full max-w-5xl px-6 py-12">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-accent-glow/60">Scientific boundaries</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-accent-glow/60">Scientific boundaries</div>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight">What ANIMUS is — and is not</h1>
           </div>
           <Link href="/animus" className="text-[11px] text-foreground/45 hover:text-foreground">
@@ -77,9 +77,9 @@ export default function AnimusAboutPage() {
           <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
             {LOOP.map(([title, body], index) => (
               <div key={title} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">
-                <div className="font-mono text-[10px] text-accent-glow/45">0{index + 1}</div>
+                <div className="font-mono text-[11px] text-accent-glow/45">0{index + 1}</div>
                 <h3 className="mt-1.5 text-xs font-medium text-foreground/80">{title}</h3>
-                <p className="mt-1 text-[10px] leading-relaxed text-foreground/35">{body}</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-foreground/35">{body}</p>
               </div>
             ))}
           </div>
@@ -88,7 +88,7 @@ export default function AnimusAboutPage() {
         <section className="mt-10">
           <div className="flex items-end justify-between gap-3">
             <h2 className="text-lg font-semibold tracking-tight">Capability envelope</h2>
-            <span className="rounded-full border border-accent-glow/25 bg-accent-glow/5 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-accent-glow/70">
+            <span className="rounded-full border border-accent-glow/25 bg-accent-glow/5 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-accent-glow/70">
               claim ceiling L1 · behavioural-assisted
             </span>
           </div>
@@ -98,7 +98,7 @@ export default function AnimusAboutPage() {
           </p>
           <div className="mt-4 overflow-hidden rounded-xl border border-white/10">
             <table className="w-full text-left text-[11px]">
-              <thead className="bg-white/[0.03] text-[9px] uppercase tracking-[0.14em] text-foreground/35">
+              <thead className="bg-white/[0.03] text-[11px] uppercase tracking-[0.14em] text-foreground/35">
                 <tr>
                   <th className="px-3 py-2 font-medium">Capability</th>
                   <th className="px-3 py-2 font-medium">Status</th>
@@ -111,7 +111,7 @@ export default function AnimusAboutPage() {
                     <td className="px-3 py-2 text-foreground/65">{name}</td>
                     <td className="px-3 py-2">
                       <span
-                        className={`rounded px-1.5 py-0.5 font-mono text-[9px] ${
+                        className={`rounded px-1.5 py-0.5 font-mono text-[11px] ${
                           status === "ACTIVE"
                             ? "bg-emerald-400/10 text-emerald-200/80"
                             : status === "DISABLED" || status === "LOCAL ONLY"
@@ -180,6 +180,6 @@ export default function AnimusAboutPage() {
           </Link>
         </div>
       </div>
-    </AppShell>
+    </AnimusShell>
   );
 }

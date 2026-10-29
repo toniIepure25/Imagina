@@ -1270,8 +1270,9 @@ export function getStudioEvents(
 export function getStudioVersion(
   sessionId: string,
   versionId: string,
+  options?: StudioRequestOptions,
 ): Promise<StudioVersionDetail> {
-  return request(`/animus/studio/sessions/${sessionId}/versions/${versionId}`);
+  return request(`/animus/studio/sessions/${sessionId}/versions/${versionId}`, undefined, options);
 }
 
 export function saveStudioWorld(

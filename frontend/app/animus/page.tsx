@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import AppShell from "@/components/layout/AppShell";
+import AnimusShell from "@/components/animus/AnimusShell";
 import Button from "@/components/common/Button";
 import {
   createStudioSession,
@@ -44,6 +44,41 @@ const STEPS = [
   },
 ];
 
+const INSTRUMENTS = [
+  {
+    key: "studio",
+    index: "01",
+    title: "Studio",
+    kicker: "Author",
+    body: "A visible candidate, direct correction, locks, branches, and a scene index for spatial selection.",
+    boundary: "symbolic · procedural",
+  },
+  {
+    key: "practice",
+    index: "02",
+    title: "Recall",
+    kicker: "Reconstruct",
+    body: "Object, token, and spatial reconstruction with confidence captured before feedback.",
+    boundary: "behavioural probe",
+  },
+  {
+    key: "interview",
+    index: "03",
+    title: "Beliefs",
+    kicker: "Elicit",
+    body: "Binary probes with abstention, Beta posteriors, coverage, and calibration reported separately.",
+    boundary: "uncertainty-aware",
+  },
+  {
+    key: "observatory",
+    index: "04",
+    title: "Threshold",
+    kicker: "Discriminate",
+    body: "Two-alternative contrast judgements, an adaptive staircase, SDT sensitivity, and reliability.",
+    boundary: "within-scene only",
+  },
+] as const;
+
 export default function AnimusPage() {
   const router = useRouter();
   const [intention, setIntention] = useState("");
@@ -51,6 +86,7 @@ export default function AnimusPage() {
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [worlds, setWorlds] = useState<StudioWorld[]>([]);
+  const anchorSession = sessions[0]?.session_id;
 
   useEffect(() => {
     let active = true;
@@ -86,11 +122,11 @@ export default function AnimusPage() {
   };
 
   return (
-    <AppShell>
+    <AnimusShell active="home">
       <div className="w-full">
         <section className="mx-auto grid max-w-6xl gap-10 px-6 pb-10 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-accent-glow/75">
+            <span className="inline-flex items-center gap-2 rounded-full border border-accent-glow/25 bg-accent-glow/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-glow/75">
               ANIMUS · closed-loop imagination amplifier
             </span>
             <h1 className="mt-5 max-w-xl text-4xl font-semibold leading-[1.05] tracking-tight md:text-5xl">
@@ -105,9 +141,12 @@ export default function AnimusPage() {
               is right, and explore variations that preserve your choices. A behavioural scaffold for imagery
               practice — not a decoder.
             </p>
-            <div className="mt-6 flex flex-wrap gap-2 text-[10px] text-foreground/40">
+            <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.2em] text-accent-glow/45">
+              A calibrated mirror, not an oracle
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2 text-[11px] text-foreground/40">
               <span className="rounded-full border border-white/10 px-2.5 py-1">local-first</span>
-              <span className="rounded-full border border-white/10 px-2.5 py-1">procedural render</span>
+              <span className="rounded-full border border-white/10 px-2.5 py-1">Lumen world engine</span>
               <span className="rounded-full border border-white/10 px-2.5 py-1">typed scene graph</span>
               <span className="rounded-full border border-white/10 px-2.5 py-1">claim ceiling L1</span>
             </div>
@@ -122,19 +161,19 @@ export default function AnimusPage() {
                 <div className="absolute bottom-[27%] left-[28%] h-24 w-12 bg-[#0c1020] [clip-path:polygon(50%_0,100%_100%,0_100%)]" />
                 <div className="absolute bottom-[27%] left-0 right-0 h-px bg-[#f4a978]/40" />
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,#102437_0%,#071018_100%)]" />
-                <div className="absolute bottom-3 left-4 rounded-full border border-white/15 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-white/70 backdrop-blur">
+                <div className="absolute bottom-3 left-4 rounded-full border border-white/15 bg-black/30 px-2 py-1 text-[11px] uppercase tracking-[0.16em] text-white/70 backdrop-blur">
                   candidate A · dusk · cinematic
                 </div>
               </div>
               <div className="space-y-3 p-4">
-                <div className="flex items-center justify-between text-[10px]">
+                <div className="flex items-center justify-between text-[11px]">
                   <span className="text-foreground/40">castle · ocean · moon</span>
                   <span className="text-accent-glow/60">3 kept locked</span>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-white/8">
                   <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-accent to-accent-glow" />
                 </div>
-                <div className="flex items-center justify-between text-[10px]">
+                <div className="flex items-center justify-between text-[11px]">
                   <span className="text-foreground/35">correction loop</span>
                   <span className="font-mono text-foreground/45">v3 · candidate</span>
                 </div>
@@ -149,7 +188,7 @@ export default function AnimusPage() {
             className="glass panel-glow relative overflow-hidden rounded-2xl p-1.5"
           >
             <div className="rounded-xl border border-white/5 bg-[#080b14]/80 p-4">
-              <label htmlFor="intention" className="text-[10px] uppercase tracking-[0.2em] text-accent-glow/60">
+              <label htmlFor="intention" className="text-[11px] uppercase tracking-[0.2em] text-accent-glow/60">
                 Your first intention
               </label>
               <textarea
@@ -169,14 +208,14 @@ export default function AnimusPage() {
                     key={example}
                     type="button"
                     onClick={() => setIntention(example)}
-                    className="rounded-full border border-white/8 px-2.5 py-1 text-[10px] text-foreground/40 transition-colors hover:border-accent-glow/30 hover:text-foreground/75"
+                    className="rounded-full border border-white/8 px-2.5 py-1 text-[11px] text-foreground/40 transition-colors hover:border-accent-glow/30 hover:text-foreground/75"
                   >
                     {example}
                   </button>
                 ))}
               </div>
               <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/8 pt-3">
-                <span className="text-[10px] text-foreground/30">
+                <span className="text-[11px] text-foreground/30">
                   {intention.length}/500 · no account · stays on this machine
                 </span>
                 <Button type="submit" disabled={busy || intention.trim().length < 3} size="md" data-testid="enter-studio">
@@ -188,6 +227,55 @@ export default function AnimusPage() {
           </form>
         </section>
 
+        <section className="mx-auto max-w-6xl px-6 pt-10">
+          <Link
+            href="/animus/imagine"
+            className="group relative grid overflow-hidden rounded-2xl border border-signal/20 bg-[#071018] md:grid-cols-[1.1fr_0.9fr]"
+          >
+            <div className="relative z-10 p-5 md:p-7">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-signal/30 bg-signal/[0.07] px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-signal/80">
+                  Lumen · world engine
+                </span>
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/30">
+                  first-person · adaptive · 5 starter worlds
+                </span>
+              </div>
+              <h2 className="mt-4 max-w-md font-display text-2xl leading-tight text-foreground md:text-3xl">
+                Describe a place. Then walk it.
+              </h2>
+              <p className="mt-3 max-w-lg text-xs leading-6 text-foreground/50">
+                A text brief composes a layered world: sky, terrain, water, architecture, ground detail, and weather.
+                A 16D signal vector only tunes the perceptual budget — light, haze, motion, and density. The local
+                renderer runs now; the diffusion worker is a visible, blocked handoff, not a hidden claim.
+              </p>
+              <div className="mt-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-signal/75 group-hover:text-signal">
+                Enter the lab <span aria-hidden="true">→</span>
+              </div>
+            </div>
+            <div className="relative min-h-48 overflow-hidden border-t border-white/[0.06] bg-[radial-gradient(circle_at_60%_25%,rgba(111,227,196,0.18),transparent_45%),linear-gradient(180deg,#091825_0%,#071018_70%)] md:border-l md:border-t-0">
+              <div className="absolute left-1/2 top-1/2 h-24 w-px -translate-x-1/2 -translate-y-1/2 bg-gradient-to-b from-transparent via-signal/40 to-transparent" />
+              <div className="absolute left-1/2 top-1/2 h-px w-24 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-transparent via-signal/40 to-transparent" />
+              <div className="absolute inset-x-6 bottom-6 space-y-2">
+                {[
+                  ["attention", "w-[68%]"],
+                  ["valence", "w-[74%]"],
+                  ["vividness", "w-[58%]"],
+                ].map(([label, width]) => (
+                  <div key={label} className="flex items-center gap-3">
+                    <span className="w-20 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/30">
+                      {label}
+                    </span>
+                    <span className="h-1 flex-1 overflow-hidden rounded-full bg-white/8">
+                      <span className={`block h-full rounded-full bg-signal/60 ${width}`} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Link>
+        </section>
+
         <section className="mx-auto max-w-6xl px-6 py-14">
           <div className="mb-5 flex items-end justify-between">
             <div>
@@ -195,10 +283,10 @@ export default function AnimusPage() {
               <p className="mt-1 text-xs text-foreground/40">Imagine → see → correct → converge → keep or explore.</p>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/animus/profile" className="text-[10px] text-foreground/45 hover:text-foreground">
+              <Link href="/animus/profile" className="text-[11px] text-foreground/45 hover:text-foreground">
                 Behavioural profile →
               </Link>
-              <Link href="/animus/about" className="text-[10px] text-accent-glow/60 hover:text-accent-glow">
+              <Link href="/animus/about" className="text-[11px] text-accent-glow/60 hover:text-accent-glow">
                 How it works →
               </Link>
             </div>
@@ -206,11 +294,72 @@ export default function AnimusPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((step) => (
               <div key={step.number} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
-                <div className="font-mono text-[10px] text-accent-glow/50">{step.number}</div>
+                <div className="font-mono text-[11px] text-accent-glow/50">{step.number}</div>
                 <h3 className="mt-2 text-sm font-medium text-foreground/85">{step.title}</h3>
                 <p className="mt-1.5 text-[11px] leading-relaxed text-foreground/40">{step.body}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-6 pb-14">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <span className="mono-label text-accent-glow/45">instrument suite</span>
+              <h2 className="mt-2 text-xl font-semibold tracking-tight">One scene, four measurement surfaces</h2>
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-foreground/40">
+                Each instrument answers a different question. None of them is a composite imagery score, and none
+                of them leaves this machine.
+              </p>
+            </div>
+            {anchorSession ? (
+              <Link href={`/animus/studio/${anchorSession}`} className="text-[11px] text-accent-glow/60 hover:text-accent-glow">
+                Open latest session →
+              </Link>
+            ) : (
+              <span className="text-[11px] text-foreground/25">Start a studio to unlock session instruments</span>
+            )}
+          </div>
+          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+            {INSTRUMENTS.map((instrument) => {
+              const href =
+                instrument.key === "studio"
+                  ? "/animus#intention"
+                  : anchorSession
+                    ? `/animus/${instrument.key}/${anchorSession}`
+                    : null;
+              const inner = (
+                <>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-mono text-[11px] text-accent-glow/45">{instrument.index}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-foreground/20">
+                      {instrument.kicker}
+                    </span>
+                  </div>
+                  <h3 className="mt-5 text-base font-semibold text-foreground/90">{instrument.title}</h3>
+                  <p className="mt-2 min-h-[52px] text-[11px] leading-relaxed text-foreground/40">{instrument.body}</p>
+                  <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-2.5">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/20">{instrument.boundary}</span>
+                    <span className={`text-[11px] ${href ? "text-accent-glow/55" : "text-foreground/20"}`}>
+                      {href ? "Open →" : "no session"}
+                    </span>
+                  </div>
+                </>
+              );
+              return href ? (
+                <Link
+                  key={instrument.key}
+                  href={href}
+                  className="metric-transition group rounded-xl border border-white/[0.07] bg-white/[0.018] p-4 hover:border-accent-glow/25 hover:bg-white/[0.03]"
+                >
+                  {inner}
+                </Link>
+              ) : (
+                <div key={instrument.key} className="rounded-xl border border-white/[0.05] bg-white/[0.012] p-4 opacity-60">
+                  {inner}
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -219,7 +368,7 @@ export default function AnimusPage() {
             <div>
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-foreground/80">Continue a studio</h2>
-                <span className="text-[10px] text-foreground/30">local sessions</span>
+                <span className="text-[11px] text-foreground/30">local sessions</span>
               </div>
               <div className="space-y-1.5">
                 {sessions.length === 0 && (
@@ -235,9 +384,9 @@ export default function AnimusPage() {
                   >
                     <div className="min-w-0">
                       <div className="truncate text-xs text-foreground/75">{session.title}</div>
-                      <div className="truncate text-[10px] text-foreground/30">{session.intention}</div>
+                      <div className="truncate text-[11px] text-foreground/30">{session.intention}</div>
                     </div>
-                    <span className="shrink-0 text-[9px] text-foreground/25">{formatRelative(session.updated_at)}</span>
+                    <span className="shrink-0 text-[11px] text-foreground/25">{formatRelative(session.updated_at)}</span>
                   </Link>
                 ))}
               </div>
@@ -245,7 +394,7 @@ export default function AnimusPage() {
             <div>
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-foreground/80">Saved worlds</h2>
-                <Link href="/animus/worlds" className="text-[10px] text-accent-glow/60 hover:text-accent-glow">
+                <Link href="/animus/worlds" className="text-[11px] text-accent-glow/60 hover:text-accent-glow">
                   all worlds →
                 </Link>
               </div>
@@ -262,7 +411,7 @@ export default function AnimusPage() {
                     className="block rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5 transition-colors hover:border-accent-glow/25"
                   >
                     <div className="truncate text-xs text-foreground/75">{world.name}</div>
-                    <div className="truncate text-[10px] text-foreground/30">
+                    <div className="truncate text-[11px] text-foreground/30">
                       {world.scene.entities.length} elements · {world.scene.style}
                     </div>
                   </Link>
@@ -274,17 +423,16 @@ export default function AnimusPage() {
 
         <section className="border-t border-surface-border bg-black/20 px-6 py-6">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
-            <p className="max-w-2xl text-[10px] leading-relaxed text-foreground/35">
-              ANIMUS is a behavioural imagery scaffold. It does not decode thoughts or dreams, does not measure
-              neural content, and does not generate images with a model. The claim ceiling is L1
-              (behavioural-assisted); every scene is a symbolic, editable preview.
+            <p className="max-w-2xl text-[11px] leading-relaxed text-foreground/35">
+              Every scene is a symbolic, editable preview. Nothing is decoded from the body, and nothing is sent
+              to a model.
             </p>
-            <Link href="/animus/about" className="text-[10px] text-foreground/45 underline-offset-4 hover:text-foreground hover:underline">
-              Scientific boundaries
+            <Link href="/animus/about" className="text-[11px] text-foreground/45 underline-offset-4 hover:text-foreground hover:underline">
+              Read the capability envelope
             </Link>
           </div>
         </section>
       </div>
-    </AppShell>
+    </AnimusShell>
   );
 }

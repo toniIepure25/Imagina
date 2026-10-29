@@ -19,6 +19,24 @@
 
 ---
 
+## Frontend / interface change
+
+1. `AGENTS.md` — coding, safety, privacy, and claim rules
+2. `frontend/AGENTS.md` — Next.js version-specific constraints
+3. `docs/animus/INTERFACE_PRINCIPLES.md` — research basis, North Star, and interaction constraints
+4. `docs/animus/RESEARCH_2_0.md` — 2022–2026 review and Palimpsest comparison rationale
+5. `docs/animus/WORKBENCH_SPEC.md` — workbench state, keyboard map, preview, trace, and Stage lens contract
+6. `docs/animus/ANIMUS_PRODUCT_VISION.md` — product loop and boundaries
+7. `docs/ai/EVIDENCE_INSTRUMENT.md` — Glass Box registry, evidence marks, Method Atlas, claim audit, and budget rules
+8. `docs/ai/STUDY_DESIGNER.md` — Falsification Studio, preregistration schema, allocation preview, Participant Mode
+9. `docs/ai/PROJECT_CONTEXT.md` — frontend module map
+10. `docs/animus/IMAGINE_LAB.md` — Imagine 2.0: 16D conditioning, adaptive policy, stage-first UI, fail-closed diffusion lane
+11. `docs/animus/LUMEN_WORLD_ENGINE.md` — Lumen grammar, layered composer, presets, renderer, staged diffusion path
+12. `docs/animus/DIFFUSION_WORKER.md` — A100 worker contract, security, deployment acceptance, rollback
+13. `frontend/components/animus/` — existing components and patterns
+
+---
+
 ## Bug Fix
 
 1. `AGENTS.md` — coding rules
@@ -99,8 +117,9 @@
 5. `docs/animus/ADAPTIVE_POLICY.md` — coverage floor, information gain, difficulty
 6. `docs/animus/VALIDATION_PROTOCOL.md` — proposed independent study
 7. `docs/animus/ANIMUS_CLAIMS_BOUNDARY.md` — allowed and forbidden copy
-8. `backend/app/core/animus/studio/` — tasks, reconstruction, adaptive, profile, service
-9. `frontend/app/animus/` and `frontend/components/animus/` — product surfaces
+8. `docs/animus/COMPARISON_RESEARCH.md` — comparison chamber evidence, limits, proposed studies
+9. `backend/app/core/animus/studio/` — tasks, reconstruction, adaptive, profile, service
+10. `frontend/app/animus/` and `frontend/components/animus/` — product surfaces
 
 ---
 

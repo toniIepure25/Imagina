@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "audit:claims": "node scripts/audit-claims.cjs",
+    "audit:claims:write": "node scripts/audit-claims.cjs --write",
+    "budget:bundle": "node scripts/check-bundle-budget.cjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

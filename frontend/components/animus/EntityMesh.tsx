@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { Html } from "@react-three/drei";
+import { useMemo, useRef, type Ref } from "react";
+import { Html, Line } from "@react-three/drei";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
 import type { SceneEntity, SceneGraph } from "@/lib/animusStudioApi";
@@ -12,8 +12,32 @@ import {
   entityEmissive,
   entityOpacity,
   entitySize,
-  isLocked,
+  isEntityLocked,
+  provenanceColor,
 } from "./sceneUtils";
+import {
+  ColonnadeBody,
+  ColumnBody,
+  FireflyBody,
+  LanternBody,
+  LibraryBody,
+  MonolithBody,
+  MoteBody,
+  ObservatoryBody,
+  PathBody,
+  RingBody,
+  ShrineBody,
+  TableBody,
+} from "./world/ArchitectureBodies";
+
+function ringPoints(radius: number, segments = 64): Array<[number, number, number]> {
+  const points: Array<[number, number, number]> = [];
+  for (let index = 0; index <= segments; index += 1) {
+    const angle = (index / segments) * Math.PI * 2;
+    points.push([Math.cos(angle) * radius, 0.018, Math.sin(angle) * radius]);
+  }
+  return points;
+}
 
 interface SurfaceProps {
   color: string;
@@ -674,6 +698,30 @@ function Body({ entity, style, animate }: { entity: SceneEntity; style: string; 
       return <GrassBody entity={entity} />;
     case "island":
       return <IslandBody entity={entity} />;
+    case "library":
+      return <LibraryBody entity={entity} />;
+    case "table":
+      return <TableBody entity={entity} />;
+    case "lantern":
+      return <LanternBody entity={entity} />;
+    case "column":
+      return <ColumnBody entity={entity} />;
+    case "colonnade":
+      return <ColonnadeBody entity={entity} />;
+    case "ring":
+      return <RingBody entity={entity} />;
+    case "observatory":
+      return <ObservatoryBody entity={entity} />;
+    case "monolith":
+      return <MonolithBody entity={entity} />;
+    case "mote":
+      return <MoteBody entity={entity} />;
+    case "firefly":
+      return <FireflyBody entity={entity} />;
+    case "path":
+      return <PathBody entity={entity} />;
+    case "shrine":
+      return <ShrineBody entity={entity} />;
     default:
       return <AbstractBody entity={entity} />;
   }
@@ -685,20 +733,32 @@ export default function EntityMesh({
   selected,
   onSelect,
   animate = true,
+  groupRef,
+  showLockRing = true,
+  changeState = null,
+  showProvenance = false,
 }: {
   entity: SceneEntity;
   scene: SceneGraph;
   selected: boolean;
   onSelect: (entityId: string) => void;
   animate?: boolean;
+  groupRef?: Ref<THREE.Group>;
+  showLockRing?: boolean;
+  changeState?: "added" | "changed" | null;
+  showProvenance?: boolean;
 }) {
   const floatRef = useRef<THREE.Group>(null);
   const size = entitySize(entity);
   const position = entity.transform.position;
   const rotation = entity.transform.rotation;
   const scale = entity.transform.scale.map((value) => value * size) as [number, number, number];
-  const locked = isLocked(entity);
+  const locked = isEntityLocked(entity);
   const floating = Math.max(0, Math.min(1, scene.dynamics.floating));
+  const changeTone = changeState === "added" ? "#6fe3c4" : changeState === "changed" ? "#e8b45a" : null;
+  const provenanceTone = showProvenance ? provenanceColor(entity.provenance) : null;
+  const changeRing = useMemo(() => ringPoints(1.375), []);
+  const provenanceRing = useMemo(() => ringPoints(changeTone ? 1.5 : 1.375), [changeTone]);
 
   useFrame(({ clock }) => {
     if (!floatRef.current || !animate) return;
@@ -714,6 +774,7 @@ export default function EntityMesh({
 
   return (
     <group
+      ref={groupRef}
       position={position}
       rotation={rotation}
       scale={scale}
@@ -723,20 +784,35 @@ export default function EntityMesh({
       <group ref={floatRef}>
         <Body entity={entity} style={scene.style} animate={animate} />
       </group>
-      {(selected || locked) && (
+      {(selected || (locked && showLockRing)) && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
           <ringGeometry args={[1.15, 1.24, 48]} />
           <meshBasicMaterial
-            color={selected ? "#79e8ff" : "#f5b642"}
+            color={selected ? "#6fe3c4" : "#e8b45a"}
             transparent
             opacity={selected ? 0.9 : 0.55}
             side={THREE.DoubleSide}
           />
         </mesh>
       )}
+      {changeTone && (
+        <Line
+          points={changeRing}
+          color={changeTone}
+          lineWidth={1.5}
+          dashed={changeState === "changed"}
+          dashSize={0.16}
+          gapSize={0.12}
+          transparent
+          opacity={0.9}
+        />
+      )}
+      {provenanceTone && (
+        <Line points={provenanceRing} color={provenanceTone} lineWidth={1} transparent opacity={0.75} />
+      )}
       {selected && (
         <Html position={[0, 2.9, 0]} center distanceFactor={12} zIndexRange={[20, 0]}>
-          <div className="pointer-events-none whitespace-nowrap rounded-full border border-accent-glow/40 bg-background/85 px-2.5 py-1 text-[10px] font-medium text-accent-glow shadow-lg backdrop-blur">
+          <div className="pointer-events-none whitespace-nowrap rounded-full border border-accent-glow/40 bg-background/85 px-2.5 py-1 text-[11px] font-medium text-accent-glow shadow-lg backdrop-blur">
             {entity.label}
             {locked ? " · locked" : ""}
           </div>

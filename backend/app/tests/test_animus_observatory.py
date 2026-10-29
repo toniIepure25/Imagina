@@ -22,9 +22,9 @@ from app.core.animus.studio.sdt import (
     overconfidence,
     pearson,
     side_bias,
-    test_retest,
     type2_auc,
 )
+from app.core.animus.studio.sdt import test_retest as retest_error
 
 pytestmark = pytest.mark.core
 
@@ -57,8 +57,8 @@ def test_side_bias_is_a_signed_proportion():
 
 
 def test_calibration_and_type2_are_withheld_when_sparse():
-    assert brier_score([], []) is None
-    assert overconfidence([], []) is None
+    assert brier_score([]) is None
+    assert overconfidence([]) is None
     assert type2_auc([], []) is None
     assert calibration_summary([])["brier"] is None
     summary = calibration_summary([(0.9, True), (0.8, False), (0.7, True)])
@@ -92,7 +92,7 @@ def test_threshold_fit_withholds_with_too_few_trials():
 
 
 def test_test_retest_is_insufficient_below_three_aligned_features():
-    result = test_retest({"spatial_position": 0.3}, {"spatial_position": 0.35})
+    result = retest_error({"spatial_position": 0.3}, {"spatial_position": 0.35})
     assert result["status"] == "insufficient"
     assert result["sem"] is None
     assert pearson([1.0, 2.0], [1.0, 2.0]) is None
@@ -101,7 +101,7 @@ def test_test_retest_is_insufficient_below_three_aligned_features():
 def test_test_retest_reports_error_and_change():
     first = {"spatial_position": 0.3, "object_color": 0.4, "object_presence": 0.2}
     second = {"spatial_position": 0.35, "object_color": 0.45, "object_presence": 0.25}
-    result = test_retest(first, second)
+    result = retest_error(first, second)
     assert result["status"] == "estimated"
     assert result["n_features"] == 3
     assert result["r"] == pytest.approx(1.0)

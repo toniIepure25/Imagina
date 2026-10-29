@@ -34,18 +34,18 @@ interface AEPProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-gray-500/20 text-gray-400",
-  completed: "bg-green-500/20 text-green-400",
-  skipped: "bg-red-500/20 text-red-400",
+  pending: "bg-foreground/10 text-foreground/50",
+  completed: "bg-signal/10 text-signal",
+  skipped: "bg-danger/10 text-danger",
 };
 
 const RESPONSE_COLORS: Record<string, string> = {
-  strong_positive_response: "text-green-400 bg-green-500/10",
-  mild_positive_response: "text-green-300 bg-green-500/10",
-  stable_response: "text-foreground/60 bg-gray-500/10",
-  fatigue_limited_response: "text-amber-400 bg-amber-500/10",
-  negative_response: "text-red-400 bg-red-500/10",
-  insufficient_checkpoint_data: "text-foreground/40 bg-gray-500/10",
+  strong_positive_response: "text-signal bg-green-500/10",
+  mild_positive_response: "text-signal bg-green-500/10",
+  stable_response: "text-foreground/60 bg-foreground/[0.06]",
+  fatigue_limited_response: "text-lock bg-amber-500/10",
+  negative_response: "text-danger bg-danger/[0.06]",
+  insufficient_checkpoint_data: "text-foreground/40 bg-foreground/[0.06]",
 };
 
 export function AdaptiveExecutionPanel({ execution, analysis, onStart, onCompleteDay, onClose, onRefresh }: AEPProps) {
@@ -54,7 +54,7 @@ export function AdaptiveExecutionPanel({ execution, analysis, onStart, onComplet
 
   if (!execution) {
     return (
-      <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-teal-500/50">
+      <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-teal-500/50">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Plan Execution (V15)</div>
         <div className="text-foreground/50">No active execution. Start one from your adaptive plan.</div>
         <button onClick={onStart} className="px-3 py-1.5 rounded bg-teal-500/20 border border-teal-500/30 text-teal-300 hover:bg-teal-500/30">
@@ -67,51 +67,51 @@ export function AdaptiveExecutionPanel({ execution, analysis, onStart, onComplet
   const active = execution.status === "active";
 
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-teal-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-teal-500/50">
       <div className="flex justify-between items-center">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">Plan Execution (V15)</div>
-        <span className={`px-2 py-0.5 rounded text-[8px] ${active ? "bg-green-500/20 text-green-400" : "bg-gray-500/20 text-gray-400"}`}>
+        <span className={`px-2 py-0.5 rounded text-[11px] ${active ? "bg-signal/10 text-signal" : "bg-foreground/10 text-foreground/50"}`}>
           {active ? "Active" : "Completed"}
         </span>
       </div>
 
       <div className="text-foreground/60">{execution.plan_title}</div>
-      <div className="text-foreground/40 text-[9px]">Focus: {execution.training_focus?.replace(/_/g, " ") || "—"}</div>
+      <div className="text-foreground/40 text-[11px]">Focus: {execution.training_focus?.replace(/_/g, " ") || "—"}</div>
 
       <div className="grid grid-cols-4 gap-1 text-center">
         <div className="p-1 rounded bg-surface/30">
-          <div className="text-foreground/30 text-[7px]">Done</div>
-          <div className="text-green-400 text-[9px]">{execution.summary.completed_days}/{execution.summary.total_days}</div>
+          <div className="text-foreground/30 text-[11px]">Done</div>
+          <div className="text-signal text-[11px]">{execution.summary.completed_days}/{execution.summary.total_days}</div>
         </div>
         <div className="p-1 rounded bg-surface/30">
-          <div className="text-foreground/30 text-[7px]">Skip</div>
-          <div className="text-red-400 text-[9px]">{execution.summary.skipped_days}</div>
+          <div className="text-foreground/30 text-[11px]">Skip</div>
+          <div className="text-danger text-[11px]">{execution.summary.skipped_days}</div>
         </div>
         <div className="p-1 rounded bg-surface/30">
-          <div className="text-foreground/30 text-[7px]">Left</div>
-          <div className="text-foreground/50 text-[9px]">{execution.summary.pending_days}</div>
+          <div className="text-foreground/30 text-[11px]">Left</div>
+          <div className="text-foreground/50 text-[11px]">{execution.summary.pending_days}</div>
         </div>
         <div className="p-1 rounded bg-surface/30">
-          <div className="text-foreground/30 text-[7px]">Adh.</div>
-          <div className="text-foreground/50 text-[9px]">{(execution.summary.adherence_rate * 100).toFixed(0)}%</div>
+          <div className="text-foreground/30 text-[11px]">Adh.</div>
+          <div className="text-foreground/50 text-[11px]">{(execution.summary.adherence_rate * 100).toFixed(0)}%</div>
         </div>
       </div>
 
       <div className="space-y-1 max-h-48 overflow-y-auto">
         {execution.days?.map((d) => (
-          <div key={d.day} className={`flex items-center gap-2 p-1.5 rounded ${d.status === "completed" ? "bg-green-500/5" : d.status === "skipped" ? "bg-red-500/5" : "bg-surface/30"}`}>
-            <span className="text-foreground/30 w-5 text-[9px]">D{d.day}</span>
-            <span className="text-foreground/60 flex-1 truncate text-[9px]">{d.planned_exercise?.title || "—"}</span>
-            <span className={`px-1.5 py-0.5 rounded text-[7px] ${STATUS_COLORS[d.status] || ""}`}>
+          <div key={d.day} className={`flex items-center gap-2 p-1.5 rounded ${d.status === "completed" ? "bg-signal/[0.04]" : d.status === "skipped" ? "bg-danger/[0.04]" : "bg-surface/30"}`}>
+            <span className="text-foreground/30 w-5 text-[11px]">D{d.day}</span>
+            <span className="text-foreground/60 flex-1 truncate text-[11px]">{d.planned_exercise?.title || "—"}</span>
+            <span className={`px-1.5 py-0.5 rounded text-[11px] ${STATUS_COLORS[d.status] || ""}`}>
               {d.status}
             </span>
             {d.requires_calibration && (
-              <span className={`text-[8px] ${d.checkpoint_pid != null ? "text-cyan-400" : "text-foreground/30"}`}>
+              <span className={`text-[11px] ${d.checkpoint_pid != null ? "text-cyan-400" : "text-foreground/30"}`}>
                 {d.checkpoint_pid != null ? `PID:${d.checkpoint_pid.toFixed(2)}` : "C"}
               </span>
             )}
             {active && d.status === "pending" && (
-              <button onClick={() => setCheckinDay(d.day)} className="px-2 py-0.5 rounded text-[8px] bg-accent/20 border border-accent/30 text-accent-glow hover:bg-accent/30">
+              <button onClick={() => setCheckinDay(d.day)} className="px-2 py-0.5 rounded text-[11px] bg-accent/20 border border-accent/30 text-accent-glow hover:bg-accent/30">
                 +
               </button>
             )}
@@ -121,16 +121,16 @@ export function AdaptiveExecutionPanel({ execution, analysis, onStart, onComplet
 
       {checkinDay && (
         <div className="p-3 rounded bg-surface/50 space-y-2">
-          <div className="text-foreground/40 text-[9px]">Day {checkinDay} Check-in</div>
+          <div className="text-foreground/40 text-[11px]">Day {checkinDay} Check-in</div>
           <div className="grid grid-cols-2 gap-2">
             {(["difficulty_rating", "clarity_rating", "fatigue_rating", "focus_quality"] as const).map((k) => (
-              <div key={k} className="text-foreground/50 text-[8px]">
+              <div key={k} className="text-foreground/50 text-[11px]">
                 <label>{k.replace(/_/g, " ")} ({form[k as keyof typeof form]})</label>
                 <input type="range" min="1" max="10" value={form[k as keyof typeof form]} onChange={(e) => setForm({ ...form, [k]: Number(e.target.value) })}
                   className="w-full h-1 bg-surface-border rounded" />
               </div>
             ))}
-            <div className="col-span-2 text-foreground/50 text-[8px]">
+            <div className="col-span-2 text-foreground/50 text-[11px]">
               <label>Duration (min): {form.duration_minutes_actual}</label>
               <input type="range" min="1" max="30" value={form.duration_minutes_actual} onChange={(e) => setForm({ ...form, duration_minutes_actual: Number(e.target.value) })}
                 className="w-full h-1 bg-surface-border rounded" />
@@ -138,14 +138,14 @@ export function AdaptiveExecutionPanel({ execution, analysis, onStart, onComplet
           </div>
           <div className="flex gap-2">
             <button onClick={() => { onCompleteDay(checkinDay, { ...form, completed: true }); setCheckinDay(null); }}
-              className="px-3 py-1 rounded bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 text-[9px]">
+              className="px-3 py-1 rounded bg-signal/10 border border-green-500/30 text-signal hover:bg-green-500/30 text-[11px]">
               Complete
             </button>
             <button onClick={() => { onCompleteDay(checkinDay, { completed: false }); setCheckinDay(null); }}
-              className="px-3 py-1 rounded bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 text-[9px]">
+              className="px-3 py-1 rounded bg-danger/10 border border-danger/25 text-danger hover:bg-danger/20 text-[11px]">
               Skip
             </button>
-            <button onClick={() => setCheckinDay(null)} className="px-3 py-1 rounded bg-surface border border-surface-border text-foreground/50 text-[9px]">
+            <button onClick={() => setCheckinDay(null)} className="px-3 py-1 rounded bg-surface border border-surface-border text-foreground/50 text-[11px]">
               Cancel
             </button>
           </div>
@@ -154,25 +154,25 @@ export function AdaptiveExecutionPanel({ execution, analysis, onStart, onComplet
 
       {analysis && (
         <div className="p-2 rounded bg-surface/30 space-y-1">
-          <div className="text-foreground/50 text-[9px]">Response: <span className={`px-1.5 py-0.5 rounded text-[8px] ${RESPONSE_COLORS[analysis.response_category] || ""}`}>{analysis.response_category?.replace(/_/g, " ") || "—"}</span></div>
+          <div className="text-foreground/50 text-[11px]">Response: <span className={`px-1.5 py-0.5 rounded text-[11px] ${RESPONSE_COLORS[analysis.response_category] || ""}`}>{analysis.response_category?.replace(/_/g, " ") || "—"}</span></div>
           {analysis.pid_checkpoint_analysis?.meaningful_improvement !== undefined && (
-            <div className="text-foreground/40 text-[9px]">
+            <div className="text-foreground/40 text-[11px]">
               PID Change: {analysis.pid_checkpoint_analysis?.baseline_to_final_change?.toFixed(3)} |
               Meaningful: {analysis.pid_checkpoint_analysis?.meaningful_improvement ? "Yes" : "No"}
             </div>
           )}
           {analysis.subjective_metrics && (
-            <div className="text-foreground/30 text-[8px]">
+            <div className="text-foreground/30 text-[11px]">
               Fatigue: {analysis.subjective_metrics.avg_fatigue} · Focus: {analysis.subjective_metrics.avg_focus_quality} · Clarity: {analysis.subjective_metrics.avg_clarity}
             </div>
           )}
-          <div className="text-foreground/40 text-[8px] leading-relaxed">{analysis.interpretation?.slice(0, 200)}</div>
+          <div className="text-foreground/40 text-[11px] leading-relaxed">{analysis.interpretation?.slice(0, 200)}</div>
         </div>
       )}
 
       <div className="flex gap-2">
         {active && (
-          <button onClick={onClose} className="px-3 py-1.5 rounded bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30">
+          <button onClick={onClose} className="px-3 py-1.5 rounded bg-lock/10 border border-amber-500/30 text-lock hover:bg-amber-500/30">
             Close Execution
           </button>
         )}
@@ -181,7 +181,7 @@ export function AdaptiveExecutionPanel({ execution, analysis, onStart, onComplet
         </button>
       </div>
 
-      <div className="text-foreground/20 text-[7px]">{execution.scientific_boundary}</div>
+      <div className="text-foreground/20 text-[11px]">{execution.scientific_boundary}</div>
     </div>
   );
 }

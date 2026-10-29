@@ -44,6 +44,27 @@ export function isLocked(entity: SceneEntity): boolean {
   return entity.locked || Object.values(entity.attributes).some((attribute) => attribute.locked);
 }
 
+export function provenanceColor(provenance: string | null | undefined): string {
+  switch (provenance) {
+    case "user_explicit":
+      return "#6fe3c4";
+    case "user_implied":
+      return "#9fe8d2";
+    case "candidate":
+      return "#e8b45a";
+    default:
+      return "#7f8ba3";
+  }
+}
+
+export function isEntityLocked(entity: SceneEntity): boolean {
+  return entity.locked;
+}
+
+export function hasLockedAttributes(entity: SceneEntity): boolean {
+  return Object.values(entity.attributes).some((attribute) => attribute.locked);
+}
+
 export function lockedAttributePaths(entity: SceneEntity): string[] {
   return Object.entries(entity.attributes)
     .filter(([, attribute]) => attribute.locked)

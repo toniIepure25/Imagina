@@ -4,11 +4,13 @@ import { useState, type FormEvent } from "react";
 import Button from "@/components/common/Button";
 import type { SceneCommand, StudioSnapshot, StudioWorld } from "@/lib/animusStudioApi";
 import HistoryPanel from "./HistoryPanel";
+import ProvenanceChip from "./workbench/ProvenanceChip";
 import {
   attrNumber,
   entityColor,
   entityKindLabel,
-  isLocked,
+  hasLockedAttributes,
+  isEntityLocked,
   lockedAttributePaths,
 } from "./sceneUtils";
 
@@ -48,7 +50,7 @@ function RangeControl({
   };
   return (
     <label className="block space-y-1">
-      <span className="flex items-center justify-between text-[10px] text-foreground/45">
+      <span className="flex items-center justify-between text-[11px] text-foreground/45">
         <span>{label}</span>
         <span className="font-mono text-foreground/30">{display ? display(shown) : shown.toFixed(2)}</span>
       </span>
@@ -74,7 +76,7 @@ function RangeControl({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-2.5">
-      <h3 className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">{title}</h3>
+      <h3 className="text-[11px] uppercase tracking-[0.18em] text-foreground/40">{title}</h3>
       {children}
     </section>
   );
@@ -111,8 +113,27 @@ export default function InspectorPanel({
   const scene = snapshot.scene;
   const effectiveWorldName = worldName ?? `${scene.title} world`;
   const selected = scene.entities.find((entity) => entity.id === selectedId) || null;
-  const selectedLocked = selected ? isLocked(selected) : false;
+  const selectedLocked = selected ? isEntityLocked(selected) : false;
   const lockedPaths = selected ? lockedAttributePaths(selected) : [];
+  const nextMove = snapshot.candidates.length
+    ? {
+        label: "Compare, then keep",
+        body: "The candidate set is ready. Read the diff notes, then keep the variation that fits — or explore again while your locks stay fixed.",
+      }
+    : selected
+      ? {
+          label: "Correct one thing",
+          body: "Change a single attribute, then lock it. Locks are the contract for the next candidate set; everything else stays free to vary.",
+        }
+      : scene.entities.length
+        ? {
+            label: "Choose a point of focus",
+            body: "Select an element in the scene, the index, or the list. Then correct it, lock it, or leave it free for exploration.",
+          }
+        : {
+            label: "Build the stage",
+            body: "Add a subject or element from the controls below. A visible candidate is the first step of the correction loop.",
+          };
 
   const save = async (event: FormEvent) => {
     event.preventDefault();
@@ -150,7 +171,7 @@ export default function InspectorPanel({
               setTab(next);
               document.getElementById(`inspector-tab-${next}`)?.focus();
             }}
-            className={`flex-1 px-3 py-2.5 text-[10px] uppercase tracking-[0.18em] transition-colors ${
+            className={`flex-1 px-3 py-2.5 text-[11px] uppercase tracking-[0.18em] transition-colors ${
               tab === item
                 ? "border-b border-accent-glow text-accent-glow"
                 : "text-foreground/35 hover:text-foreground/60"
@@ -183,10 +204,24 @@ export default function InspectorPanel({
           />
         ) : (
           <>
+            <div
+              className="rounded-lg border border-accent-glow/15 bg-[linear-gradient(135deg,rgba(121,232,255,0.055),rgba(91,108,255,0.02))] p-3"
+              aria-live="polite"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent-glow/60">Next move</span>
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/20">
+                  L1 scaffold
+                </span>
+              </div>
+              <p className="mt-1.5 text-[11px] font-medium text-foreground/80">{nextMove.label}</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-foreground/40">{nextMove.body}</p>
+            </div>
+
             <Section title={`Elements · ${scene.entities.length}`}>
               <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
                 {scene.entities.length === 0 && (
-                  <p className="text-[10px] text-foreground/30">No elements yet. Add one below.</p>
+                  <p className="text-[11px] text-foreground/30">No elements yet. Add one below.</p>
                 )}
                 {scene.entities.map((entity) => (
                   <button
@@ -206,15 +241,19 @@ export default function InspectorPanel({
                     />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[11px] text-foreground/70">{entity.label}</span>
-                      <span className="block truncate text-[9px] text-foreground/25">
+                      <span className="block truncate text-[11px] text-foreground/25">
                         {entityKindLabel(entity.kind)} · {entity.role}
                       </span>
                     </span>
-                    {isLocked(entity) && (
-                      <span className="shrink-0 text-[9px] text-amber-200/60" title="Locked">
+                    {isEntityLocked(entity) ? (
+                      <span className="shrink-0 text-[11px] text-lock/70" title="Element locked">
                         locked
                       </span>
-                    )}
+                    ) : hasLockedAttributes(entity) ? (
+                      <span className="shrink-0 text-[11px] text-lock/45" title="One or more attributes locked">
+                        attr lock
+                      </span>
+                    ) : null}
                   </button>
                 ))}
               </div>
@@ -225,7 +264,7 @@ export default function InspectorPanel({
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <h3 className="truncate text-sm font-semibold text-foreground/90">{selected.label}</h3>
-                    <p className="text-[10px] text-foreground/35">
+                    <p className="text-[11px] text-foreground/35">
                       {entityKindLabel(selected.kind)} · {selected.role} ·{" "}
                       {Math.round(selected.confidence * 100)}% confidence
                     </p>
@@ -233,11 +272,24 @@ export default function InspectorPanel({
                   <button
                     type="button"
                     onClick={() => onSelect(null)}
-                    className="text-[10px] text-foreground/35 hover:text-foreground"
+                    className="text-[11px] text-foreground/35 hover:text-foreground"
                   >
                     close
                   </button>
                 </div>
+
+                <div className="flex flex-wrap gap-1">
+                  <ProvenanceChip provenance={selected.provenance} locked={selected.locked} />
+                  {Object.entries(selected.attributes)
+                    .filter(([, attribute]) => attribute.provenance && attribute.provenance !== selected.provenance)
+                    .slice(0, 3)
+                    .map(([path, attribute]) => (
+                      <ProvenanceChip key={path} provenance={attribute.provenance} locked={attribute.locked} />
+                    ))}
+                </div>
+                <p className="text-[11px] leading-relaxed text-foreground/30">
+                  Source describes where the value entered the scene graph. It is not a claim about why you imagined it.
+                </p>
 
                 <div className="flex flex-wrap gap-1">
                   {COLORS.map((color) => (
@@ -284,7 +336,7 @@ export default function InspectorPanel({
                   min={0.2}
                   max={4}
                   step={0.05}
-                  disabled={busy || selectedLocked}
+                  disabled={busy || selectedLocked || lockedPaths.includes("size")}
                   onCommit={(value) =>
                     void onCommands([
                       { op: "set_entity_attribute", entity_id: selected.id, path: "size", value },
@@ -297,7 +349,7 @@ export default function InspectorPanel({
                   min={0}
                   max={3}
                   step={0.05}
-                  disabled={busy || selectedLocked}
+                  disabled={busy || selectedLocked || lockedPaths.includes("emissive")}
                   onCommit={(value) =>
                     void onCommands([
                       { op: "set_entity_attribute", entity_id: selected.id, path: "emissive", value },
@@ -341,7 +393,7 @@ export default function InspectorPanel({
                     void onCommands([{ op: "remove_entity", entity_id: selected.id }]);
                     onSelect(null);
                   }}
-                  className="text-[10px] text-danger/60 hover:text-danger disabled:opacity-30"
+                  className="text-[11px] text-danger/60 hover:text-danger disabled:opacity-30"
                 >
                   Remove this element
                 </button>
@@ -355,7 +407,7 @@ export default function InspectorPanel({
 
             <Section title="Atmosphere">
               <div className="grid grid-cols-2 gap-2">
-                <label className="space-y-1 text-[10px] text-foreground/45">
+                <label className="space-y-1 text-[11px] text-foreground/45">
                   <span>Style</span>
                   <select
                     value={scene.style}
@@ -372,7 +424,7 @@ export default function InspectorPanel({
                     ))}
                   </select>
                 </label>
-                <label className="space-y-1 text-[10px] text-foreground/45">
+                <label className="space-y-1 text-[11px] text-foreground/45">
                   <span>Time</span>
                   <select
                     value={scene.atmosphere.time_of_day}
@@ -391,7 +443,7 @@ export default function InspectorPanel({
                     ))}
                   </select>
                 </label>
-                <label className="col-span-2 space-y-1 text-[10px] text-foreground/45">
+                <label className="col-span-2 space-y-1 text-[11px] text-foreground/45">
                   <span>Weather</span>
                   <select
                     value={scene.atmosphere.weather}
@@ -456,13 +508,13 @@ export default function InspectorPanel({
                     type="button"
                     disabled={busy || scene.entities.length >= 40}
                     onClick={() => void onCommands([{ op: "add_entity", kind }])}
-                    className="rounded-full border border-white/10 bg-white/[0.02] px-2 py-1 text-[10px] text-foreground/50 transition-colors hover:border-accent-glow/35 hover:text-foreground/85 disabled:opacity-30"
+                    className="rounded-full border border-white/10 bg-white/[0.02] px-2 py-1 text-[11px] text-foreground/50 transition-colors hover:border-accent-glow/35 hover:text-foreground/85 disabled:opacity-30"
                   >
                     + {kind}
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] leading-relaxed text-foreground/25">
+              <p className="text-[11px] leading-relaxed text-foreground/25">
                 {scene.entities.length}/40 elements. Unknown kinds become abstract forms rather than failing.
               </p>
             </Section>
@@ -490,7 +542,7 @@ export default function InspectorPanel({
               </form>
             </Section>
 
-            <div className="rounded-md border border-white/6 bg-white/[0.015] p-2.5 text-[9px] leading-relaxed text-foreground/25">
+            <div className="rounded-md border border-white/6 bg-white/[0.015] p-2.5 text-[11px] leading-relaxed text-foreground/25">
               Studio state is stored locally in SQLite. No image model, upload, or network call is used to
               render this scene. Claim ceiling: {snapshot.claim_label}.
             </div>

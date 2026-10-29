@@ -50,6 +50,13 @@ def test_undo_root_is_rejected():
         store.undo()
 
 
+def test_scoped_stores_do_not_share_version_ids():
+    first = RevisionStore.with_root(_scene(), scope="ast_first")
+    second = RevisionStore.with_root(_scene(), scope="ast_second")
+    assert first.head().content_hash == second.head().content_hash
+    assert first.head().version_id != second.head().version_id
+
+
 def test_branch_is_isolated_and_history_is_lineage():
     root = _scene()
     store = RevisionStore.with_root(root)

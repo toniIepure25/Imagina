@@ -2,6 +2,397 @@
 
 ---
 
+## 2026-10-26 -- Lumen: world grammar, layered renderer, and interface overhaul
+
+**Objective:** turn `/animus/imagine` from a flat primitive scatter into a credible first-person world engine and a
+professional instrument, while keeping the diffusion lane honestly blocked until the remote A100 exists. The work had
+to preserve the existing `SceneGraph`, backend contract, URLs, evidence marks, and `L1_BEHAVIORAL_ASSISTED` ceiling.
+
+**Delivered**
+- `frontend/lib/imagine/world.ts`: deterministic `WorldSpec` with six biomes, eight archetypes, time/weather/mood,
+  style priors, palette, focal object, seven semantic layers, budgets, path, and camera. Prompt terms remain
+  semantic; signals only tune detail, emissive light, fog, path width, and motion. Added optional title override so a
+  preset reads as its own world.
+- `frontend/lib/imagine/composeWorld.ts`: layered composition into a capped 40-entity `SceneGraph`. Focal object sits
+  beyond the walkable end; architecture, biome props, horizon, prompt props, ground detail, and atmosphere are
+  separate passes. Every entity carries `semantic_source`, `layer`, `collidable`, `variant`, and `anchor`.
+- `frontend/lib/imagine/presets.ts`: five starter worlds — Bioluminescent Grove, Drowned Observatory, Gothic Library,
+  Salt Coast, Void Garden — with gradient previews and `?preset=` support. Invalid ids fall back without changing the
+  world.
+- `frontend/components/animus/world/`: new sky shader (gradient, sun/moon, aurora, haze), terrain/path shader,
+  practical point lights, ambient motes, twelve architecture/effect bodies, and a bloom `EffectComposer` built from
+  the existing `three` examples. Reduced motion keeps the normal renderer.
+- `AnimusScene`: world-aware backdrop/terrain/lighting, `collidable`-aware first-person collision, velocity smoothing,
+  head bob, preserved-drawing-buffer capture, and the existing orbit/Studio behavior untouched.
+- Interface: Lumen header and world strip; scene-read overlay; Scene/Signals/Off stage lens; refined crosshair;
+  first-visit walk/look coach mark; underline instrument tabs; mobile instrument sheet; sharpened composer and status
+  rail. `diffusion offline` remains in the stage; the header now says `diffusion lane closed` to avoid a duplicate
+  accessible label.
+- Project integration: landing page presents three modes including Lumen; `/animus` advertises the Lumen engine;
+  `/animus/worlds` adds five one-click Lumen starters above saved worlds; `/science` records the local world
+  composition evidence and its boundary.
+
+**Verification (actually run)**
+- `tsc --noEmit` — pass.
+- ESLint on all changed frontend files — pass.
+- `vitest run` — 32 files, 144 tests pass, including 10 world-grammar tests and 7 composer tests.
+- `next build` — pass, 30 routes.
+- Playwright `e2e/imagine-diffusion.spec.ts` + `e2e/instrument-routes.spec.ts` — 19/19 pass after the duplicate
+  accessible label was removed.
+- Bundle budget — pass; `/animus/imagine` is 233.4 KB gzip against a 340 KB ceiling, shared 190.3 KB.
+- Static claim audit — pass: 204 files, 11 phrase matches (0 affirmative), 11 evidence ids, 0 orphan.
+- Headless interaction audit — canvas present, zero console/page errors, `?preset=grove` changes title to
+  `Bioluminescent Grove`, URL and hash; `#signal-attention` changes the hash and entity count; first-person toggle
+  exits and re-enters; download is `imagina-diffusion-request-v2.json`; mobile has no horizontal overflow and opens
+  the instrument sheet.
+- Project audit — `/`, `/animus`, `/animus/worlds`, `/science`, and `/animus/imagine?preset=library` load with no
+  overflow at 1440 and 390 px; landing exposes 3 modes, worlds exposes 5 starters, Coast starter resolves to
+  `Salt Coast`, and an invalid preset falls back with a notice.
+- Screenshot `docs/animus/lumen-imagine.png` captured from the actual local render at 1440×1000.
+
+**Risks / limits**
+- No diffusion, model weights, text encoder, or A100 worker was added. Every rendered form is procedural.
+- The five presets are local compositions, not saved Studio worlds and not generated images.
+- Bloom and multiple transparent layers add GPU cost; DPR remains capped, motion can be disabled, and the composer
+  is skipped under reduced motion.
+- The entity cap can drop the lowest-priority detail at high density; metadata records truncation.
+- Mobile scene-read is intentionally hidden; the signals sheet carries the same information.
+- No commit or push was made.
+
+---
+
+## 2026-10-24 -- ANIMUS 2.2: Comparison Chamber
+
+**Objective:** add a professional, deliberate head-versus-preview comparison surface without changing the
+backend, schema, persistence, or claim ceiling. The chamber should make the comparison basis explicit, keep both
+states on one camera, and let a person filter unchanged elements without turning the filter into a second truth
+claim.
+
+**Delivered**
+- `frontend/lib/sceneCompare.ts`: added `comparisonSets` (deduplicated added/changed/removed ID sets) and
+  scene-level comparison rows for title, style, atmosphere, lighting, camera, and dynamics. Scene rows use
+  `entity_id: null`, so a sky-only change can no longer produce a false "No differences".
+- `AnimusScene`: added `AnimusCameraView`, `visibleIds`, `cameraView`, `animate`, `frameloop`, `dpr`, and
+  `onCameraInteract`. Existing callers remain compatible; the main Stage now clears its Shot label when the person
+  manually orbits.
+- `CompareChamber`: full-screen dialog with two static panes, shared head camera, head-relative diff, trace,
+  explicit **Head** / **Preview** labels, basis line, counts, footer legend, default-off **Only differences**
+  filter, scene-level explanation, screen-reader summary, body scroll lock, focus trap/return, and Escape close.
+  On narrow screens the panes stack; desktop uses two columns.
+- Entry points: **Compare** in the preview banner, **Compare with head** in the preview panel, command palette
+  **Compare with head**, and `C`. The chamber never discards or commits the preview; Escape closes the chamber
+  before the preview. Closing or changing the preview closes the chamber through preview-reference equality, with
+  no effect-driven state reset.
+- Candidate previews are labelled **Head vs candidate** in the chamber, while the existing panel continues to
+  report the candidate's source-relative diff. The two bases are deliberately not conflated.
+- Tests: scene comparison now 8 tests (including scene-level rows and set deduplication); new `CompareChamber`
+  suite (4); preview panel suite (4) includes the compare entry point. The Playwright flow opens the chamber,
+  checks both panes, basis, legend, scene-level note, filter, Escape behaviour, screenshot, console errors, and
+  mobile overflow.
+
+**Research/docs**
+- New `docs/animus/COMPARISON_RESEARCH.md`: focus+context, information seeking, change blindness, coordinated
+  multiple views, WCAG 1.4.1, design constraints, limits, and five proposed studies. It explicitly records that no
+  direct empirical study of 3D scene-version comparison was found.
+- Extended `RESEARCH_2_0.md` with section 10, `WORKBENCH_SPEC.md` with section 7.3 and the verification contract,
+  `INTERFACE_PRINCIPLES.md` with section 12, and `README.md` with the chamber, `C`, and the research link.
+- Added ADR-059 and updated `CONTEXT_INDEX.md`. No canonical architecture, metrics, claims, or ethics docs were
+  modified.
+
+**Verification (actually run)**
+- `tsc --noEmit` - pass.
+- ESLint on all changed frontend files, tests, and the E2E script - pass.
+- `vitest run` - 18 files, 70 tests pass.
+- `next build` - pass; 27 routes generated.
+- `node scripts/verify-animus-ui.cjs` - pass: full studio loop plus chamber open, two panes with usable sizes,
+  head-relative basis, legend, scene-level note, filter activation, responsive stacking at 640 px, Escape closes
+  the chamber but not the preview, screenshot `03d-studio-chamber.png`, no browser console errors, mobile
+  overflow `0`.
+- Backend target `pytest app/tests/test_animus_scene_revisions.py app/tests/test_animus_scene_commands.py` -
+  23 passed; `ruff check --no-cache` on the ANIMUS backend scope - pass.
+
+**Risks / limits**
+- No usability, change-detection, memory, or creativity study was run. The chamber is an interaction hypothesis.
+- Two WebGL canvases cost more than one; `frameloop="demand"`, no animation, and a DPR cap mitigate this, with a
+  single-pane toggle as the documented fallback if a target device measures poorly.
+- Scene-level rows count and describe a field but have no spatial marker; the chamber says so.
+- **Only differences** can remove context by design. It is default-off and keeps all elements visible when only
+  scene-level changes exist.
+- No commit or push was made.
+
+---
+
+## 2026-10-24 -- ANIMUS 2.1: Palimpsest, head-relative diff, and linked previews
+
+**Objective:** take the Timecode/scene-lens/shot-deck slice further by making history spatial, without adding a
+runtime dependency, backend endpoint, schema, telemetry, or claim above `L1_BEHAVIORAL_ASSISTED`.
+
+**Delivered**
+- `frontend/lib/sceneCompare.ts`: deterministic head-to-preview comparison (`compareScenes`) and capped
+  previous-position trace selection (`traceEntities`). Covers added, removed, transform, attribute, provenance,
+  and locked-untouched changes.
+- `SceneTrace`: subdued wireframe proxies at stored old transforms for moved and removed entities, with a dashed
+  old-to-new connector for moves. Trace is non-interactive, rendered before current entities, capped at 16, and
+  counted as `shown of total` in the legend.
+- Version previews now use a head-relative spatial diff for Stage rings, trace, and panel counts; the panel states
+  **Since head**. Candidate previews keep the backend candidate diff and state **Since source version**.
+- `PreviewPanel`: changed rows are focusable buttons; added entries are focusable chips; a removed entity is
+  reported as not focusable and its trace is the spatial answer. Focusing selects the entity and switches the
+  camera to **Detail**.
+- Added/changed rings now use solid vs dashed line loops, so colour is not the sole encoding.
+- Local deep links: `?version=…`, `?candidate=…`, and `?view=structure|ledger` are mirrored with
+  `history.replaceState`, applied once after the snapshot loads, and cleared when returning to head. Invalid links
+  clear with an inline message.
+- `useFocusTrap`: Tab trapping and focus return for the command palette and shortcut overlay.
+- New tests: scene comparison/trace (5), URL links (5), focus trap (1), preview panel (3). Updated the Playwright
+  flow to check head-relative basis, solid/dashed legend, linked reload, and head URL cleanup.
+
+**Research/docs**
+- Extended `RESEARCH_2_0.md` with the Palimpsest rationale, comparison-basis rule, trace limits, WCAG 1.4.1
+  motivation, and a proposed trace-localization experiment. Furnas (1986) and Shneiderman (1996) are cited as
+  design vocabulary, not tests; bibliographic details still need verification before external publication.
+- Updated `WORKBENCH_SPEC.md` (Palimpsest, URL state, accessibility, verification contract), `README.md`,
+  `INTERFACE_PRINCIPLES.md` (principles 11–12 and §11), ADR-058, and `CONTEXT_INDEX.md`.
+- ADR-057's “no ghost geometry” consequence is marked superseded by ADR-058; the new trace uses only stored
+  transforms and is explicitly symbolic.
+
+**Verification (actually run)**
+- `tsc --noEmit` - pass.
+- ESLint on all changed frontend files, tests, and the E2E script - pass.
+- `vitest run` - 17 files, 61 tests pass.
+- `next build` - pass; 27 routes generated.
+- `node scripts/verify-animus-ui.cjs` - pass: v1 → prompt v2 → head-relative timecode preview → basis/legend
+  checks → linked reload → Top shot → return → lock v3 → 3 candidates → keep v4 → undo v3 → branch round-trip →
+  save/reload → world open/delete; no console errors; mobile overflow 0 px; new
+  `docs/animus/03c-studio-palimpsest.png`.
+- Targeted backend tests (`test_animus_scene_revisions.py`, `test_animus_scene_commands.py`,
+  `test_animus_studio_reconstruction.py`) - 30 passed.
+- `python -m ruff check app/` - pass.
+- Full backend suite was not rerun because no backend files changed; the last full run had 5 pre-existing failures
+  and 101 Windows temp-directory errors. `bash scripts/verify.sh` remains unavailable because `python3` and `npm`
+  are not on PATH.
+
+**Risks and limits**
+- The trace is a spatial hypothesis; it has not been tested for change localization, clutter, or color-vision
+  accessibility. A large diff is capped, not fully drawn.
+- The client comparison is not the canonical backend diff and does not cover every metadata field.
+- The active Shot label still does not clear on manual orbit; this remains a known cosmetic mismatch.
+- Deep links are local-only, use `replaceState`, and are not share or persistence infrastructure.
+- No usability study was run; no memory, creativity, trust, or efficiency claim follows.
+
+**Changed files (this slice)**
+- `frontend/lib/sceneCompare.ts`, `frontend/lib/workbenchUrl.ts`, `frontend/lib/useFocusTrap.ts`
+- `frontend/components/animus/StudioClient.tsx`, `AnimusScene.tsx`, `EntityMesh.tsx`
+- `frontend/components/animus/workbench/SceneTrace.tsx`, `PreviewBanner.tsx`
+- `frontend/components/animus/AnimusCommandPalette.tsx`, `ShortcutOverlay.tsx`
+- tests: `frontend/lib/__tests__/scene-compare.test.ts`, `workbench-url.test.ts`, `focus-trap.test.tsx`,
+  `frontend/components/animus/workbench/__tests__/PreviewPanel.test.tsx`
+- `frontend/scripts/verify-animus-ui.cjs`
+- `docs/animus/RESEARCH_2_0.md`, `WORKBENCH_SPEC.md`, `README.md`, `INTERFACE_PRINCIPLES.md`
+- `docs/ai/DECISIONS.md`, `SESSION_LOG.md`, `CONTEXT_INDEX.md`
+
+---
+
+## 2026-10-24 -- ANIMUS 2.0 direction: spatial timecode, scene lens, and shot deck
+
+**Objective:** research how the workbench could move beyond a conventional 3D editor, then implement the highest-
+value interface slice without new dependencies, backend endpoints, or claim expansion. The claim ceiling remains
+`L1_BEHAVIORAL_ASSISTED`.
+
+**Research**
+- Added `docs/animus/RESEARCH_2_0.md`: a rapid, abstract-level review with an explicit question, inclusion
+  criteria, source table, claim-to-source separation, limitations, confidence, and four proposed experiments.
+- Sources: Sterman/Nicholas/Paulos 2022 on creative version control (18 interviews); Moll/Sykes 2022 VR Method of
+  Loci feasibility (n=21 / 17); Edelsbrunner et al. 2025 visualization badges; Tankelevitch et al. 2024
+  metacognitive demands of GenAI; Fernandes et al. 2025 performance/metacognition dissociation (N=246, replicated
+  N=452); Dalsgaard 2025 (framing only; no abstract available); Andersson/Elmqvist 2026 SOSS preprint.
+- Key inference: versions are material, provenance belongs next to the mark, and calibration must not be collapsed
+  into a composite score. The research supports the direction; it does not test this interface.
+
+**Delivered**
+- `VersionTimecode`: persistent Stage strip for the active branch, with head marker, in-place preview, loading
+  state, automatic scroll to the current version, and `[` / `]` keyboard stepping.
+- `Scene lens`: `Changes` now draws an outer mint ring for added entities and an amber ring for changed entities;
+  `Sources` draws a provenance ring for explicit, implied, candidate, or seed/procedural. Selection and lock rings
+  keep their own radii. A compact legend reports diff counts and provenance colors. Removed entities are reported
+  by count and label, never invented as ghost geometry.
+- `Shot` deck replaces the hidden View dropdown: Wide, Eye, Detail, Top. Detail frames the selected entity when
+  one exists. Camera presets are stable, named viewpoints, not an autonomous director.
+- Corrected `ShortcutOverlay`: removed the false Stage claims about `[` / `]` rotation and arrow nudging; `[` / `]`
+  now steps versions, and Structure owns arrow-key nudging.
+- Command palette entries for previous/next version, with disabled reasons at the ends of the branch.
+- Added `PreviewBanner` test id and updated the Playwright flow to verify timecode preview, scene-lens counts, and
+  the active Shot button.
+- Added `VersionTimecode` component tests (3).
+- Updated `WORKBENCH_SPEC.md`, `README.md`, `INTERFACE_PRINCIPLES.md` (principles 9-10 and a 2026 addendum), and
+  ADR-057.
+
+**Verification (actually run)**
+- `tsc --noEmit` - pass.
+- `eslint` on all changed frontend files and the E2E script - pass.
+- `vitest run` - 13 files, 47 tests pass.
+- `next build` - pass; 27 routes generated.
+- `node scripts/verify-animus-ui.cjs` - pass: v1 -> prompt v2 -> timecode preview (`[`) -> scene lens -> Top shot
+  -> return -> lock v3 -> 3 candidates -> keep v4 -> undo v3 -> branch round-trip -> save/reload -> world
+  open/delete; no console errors; mobile overflow 0 px; new `03b-studio-timecode.png`.
+- `pytest app/tests/test_animus_scene_revisions.py app/tests/test_animus_scene_commands.py
+  app/tests/test_animus_studio_reconstruction.py` - 30 passed.
+- `python -m ruff check app/` - pass.
+- Full backend suite was not rerun this round because no backend files changed in this slice; the last full run
+  (previous entry) had 5 pre-existing failures and 101 Windows temp-directory errors.
+- `bash scripts/verify.sh` remains unavailable here because `python3` and `npm` are not on PATH; equivalent
+  commands were run directly.
+
+**Risks and limits**
+- Timecode lists the active branch only; branch topology remains the Ledger's job.
+- The scene lens does not draw removed entities because their geometry is no longer in the scene.
+- The active Shot button is not cleared when the user orbits away; the camera no longer matches the label.
+- Rings are visual encodings and have not been tested for color-vision accessibility or badge overload.
+- No usability study was run. The research is abstract-level; the SOSS source is a preprint and Dalsgaard is
+  framing only. No claim of improved memory, creativity, imagery, trust, or efficiency follows.
+
+**Changed files (this slice)**
+- `frontend/components/animus/StudioClient.tsx`
+- `frontend/components/animus/AnimusScene.tsx`
+- `frontend/components/animus/EntityMesh.tsx`
+- `frontend/components/animus/sceneUtils.ts`
+- `frontend/components/animus/workbench/VersionTimecode.tsx`
+- `frontend/components/animus/workbench/WorkbenchToolbar.tsx`
+- `frontend/components/animus/workbench/PreviewBanner.tsx`
+- `frontend/components/animus/ShortcutOverlay.tsx`
+- `frontend/components/animus/workbench/__tests__/VersionTimecode.test.tsx`
+- `frontend/scripts/verify-animus-ui.cjs`
+- `docs/animus/RESEARCH_2_0.md`, `WORKBENCH_SPEC.md`, `README.md`, `INTERFACE_PRINCIPLES.md`
+- `docs/ai/CONTEXT_INDEX.md`, `docs/ai/DECISIONS.md`, `docs/ai/SESSION_LOG.md`
+
+---
+
+## 2026-10-24 -- ANIMUS workbench: implementation, dossier, and runtime verification
+
+**Objective:** implement the approved workbench plan end to end: direct manipulation, version preview and
+branching, a top-down structure editor, a deliberate first look, a research-grounded dossier, and route-level
+loading/error states — without new runtime dependencies or claim expansion.
+
+**Delivered**
+- Stage / Structure / Ledger workbench with a controlled reducer (`lib/workbenchState.ts`), `TransformControls`
+  attached to unlocked selected entities, clamped/rounded transforms, camera presets, relation layer, grid/lock
+  layers, and focus mode.
+- `StructureView`: fixed-bounds top-down projection, pointer drag, arrow-key nudge, relation add/remove, accessible
+  table, read-only preview behaviour.
+- `VersionGraph` + `LedgerView`: branch lanes, parent edges, recent versions, intentions, preview and branch
+  actions. Preview never writes; branch is explicit.
+- Candidate preview is separate from keep; stale candidates are previewable but not keepable; version details are
+  abortable and cached (LRU 20).
+- `PreviewBanner` / `PreviewPanel` with added/changed/removed, locked-untouched, stale warning, and keep/branch/
+  return actions.
+- `PreviewPanel` lists added and removed labels in addition to changed paths, so a candidate/version diff is
+  readable without opening the scene.
+- `FirstLookGate`: deliberate first look with three optional prompts and local-only notes; `sessionStorage`
+  dismissal only.
+- Transform shortcuts (`G`/`R`/`S`) now ignore locked selections and read-only previews, matching the disabled
+  toolbar buttons. Verified in-browser: locked selection stayed on Move; unlocked selection switched to Rotate.
+- Dossier redesign of `/animus/profile` with `DossierSheet`, `EvidenceLedger`, and `IntervalPlot`: separate
+  dimensions, Brier displayed separately, no composite, no gradient bars.
+- Adaptive practice now shows the backend `adaptive.reason`, task family, difficulty, and expected gain; candidate
+  thumbnails use `SceneSketch` instead of extra WebGL canvases.
+- Observatory shows an evidence-budget row and an explicit censoring note.
+- Route-level `loading.tsx` and `error.tsx` for Studio, Recall, Beliefs, and Threshold, using `unstable_retry`.
+- `WORKBENCH_SPEC.md` and ADR-056; `INTERFACE_PRINCIPLES.md` remains the research rationale.
+
+**Verification (actually run)**
+- `tsc --noEmit` — pass.
+- `vitest run` — 12 files, 44 tests pass; new tests cover workbench reducer, version graph, and scene contract.
+- `next build` — pass; 27 routes generated.
+- `node scripts/verify-animus-ui.cjs` — pass; no console errors, no mobile horizontal overflow, branch round-trip,
+  world save/reload/open/delete.
+- `pytest app/tests/test_animus_scene_revisions.py app/tests/test_animus_scene_commands.py` — 23 tests pass,
+  including a new cross-session version-ID uniqueness regression.
+- Full `pytest app/tests/ -m "core or research"` — 976 passed, 5 failed, 101 errors. The 101 errors are pytest
+  tmp-dir permission failures on this Windows host (`PermissionError: ... Temp/pytest-of-ComputaCenter`), not
+  product assertions. The 5 failures are pre-existing/out-of-scope test drift in epistemic/observatory/events/
+  migration tests; none touches the files changed here. See “Remaining risks”.
+- `python -m ruff check app/` — pass after removing one unused import in a reconstruction test.
+- `bash scripts/verify.sh` (via Git Bash) could not resolve `python3` or `npm` on PATH; equivalent commands were
+  run directly with the available `python` and Node paths, as listed above.
+- Browser smoke pass over profile, studio, practice, interview, observatory, worlds, and about: no page errors,
+  no horizontal overflow at 1440 px; studio workflow exercised through Structure nudge (v3 → v5).
+
+**Fixed during verification**
+- `backend/app/core/animus/scene/commands.py` had a missing newline (`return    if path == "camera.fov"`), making
+  the backend unimportable. Repaired.
+- Studio creation could fail with `UNIQUE constraint failed: animus_studio_versions.version_id` because version
+  IDs were derived only from branch, parent, scene hash, and number. Version IDs are now scoped by session
+  (`RevisionStore.scope`), with a regression test. This changes IDs for new sessions only; existing rows are
+  untouched and no schema, migration, or API shape change was made.
+- Backend edits in this slice are limited to the fatal syntax repair and the version-ID collision fix above.
+  No endpoint, schema, or persistence contract was added or removed.
+- `useAnimusCommands` was called above the provider that `AnimusShell` owns. `AnimusShell` now reuses an existing
+  provider; Studio wraps the workspace in `AnimusCommandProvider`, so the palette and Studio share one registry.
+- Candidate regenerate button's `aria-label` masked its visible text; removed so the accessible name matches.
+
+**Remaining risks**
+- `eslint .` still reports pre-existing `react-hooks/set-state-in-effect` errors in `useAnimusStudio` and a few
+  older pages/components; changed/new files are lint-clean. These are not introduced by this slice and were not
+  mechanically suppressed.
+- The backend pytest suite as a whole was not clean in this environment: 976 passed, 5 failed, 101 setup errors
+  (tmp permissions). The five failures are in `test_animus_epistemic.py` (six-decimal rounding in
+  `abstention_rate`), `test_animus_epistemic_api.py` (expects a probe after the six-probe cap),
+  `test_animus_observatory.py` (calls `brier_score([], [])` against a one-argument API),
+  `test_animus_studio_api.py` (`has_more` expects true when its cursor page has no remaining event), and
+  `test_migration_runner.py` (Windows 8.3 short-path comparison). These predate this slice and were not
+  mechanically “fixed” by weakening tests; they need a separate reconciliation pass.
+- Visual review was limited to screenshot generation and DOM/overflow checks in this environment; no human visual
+  rating or usability study was performed.
+
+**Claim boundary:** ceiling unchanged `L1_BEHAVIORAL_ASSISTED`; no neural decoding, image model, diagnosis,
+composite imagery score, telemetry, or cloud call. The workbench is an interaction hypothesis, not evidence of
+usability or efficacy.
+
+---
+
+## 2026-10-24 -- ANIMUS interface: a calibrated mirror, not an oracle
+
+**Objective:** take the ANIMUS frontend to a substantially more professional, coherent, and research-grounded
+level without adding runtime dependencies, changing backend contracts, or weakening the claim ceiling.
+
+**Research and decision**
+- Synthesized HCI and psychology sources on generative-AI metacognition, human–AI co-creativity, semantic
+  diversity, uncertainty visualization, retrieval practice, aphantasia/imagery variation, spatial memory, and
+  GenAI interaction taxonomies.
+- Wrote `docs/animus/INTERFACE_PRINCIPLES.md` with a research question, inclusion criteria, claim-to-source table,
+  reported findings vs design inference, limits, and proposed experiments. The review is explicitly not a
+  validation of ANIMUS.
+- Adopted the interface North Star **“a calibrated mirror, not an oracle”** and eight principles: instrument not
+  oracle; state before story; legible next move; preserve generative effort; small semantic candidate sets;
+  spatial directness; boundaries travel with numbers; quiet confidence.
+- Recorded ADR-055.
+
+**Delivered (code complete; not executed)**
+- `AnimusShell`: dedicated ANIMUS navigation frame, persistent local-only and claim-ceiling markers, session
+  instrument rail, responsive nav, skip link, and command-palette entry point. All ANIMUS routes now use it.
+- `AnimusCommandPalette`: accessible `⌘K` / `Ctrl+K` navigation with search, arrow/enter/escape handling and
+  focus management. No dependency added.
+- `SceneNavigator`: top-down clickable entity index inside the studio scene, with selected state, entity labels,
+  and keyboard focus.
+- Studio inspector “Next move” card: state-aware metacognitive guidance that recommends an evaluation step
+  without automating it.
+- `/animus` instrument-suite map: Studio, Recall, Beliefs, and Threshold presented as separate measurements with
+  separate boundaries.
+- Global refinements: new surface/motion/focus tokens, skip link, noindex metadata, updated root metadata, and
+  removal of stale V1/V2 branding from the global header/footer.
+- `docs/animus/INTERFACE_PRINCIPLES.md`, README interface principles, ADR-055, and this log entry.
+
+**Verification:** **not run.** `npm run typecheck` could not start because Node.js/npm is not on `PATH` in this
+environment; no install was attempted. Frontend typecheck, lint, build, Playwright UI verification, and a visual
+pass remain UNVERIFIED until an authorized environment runs them. Static checks passed: `git diff --check`,
+ANIMUS shell tag balance, and a prohibited-claim grep over the new UI copy.
+
+**Claim boundary:** ceiling unchanged `L1_BEHAVIORAL_ASSISTED`; no neural decoding, image model, diagnosis,
+composite imagery score, telemetry, or cloud call. The new interface is an interaction hypothesis, not evidence
+of usability or efficacy.
+
+---
+
 ## 2026-10-24 -- ANIMUS 5.0: Scene Threshold and provenance observatory (`contrast-v1` / `sdt-v1`)
 
 **Objective:** add a contrastive 2-AFC scene-discrimination task and a provenance-aware longitudinal
@@ -4796,3 +5187,188 @@ PATH (Node lives in `C:\nvm4w\nodejs`); its commands were run individually.
 **Decisions:** ADR-040.
 
 **Remaining risks:** RISK-033..036. No real data, hardware, or validated model; all results are synthetic.
+
+---
+
+## Frontend 3.0 — one instrument, two modes (2026-10-25)
+
+**What was done:** rebuilt the platform shell around `PlatformHeader`/`PlatformFooter`, semantic type tokens, a
+single ⌘K palette, shared page headers/panels/async states, and a claim badge. Redesigned the landing page, science
+framing, experiments, profile, replay, report dossier (with a paper print stylesheet), research landing, measurement,
+design simulation, analysis, multimodal header, live neuroadaptive, showcase, datasets, and EEG validation. Migrated
+the remaining shell-less routes into the platform shell and removed hardcoded `localhost:8000` calls in favour of
+`apiFetch` / `NEXT_PUBLIC_API_URL`.
+
+**Instrument features:** read-only **Trace** view (filters, search, keyboard listbox, typed commands, raw payload,
+incremental merge on `last_event_seq`, "Load older"), the **Intent Lens** receipt in `PromptBar`, and a manual
+**Blink** comparison in the preview panel (same head camera, hidden overlays, 1.1 s alternation capped at six ticks,
+disabled under reduced motion, stopped when the preview clears). Added route-level loading, error, empty, and 404
+states. Added the global print rule for evidence dossiers.
+
+**Typography and targets:** added `scripts/raise-type-floor.cjs`, which raised 648 sub-11px Tailwind sizes across 102
+files; SVG/Recharts label sizes below 11px were raised manually. Icon-only mobile navigation now meets a 44×44 target.
+
+**Verification:** `tsc --noEmit` clean; ESLint 0 errors (25 pre-existing warnings); `next build` successful (30
+routes); vitest 75/75; `scripts/verify-animus-ui.cjs` passes with new Trace, Intent receipt and Blink assertions;
+`scripts/verify-platform-ui.cjs` reports 23/23 routes clean at 1440 and 390 px (HTTP, console, overflow, sub-11px
+text, undersized targets). Showcase demo data was seeded through the local CLI endpoint for the audit.
+
+**Remaining risks:** Blink is a manual attention aid with no comparative efficacy evidence; Trace explains system
+actions, not a person's reasons; the research simulation/analysis pages queue work for a local worker and honestly
+show `queued` when none is running; `/research/participant` and `/research/synthetic-demo` remain planned surfaces.
+
+---
+
+## Frontend 4.0 - the falsifiable instrument (2026-10-26)
+
+**What was done:** added a Glass Box evidence layer (registry, types, context/store, per-metric marks, focus-trapped
+drawer, header toggle, Method Atlas at `/method`), a five-step Falsification Studio at `/research/design`, and a
+local-only Participant Mode at `/research/participant`. Retrofitted evidence marks across science, profile, report,
+multimodal, datasets, analysis, ANIMUS profile, and observatory metrics. Added `scripts/audit-claims.cjs` with a
+generated `lib/evidence/audit.json`; added `ChartFrame` chart-plus-table fallbacks, `VirtualList` for report
+timelines, lazy 3D imports with DPR/visibility/context-loss handling, semantic-token cleanup across 47 legacy files,
+and `scripts/check-bundle-budget.cjs`.
+
+**Verification:** `tsc --noEmit` clean; ESLint 0 errors (25 pre-existing warnings); `next build` successful with
+33 routes including `/method`, `/research/design` and `/research/participant`; vitest 100/100; claim audit PASS,
+186 files, 8 negated phrase matches, 10 evidence ids, 0 orphans. Bundle script reads Turbopack client-reference
+manifests and passes measured regression ceilings (shared 189.9 KB gzip; largest 3D route 485.5 KB). E2E
+`e2e/instrument-routes.spec.ts` passed 14/14 against the local production server on port 3000, covering six routes
+at 390/1440px, Glass Box provenance, and local plan locking. `scripts/verify-platform-ui.cjs` passed 25/25 routes with
+zero console errors, zero overflow, zero sub-11px visible text, and zero undersized targets at 1440 and 390 px.
+
+**Docs:** `docs/ai/EVIDENCE_INSTRUMENT.md`, `docs/ai/STUDY_DESIGNER.md`, ADR-061, and an addendum to
+`docs/animus/INTERFACE_PRINCIPLES.md`.
+
+**Remaining risks:** the evidence registry is curated, not validated; the claim audit is textual; the Study Designer's
+precision preview assumes independent pairs and is not power; Participant Mode is a demonstration, not a live study;
+bundle budgets are regression ceilings rather than the original aspirational targets.
+
+---
+
+## Imagine lab — first-person, diffusion-ready synthesis (2026-10-25)
+
+**What was done:** added `/animus/imagine`, a focused scene-generation lab separate from the Studio workbench. The
+left rail composes an initial text brief, style, seed, and a download/copy `IMAGINA-DIFFUSION-JOB-v1` contract; the
+centre is a first-person R3F stage; the right rail exposes attention, arousal, valence, vividness, fatigue,
+confidence, theta/alpha/beta/gamma, HRV, and EDA as a clearly labelled demo vector. `frontend/lib/imagineScene.ts`
+builds a deterministic `SceneGraph` from the brief and vector and maps each channel to symbolic geometry, palette,
+fog, light, stars, and motion.
+
+**First person:** `AnimusScene` gained additive `cameraMode="firstPerson"` support with WASD/arrow movement, Shift
+speed, drag look, eye-height/clamped bounds, `F` exit, and an orbit fallback. `CameraRig` and `OrbitControls` are
+skipped in first-person mode; existing Studio and comparison callers keep the default orbit path.
+
+**Honesty:** the engine card says **diffusion worker not attached**, the stage says **local fallback** and
+**diffusion offline**, and the adaptive card says it is not live neurofeedback. The job contract is `status: "blocked"`
+and no request is sent. A new `imagine.scene` evidence entry (kind `simulated`) records source, method, uncertainty,
+and what it cannot show.
+
+**Verification (actually run):** `tsc --noEmit` clean; ESLint 0 errors (25 pre-existing warnings); `next build`
+successful with 34 routes; vitest 106/106; Playwright `e2e/instrument-routes.spec.ts` 17/17 against the production
+server, including `/animus/imagine` at 390/1440px, local rebuild, and first-person toggle; an ad-hoc browser check
+confirmed WASD changes the rendered canvas and `F` returns to orbit; `scripts/verify-platform-ui.cjs` 26/26 routes
+clean at 1440 and 390px; claim audit PASS (189 files, 8 negated matches, 11 evidence ids, 0 orphans); bundle budget
+PASS (shared 190.1 KB gzip, `/animus/imagine` 215.0 KB / 340 KB, largest 3D 486.8 / 540 KB).
+
+**Docs:** `docs/animus/IMAGINE_LAB.md`, ADR-062, this entry, `TASK_BRIEF.md`, and the evidence-count/surface note in
+`docs/ai/EVIDENCE_INSTRUMENT.md`.
+
+**Remaining risks:** no diffusion model, GPU, text encoder, signal adapter, or device input exists; the local scene
+is symbolic geometry, not generated imagery; the signal vector is a UI control surface, not a measurement; adaptive
+feedback is a demo, not validated neurofeedback; the job contract is an interface proposal, and its model/VRAM
+choices are not benchmarked. The A100 worker remains blocked on pod access.
+
+---
+
+## Imagine 2.0 — fail-closed diffusion seam, 16D conditioning, hybrid skybox (2026-10-25)
+
+**What was done:** rebuilt `/animus/imagine` as a stage-first instrument. The center is a 58–62 vh first-person R3F
+stage; the left rail composes prompt, style, seed, and negative prompt; the right rail has Signals, Adaptive,
+Diffusion, and Provenance tabs. Mobile puts the stage first and exposes a touch joystick. First person now supports
+pointer lock with drag fallback, `R` reset, `F` exit, collision sliding, fullscreen, and local canvas capture.
+
+**Conditioning:** `frontend/lib/imagine/conditioning.ts` derives 16 dimensions (6 state, 4 band, 2 physiology,
+quality/uncertainty/trend/stability), applies a quality gate below 0.35, and maps eight aesthetic controls. Text still
+owns semantics. `frontend/lib/imagine/policy.ts` adds a `0.12/s` cap, 0.03 deadband, two-window hysteresis, 2500 ms
+dwell, 0.78 fatigue stop, and quality hold; `scenarios.ts` adds Steady, Drift, Load, and Settle simulations. The trace
+is a 60-sample SVG with intervention/safety markers and an sr-only table.
+
+**Backend seam:** new `/animus/imagine` FastAPI router and `backend/app/core/imagine/` service, file store, and remote
+provider. `capabilities` reports `blocked` by default; `POST /jobs` returns `503 diffusion_unavailable` and writes no
+job. A mock-tested state machine covers create/idempotency/list/cancel/failure, validates manifest expiry and
+checksums, downloads same-origin assets, caps them at 64 MB, and serves only PNG/JPEG/WebP with `nosniff`. No database
+migration. `httpx` was added as a runtime dependency.
+
+**Hybrid skybox:** `IMAGINA-DIFFUSION-REQUEST-v2` and `MANIFEST-v1` carry prompt, 16D vector, controls, first-person
+camera, provenance, and boundary text — but no session id, raw signals, or participant id. A validated manifest can
+replace only the equirectangular sky sphere; geometry, collision, and navigation stay local. The stage badges
+`local procedural` vs `diffusion skybox`, and Provenance names model/seed/hash or says no model produced the geometry.
+
+**Honesty:** remains `L1_BEHAVIORAL_ASSISTED`. The lane is disabled by default; the UI says consent is required, names
+the exact payload/retention, and states that a future skybox is an aesthetic aid, not a reconstruction or measurement.
+New evidence entry `imagine.diffusion` (kind `simulated`) records the gap. ADR-063, RISK-054.
+
+**Verification (actually run):**
+- `tsc --noEmit` clean; full ESLint 0 errors (25 pre-existing warnings after removing the new one); `next build`
+  successful with 34 routes.
+- Vitest 124/124 across 29 files, including 18 new Imagine assertions (conditioning, policy, scenarios, manifest,
+  collision, request v2).
+- Backend `test_imagine_api.py` 9/9, including expired manifest, checksum mismatch, and oversized preview failing
+  closed; `ruff check .` clean.
+- Playwright `instrument-routes.spec.ts` + `imagine-diffusion.spec.ts` 19/19 against the production server: 390/1440
+  no overflow, local rebuild, first-person toggle, consent, mocked success/skybox/provenance, offline v2 download.
+- `verify-platform-ui.cjs` 26/26 routes clean (fixed 7.5 px radar labels to 11 px).
+- Claim audit PASS: 194 files, 11 phrase matches (0 affirmative), 11 ids referenced, 0 orphans. Registry now 22 entries.
+- Bundle budget PASS: shared 190.3 KB gzip, `/animus/imagine` 224.7 KB / 340 KB, largest 3D 487.9 / 540 KB.
+- Full unfiltered `pytest app/tests -q` was also attempted: 1854 passed, but 150 errors and 108 failures from the
+  Windows temp-directory ACL (`PermissionError` on `pytest-of-ComputaCenter`) and missing generated research artifacts.
+  These are environment/artifact failures, not Imagine failures; the marker-based suite in `verify.sh` remains the gate.
+
+**Docs/screens:** `docs/animus/IMAGINE_LAB.md` rewritten, new `DIFFUSION_WORKER.md`, `INTERFACE_PRINCIPLES.md` §15,
+ADR-063, `TASK_BRIEF.md`, `PROJECT_CONTEXT.md`, `CONTEXT_INDEX.md`, `EVIDENCE_INSTRUMENT.md`, `KNOWN_ISSUES.md`,
+`07-imagine-desktop.png`, `07c-imagine-mobile.png`, `07d-imagine-adaptive.png`.
+
+**Remaining risks:** no A100, worker, weights, text encoder, or generated image exists; policy thresholds are authored
+v0 values, not validated; scenarios are synthetic; the consent copy is a UI contract, not legal review; the skybox
+contract is untested against a real model; `schema` fields emit Pydantic shadow warnings. The next real step is the
+A100 runbook acceptance in `DIFFUSION_WORKER.md`.
+
+---
+
+## 2026-10-29 - Phase 0: repository truth, license, and cross-platform verification
+
+**Task:** execute the approved research-grade upgrade plan, starting with WS0 (repository truth and
+governance). No scientific claim changed.
+
+**Done:**
+- Added Apache-2.0 code license, CC BY 4.0 documentation license, NOTICE, CITATION.cff,
+  CONTRIBUTING.md, SECURITY.md, GOVERNANCE.md, CODE_OF_CONDUCT.md, CHANGELOG.md, .editorconfig,
+  .gitattributes, and backend/frontend .dockerignore files.
+- Replaced the bash-only verify.sh with scripts/verify.py plus .sh/.ps1 wrappers. Modes: quick, ci,
+  full; PASS/FAIL/SKIP summary; Docker/npm are skips locally and failures in CI.
+- Repaired both release Dockerfiles (install from pyproject, multi-stage frontend, non-root UID
+  10001, healthchecks) and updated docker-compose.release.yml; documented in
+  docs/engineering/RELEASE.md.
+- Added CI permissions, concurrency cancellation, and a release-images job that builds, starts,
+  health-checks, and asserts non-root execution.
+- Added .pytest_tmp/ to .gitignore as the documented Windows temp-ACL workaround.
+
+**Verification (actually run):**
+- `python -m ruff check .` in backend: clean.
+- Merge gate with `TMP`/`TEMP` set to `.pytest_tmp`: 1090 passed, 0 failed, 0 errors, 1063
+  deselected, 10m35s. Without the temp fix the same suite produced 101 PermissionError setup errors,
+  confirming the environment cause rather than a code regression.
+- Fixed four stale test contracts exposed by the gate: pytest was collecting the imported
+  `test_retest` helper as a test; `brier_score`/`overconfidence` now take one iterable; the epistemic
+  API loop read `probe` from a submit response that returns `next_probe`; the event-pagination test
+  needed a third event; the abstention-rate assertion now matches the documented 6-decimal rounding.
+- Frontend checks could not run locally: Node/npm are not on PATH in this environment. CI covers
+  lint, typecheck, Vitest, claim audit, and build.
+- Docker checks could not run locally: Docker is not installed. The new CI job is the verification.
+
+**Commit:** `ba64444` chore: establish licensed, cross-platform repository baseline.
+
+**Remaining risks:** no Python lockfile yet; Windows temp ACL still requires the env workaround;
+release images are unverified locally; 146 modified + ~100 untracked feature paths are still
+uncommitted and will be committed as a separate checkpoint after review.

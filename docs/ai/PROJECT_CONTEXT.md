@@ -35,8 +35,11 @@ Imagina/
 │   │   ├── session/           # SessionSetup, BaselineCalibration, SelfReportPanel, SessionControls
 │   │   ├── metrics/           # MetricsDashboard, TimelineChart, CurriculumTimeline, SafetyBanner
 │   │   ├── layout/            # AppShell, Header, Footer
+│   │   ├── imagine/           # Stage, world strip, scene read, diffusion lane, provenance
+│   │   ├── animus/            # ANIMUS shell, scene renderer, world/ Lumen shaders and bodies
 │   │   └── common/            # Button, Card, Badge, DisclaimerBox, Slider
-│   ├── lib/                   # API client, WebSocket client, formatters, feedback mapping, types
+│   ├── lib/                   # API clients, formatters, feedback mapping, scene contracts
+│   │   └── imagine/           # Lumen world grammar, composer, presets, conditioning, policy, request
 │   ├── Dockerfile
 │   ├── package.json
 │   └── tsconfig.json
@@ -248,11 +251,21 @@ Interpretation thresholds:
 | `backend/app/evaluation/animus_contrast_sim.py` | Deterministic 2-AFC respondent and threshold-recovery simulation; `simulation_only` |
 | `backend/app/schemas/animus_studio.py` | Strict bounded request schemas for the Studio API |
 | `backend/app/schemas/animus_studio_responses.py` | Typed response contract for every successful Studio route |
-| `frontend/app/animus/` | Product routes: landing, studio, practice, interview, observatory, profile, worlds, about |
-| `frontend/components/animus/` | Procedural R3F scene, candidate strip, prompt bar, inspector, history, studio shell, reconstruction board, epistemic probe, contrast pair, atlas, evidence trail, reliability panel |
+| `frontend/app/animus/` | Product routes: landing, studio, imagine, practice, interview, observatory, profile, worlds, about |
+| `frontend/components/animus/` | Dedicated ANIMUS shell, command palette, procedural R3F scene + scene index, candidate strip, prompt bar, inspector with next-move guidance, history, reconstruction board, epistemic probe, contrast pair, atlas, evidence trail, reliability panel |
 | `frontend/lib/animusStudioApi.ts`, `useAnimusStudio.ts` | Typed client, response/command/WS types, and product state hook |
+| `frontend/lib/imagineScene.ts`, `frontend/lib/imagine/`, `components/imagine/` | Imagine 2.0: 16D conditioning, adaptive policy/scenarios, stage-first first-person lab, fail-closed diffusion lane |
+| `backend/app/api/imagine.py`, `backend/app/core/imagine/` | Capabilities/jobs/cancel/delete/assets, file-backed store, checksum-validated manifest, disabled-by-default remote provider |
+| `frontend/lib/evidence/` | Glass Box registry (`registry.json`), typed lookup, local preference store, and generated claim audit |
+| `frontend/components/evidence/` | Provider, per-metric `EvidenceMark`, focus-trapped `EvidenceDrawer`, header toggle, page rail, Method Atlas |
+| `frontend/app/method/` | Public Method Atlas: evidence counts, registry cards, filters, audit artifact, study links |
+| `frontend/lib/studyDesign.ts`, `randomization.ts`, `preregistration.ts` | `IMAGINA-PREREG-v1` validation, deterministic allocation preview, SHA-256 lock, local Markdown/JSON export |
+| `frontend/app/research/design/`, `components/research/StudyDesigner.tsx` | Five-step Falsification Studio (claim, measure, design, analysis, review/export) |
+| `frontend/app/research/participant/`, `components/research/ParticipantRunner.tsx` | Local-only Participant Mode demonstration; no persistence or network |
+| `frontend/components/charts/ChartFrame.tsx`, `components/common/VirtualList.tsx` | Chart-plus-table fallback and virtualized long lists |
+| `frontend/scripts/audit-claims.cjs`, `check-bundle-budget.cjs` | Static claim/evidence audit and production bundle regression check |
 | `frontend/scripts/verify-animus-ui.cjs` | Playwright end-to-end loop + screenshots |
-| `docs/animus/` | Vision, architecture, API contract, claims boundary, roadmap, demo, README |
+| `docs/animus/` | Vision, architecture, API contract, interface principles, claims boundary, roadmap, demo, README |
 
 The Studio is additive: it does not replace the IMAGINA session stack or the P1 ANIMUS research API. The claim
 ceiling remains L1; image generation, uploads, neural content, dream content, and neural reconstruction are

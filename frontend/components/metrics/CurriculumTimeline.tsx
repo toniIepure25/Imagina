@@ -20,7 +20,7 @@ export default function CurriculumTimeline({ currentLevel }: { currentLevel: num
             >
               {lvl}
             </div>
-            <span className={`text-[10px] whitespace-nowrap ${active ? "text-foreground/80" : "text-foreground/30"}`}>
+            <span className={`text-[11px] whitespace-nowrap ${active ? "text-foreground/80" : "text-foreground/30"}`}>
               {name}
             </span>
             {i < LEVELS.length - 1 && <div className={`w-3 h-px ${done ? "bg-accent/40" : "bg-surface-border"}`} />}

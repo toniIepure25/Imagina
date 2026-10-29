@@ -20,7 +20,7 @@ interface IPProps {
 export function PidImprovementPanel({ improvement, onRefresh }: IPProps) {
   if (!improvement || improvement.n_sessions < 2) {
     return (
-      <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-cyan-500/50">
+      <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-cyan-500/50">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">PID Improvement Tracker</div>
         <div className="text-foreground/50">
           {!improvement ? "No data yet." : `Only ${improvement.n_sessions} session(s). Complete at least 2 calibrations.`}
@@ -33,23 +33,23 @@ export function PidImprovementPanel({ improvement, onRefresh }: IPProps) {
   }
 
   const trendColors: Record<string, string> = {
-    improving: "text-green-400", slightly_improving: "text-green-300",
+    improving: "text-signal", slightly_improving: "text-signal",
     stable: "text-foreground/60",
-    declining: "text-red-400", slightly_declining: "text-amber-400",
+    declining: "text-danger", slightly_declining: "text-lock",
     insufficient_data: "text-foreground/40",
   };
 
   const changeSign = improvement.absolute_change <= 0 ? "↓" : "↑";
-  const changeColor = improvement.absolute_change <= 0 ? "text-green-400" : "text-amber-400";
+  const changeColor = improvement.absolute_change <= 0 ? "text-signal" : "text-lock";
 
   return (
-    <div className="glass panel-glow p-4 space-y-3 text-[10px] border-l-2 border-cyan-500/50">
+    <div className="glass panel-glow p-4 space-y-3 text-[11px] border-l-2 border-cyan-500/50">
       <div className="flex justify-between items-center">
         <div className="text-foreground/40 uppercase tracking-[0.1em]">PID Improvement Tracker</div>
-        <span className={`px-2 py-0.5 rounded text-[8px] ${
+        <span className={`px-2 py-0.5 rounded text-[11px] ${
           improvement.meaningful_change
-            ? (improvement.absolute_change <= 0 ? "bg-green-500/20 text-green-400" : "bg-amber-500/20 text-amber-400")
-            : "bg-gray-500/20 text-gray-400"
+            ? (improvement.absolute_change <= 0 ? "bg-signal/10 text-signal" : "bg-lock/10 text-lock")
+            : "bg-foreground/10 text-foreground/50"
         }`}>
           {improvement.meaningful_change ? "Meaningful" : "Minimal"}
         </span>
@@ -57,15 +57,15 @@ export function PidImprovementPanel({ improvement, onRefresh }: IPProps) {
 
       <div className="grid grid-cols-3 gap-2">
         <div className="p-2 rounded bg-surface/30 text-center">
-          <div className="text-foreground/30 text-[8px]">First</div>
+          <div className="text-foreground/30 text-[11px]">First</div>
           <div className="text-foreground">{improvement.first_pid?.toFixed(3)}</div>
         </div>
         <div className="p-2 rounded bg-surface/30 text-center">
-          <div className="text-foreground/30 text-[8px]">Latest</div>
+          <div className="text-foreground/30 text-[11px]">Latest</div>
           <div className="text-foreground">{improvement.latest_pid?.toFixed(3)}</div>
         </div>
         <div className="p-2 rounded bg-surface/30 text-center">
-          <div className="text-foreground/30 text-[8px]">Change</div>
+          <div className="text-foreground/30 text-[11px]">Change</div>
           <div className={changeColor}>
             {changeSign}{Math.abs(improvement.absolute_change).toFixed(3)} ({improvement.relative_change_percent}%)
           </div>
@@ -84,9 +84,9 @@ export function PidImprovementPanel({ improvement, onRefresh }: IPProps) {
           <div className="text-foreground/50 tracking-[0.05em]">Dimension Gaps</div>
           {Object.entries(improvement.dimension_changes).map(([key, d]) => {
             const dimChangeDir = d.change <= 0 ? "↓" : "↑";
-            const dimColor = d.change <= 0 ? "text-green-400" : "text-amber-400";
+            const dimColor = d.change <= 0 ? "text-signal" : "text-lock";
             return (
-              <div key={key} className="flex gap-2 text-[9px] p-1 rounded bg-surface/30">
+              <div key={key} className="flex gap-2 text-[11px] p-1 rounded bg-surface/30">
                 <span className="text-foreground/40 w-20">{key.replace(/_/g, " ")}</span>
                 <span className="text-foreground/30">{d.first.toFixed(2)} → {d.latest.toFixed(2)}</span>
                 <span className={dimColor}>{dimChangeDir}{Math.abs(d.change).toFixed(3)}</span>
@@ -96,7 +96,7 @@ export function PidImprovementPanel({ improvement, onRefresh }: IPProps) {
         </div>
       )}
 
-      <div className="text-foreground/40 text-[9px] leading-relaxed p-2 rounded bg-surface/20">
+      <div className="text-foreground/40 text-[11px] leading-relaxed p-2 rounded bg-surface/20">
         {improvement.interpretation}
       </div>
 
@@ -104,7 +104,7 @@ export function PidImprovementPanel({ improvement, onRefresh }: IPProps) {
         Refresh
       </button>
 
-      <div className="text-foreground/20 text-[7px]">{improvement.scientific_boundary}</div>
+      <div className="text-foreground/20 text-[11px]">{improvement.scientific_boundary}</div>
     </div>
   );
 }

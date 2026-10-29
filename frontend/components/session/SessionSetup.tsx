@@ -84,7 +84,7 @@ export default function SessionSetup({ experimentRunId = null, onStart }: Props)
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 p-6">
-      <h2 className="text-2xl font-bold">Session Setup</h2>
+      <h1 className="text-2xl font-bold">Session Setup</h1>
       {experimentRunId && (
         <div className="glass p-3 text-sm text-accent-glow">
           This session will be linked to experiment run <span className="font-mono">{experimentRunId}</span>.
@@ -174,7 +174,7 @@ export default function SessionSetup({ experimentRunId = null, onStart }: Props)
                 </div>
                 <div className="mt-1 text-xs text-foreground/50">{provider.description}</div>
                 {disabledReason && (
-                  <div className="mt-2 text-[11px] text-yellow-200/80">{disabledReason}</div>
+                  <div className="mt-2 text-[11px] text-lock/80">{disabledReason}</div>
                 )}
                 <div className="mt-2 text-[11px] uppercase tracking-[0.14em] text-foreground/38">
                   {provider.provider_type} | {provider.health?.status || "unknown"}

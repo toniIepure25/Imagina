@@ -9,89 +9,78 @@ interface ConsentGateProps {
   onDecline: () => void;
 }
 
+const SECTIONS = [
+  {
+    title: "What this is",
+    body: "A local demonstration of a self-report imagery task. It runs entirely in this browser tab and is not a live research study.",
+  },
+  {
+    title: "What you will do",
+    body: "You will see three short imagery prompts, spend a few seconds imagining each one, and rate vividness, confidence, and effort.",
+  },
+  {
+    title: "Data",
+    body: "No ratings are saved by the platform and nothing is sent to a server. You can download a local JSON summary only if you choose to.",
+  },
+  {
+    title: "Risks and stopping",
+    body: "Imagery can be tiring. You may stop at any time. This demonstration is not therapy, diagnosis, or clinical care.",
+  },
+  {
+    title: "What it cannot show",
+    body: "It cannot measure imagery objectively, read your mind, decode a dream, or establish that any practice works.",
+  },
+];
+
 export default function ConsentGate({ studyTitle, consentVersion, onConsent, onDecline }: ConsentGateProps) {
   const [accepted, setAccepted] = useState(false);
 
   return (
-    <div className="max-w-2xl mx-auto p-8 bg-white/5 rounded-2xl border border-white/10">
-      <h2 className="text-2xl font-bold mb-4">Informed Consent</h2>
-      <p className="text-sm text-gray-400 mb-2">Study: {studyTitle}</p>
-      <p className="text-sm text-gray-400 mb-6">Consent version: {consentVersion}</p>
+    <section className="mx-auto max-w-2xl rounded-xl border border-surface-border bg-white/[0.025] p-6 sm:p-8">
+      <p className="mono-label text-lock/70">Local demonstration consent</p>
+      <h2 className="mt-2 text-2xl font-semibold tracking-tight">Before you begin</h2>
+      <p className="mt-2 text-sm leading-6 text-foreground/55">
+        {studyTitle} · demo version {consentVersion}
+      </p>
 
-      <div className="space-y-4 text-sm text-gray-300 mb-6">
-        <div className="p-4 bg-white/5 rounded-lg">
-          <h3 className="font-semibold text-white mb-2">About This Study</h3>
-          <p>
-            IMAGINA is a research prototype for closed-loop mental imagery training.
-            It estimates proxy metrics related to attention, self-reported vividness,
-            behavioral consistency, and simulated signal patterns. It does not read
-            your mind, decode your dreams, or diagnose any condition.
-          </p>
-        </div>
-
-        <div className="p-4 bg-white/5 rounded-lg">
-          <h3 className="font-semibold text-white mb-2">What You Will Do</h3>
-          <p>
-            You will perform mental imagery tasks (imagining visual scenes) while
-            the system provides adaptive visual feedback. You will rate your
-            experience after each trial. Sessions last approximately 15-20 minutes.
-          </p>
-        </div>
-
-        <div className="p-4 bg-white/5 rounded-lg">
-          <h3 className="font-semibold text-white mb-2">Risks and Safeguards</h3>
-          <p>
-            Mental imagery practice may cause mild fatigue. The system monitors
-            estimated fatigue and will suggest rest periods. You may stop at any
-            time without penalty.
-          </p>
-        </div>
-
-        <div className="p-4 bg-white/5 rounded-lg">
-          <h3 className="font-semibold text-white mb-2">Privacy</h3>
-          <p>
-            All data is stored locally on this computer. No data is sent to
-            external servers. Your identity is recorded only as a pseudonym.
-          </p>
-        </div>
-
-        <div className="p-4 bg-white/5 rounded-lg">
-          <h3 className="font-semibold text-white mb-2">Withdrawal</h3>
-          <p>
-            You may withdraw from the study at any time. Your data will be
-            retained up to the point of withdrawal but will not be included
-            in final analyses if you request its removal.
-          </p>
-        </div>
+      <div className="mt-5 space-y-3">
+        {SECTIONS.map((section) => (
+          <div key={section.title} className="rounded-lg border border-surface-border bg-white/[0.02] p-4">
+            <h3 className="text-sm font-semibold text-foreground/80">{section.title}</h3>
+            <p className="mt-1 text-sm leading-6 text-foreground/55">{section.body}</p>
+          </div>
+        ))}
       </div>
 
-      <label className="flex items-center gap-3 mb-6 cursor-pointer">
+      <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-lg border border-surface-border p-3">
         <input
           type="checkbox"
           checked={accepted}
-          onChange={(e) => setAccepted(e.target.checked)}
-          className="w-5 h-5 rounded bg-white/10 border-white/20"
+          onChange={(event) => setAccepted(event.target.checked)}
+          className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--signal)]"
         />
-        <span className="text-sm">
-          I have read and understood the above information. I voluntarily agree to participate.
+        <span className="text-sm leading-6 text-foreground/65">
+          I understand this is a local demonstration, not a research study or ethics-approved protocol.
         </span>
       </label>
 
-      <div className="flex gap-4">
+      <div className="mt-5 flex flex-wrap gap-2">
         <button
+          type="button"
           onClick={onConsent}
           disabled={!accepted}
-          className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-700 disabled:text-gray-500 rounded-xl font-medium transition-colors"
+          className="inline-flex min-h-11 items-center rounded-lg border border-signal/35 bg-signal/[0.09] px-5 text-sm font-medium text-signal hover:bg-signal/[0.14] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          I Consent
+          Start demonstration
         </button>
         <button
+          type="button"
           onClick={onDecline}
-          className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
+          className="inline-flex min-h-11 items-center rounded-lg border border-surface-border px-5 text-sm text-foreground/60 hover:bg-white/[0.04]"
         >
-          Decline
+          Exit
         </button>
       </div>
-    </div>
+    </section>
   );
 }
