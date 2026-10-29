@@ -52,3 +52,11 @@ gates:
       Simulation-only design gate for the Source and Imagination Monitor. A PASS means parameter
       recovery and the coverage constraints are acceptable in simulation; it is not human
       validation and does not authorize a measurement claim.
+
+  - gate_id: ANIMUS_P3_POWER
+    name: Source-monitoring Stage 1 power check
+    canonical_artifact: animus.p3.power
+    claim_ids: []
+    note: >-
+      Simulation-only planning gate. A PASS means the planned N=180 has at least 80% power for the
+      reliability lower-bound target under the stated approximation; it is not human evidence.

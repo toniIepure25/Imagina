@@ -98,6 +98,14 @@ Before fitting human data:
 Acceptance: 95% interval coverage between 0.93 and 0.97 for the primary parameters; no systematic
 rank skew. If SBC fails, the model or priors are revised before registration.
 
+### Power check
+
+The Stage 0 power artifact uses a two-occasion ICC(2,1) with a normal-approximation lower bound.
+At N=180 and 2,000 simulations, power is 0.961 for true ICC 0.75 with the lower bound above 0.60.
+This is a planning approximation. The registered analysis will compute the ICC confidence interval
+from the observed variance components, and the final sample size may be revised if the pilot
+variance components differ materially.
+
 ## 4. Reliability
 
 - ICC(2,1): two-way random effects, absolute agreement, single measures.

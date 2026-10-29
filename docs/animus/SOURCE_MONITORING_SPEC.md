@@ -7,9 +7,11 @@
 - **Canonical claims:** `claim.source_monitoring_measurement` (UNVALIDATED),
   `claim.source_monitoring_training` (BLOCKED), `claim.source_monitoring_clinical` (BLOCKED).
 - **Protocol version:** `ANIMUS-SIM-v1`.
-- **Stage 0 evidence:** [`results/prm/PRM_STAGE0_SIMULATION.json`](../../results/prm/PRM_STAGE0_SIMULATION.json).
+- **Stage 0 evidence:** [`results/prm/PRM_STAGE0_SIMULATION.json`](../../results/prm/PRM_STAGE0_SIMULATION.json)
+  and [`results/prm/PRM_STAGE0_POWER.json`](../../results/prm/PRM_STAGE0_POWER.json).
   Simulation-only: 120 simulated participants, 120 trials, recovery bias +0.051, RMSE 0.197, and a
-  28.9% final-entropy reduction versus the fixed stratified schedule. This is not human validation.
+  28.9% final-entropy reduction versus the fixed stratified schedule. The N=180 power check gives
+  0.961 power for true ICC 0.75 with a lower bound above 0.60. Neither result is human validation.
 - **Preregistration:** draft in [`docs/program/PRM_PREREGISTRATION.md`](../program/PRM_PREREGISTRATION.md);
   not yet registered.
 

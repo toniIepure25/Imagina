@@ -9,9 +9,11 @@ dependency-free simulation core that passes its design gate. No human data, API,
 **Scope**
 - `docs/animus/SOURCE_MONITORING_SPEC.md`, `docs/program/PRM_PREREGISTRATION.md`,
   `docs/program/PRM_ANALYSIS_PLAN.md`, `science/protocols/prm-v1.yaml`.
-- `backend/app/research/prm/` model, metrics, adaptive design, simulator; `app/cli/prm_simulate.py`.
+- `backend/app/research/prm/` model, metrics, adaptive design, simulator, power; `app/cli/prm_simulate.py`,
+  `app/cli/prm_power.py`.
 - `backend/app/tests/test_prm_stage0.py`.
-- `results/prm/PRM_STAGE0_SIMULATION.json` and registry entries for the simulation-only gate.
+- `results/prm/PRM_STAGE0_SIMULATION.json`, `results/prm/PRM_STAGE0_POWER.json`, and registry entries for
+  the two simulation-only gates.
 - ADR-067 and session log.
 
 **Non-goals**
@@ -20,8 +22,9 @@ dependency-free simulation core that passes its design gate. No human data, API,
 - No `meta_d_prime` estimate in Stage 0; it is gated.
 
 **Acceptance**
-- Simulation `--check` and 13 Stage 0 tests pass.
-- `ANIMUS_P3_SIM=PASS` in the ledger; 11 claims with the three new source-monitoring claims.
+- Simulation `--check` and 15 Stage 0 tests pass.
+- `ANIMUS_P3_SIM=PASS` and `ANIMUS_P3_POWER=PASS` in the ledger; 11 claims with the three new
+  source-monitoring claims.
 - Ruff clean; `verify.py --quick` passes; docs links pass.
 - The artifact is reproducible from the documented CLI command.
 

@@ -1749,7 +1749,8 @@ the platform can generate controlled seen/imagined/described/new items from its 
 **Consequences:**
 
 - `claim.source_monitoring_measurement` is `UNVALIDATED`; training and clinical claims are `BLOCKED`.
-- `ANIMUS_P3_SIM` is a simulation-only gate. A PASS does not validate the instrument.
+- `ANIMUS_P3_SIM` and `ANIMUS_P3_POWER` are simulation-only gates. A PASS does not validate the
+  instrument.
 - The existing ERI and Scene Threshold surfaces remain available as secondary measures.
 - A registered validation study is required before any training RCT or product surface.
 - The claim ceiling did not change.

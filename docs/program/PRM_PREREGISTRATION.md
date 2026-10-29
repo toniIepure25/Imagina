@@ -107,8 +107,10 @@ as impaired.
 ### Sample-size rationale
 
 N=180 is a planning target. Under a Fisher-z approximation, true ICC 0.75 with N=180 gives a lower
-95% bound near 0.61, which is close to the target. Stage 0 simulation will confirm or revise the
-sample size before registration. The study is powered for the reliability hypothesis, not for
+95% bound near 0.61, which is close to the target. The Stage 0 power simulation
+([`results/prm/PRM_STAGE0_POWER.json`](../../results/prm/PRM_STAGE0_POWER.json)) gives 0.961 power
+for true ICC 0.75 with a lower bound above 0.60 under the stated normal approximation. This is a
+planning result, not human evidence. The study is powered for the reliability hypothesis, not for
 small group differences; group comparisons are secondary and will be reported with confidence
 intervals, not as confirmatory tests.
 

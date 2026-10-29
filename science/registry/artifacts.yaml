@@ -163,3 +163,17 @@ artifacts:
       Stage 0 simulation with 120 simulated participants and 120 trials each. Parameter recovery
       passed (bias +0.051, RMSE 0.197). Adaptive EIG reduced final posterior entropy by 28.9% versus
       the fixed stratified schedule. This is a design artifact, not human evidence.
+
+  - artifact_id: animus.p3.power
+    path: results/prm/PRM_STAGE0_POWER.json
+    gate_id: ANIMUS_P3_POWER
+    authority: canonical
+    status_path: decision
+    status_map:
+      PRM_STAGE0_POWER_PASS: PASS
+      PRM_STAGE0_POWER_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, scenarios]
+    note: >-
+      Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95%
+      bound above 0.60 is 0.961 under a normal approximation. Not human evidence; the registered
+      analysis will use the actual ICC confidence-interval method.

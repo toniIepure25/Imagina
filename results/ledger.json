@@ -49,6 +49,18 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p3.power",
+      "authority": "canonical",
+      "bytes": 996,
+      "gate_id": "ANIMUS_P3_POWER",
+      "note": "Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95% bound above 0.60 is 0.961 under a normal approximation. Not human evidence; the registered analysis will use the actual ICC confidence-interval method.",
+      "path": "results/prm/PRM_STAGE0_POWER.json",
+      "raw_status": "PRM_STAGE0_POWER_PASS",
+      "sha256": "5d44b4362cc2989484a2e566bbb1ec29a6baba2d1011101f1df4ebc5d47353f3",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "animus.p3.sim",
       "authority": "canonical",
       "bytes": 1934,
@@ -381,6 +393,14 @@
       "gate_id": "ANIMUS_P3_SIM",
       "name": "Source-monitoring Stage 0 simulation",
       "note": "Simulation-only design gate for the Source and Imagination Monitor. A PASS means parameter recovery and the coverage constraints are acceptable in simulation; it is not human validation and does not authorize a measurement claim.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p3.power",
+      "claims": [],
+      "gate_id": "ANIMUS_P3_POWER",
+      "name": "Source-monitoring Stage 1 power check",
+      "note": "Simulation-only planning gate. A PASS means the planned N=180 has at least 80% power for the reliability lower-bound target under the stated approximation; it is not human evidence.",
       "status": "PASS"
     }
   ],

@@ -5429,21 +5429,27 @@ human-data surface.
 - `science/protocols/prm-v1.yaml`: machine-readable `ANIMUS-SIM-v1` protocol.
 - `backend/app/research/prm/`: dependency-free model, metrics, adaptive design, and simulator.
 - `backend/app/cli/prm_simulate.py`: deterministic `--check` and configurable simulation CLI.
-- `backend/app/tests/test_prm_stage0.py`: 13 tests covering probability normalization, d-prime
+- `backend/app/research/prm/power.py`, `backend/app/cli/prm_power.py`: simulation-based ICC power
+  check for the N=180 reliability target.
+- `backend/app/tests/test_prm_stage0.py`: 15 tests covering probability normalization, d-prime
   separation and null recovery, Brier/ECE bounds, meta-d-prime gating, EIG item preference, entropy
-  reduction, coverage, schedule balance, determinism, design comparison, and the simulation gate.
+  reduction, coverage, schedule balance, determinism, design comparison, ICC, power, and the
+  simulation gate.
 - `results/prm/PRM_STAGE0_SIMULATION.json`: 120 simulated participants x 120 trials. Recovery bias
   +0.051, RMSE 0.197, PASS. Adaptive EIG reduced final posterior entropy by 28.9% versus the fixed
   stratified schedule. Coverage counts: described 21.0%, imagined 39.5%, new 15.0%, seen 24.5%.
+- `results/prm/PRM_STAGE0_POWER.json`: 2,000 simulations at N=180; power 0.961 for true ICC 0.75
+  with a lower bound above 0.60, PASS.
 - Registry: three new claims (`claim.source_monitoring_measurement` UNVALIDATED,
-  `claim.source_monitoring_training` BLOCKED, `claim.source_monitoring_clinical` BLOCKED), one
-  simulation-only gate (`ANIMUS_P3_SIM`), and one canonical simulation artifact.
+  `claim.source_monitoring_training` BLOCKED, `claim.source_monitoring_clinical` BLOCKED), two
+  simulation-only gates (`ANIMUS_P3_SIM`, `ANIMUS_P3_POWER`), and two canonical artifacts.
 
 **Verification (actually run):**
 - `python -m app.cli.prm_simulate --check`: PASS.
-- `pytest app/tests/test_prm_stage0.py`: 13 passed.
-- `ruff check app/research/prm app/cli/prm_simulate.py app/tests/test_prm_stage0.py`: clean.
-- `python -m app.cli.science_ledger --check`: 13 artifacts, 8 gates, 11 claims; `ANIMUS_P3_SIM=PASS`.
+- `python -m app.cli.prm_power --check`: PASS.
+- `pytest app/tests/test_prm_stage0.py`: 15 passed.
+- `ruff check app/research/prm app/cli/prm_simulate.py app/cli/prm_power.py app/tests/test_prm_stage0.py`: clean.
+- `python -m app.cli.science_ledger --check`: 14 artifacts, 9 gates, 11 claims; `ANIMUS_P3_SIM=PASS`, `ANIMUS_P3_POWER=PASS`.
 - `python -m app.cli.science_ledger --write`: regenerated `PROGRAM_STATUS.md` and `ledger.json`.
 
 **Decisions:** ADR-067 records source monitoring as the next scientific object, with Stage 0 limited
