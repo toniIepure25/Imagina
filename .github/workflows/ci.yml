@@ -28,6 +28,11 @@ jobs:
       - run: pip install -e ".[dev,science]"
       - name: Ruff lint
         run: python3 -m ruff check .
+      - name: Science ledger
+        run: python3 -m app.cli.science_ledger --check
+      - name: Documentation links
+        working-directory: .
+        run: python3 scripts/check_docs_links.py
       - name: Core and research tests (hermetic merge-gate suite)
         run: >-
           python3 -m pytest app/tests/

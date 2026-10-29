@@ -245,6 +245,13 @@ def main() -> int:
     print(f"  root: {ROOT}")
     print("=" * 60)
 
+    runner.run(
+        "docs links",
+        [find_python(), str(ROOT / "scripts" / "check_docs_links.py")],
+        cwd=ROOT,
+        timeout=60,
+    )
+
     if not args.skip_backend:
         backend_checks(runner, mode)
     if not args.skip_frontend:

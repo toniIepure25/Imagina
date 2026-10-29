@@ -1,5 +1,5 @@
 # ============================================================
-# IMAGINA â€” L1 .gitignore
+# IMAGINA Ã¢â‚¬â€ L1 .gitignore
 # ============================================================
 
 # ---- Python ----
@@ -108,3 +108,6 @@ results/.c3_strict_replay_checkpoint.pkl
 
 # Local pytest temp root (Windows ACL workaround)
 .pytest_tmp/
+
+# Local agent scratch space
+.codex-tmp/

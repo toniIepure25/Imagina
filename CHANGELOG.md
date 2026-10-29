@@ -13,11 +13,22 @@ semantic versioning.
   `GOVERNANCE.md`, `CODE_OF_CONDUCT.md`, `.editorconfig`.
 - `.gitattributes` for line-ending and binary-file normalization.
 - `.dockerignore` files for backend and frontend build contexts.
+- Canonical claim registry (`science/registry/`) and hash-chained result ledger
+  (`backend/app/research/ledger.py`) that generate `docs/program/PROGRAM_STATUS.md`
+  and `results/ledger.json`.
+- JSON Schemas for claims, result envelopes, and ledger snapshots.
+- Cross-platform `scripts/verify.py` with `--quick`, `--ci`, and `--full`
+  modes, plus `check_docs_links.py` for local Markdown links.
 
 ### Changed
 
-- Release container definitions are being brought in line with the development
-  images (install from the project metadata, run production servers, non-root).
+- Release container definitions now install from the project metadata, run
+  production servers as a non-root user, and are built/started/health-checked
+  in CI.
+- Canonical ANIMUS-P2 status is `BLOCKED` (confirmatory cohort not executed);
+  P2's `VALIDATED` label is retained only as a historical pilot artifact and
+  is superseded by P2R. The perception-content claim is `PILOT`; imagery
+  content, geometry, and clinical use remain `BLOCKED`.
 
 ### Fixed
 

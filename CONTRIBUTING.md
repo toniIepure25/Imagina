@@ -43,8 +43,10 @@ explicit, reviewed justification.
 ## Scientific rules
 
 1. **No claim without evidence.** Every user-visible or exported claim must map
-   to an entry in the claim registry (once available) or an existing canonical
-   claims document.
+   to an entry in [`science/registry/claims.yaml`](science/registry/claims.yaml)
+   and the canonical status in
+   [`docs/program/PROGRAM_STATUS.md`](docs/program/PROGRAM_STATUS.md). Read
+   [`science/README.md`](science/README.md) before adding or changing a claim.
 2. **No new composite score.** PID/IQI and similar legacy composites are
    demo-only and must not appear in primary research surfaces.
 3. **No target leakage.** Task targets, held-out labels, and decoder targets are
