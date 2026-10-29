@@ -16,6 +16,11 @@ reproducibility, and claim discipline** at least as much as on feature velocity.
 ```bash
 # Backend (Python 3.10+; 3.12 recommended)
 cd backend
+
+# Reproducible resolve from backend/uv.lock (recommended)
+uv sync --extra dev --extra science --extra neural
+
+# pip fallback without the lock
 python -m venv .venv
 . .venv/Scripts/activate        # Windows
 # . .venv/bin/activate          # macOS/Linux

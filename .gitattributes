@@ -15,6 +15,7 @@
 *.css  text eol=lf
 *.sh   text eol=lf
 *.ps1  text eol=crlf
+uv.lock text eol=lf
 
 # Binary assets
 *.png  binary
