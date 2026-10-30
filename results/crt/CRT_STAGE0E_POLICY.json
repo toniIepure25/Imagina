@@ -1,0 +1,266 @@
+{
+  "analysis": "stage0e_policy_competition",
+  "condition_summaries": {
+    "cost_only": {
+      "accuracy": 0.279167,
+      "brier_score": 0.194642,
+      "confounded_test_rate": 0.5,
+      "d_prime_seen_imagined": 0.149908,
+      "expected_calibration_error": 0.025669,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 0,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.0,
+      "mean_crte_meta": 0.0,
+      "mean_evidence_resolution": 0.070502,
+      "mean_prediction_error": null,
+      "mean_tests": 2,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 0,
+        "1": 1440,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 1440
+      }
+    },
+    "eig": {
+      "accuracy": 0.340972,
+      "brier_score": 0.202048,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.319029,
+      "expected_calibration_error": 0.024167,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 100,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.527035,
+      "mean_crte_meta": 0.567686,
+      "mean_evidence_resolution": 0.134147,
+      "mean_prediction_error": null,
+      "mean_tests": 1.773611,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 439,
+        "1": 648,
+        "2": 464,
+        "3": 268,
+        "4": 735,
+        "5": 0
+      }
+    },
+    "fixed": {
+      "accuracy": 0.351389,
+      "brier_score": 0.206711,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.651653,
+      "expected_calibration_error": 0.03006,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 0,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.624479,
+      "mean_crte_meta": 0.665232,
+      "mean_evidence_resolution": 0.156877,
+      "mean_prediction_error": null,
+      "mean_tests": 2,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 1440,
+        "1": 1440,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      }
+    },
+    "heuristic": {
+      "accuracy": 0.272917,
+      "brier_score": 0.193651,
+      "confounded_test_rate": 0.5,
+      "d_prime_seen_imagined": 0.184935,
+      "expected_calibration_error": 0.05176,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 0,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.0,
+      "mean_crte_meta": 0.0,
+      "mean_evidence_resolution": 0.069313,
+      "mean_prediction_error": null,
+      "mean_tests": 2,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 1440,
+        "4": 0,
+        "5": 1440
+      }
+    },
+    "meta_eig": {
+      "accuracy": 0.339583,
+      "brier_score": 0.199352,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.328413,
+      "expected_calibration_error": 0.027741,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 90,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.515014,
+      "mean_crte_meta": 0.556446,
+      "mean_evidence_resolution": 0.134065,
+      "mean_prediction_error": null,
+      "mean_tests": 1.790278,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 431,
+        "1": 661,
+        "2": 488,
+        "3": 266,
+        "4": 732,
+        "5": 0
+      }
+    },
+    "positive": {
+      "accuracy": 0.313194,
+      "brier_score": 0.197314,
+      "confounded_test_rate": 0.168841,
+      "d_prime_seen_imagined": 0.082966,
+      "expected_calibration_error": 0.029118,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 89,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.310381,
+      "mean_crte_meta": 0.340307,
+      "mean_evidence_resolution": 0.110035,
+      "mean_prediction_error": null,
+      "mean_tests": 1.809722,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 338,
+        "1": 553,
+        "2": 530,
+        "3": 183,
+        "4": 562,
+        "5": 440
+      }
+    },
+    "random": {
+      "accuracy": 0.341667,
+      "brier_score": 0.203103,
+      "confounded_test_rate": 0.167014,
+      "d_prime_seen_imagined": 0.540599,
+      "expected_calibration_error": 0.017392,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 0,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.291769,
+      "mean_crte_meta": 0.320822,
+      "mean_evidence_resolution": 0.122231,
+      "mean_prediction_error": null,
+      "mean_tests": 2,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 477,
+        "1": 483,
+        "2": 492,
+        "3": 486,
+        "4": 461,
+        "5": 481
+      }
+    }
+  },
+  "config": {
+    "max_tests": 2,
+    "n_participants": 24,
+    "n_trials": 60,
+    "policies": [
+      "meta_eig",
+      "eig",
+      "cost_only",
+      "positive",
+      "fixed",
+      "heuristic",
+      "random"
+    ],
+    "seed": 20261030
+  },
+  "contrasts": {
+    "best_alternative_accuracy": 0.351389,
+    "meta_eig_minus_best_alternative": -0.011806,
+    "meta_eig_minus_cost_only": 0.060416
+  },
+  "decision": "CRT_STAGE0E_POLICY_REVIEW",
+  "note": "Policy simulation with belief-based prediction and outcome-only source updating. A REVIEW means the normative meta-EIG claim is not supported by the current simulation and should remain descriptive.",
+  "protocol": "ANIMUS-CRT-v1"
+}

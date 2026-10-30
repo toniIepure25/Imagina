@@ -1,0 +1,101 @@
+{
+  "analysis": "stage0d_model_signature_separability",
+  "balanced_accuracy": 0.9,
+  "config": {
+    "n_observations": 40,
+    "noise_sd": 0.03,
+    "recovery_threshold": 0.8,
+    "seed": 20261029
+  },
+  "confusion": {
+    "crt_meta_eig": {
+      "crt_meta_eig": 40,
+      "eig_only": 0,
+      "heuristic_source": 0,
+      "higher_order_precision": 0,
+      "sdt_confidence": 0
+    },
+    "eig_only": {
+      "crt_meta_eig": 0,
+      "eig_only": 36,
+      "heuristic_source": 0,
+      "higher_order_precision": 0,
+      "sdt_confidence": 4
+    },
+    "heuristic_source": {
+      "crt_meta_eig": 0,
+      "eig_only": 0,
+      "heuristic_source": 31,
+      "higher_order_precision": 0,
+      "sdt_confidence": 9
+    },
+    "higher_order_precision": {
+      "crt_meta_eig": 0,
+      "eig_only": 0,
+      "heuristic_source": 0,
+      "higher_order_precision": 40,
+      "sdt_confidence": 0
+    },
+    "sdt_confidence": {
+      "crt_meta_eig": 0,
+      "eig_only": 2,
+      "heuristic_source": 5,
+      "higher_order_precision": 0,
+      "sdt_confidence": 33
+    }
+  },
+  "decision": "CRT_STAGE0D_THEORY_PASS",
+  "diagonal": {
+    "crt_meta_eig": 1.0,
+    "eig_only": 0.9,
+    "heuristic_source": 0.775,
+    "higher_order_precision": 1.0,
+    "sdt_confidence": 0.825
+  },
+  "note": "Design-signature separability only. It does not estimate human model evidence. A REVIEW means the planned contrasts cannot distinguish the theories under the stated noise.",
+  "protocol": "ANIMUS-CRT-v1",
+  "signature_names": [
+    "prediction_advantage",
+    "meta_eig_efficiency",
+    "active_selection_gain",
+    "specificity_gain",
+    "prediction_error_update"
+  ],
+  "signatures": {
+    "crt_meta_eig": [
+      0.12,
+      0.55,
+      0.03,
+      0.08,
+      0.15
+    ],
+    "eig_only": [
+      0.0,
+      0.08,
+      0.03,
+      0.0,
+      0.0
+    ],
+    "heuristic_source": [
+      0.0,
+      -0.05,
+      -0.02,
+      0.0,
+      0.0
+    ],
+    "higher_order_precision": [
+      0.0,
+      0.3,
+      0.01,
+      0.0,
+      0.0
+    ],
+    "sdt_confidence": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+}

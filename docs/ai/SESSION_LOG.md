@@ -2,6 +2,117 @@
 
 ---
 
+## 2026-10-30 — CRT Stage 0E: model repair and construct audit
+
+**Objective:** repair the oracle prediction and prediction/outcome double-counting defects in the CRT
+simulator, quantify how much of the Stage 0D result depended on them, add dual-hypothesis prediction,
+policy competition, test-facet reliability, and posterior PIT calibration, and downgrade unsupported
+claims. Simulation only; no human data, API, DB, UI, clinical sample, or claim upgrade.
+
+**Delivered**
+- `backend/app/research/crt/model.py`: `posterior_predictive` and updated exports.
+- `backend/app/research/crt/simulate.py`: `prediction_source` (`belief`, `oracle`, `prior`),
+  `prediction_format` (`single`, `dual`), `source_update` (`outcome`, `legacy`), dual-prediction fields,
+  outcome-only posterior by default, `cost_only` policy.
+- `backend/app/research/crt/metrics.py`: hypothesis-specific prediction fields and summary metrics.
+- New `model_repair.py`, `counterfactual.py`, `policy.py`, `psychometrics.py`, `pit.py`.
+- `backend/app/cli/crt_stage0e.py`; `crt_stage0d.py` pinned to the historical oracle path.
+- Five new test files; 83 CRT tests pass.
+- Five Stage 0E artifacts; new registry gates; Stage 0D specificity gate superseded by a
+  belief-based audit and downgraded to `LIMITED`.
+- Docs: `CRT_STAGE0E_PROTOCOL.md`, `CRT_MODEL_REPAIR_AUDIT.md`, `CRT_COUNTERFACTUAL_SPEC.md`,
+  `CRT_EVIDENCE_UPDATE.md`; updated theory audit, Stage 0D protocol, analysis plan, preregistration,
+  protocol YAML, claim note, task brief, and risks.
+
+**Results**
+- Oracle prediction advantage 0.127778 vs belief 0.026389; oracle inflation 0.101389.
+- Oracle prediction accuracy 0.623165 vs belief 0.532993; gap 0.090172.
+- Stage 0D specificity does not reproduce: diagnostic source accuracy 0.400 vs nondiagnostic 0.374
+  (gain 0.026); diagnostic prediction accuracy 0.505; gate `LIMITED`.
+- Dual prediction discrepancy 0.475993, but dual gain over single 0.0; gate `LIMITED`.
+- Meta-EIG beats cost-only by 0.060416 but loses to the best alternative by 0.011806; gate `LIMITED`.
+- Test-facet minimum relative reliability 0.842731; psychometric gate PASS (simulation only).
+- Posterior PIT chi-square 15.92 with 9 df (critical 21.666); PIT screening PASS, not full SBC.
+
+**Risks / limits**
+- All results are simulation-only and depend on the hand-specified likelihood table.
+- The PIT check is not full hierarchical SBC.
+- Dual prediction was tested only on a fixed sequence; the policy channel is untested.
+- Stage 0C recovery still uses an oracle identifiability path; it is not human evidence.
+- The literature update is rapid and non-systematic; no priority claim is possible.
+- No human study is authorized; training and clinical claims remain `BLOCKED`.
+
+**Verification**
+- `python -m pytest` focused CRT suite: 83 passed.
+- `python -m ruff check app/research/crt app/cli/crt_stage0d.py app/cli/crt_stage0e.py app/tests/test_crt_*.py`: pass.
+- `python -m app.cli.crt_stage0d --check`: pass.
+- `python -m app.cli.crt_stage0e --check`: pass.
+- `python -m app.cli.science_ledger --check` and `--write`: pass.
+- `python scripts/verify.py --quick`: 4 passed, 2 skipped (`npm` and Docker unavailable); docs links,
+  ruff, ledger, and the `core or research` pytest gate passed.
+
+---
+
+## 2026-10-30 -- CRT Stage 0D: theory tournament and design controls
+
+**Objective:** implement the approved Stage 0D simulation slice for Counterfactual Reality Testing:
+test whether the competing theories are separable, add a matched non-diagnostic prediction control and
+active/random-passive/algorithm arms, design a human test-likelihood calibration step, and add a
+G-theory decision study. No human data, API, DB, UI, clinical sample, or claim upgrade.
+
+**Delivered**
+- `backend/app/research/crt/theory.py`: five models, five-dimensional design signatures, nearest-signature
+  classification, confusion matrix, balanced accuracy, and `CRT_STAGE0D_THEORY_PASS/REVIEW`.
+- `backend/app/research/crt/gtheory.py`: person-by-occasion variance components, relative/absolute
+  reliability, SEM, MDC95, four-point decision study, and `CRT_STAGE0D_GTHEORY_PASS/REVIEW`.
+- `backend/app/research/crt/calibration.py`: hierarchical Beta-Binomial test-likelihood calibration,
+  likelihood ratios, strong-test selection, fluency-trap check, and
+  `CRT_STAGE0D_CALIBRATION_PASS/REVIEW`.
+- `backend/app/research/crt/simulate.py`: `prediction_mode` (`diagnostic`, `nondiagnostic`, `none`) and
+  `selection_mode` (`policy`, `algorithm`, `random_passive`); specificity and selection simulations;
+  `check_specificity`, `check_selection`, `check_controls`.
+- `backend/app/cli/crt_stage0d.py`: `--check` and `--write`; writes four canonical artifacts.
+- Tests: 27 new tests across theory, controls, G-theory, and calibration; existing 35 CRT Stage 0 tests
+  still pass (62 total).
+- Registry: `ANIMUS_P5_CRT_THEORY`, `ANIMUS_P5_CRT_SPECIFICITY`, `ANIMUS_P5_CRT_GTHEORY`, and
+  `ANIMUS_P5_CRT_CALIBRATION`; 24 artifacts and 19 gates total.
+- `science/protocols/crt-v1.yaml` v0.2.0: specificity and selection sub-studies, ICC 0.80/0.70,
+  N=240, and Stage 0D artifact references.
+- Docs: `docs/research/CRT_THEORY_AUDIT.md`, `CRT_NOVELTY_MATRIX.md`, `CRT_MODEL_PREDICTIONS.md`;
+  `docs/program/CRT_STAGE0D_PROTOCOL.md`; updated CRT spec, preregistration, and analysis plan;
+  ADR-070; evidence-map addendum.
+
+**Results**
+- Model-signature separability: balanced accuracy 0.90; weakest diagonal 0.775 (heuristic).
+- Specificity: diagnostic accuracy gain 0.160; non-diagnostic prediction accuracy 0.507; PASS.
+  Both arms use the same fixed test sequence.
+- Active selection: active-choice gain 0.037; adaptive-design gain 0.128; active is 0.092 below
+  algorithm-adaptive; PASS.
+- Calibration: four strong tests; fluency likelihood ratio 1.005; PASS.
+- G-theory: relative reliability 0.938 at two occasions; occasion component zero in this draw; PASS.
+- N=240 power check: 0.949 for true ICC 0.80 / lower bound 0.70.
+- All Brier and calibration specificity gains are negative; the gate uses accuracy and this is
+  documented as a construct-neutral, not confidence-matched, control.
+
+**Risks / limits**
+- All Stage 0D results are simulation-only. No model is shown to be true in humans.
+- The theory signatures are design hypotheses, not fitted effects. The tournament measures separability,
+  not model evidence.
+- Algorithm-adaptive selection beats active choice in simulation; this is a benchmark, not a failed
+  control.
+- The human calibration sample, pilot, and Stage 1A remain blocked on PI/IRB/funding/registration.
+- N=180 Stage 0C power remains historical planning evidence; the N=240 target is the current plan.
+
+**Verification**
+- `python -m app.cli.crt_stage0d --check` — pass.
+- `python -m pytest app/tests/test_crt_*.py -q` — 62 passed.
+- `python -m ruff check app/research/crt app/cli/crt_stage0d.py app/tests/test_crt_*.py` — pass.
+- `python -m app.cli.science_ledger --check` and `--write` — pass.
+- `python scripts/verify.py --quick` — pass: 4 passed, 2 skipped (`npm` and `docker` unavailable);
+  backend core/research suite green.
+
+---
+
 ## 2026-10-26 -- Lumen: world grammar, layered renderer, and interface overhaul
 
 **Objective:** turn `/animus/imagine` from a flat primitive scatter into a credible first-person world engine and a

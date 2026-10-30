@@ -1,0 +1,81 @@
+{
+  "analysis": "stage0e_model_repair_oracle_audit",
+  "audit": {
+    "double_counting_removed": true,
+    "oracle_inflation": 0.101389,
+    "oracle_prediction_accuracy_gap": 0.090172,
+    "stage0d_specificity_reproduced_under_belief": false
+  },
+  "belief": {
+    "prediction_accuracy": 0.532993,
+    "prediction_advantage": 0.026389,
+    "prediction_source": "belief",
+    "source_update": "outcome",
+    "specificity_contrasts": {
+      "accuracy_gain": 0.026389,
+      "brier_gain": -0.014884,
+      "calibration_gain": -0.032138,
+      "prediction_accuracy_diagnostic": 0.504861,
+      "prediction_accuracy_nondiagnostic": 0.49375
+    },
+    "specificity_decision": "CRT_STAGE0D_SPECIFICITY_REVIEW"
+  },
+  "config": {
+    "n_participants": 24,
+    "n_trials": 60,
+    "prediction_sources": [
+      "oracle",
+      "belief"
+    ],
+    "seed": 20261030
+  },
+  "decision": "CRT_STAGE0E_MODEL_PASS",
+  "note": "Stage 0E model repair. Oracle prediction is retained only as a benchmark; the belief arm predicts from the current source posterior and updates the source from the outcome only. The nested PIT check is a posterior calibration screening for the assumed generative model, not full hierarchical SBC. A PASS is design evidence, not human validation.",
+  "oracle": {
+    "prediction_accuracy": 0.623165,
+    "prediction_advantage": 0.127778,
+    "prediction_source": "oracle",
+    "source_update": "legacy",
+    "specificity_contrasts": {
+      "accuracy_gain": 0.147917,
+      "brier_gain": 0.000531,
+      "calibration_gain": -0.035257,
+      "prediction_accuracy_diagnostic": 0.614931,
+      "prediction_accuracy_nondiagnostic": 0.49375
+    },
+    "specificity_decision": "CRT_STAGE0D_SPECIFICITY_PASS"
+  },
+  "pit_calibration": {
+    "analysis": "stage0e_posterior_pit_calibration",
+    "config": {
+      "bins": 10,
+      "max_bin_deviation": 0.25,
+      "n_simulations": 1000,
+      "n_tests": 2,
+      "seed": 20261030
+    },
+    "decision": "CRT_STAGE0E_PIT_PASS",
+    "histogram": [
+      101,
+      80,
+      113,
+      104,
+      96,
+      106,
+      122,
+      86,
+      107,
+      85
+    ],
+    "note": "Randomized PIT calibration for the source posterior under the assumed generative model. This is a necessary design check, not a fit to human data and not full hierarchical simulation-based calibration.",
+    "protocol": "ANIMUS-CRT-v1",
+    "summary": {
+      "chi_square": 15.92,
+      "chi_square_critical": 21.666,
+      "max_bin_deviation": 0.22,
+      "max_bin_deviation_threshold": 0.25,
+      "mean_pit": 0.499434
+    }
+  },
+  "protocol": "ANIMUS-CRT-v1"
+}

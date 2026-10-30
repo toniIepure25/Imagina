@@ -24,6 +24,15 @@ class TestRecord:
     predicted: bool | None = None
     prediction_confidence: float | None = None
     prediction_correct: bool | None = None
+    predicted_seen: bool | None = None
+    predicted_imagined: bool | None = None
+    prediction_confidence_seen: float | None = None
+    prediction_confidence_imagined: float | None = None
+    prediction_correct_seen: bool | None = None
+    prediction_correct_imagined: bool | None = None
+    prediction_probability: float | None = None
+    prediction_error: float | None = None
+    counterfactual_discrepancy: float | None = None
 
 
 @dataclass(frozen=True)
@@ -74,6 +83,10 @@ class CrtSummary:
     mean_evidence_resolution: float
     d_prime_seen_imagined: float
     insufficient_tests: int
+    prediction_accuracy_seen: float | None = None
+    prediction_accuracy_imagined: float | None = None
+    mean_counterfactual_discrepancy: float | None = None
+    mean_prediction_error: float | None = None
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -95,6 +108,22 @@ class CrtSummary:
             "mean_evidence_resolution": round(self.mean_evidence_resolution, 6),
             "d_prime_seen_imagined": round(self.d_prime_seen_imagined, 6),
             "insufficient_tests": self.insufficient_tests,
+            "prediction_accuracy_seen": (
+                None if self.prediction_accuracy_seen is None else round(self.prediction_accuracy_seen, 6)
+            ),
+            "prediction_accuracy_imagined": (
+                None
+                if self.prediction_accuracy_imagined is None
+                else round(self.prediction_accuracy_imagined, 6)
+            ),
+            "mean_counterfactual_discrepancy": (
+                None
+                if self.mean_counterfactual_discrepancy is None
+                else round(self.mean_counterfactual_discrepancy, 6)
+            ),
+            "mean_prediction_error": (
+                None if self.mean_prediction_error is None else round(self.mean_prediction_error, 6)
+            ),
         }
 
 
@@ -187,6 +216,41 @@ def prediction_ece(trials: Sequence[TrialRecord], bins: int = 10) -> float | Non
     return error
 
 
+def _prediction_accuracy_for(trials: Sequence[TrialRecord], attribute: str) -> float | None:
+    values = []
+    for trial in trials:
+        for test in trial.tests:
+            value = getattr(test, attribute)
+            if value is not None:
+                values.append(int(bool(value)))
+    return mean(values) if values else None
+
+
+def prediction_accuracy_seen(trials: Sequence[TrialRecord]) -> float | None:
+    return _prediction_accuracy_for(trials, "prediction_correct_seen")
+
+
+def prediction_accuracy_imagined(trials: Sequence[TrialRecord]) -> float | None:
+    return _prediction_accuracy_for(trials, "prediction_correct_imagined")
+
+
+def mean_counterfactual_discrepancy(trials: Sequence[TrialRecord]) -> float | None:
+    values = [
+        test.counterfactual_discrepancy
+        for trial in trials
+        for test in trial.tests
+        if test.counterfactual_discrepancy is not None
+    ]
+    return mean(values) if values else None
+
+
+def mean_prediction_error(trials: Sequence[TrialRecord]) -> float | None:
+    values = [
+        test.prediction_error for trial in trials for test in trial.tests if test.prediction_error is not None
+    ]
+    return mean(values) if values else None
+
+
 def imagination_inflation_rate(trials: Sequence[TrialRecord]) -> float | None:
     eligible = [
         trial
@@ -241,6 +305,10 @@ def summarize(trials: Sequence[TrialRecord]) -> CrtSummary:
         mean_evidence_resolution=mean_evidence_resolution(trials),
         d_prime_seen_imagined=d_prime_seen_imagined(trials),
         insufficient_tests=sum(1 for trial in trials if trial.crte_meta is None),
+        prediction_accuracy_seen=prediction_accuracy_seen(trials),
+        prediction_accuracy_imagined=prediction_accuracy_imagined(trials),
+        mean_counterfactual_discrepancy=mean_counterfactual_discrepancy(trials),
+        mean_prediction_error=mean_prediction_error(trials),
     )
 
 
@@ -266,8 +334,12 @@ __all__ = [
     "mean_crte_eig",
     "mean_crte_meta",
     "mean_evidence_resolution",
+    "mean_counterfactual_discrepancy",
+    "mean_prediction_error",
     "mean_tests",
     "prediction_accuracy",
+    "prediction_accuracy_imagined",
+    "prediction_accuracy_seen",
     "prediction_ece",
     "summarize",
 ]

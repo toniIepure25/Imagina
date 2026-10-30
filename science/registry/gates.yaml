@@ -113,3 +113,77 @@ gates:
     note: >-
       Simulation-only planning gate. A PASS means N=180 has at least 80% power for the reliability
       lower-bound target under the stated approximation; it is not human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_THEORY
+    name: Counterfactual Reality Testing Stage 0D model-signature separability
+    canonical_artifact: animus.p5.crt.theory
+    claim_ids: []
+    note: >-
+      Simulation-only design-identifiability gate. A PASS means the five competing theory signatures
+      are separable under the stated measurement noise. It is not a fit to human data and does not
+      establish that any model is true.
+
+  - gate_id: ANIMUS_P5_CRT_SPECIFICITY
+    name: Counterfactual Reality Testing specificity and active-selection controls
+    canonical_artifact: animus.p5.crt.specificity.belief
+    claim_ids: []
+    note: >-
+      Simulation-only control gate, now canonicalized on belief-based prediction. The historical
+      oracle artifact is preserved but superseded; Stage 0E showed that the diagnostic-specificity
+      advantage did not reproduce when the participant predicted from the current source posterior.
+      The current status is LIMITED. Not human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_MODEL_REPAIR
+    name: Counterfactual Reality Testing belief-based prediction repair
+    canonical_artifact: animus.p5.crt.model_repair
+    claim_ids: []
+    note: >-
+      Simulation-only model-repair gate. A PASS means oracle inflation is quantified, the belief arm
+      predicts from the current source posterior, the source is updated from the outcome only, and
+      the nested posterior PIT calibration check passes. A PASS is design evidence, not human
+      validation and not authorization for a measurement claim.
+
+  - gate_id: ANIMUS_P5_CRT_COUNTERFACTUAL
+    name: Counterfactual Reality Testing dual-hypothesis prediction
+    canonical_artifact: animus.p5.crt.counterfactual
+    claim_ids: []
+    note: >-
+      Simulation-only construct gate. A PASS requires dual diagnostic prediction to improve accuracy
+      over a single prediction and a dual non-diagnostic prediction on the same test sequence. A
+      REVIEW means the counterfactual label is not yet earned; the construct remains prospective
+      reality testing.
+
+  - gate_id: ANIMUS_P5_CRT_POLICY
+    name: Counterfactual Reality Testing policy competition
+    canonical_artifact: animus.p5.crt.policy
+    claim_ids: []
+    note: >-
+      Simulation-only policy gate. A PASS requires meta-EIG selection to exceed both cost-only and
+      the best competing policy. A REVIEW means the normative meta-EIG claim is descriptive only.
+
+  - gate_id: ANIMUS_P5_CRT_PSYCHOMETRIC
+    name: Counterfactual Reality Testing test-facet reliability
+    canonical_artifact: animus.p5.crt.psychometric
+    claim_ids: []
+    note: >-
+      Simulation-only test-facet reliability gate. A PASS means every simulated test facet clears
+      the pre-specified relative-reliability floor at two occasions. It is not a human reliability
+      estimate.
+
+  - gate_id: ANIMUS_P5_CRT_GTHEORY
+    name: Counterfactual Reality Testing generalizability decision study
+    canonical_artifact: animus.p5.crt.gtheory
+    claim_ids: []
+    note: >-
+      Simulation-only variance-component and decision-study gate. A PASS means the simulated
+      person variance supports the stated relative-reliability target at two occasions; it is not an
+      estimate of human reliability.
+
+  - gate_id: ANIMUS_P5_CRT_CALIBRATION
+    name: Counterfactual Reality Testing test-likelihood calibration design
+    canonical_artifact: animus.p5.crt.calibration
+    claim_ids: []
+    note: >-
+      Simulation-only calibration gate. A PASS means at least four tests have a strong simulated
+      seen-versus-imagined likelihood ratio and the fluency trap remains non-diagnostic. A human
+      calibration sample must freeze the likelihood table before confirmatory data collection.

@@ -25,6 +25,14 @@
 | ANIMUS_P5_CRT_SIM | Counterfactual Reality Testing Stage 0C simulation | `LIMITED` | `animus.p5.crt.sim` | Simulation-only design gate. A PASS means the prospective-prediction contrast and the meta-EIG policy clear the stated thresholds in simulation; it is not human validation and does not authorize a measurement claim. A REVIEW preserves the prediction contrast as provisional and blocks the active-selection claim. |
 | ANIMUS_P5_CRT_RECOVERY | Counterfactual Reality Testing policy and precision recovery | `PASS` | `animus.p5.crt.recovery` | Simulation-only recovery gate. A PASS means policy, prediction-precision, and imagination-inflation parameters are recovered within the stated tolerance under the Stage 0C fixed-parameter conditions; it does not validate the task or the human analysis model. |
 | ANIMUS_P5_CRT_POWER | Counterfactual Reality Testing Stage 1 power check | `PASS` | `animus.p5.crt.power` | Simulation-only planning gate. A PASS means N=180 has at least 80% power for the reliability lower-bound target under the stated approximation; it is not human evidence. |
+| ANIMUS_P5_CRT_THEORY | Counterfactual Reality Testing Stage 0D model-signature separability | `PASS` | `animus.p5.crt.theory` | Simulation-only design-identifiability gate. A PASS means the five competing theory signatures are separable under the stated measurement noise. It is not a fit to human data and does not establish that any model is true. |
+| ANIMUS_P5_CRT_SPECIFICITY | Counterfactual Reality Testing specificity and active-selection controls | `LIMITED` | `animus.p5.crt.specificity.belief` | Simulation-only control gate, now canonicalized on belief-based prediction. The historical oracle artifact is preserved but superseded; Stage 0E showed that the diagnostic-specificity advantage did not reproduce when the participant predicted from the current source posterior. The current status is LIMITED. Not human evidence. |
+| ANIMUS_P5_CRT_MODEL_REPAIR | Counterfactual Reality Testing belief-based prediction repair | `PASS` | `animus.p5.crt.model_repair` | Simulation-only model-repair gate. A PASS means oracle inflation is quantified, the belief arm predicts from the current source posterior, the source is updated from the outcome only, and the nested posterior PIT calibration check passes. A PASS is design evidence, not human validation and not authorization for a measurement claim. |
+| ANIMUS_P5_CRT_COUNTERFACTUAL | Counterfactual Reality Testing dual-hypothesis prediction | `LIMITED` | `animus.p5.crt.counterfactual` | Simulation-only construct gate. A PASS requires dual diagnostic prediction to improve accuracy over a single prediction and a dual non-diagnostic prediction on the same test sequence. A REVIEW means the counterfactual label is not yet earned; the construct remains prospective reality testing. |
+| ANIMUS_P5_CRT_POLICY | Counterfactual Reality Testing policy competition | `LIMITED` | `animus.p5.crt.policy` | Simulation-only policy gate. A PASS requires meta-EIG selection to exceed both cost-only and the best competing policy. A REVIEW means the normative meta-EIG claim is descriptive only. |
+| ANIMUS_P5_CRT_PSYCHOMETRIC | Counterfactual Reality Testing test-facet reliability | `PASS` | `animus.p5.crt.psychometric` | Simulation-only test-facet reliability gate. A PASS means every simulated test facet clears the pre-specified relative-reliability floor at two occasions. It is not a human reliability estimate. |
+| ANIMUS_P5_CRT_GTHEORY | Counterfactual Reality Testing generalizability decision study | `PASS` | `animus.p5.crt.gtheory` | Simulation-only variance-component and decision-study gate. A PASS means the simulated person variance supports the stated relative-reliability target at two occasions; it is not an estimate of human reliability. |
+| ANIMUS_P5_CRT_CALIBRATION | Counterfactual Reality Testing test-likelihood calibration design | `PASS` | `animus.p5.crt.calibration` | Simulation-only calibration gate. A PASS means at least four tests have a strong simulated seen-versus-imagined likelihood ratio and the fluency trap remains non-diagnostic. A human calibration sample must freeze the likelihood table before confirmatory data collection. |
 
 ## Claims
 
@@ -44,7 +52,7 @@
 | `claim.active_reality_testing_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | Active Reality Testing diagnoses, predicts, or treats a clinical condition. |
 | `claim.source_monitoring_training` | `BLOCKED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Adaptive source-monitoring feedback improves source calibration or source discrimination beyond a yoked active control. |
 | `claim.source_monitoring_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | The Source and Imagination Monitor diagnoses, predicts, or treats a clinical condition. |
-| `claim.counterfactual_reality_testing_measurement` | `UNVALIDATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence of a source-diagnostic test and uses prediction error to revise a seen/imagined/described/new attribution, with reported uncertainty and explicit low-information states. |
+| `claim.counterfactual_reality_testing_measurement` | `UNVALIDATED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence of a source-diagnostic test and uses the observed outcome to revise a seen/imagined/described/new attribution, with reported uncertainty and explicit low-information states. The prediction is a belief-based readout and policy signal, not independent source evidence. |
 | `claim.counterfactual_reality_testing_training` | `BLOCKED` | `L1_BEHAVIORAL_ASSISTED` |  | none | Counterfactual Reality Testing training improves source calibration or prediction accuracy beyond a yoked prediction control. |
 | `claim.counterfactual_reality_testing_clinical` | `BLOCKED` | `L3_CLOSED_LOOP` |  | none | Counterfactual Reality Testing diagnoses, predicts, or treats a clinical condition. |
 
@@ -52,9 +60,14 @@
 
 - `animus.p2` (`ANIMUS_P2_PERCEPTION_DECODER_VALIDATED` -> `PILOT`) is superseded by `animus.p2r`.
 - `animus.p2e` (`ANIMUS_P2_BLOCKED_ROI_SPATIAL_PROVENANCE` -> `BLOCKED`) is superseded by `animus.p2r`.
+- `animus.p5.crt.specificity` (`CRT_STAGE0D_SPECIFICITY_PASS` -> `PASS`) is superseded by `animus.p5.crt.specificity.belief`.
 - `c3.realdata` (`SUPERSEDED_BY_AUTHORITATIVE_ROW_MAPPING_RESOLUTION` -> `SUPERSEDED`) is superseded by `c3.final`.
 - `c3xat.r1.blocked1` (`C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE` -> `BLOCKED`) is superseded by `c3xat.r1.final`.
 - `c3xat.r1.blocked2` (`C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND` -> `BLOCKED`) is superseded by `c3xat.r1.final`.
+
+### Warnings
+
+- animus.p5.crt.specificity: superseded_by 'animus.p5.crt.specificity.belief', but that artifact does not list it in supersedes
 
 ## Provenance
 
@@ -69,9 +82,18 @@
 | `animus.p4.art.power` | ANIMUS_P4_ART_POWER | canonical | `PASS` | `3e68343aa70239b7fcd1518708675a3bca61baa5dc47fd56453681bfa253fc1e` | 996 |
 | `animus.p4.art.recovery` | ANIMUS_P4_ART_RECOVERY | canonical | `PASS` | `6c6da963106c4ce4219794c738624ceb3a24e0a5c7c841a6e8b7a74f8f787674` | 5986 |
 | `animus.p4.art.sim` | ANIMUS_P4_ART_SIM | canonical | `PASS` | `812b6001986b50debfd2ddeb7dc66770f4a5ced641e2529c7517199fd6acdb4d` | 1582 |
+| `animus.p5.crt.calibration` | ANIMUS_P5_CRT_CALIBRATION | canonical | `PASS` | `e27dc33439d19b89e428fdb4272c687af7e7be103b985b687ff6a142c1b80373` | 3419 |
+| `animus.p5.crt.counterfactual` | ANIMUS_P5_CRT_COUNTERFACTUAL | canonical | `LIMITED` | `477568efd5c11da21fa7794594608ee9f163fb2334d20f395d753c6a03a4a03a` | 3902 |
+| `animus.p5.crt.gtheory` | ANIMUS_P5_CRT_GTHEORY | canonical | `PASS` | `d50038a0cbd58732ba0409467dfd217e472aca80153ee3005ed3956dfc5ae7fc` | 1932 |
+| `animus.p5.crt.model_repair` | ANIMUS_P5_CRT_MODEL_REPAIR | canonical | `PASS` | `4b4dc2153f97b07bcbd9d4424bf76dbba2f4196714efb050f4fba82cc8c8fb51` | 2669 |
+| `animus.p5.crt.policy` | ANIMUS_P5_CRT_POLICY | canonical | `LIMITED` | `9eeb0b00dc46c3caf849d377de994e5a3ba20b0d181360914cf46b54131e1c8f` | 7408 |
 | `animus.p5.crt.power` | ANIMUS_P5_CRT_POWER | canonical | `PASS` | `daa13c992968be65b04fe0711dadfc700d9232c6baecc5e9ba5152e395a70d5a` | 996 |
+| `animus.p5.crt.psychometric` | ANIMUS_P5_CRT_PSYCHOMETRIC | canonical | `PASS` | `864271ad48f934a991e2397036abff7ad415e7a88bbef88aa78b86c8a4cfea2f` | 788 |
 | `animus.p5.crt.recovery` | ANIMUS_P5_CRT_RECOVERY | canonical | `PASS` | `d5976cd23bb3081c69f9f8f01f1becf724472507b35e5f96fdd1b83b1a4c462b` | 7565 |
 | `animus.p5.crt.sim` | ANIMUS_P5_CRT_SIM | canonical | `LIMITED` | `3b9c89ae29d29fed7b736dfba713cce3bc28b9f3f8c5d0042013847fe172219b` | 5442 |
+| `animus.p5.crt.specificity` | ANIMUS_P5_CRT_SPECIFICITY | historical | `PASS` | `e1b39e8bce7a542ab24ef624c593bfc6b0c5bef70cdf1c1908eb3b741f23b072` | 6256 |
+| `animus.p5.crt.specificity.belief` | ANIMUS_P5_CRT_SPECIFICITY | canonical | `LIMITED` | `b32d1267a6d12c77602e8ca5b6f8ea942c7843e2d7fd6a682f9936ee20e1c1ea` | 3494 |
+| `animus.p5.crt.theory` | ANIMUS_P5_CRT_THEORY | canonical | `PASS` | `7b050806160fafc42cf6f661c23588a678540bd1e2d915479961e1af51b73686` | 2213 |
 | `c1.final` | C1 | canonical | `NULL` | `1f412b5216d37664a54078ace6e9bc5aaf084ef24830607732a77d1006632c3b` | 9737 |
 | `c2.final` | C2 | canonical | `NULL` | `e02e6c961302614380333e572d221b17bc11d8f14603d412784e709f95998a2e` | 8804 |
 | `c3.final` | C3 | canonical | `NULL` | `6073ec1c8aa130ef1aa06e73c87db1df571edbd49986d2e6d5e2e57113c0fc60` | 5650 |

@@ -1,6 +1,78 @@
 # TASK_BRIEF.md
 
-## Current task — Phase 3B: Stage 0B Active Reality Testing (2026-10-29)
+## Current task — Phase 0E: CRT model repair, counterfactual audit, and psychometrics (2026-10-30)
+
+**Goal:** repair the Stage 0C/0D oracle prediction and prediction/outcome double counting, add a
+dual-hypothesis counterfactual prediction assay, run policy competition, add test-facet reliability
+and posterior PIT calibration, regenerate the canonical simulation artifacts, and downgrade claims
+that do not survive. Simulation only. No human data, API, DB, UI, clinical sample, or neural data.
+
+**Scope**
+- `backend/app/research/crt/model.py`: belief-based posterior-predictive prediction.
+- `backend/app/research/crt/simulate.py`: `prediction_source`, `prediction_format`, `source_update`;
+  outcome-only posterior; dual prediction fields; `cost_only` policy.
+- New modules: `model_repair.py`, `counterfactual.py`, `policy.py`, `psychometrics.py`, `pit.py`.
+- `backend/app/cli/crt_stage0e.py` and five focused test files.
+- Stage 0E artifacts in `results/crt/CRT_STAGE0E_*.json`; new registry gates; downgrade Stage 0D
+  specificity gate to `LIMITED` via a superseding belief-based artifact.
+- Docs: Stage 0E protocol, model-repair audit, counterfactual specification, evidence update; update
+  CRT protocol, preregistration, analysis plan, theory audit, Stage 0D protocol, task brief, session
+  log, and risks.
+
+**Non-goals**
+- No human calibration, pilot, confirmatory study, IRB, recruitment, or clinical sample.
+- No API, database migration, frontend route, neural data, training RCT, or claim upgrade.
+- No composite score, diagnosis, imagery-strength claim, neural decoding, or LLM in the loop.
+- No "first", "revolutionary", or priority language.
+
+**Acceptance**
+- `python -m app.cli.crt_stage0e --check` passes.
+- `python -m app.cli.crt_stage0d --check` still passes on the preserved historical oracle path.
+- `ANIMUS_P5_CRT_MODEL_REPAIR=PASS`, `_PSYCHOMETRIC=PASS`; `_SPECIFICITY=LIMITED`,
+  `_COUNTERFACTUAL=LIMITED`, `_POLICY=LIMITED` in the ledger.
+- Ruff, focused CRT tests, ledger check, docs links, and `python scripts/verify.py --quick` pass.
+- Each Stage 0E artifact is reproducible from the documented CLI command.
+- No claim status increases; training and clinical remain `BLOCKED`.
+
+**Status:** implemented; verification recorded in the 2026-10-30 Stage 0E session-log entry.
+
+---
+
+## Previous task — Phase 0D: CRT theory tournament and design controls (2026-10-30)
+
+**Goal:** implement the approved CRT Stage 0D slice: a theory audit and competing-model signature
+analysis, specificity and active-selection controls, test-likelihood calibration design, G-theory
+decision study, simulation-only gates, and the documents needed for PI/adversarial review. No human
+data, API, migration, UI, clinical sample, or neural data.
+
+**Scope**
+- `backend/app/research/crt/theory.py`, `gtheory.py`, `calibration.py`; extend `simulate.py` with
+  `prediction_mode` and `selection_mode`.
+- `backend/app/cli/crt_stage0d.py` and focused tests.
+- Canonical artifacts in `results/crt/CRT_STAGE0D_*.json`; four simulation-only registry gates.
+- `science/protocols/crt-v1.yaml` updated with Stage 0D controls, sub-studies, and N=240 targets.
+- Theory audit, novelty matrix, model predictions, Stage 0D protocol; update CRT spec, preregistration,
+  analysis plan, ADR-070, evidence map.
+- N=240 reliability planning target with a power check at true ICC 0.80 / lower bound 0.70.
+
+**Non-goals**
+- No human calibration, pilot, or confirmatory study; no IRB, recruitment, or clinical sample.
+- No API, database migration, frontend route, neural data, training RCT, or claim upgrade.
+- No composite score, diagnosis, imagery-strength claim, neural decoding, or LLM in the loop.
+- No "first" or "revolutionary" language.
+
+**Acceptance**
+- `python -m app.cli.crt_stage0d --check` passes.
+- `ANIMUS_P5_CRT_THEORY`, `_SPECIFICITY`, `_GTHEORY`, and `_CALIBRATION` are `PASS` in the ledger.
+- Existing Stage 0C gates retain their status; no claim status changes.
+- Ruff, focused tests, ledger check, and `python scripts/verify.py --quick` pass.
+- Each Stage 0D artifact is reproducible from the documented CLI command.
+
+**Status:** implemented; verification recorded in the 2026-10-30 session-log entry.
+
+---
+
+## Previous task — Phase 3B: Stage 0B Active Reality Testing (2026-10-29)
 
 **Goal:** implement the approved active-inquiry extension as a simulation-only slice: formal model,
 deterministic simulator, power and policy recovery, Stage 0 tests, protocol and registry entries. No

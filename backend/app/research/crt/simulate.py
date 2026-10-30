@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import math
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from statistics import mean
 from typing import Sequence
 
@@ -26,7 +26,9 @@ from app.research.crt.model import (
     ALL_TESTS,
     DEFAULT_PRIOR,
     FLUENCY,
+    IMAGINED,
     INTEND,
+    SEEN,
     AgentParams,
     apply_prediction_bias,
     choose_source_probabilities,
@@ -41,11 +43,27 @@ from app.research.crt.model import (
     outcome_likelihood,
     posterior_from_outcome,
     posterior_from_prediction_outcome,
+    posterior_predictive,
     prediction_likelihood,
     softmax,
 )
 
-POLICIES = ("meta_eig", "eig", "positive", "fixed", "heuristic", "random", "agency", "mixture")
+POLICIES = (
+    "meta_eig",
+    "eig",
+    "positive",
+    "fixed",
+    "heuristic",
+    "random",
+    "agency",
+    "mixture",
+    "cost_only",
+)
+PREDICTION_MODES = ("diagnostic", "nondiagnostic", "none")
+PREDICTION_SOURCES = ("oracle", "belief", "prior")
+PREDICTION_FORMATS = ("single", "dual")
+SOURCE_UPDATES = ("outcome", "legacy")
+SELECTION_MODES = ("policy", "algorithm", "random_passive")
 _PREDICT_CONDITIONS = ("active_predict", "yoked_predict")
 _ACTIVE_CONDITIONS = ("active_intervene", "active_predict")
 
@@ -81,6 +99,11 @@ class SimulationConfig:
     confidence_noise: float = 0.05
     lapse: float = 0.0
     alpha: float = 0.5
+    prediction_mode: str = "diagnostic"
+    prediction_source: str = "belief"
+    prediction_format: str = "single"
+    source_update: str = "outcome"
+    selection_mode: str = "policy"
 
     def __post_init__(self) -> None:
         if self.n_participants <= 0:
@@ -93,6 +116,16 @@ class SimulationConfig:
             raise ValueError("cost_multiplier must be non-negative")
         if not self.cost_levels or any(level < 0 for level in self.cost_levels):
             raise ValueError("cost_levels must be a non-empty sequence of non-negative values")
+        if self.prediction_mode not in PREDICTION_MODES:
+            raise ValueError(f"unknown prediction mode: {self.prediction_mode}")
+        if self.prediction_source not in PREDICTION_SOURCES:
+            raise ValueError(f"unknown prediction source: {self.prediction_source}")
+        if self.prediction_format not in PREDICTION_FORMATS:
+            raise ValueError(f"unknown prediction format: {self.prediction_format}")
+        if self.source_update not in SOURCE_UPDATES:
+            raise ValueError(f"unknown source update: {self.source_update}")
+        if self.selection_mode not in SELECTION_MODES:
+            raise ValueError(f"unknown selection mode: {self.selection_mode}")
 
 
 @dataclass
@@ -205,10 +238,34 @@ def _choose_test(
     costs: Sequence[float],
     complexities: Sequence[float],
     agency_values: Sequence[float],
+    selection_mode: str = "policy",
 ) -> tuple[int | None, DecisionRecord]:
     if policy not in POLICIES:
         raise ValueError(f"unknown policy: {policy}")
+    if selection_mode not in SELECTION_MODES:
+        raise ValueError(f"unknown selection mode: {selection_mode}")
     cd_values = tuple(counterfactual_discrimination(posterior, test, params.pi) for test in available)
+    if selection_mode != "policy":
+        meta_values = tuple(meta_eig(posterior, test, params.pi, params.d) for test in available)
+        eig_values = tuple(eig(posterior, test, params.d) for test in available)
+        positive_values = tuple(_positive_value(posterior, test, params.d) for test in available)
+        if selection_mode == "random_passive":
+            choice_index = rng.randrange(len(available))
+        else:
+            choice_index = max(range(len(available)), key=lambda index: meta_values[index])
+        chosen = available[choice_index]
+        decision = DecisionRecord(
+            tuple(available),
+            meta_values,
+            eig_values,
+            tuple(costs),
+            tuple(complexities),
+            positive_values,
+            tuple(agency_values),
+            cd_values,
+            choice_index,
+        )
+        return chosen, decision
     if policy == "fixed":
         chosen = available[0]
         return chosen, DecisionRecord(
@@ -248,6 +305,20 @@ def _choose_test(
             cd_values,
             available.index(chosen),
         )
+    if policy == "cost_only":
+        chosen_index = min(range(len(available)), key=lambda index: costs[index])
+        chosen = available[chosen_index]
+        return chosen, DecisionRecord(
+            tuple(available),
+            tuple(meta_eig(posterior, test, params.pi, params.d) for test in available),
+            tuple(eig(posterior, test, params.d) for test in available),
+            tuple(costs),
+            tuple(complexities),
+            tuple(_positive_value(posterior, test, params.d) for test in available),
+            tuple(agency_values),
+            cd_values,
+            chosen_index,
+        )
 
     meta_utility, eig_utility, positive_utility, meta_values, eig_values, positive_values = _policy_utilities(
         posterior, available, params, costs, complexities, agency_values
@@ -270,7 +341,7 @@ def _choose_test(
         ] + [params.tau]
     else:
         raise ValueError(f"unknown policy: {policy}")
-    if policy in ("meta_eig", "eig"):
+    if policy in ("meta_eig", "eig") and params.pi > 1e-12:
         for index, test in enumerate(available):
             if counterfactual_discrimination(posterior, test, params.pi) <= 1e-12:
                 utilities[index] = -1e12
@@ -304,6 +375,11 @@ def _source_choice(
     return choice, confidence
 
 
+def _prediction_confidence(probability: float, rng: random.Random, noise: float) -> float:
+    match_probability = probability * probability + (1.0 - probability) * (1.0 - probability)
+    return min(1.0, max(0.5, match_probability + rng.gauss(0.0, noise)))
+
+
 def _simulate_trial(
     true_source: int,
     params: AgentParams,
@@ -315,13 +391,30 @@ def _simulate_trial(
     complexities: Sequence[float],
     agency_values: Sequence[float],
     script: Sequence[int] | None = None,
+    prediction_mode: str = "diagnostic",
+    selection_mode: str = "policy",
+    prediction_source: str = "belief",
+    prediction_format: str = "single",
+    source_update: str = "outcome",
 ) -> tuple[TrialRecord, list[DecisionRecord]]:
+    if prediction_mode not in PREDICTION_MODES:
+        raise ValueError(f"unknown prediction mode: {prediction_mode}")
+    if selection_mode not in SELECTION_MODES:
+        raise ValueError(f"unknown selection mode: {selection_mode}")
+    if prediction_source not in PREDICTION_SOURCES:
+        raise ValueError(f"unknown prediction source: {prediction_source}")
+    if prediction_format not in PREDICTION_FORMATS:
+        raise ValueError(f"unknown prediction format: {prediction_format}")
+    if source_update not in SOURCE_UPDATES:
+        raise ValueError(f"unknown source update: {source_update}")
     prior = DEFAULT_PRIOR
     posterior = prior
     tests: list[TestRecord] = []
     decisions: list[DecisionRecord] = []
     available = list(ALL_TESTS)
-    predicts = condition in _PREDICT_CONDITIONS
+    predicts = condition in _PREDICT_CONDITIONS and prediction_mode != "none"
+    effective_pi = 0.0 if prediction_mode == "nondiagnostic" else params.pi
+    decision_params = replace(params, pi=effective_pi)
 
     for step in range(max_tests):
         if not available:
@@ -335,10 +428,14 @@ def _simulate_trial(
             costs_step = tuple(costs[index] for index in available)
             complexities_step = tuple(complexities[index] for index in available)
             agency_step = tuple(agency_values[index] for index in available)
-            meta_values = tuple(meta_eig(posterior, candidate, params.pi, params.d) for candidate in available)
+            meta_values = tuple(
+                meta_eig(posterior, candidate, effective_pi, params.d) for candidate in available
+            )
             eig_values = tuple(eig(posterior, candidate, params.d) for candidate in available)
             positive_values = tuple(_positive_value(posterior, candidate, params.d) for candidate in available)
-            cd_values = tuple(counterfactual_discrimination(posterior, candidate, params.pi) for candidate in available)
+            cd_values = tuple(
+                counterfactual_discrimination(posterior, candidate, effective_pi) for candidate in available
+            )
             decision = DecisionRecord(
                 tuple(available),
                 meta_values,
@@ -357,12 +454,13 @@ def _simulate_trial(
             chosen, decision = _choose_test(
                 posterior,
                 available,
-                params,
+                decision_params,
                 policy,
                 rng,
                 costs_step,
                 complexities_step,
                 agency_step,
+                selection_mode,
             )
             if chosen is None:
                 decisions.append(decision)
@@ -372,35 +470,87 @@ def _simulate_trial(
 
         predicted = None
         prediction_confidence = None
+        predicted_seen = None
+        predicted_imagined = None
+        prediction_confidence_seen = None
+        prediction_confidence_imagined = None
+        prediction_correct_seen = None
+        prediction_correct_imagined = None
+        prediction_probability = None
+        prediction_error = None
+        counterfactual_discrepancy = None
         if predicts:
-            probability = prediction_likelihood(test, true_source, params.pi)
-            predicted = rng.random() < probability
-            match_probability = probability * probability + (1.0 - probability) * (1.0 - probability)
-            prediction_confidence = min(
-                1.0,
-                max(0.5, match_probability + rng.gauss(0.0, params.confidence_noise)),
-            )
+            if prediction_mode == "nondiagnostic":
+                probability = 0.5
+                probability_seen = 0.5
+                probability_imagined = 0.5
+            elif prediction_format == "dual":
+                probability_seen = prediction_likelihood(test, SEEN, params.pi)
+                probability_imagined = prediction_likelihood(test, IMAGINED, params.pi)
+                probability = probability_seen
+            elif prediction_source == "oracle":
+                probability = prediction_likelihood(test, true_source, params.pi)
+            elif prediction_source == "prior":
+                probability = posterior_predictive(DEFAULT_PRIOR, test, params.pi)
+            else:
+                probability = posterior_predictive(posterior, test, params.pi)
+
+            if prediction_format == "dual":
+                predicted_seen = rng.random() < probability_seen
+                predicted_imagined = rng.random() < probability_imagined
+                prediction_confidence_seen = _prediction_confidence(
+                    probability_seen, rng, params.confidence_noise
+                )
+                prediction_confidence_imagined = _prediction_confidence(
+                    probability_imagined, rng, params.confidence_noise
+                )
+                predicted = predicted_seen
+                prediction_confidence = prediction_confidence_seen
+                counterfactual_discrepancy = abs(probability_seen - probability_imagined)
+                prediction_probability = probability_seen
+            else:
+                predicted = rng.random() < probability
+                prediction_confidence = _prediction_confidence(probability, rng, params.confidence_noise)
+                prediction_probability = probability
 
         outcome_probability = outcome_likelihood(test, true_source, params.d)
         outcome = rng.random() < outcome_probability
+        if prediction_format == "dual":
+            prediction_correct_seen = predicted_seen == outcome
+            prediction_correct_imagined = predicted_imagined == outcome
+            prediction_error = abs(float(probability_seen) - (1.0 if outcome else 0.0))
+        elif predicted is not None:
+            prediction_correct_seen = predicted == outcome
+            prediction_error = abs(float(probability) - (1.0 if outcome else 0.0))
         tests.append(
             TestRecord(
                 test=test,
                 outcome=outcome,
                 eig=eig(posterior, test, params.d),
-                meta_eig=meta_eig(posterior, test, params.pi, params.d),
-                counterfactual_discrimination=counterfactual_discrimination(posterior, test, params.pi),
+                meta_eig=meta_eig(posterior, test, effective_pi, params.d),
+                counterfactual_discrimination=counterfactual_discrimination(posterior, test, effective_pi),
                 cost=costs[test],
                 complexity=complexities[test],
                 max_eig=max(eig(posterior, candidate, params.d) for candidate in available),
-                max_meta_eig=max(meta_eig(posterior, candidate, params.pi, params.d) for candidate in available),
+                max_meta_eig=max(
+                    meta_eig(posterior, candidate, effective_pi, params.d) for candidate in available
+                ),
                 predicted=predicted,
                 prediction_confidence=prediction_confidence,
-                prediction_correct=None if predicted is None else predicted == outcome,
+                prediction_correct=None if prediction_format == "dual" else prediction_correct_seen,
+                predicted_seen=predicted_seen,
+                predicted_imagined=predicted_imagined,
+                prediction_confidence_seen=prediction_confidence_seen,
+                prediction_confidence_imagined=prediction_confidence_imagined,
+                prediction_correct_seen=prediction_correct_seen,
+                prediction_correct_imagined=prediction_correct_imagined,
+                prediction_probability=prediction_probability,
+                prediction_error=prediction_error,
+                counterfactual_discrepancy=counterfactual_discrepancy,
             )
         )
         available.remove(test)
-        if predicted is None:
+        if predicted is None or source_update == "outcome":
             posterior = posterior_from_outcome(posterior, test, outcome, params.d)
         else:
             posterior = posterior_from_prediction_outcome(
@@ -408,16 +558,24 @@ def _simulate_trial(
                 test,
                 predicted,
                 outcome,
-                params.pi,
+                effective_pi,
                 params.d,
             )
 
-    predictions = [
-        (bool(test.prediction_correct), float(test.prediction_confidence or 0.5))
-        for test in tests
-        if test.prediction_correct is not None and test.prediction_confidence is not None
-    ]
-    choice, confidence = _source_choice(posterior, params, predictions, rng)
+    if prediction_format == "dual":
+        predictions = [
+            (bool(test.prediction_correct_seen), float(test.prediction_confidence_seen or 0.5))
+            for test in tests
+            if test.prediction_correct_seen is not None and test.prediction_confidence_seen is not None
+        ]
+    else:
+        predictions = [
+            (bool(test.prediction_correct), float(test.prediction_confidence or 0.5))
+            for test in tests
+            if test.prediction_correct is not None and test.prediction_confidence is not None
+        ]
+    bias_predictions = predictions if prediction_mode == "diagnostic" else []
+    choice, confidence = _source_choice(posterior, params, bias_predictions, rng)
     n_tests = len(tests)
     if n_tests <= 0:
         crte_meta = None
@@ -473,11 +631,31 @@ def simulate_participant(
     condition: str = "active_predict",
     policy: str | None = None,
     scripts: Sequence[Sequence[int]] | None = None,
+    prediction_mode: str | None = None,
+    selection_mode: str | None = None,
+    prediction_source: str | None = None,
+    prediction_format: str | None = None,
+    source_update: str | None = None,
 ) -> ParticipantResult:
     if condition not in CONDITIONS:
         raise ValueError(f"unknown condition: {condition}")
     if condition in ("yoked_intervene", "yoked_predict") and scripts is None:
         raise ValueError("yoked conditions require a test script")
+    prediction_mode = config.prediction_mode if prediction_mode is None else prediction_mode
+    selection_mode = config.selection_mode if selection_mode is None else selection_mode
+    prediction_source = config.prediction_source if prediction_source is None else prediction_source
+    prediction_format = config.prediction_format if prediction_format is None else prediction_format
+    source_update = config.source_update if source_update is None else source_update
+    if prediction_mode not in PREDICTION_MODES:
+        raise ValueError(f"unknown prediction mode: {prediction_mode}")
+    if selection_mode not in SELECTION_MODES:
+        raise ValueError(f"unknown selection mode: {selection_mode}")
+    if prediction_source not in PREDICTION_SOURCES:
+        raise ValueError(f"unknown prediction source: {prediction_source}")
+    if prediction_format not in PREDICTION_FORMATS:
+        raise ValueError(f"unknown prediction format: {prediction_format}")
+    if source_update not in SOURCE_UPDATES:
+        raise ValueError(f"unknown source update: {source_update}")
     params = _clamp_params(params)
     if policy is None:
         policy = "meta_eig" if condition == "active_predict" else "eig"
@@ -504,6 +682,11 @@ def simulate_participant(
             complexities,
             agency_values,
             script,
+            prediction_mode,
+            selection_mode,
+            prediction_source,
+            prediction_format,
+            source_update,
         )
         trials.append(trial)
         decisions.extend(trial_decisions)
@@ -540,6 +723,11 @@ def run_condition(
     policy: str | None = None,
     scripts: Sequence[Sequence[Sequence[int]]] | None = None,
     params_list: Sequence[AgentParams] | None = None,
+    prediction_mode: str | None = None,
+    selection_mode: str | None = None,
+    prediction_source: str | None = None,
+    prediction_format: str | None = None,
+    source_update: str | None = None,
 ) -> list[ParticipantResult]:
     if params_list is None:
         params_list = _participant_params(config)
@@ -554,6 +742,11 @@ def run_condition(
                 condition=condition,
                 policy=policy,
                 scripts=participant_scripts,
+                prediction_mode=prediction_mode,
+                selection_mode=selection_mode,
+                prediction_source=prediction_source,
+                prediction_format=prediction_format,
+                source_update=source_update,
             )
         )
     return results
@@ -671,6 +864,115 @@ def run_simulation(config: SimulationConfig) -> dict[str, object]:
     }
 
 
+def run_specificity_simulation(config: SimulationConfig) -> dict[str, object]:
+    params_list = _participant_params(config)
+    diagnostic = run_condition(
+        config,
+        "active_predict",
+        "fixed",
+        params_list=params_list,
+        prediction_mode="diagnostic",
+    )
+    nondiagnostic = run_condition(
+        config,
+        "active_predict",
+        "fixed",
+        params_list=params_list,
+        prediction_mode="nondiagnostic",
+    )
+    diagnostic_summary = _aggregate(diagnostic)
+    nondiagnostic_summary = _aggregate(nondiagnostic)
+    accuracy_gain = float(diagnostic_summary["accuracy"]) - float(nondiagnostic_summary["accuracy"])
+    calibration_gain = float(nondiagnostic_summary["expected_calibration_error"]) - float(
+        diagnostic_summary["expected_calibration_error"]
+    )
+    brier_gain = float(nondiagnostic_summary["brier_score"]) - float(diagnostic_summary["brier_score"])
+    passed = accuracy_gain >= 0.02 and float(diagnostic_summary["prediction_accuracy"]) > 0.55
+    return {
+        "protocol": "ANIMUS-CRT-v1",
+        "analysis": "stage0d_prediction_specificity_control",
+        "config": {
+            "n_participants": config.n_participants,
+            "n_trials": config.n_trials,
+            "seed": config.seed,
+            "max_tests": config.max_tests,
+        },
+        "condition_summaries": {
+            "diagnostic": diagnostic_summary,
+            "nondiagnostic": nondiagnostic_summary,
+        },
+        "contrasts": {
+            "accuracy_gain": round(accuracy_gain, 6),
+            "calibration_gain": round(calibration_gain, 6),
+            "brier_gain": round(brier_gain, 6),
+            "prediction_accuracy_diagnostic": diagnostic_summary["prediction_accuracy"],
+            "prediction_accuracy_nondiagnostic": nondiagnostic_summary["prediction_accuracy"],
+        },
+        "decision": "CRT_STAGE0D_SPECIFICITY_PASS" if passed else "CRT_STAGE0D_SPECIFICITY_REVIEW",
+        "note": (
+            "Simulation-only specificity check. Both arms use the same fixed test sequence, participants, "
+            "confidence report, cost, and time; only the prediction content differs. The non-diagnostic "
+            "prediction is independent of source. A diagnostic advantage is required before a human "
+            "specificity claim is allowed."
+        ),
+    }
+
+
+def run_selection_simulation(config: SimulationConfig) -> dict[str, object]:
+    params_list = _participant_params(config)
+    active = run_condition(
+        config,
+        "active_predict",
+        "meta_eig",
+        params_list=params_list,
+        selection_mode="policy",
+    )
+    algorithm = run_condition(
+        config,
+        "active_predict",
+        "meta_eig",
+        params_list=params_list,
+        selection_mode="algorithm",
+    )
+    random_passive = run_condition(
+        config,
+        "active_predict",
+        "meta_eig",
+        params_list=params_list,
+        selection_mode="random_passive",
+    )
+    summaries = {
+        "active": _aggregate(active),
+        "algorithm": _aggregate(algorithm),
+        "random_passive": _aggregate(random_passive),
+    }
+    active_gain = float(summaries["active"]["accuracy"]) - float(summaries["random_passive"]["accuracy"])
+    adaptive_gain = float(summaries["algorithm"]["accuracy"]) - float(summaries["random_passive"]["accuracy"])
+    active_vs_algorithm = float(summaries["active"]["accuracy"]) - float(summaries["algorithm"]["accuracy"])
+    passed = active_gain >= 0.01 and adaptive_gain >= 0.01
+    return {
+        "protocol": "ANIMUS-CRT-v1",
+        "analysis": "stage0d_active_selection_control",
+        "config": {
+            "n_participants": config.n_participants,
+            "n_trials": config.n_trials,
+            "seed": config.seed,
+            "max_tests": config.max_tests,
+        },
+        "condition_summaries": summaries,
+        "contrasts": {
+            "active_choice_gain": round(active_gain, 6),
+            "adaptive_design_gain": round(adaptive_gain, 6),
+            "active_vs_algorithm": round(active_vs_algorithm, 6),
+        },
+        "decision": "CRT_STAGE0D_SELECTION_PASS" if passed else "CRT_STAGE0D_SELECTION_REVIEW",
+        "note": (
+            "Simulation-only decomposition of active choice, algorithm-adaptive selection, and "
+            "random-passive exposure. Active selection is not identified by matched yoking."
+        ),
+    }
+
+
 def _decision_utilities(decision: DecisionRecord, params: AgentParams) -> list[float]:
     max_meta = max(decision.meta_eig) if decision.meta_eig else 0.0
     max_positive = max(decision.positive_values) if decision.positive_values else 0.0
@@ -694,7 +996,7 @@ def _decision_utilities(decision: DecisionRecord, params: AgentParams) -> list[f
         for meta, positive in zip(meta_utility, positive_utility)
     ]
     for index, cd in enumerate(decision.counterfactual_discrimination):
-        if cd <= 1e-12:
+        if params.pi > 1e-12 and cd <= 1e-12:
             utilities[index] = -1e12
     return utilities + [params.tau]
 
@@ -842,7 +1144,9 @@ def compare_conditions(config: SimulationConfig) -> dict[str, object]:
 
 
 def check_simulation() -> dict[str, object]:
-    report = run_simulation(SimulationConfig(n_participants=12, n_trials=30, seed=7))
+    report = run_simulation(
+        SimulationConfig(n_participants=12, n_trials=30, seed=7, prediction_source="oracle", source_update="legacy")
+    )
     if report["decision"] != "CRT_STAGE0_SIMULATION_PASS":
         raise AssertionError(f"CRT simulation gate failed: {report['condition_comparison']}")
     return report
@@ -859,26 +1163,60 @@ def check_recovery() -> dict[str, object]:
 
 
 def check_prediction_ablation() -> dict[str, object]:
-    report = run_simulation(SimulationConfig(n_participants=12, n_trials=30, seed=7))
+    report = run_simulation(
+        SimulationConfig(n_participants=12, n_trials=30, seed=7, prediction_source="oracle", source_update="legacy")
+    )
     if report["condition_comparison"]["prediction_advantage"] <= 0:
         raise AssertionError(f"CRT prediction ablation failed: {report['condition_comparison']}")
     return report
 
 
+def check_specificity() -> dict[str, object]:
+    report = run_specificity_simulation(
+        SimulationConfig(n_participants=24, n_trials=60, seed=7, prediction_source="oracle", source_update="legacy")
+    )
+    if report["decision"] != "CRT_STAGE0D_SPECIFICITY_PASS":
+        raise AssertionError(f"CRT specificity gate failed: {report['contrasts']}")
+    return report
+
+
+def check_selection() -> dict[str, object]:
+    report = run_selection_simulation(
+        SimulationConfig(n_participants=24, n_trials=60, seed=7, prediction_source="oracle", source_update="legacy")
+    )
+    if report["decision"] != "CRT_STAGE0D_SELECTION_PASS":
+        raise AssertionError(f"CRT selection gate failed: {report['contrasts']}")
+    return report
+
+
+def check_controls() -> dict[str, object]:
+    return {"specificity": check_specificity(), "selection": check_selection()}
+
+
 __all__ = [
     "POLICIES",
+    "PREDICTION_FORMATS",
+    "PREDICTION_MODES",
+    "PREDICTION_SOURCES",
+    "SELECTION_MODES",
+    "SOURCE_UPDATES",
     "ParticipantResult",
     "RecoveredParams",
     "SimulationConfig",
+    "check_controls",
     "check_prediction_ablation",
     "check_recovery",
+    "check_selection",
     "check_simulation",
+    "check_specificity",
     "compare_conditions",
     "fit_bias",
     "fit_policy",
     "fit_precision",
     "run_condition",
     "run_recovery",
+    "run_selection_simulation",
     "run_simulation",
+    "run_specificity_simulation",
     "simulate_participant",
 ]

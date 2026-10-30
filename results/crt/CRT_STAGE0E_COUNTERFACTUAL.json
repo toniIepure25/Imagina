@@ -1,0 +1,131 @@
+{
+  "analysis": "stage0e_dual_hypothesis_counterfactual_prediction",
+  "condition_summaries": {
+    "dual_diagnostic": {
+      "accuracy": 0.4,
+      "brier_score": 0.23031,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.859877,
+      "expected_calibration_error": 0.077873,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 0,
+      "mean_counterfactual_discrepancy": 0.475993,
+      "mean_crte_eig": 0.631773,
+      "mean_crte_meta": 0.671459,
+      "mean_evidence_resolution": 0.15627,
+      "mean_prediction_error": 0.522714,
+      "mean_tests": 2,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": 0.482292,
+      "prediction_accuracy_seen": 0.494444,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 1440,
+        "1": 1440,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      }
+    },
+    "dual_nondiagnostic": {
+      "accuracy": 0.363194,
+      "brier_score": 0.208857,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.674495,
+      "expected_calibration_error": 0.014635,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 0,
+      "mean_counterfactual_discrepancy": 0.0,
+      "mean_crte_eig": 0.631773,
+      "mean_crte_meta": 0.002297,
+      "mean_evidence_resolution": 0.15627,
+      "mean_prediction_error": 0.5,
+      "mean_tests": 2,
+      "n_trials": 1440,
+      "prediction_accuracy": null,
+      "prediction_accuracy_imagined": 0.488542,
+      "prediction_accuracy_seen": 0.507292,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 1440,
+        "1": 1440,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      }
+    },
+    "single_diagnostic": {
+      "accuracy": 0.4,
+      "brier_score": 0.228892,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.834532,
+      "expected_calibration_error": 0.0816,
+      "imagination_inflation_rate": 0.25,
+      "insufficient_tests": 0,
+      "mean_counterfactual_discrepancy": null,
+      "mean_crte_eig": 0.625888,
+      "mean_crte_meta": 0.66656,
+      "mean_evidence_resolution": 0.156145,
+      "mean_prediction_error": 0.488969,
+      "mean_tests": 2,
+      "n_trials": 1440,
+      "prediction_accuracy": 0.504861,
+      "prediction_accuracy_imagined": null,
+      "prediction_accuracy_seen": 0.504861,
+      "prediction_ece": 0.024488,
+      "source_counts": {
+        "0": 360,
+        "1": 360,
+        "2": 360,
+        "3": 360
+      },
+      "test_counts": {
+        "0": 1440,
+        "1": 1440,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      }
+    }
+  },
+  "config": {
+    "max_tests": 2,
+    "n_participants": 24,
+    "n_trials": 60,
+    "seed": 20261030,
+    "test_ids": [
+      "viewpoint",
+      "generation",
+      "context",
+      "intend",
+      "description",
+      "fluency"
+    ]
+  },
+  "contrasts": {
+    "dual_gain_over_single": 0.0,
+    "dual_prediction_accuracy_imagined": 0.482292,
+    "dual_prediction_accuracy_seen": 0.494444,
+    "mean_counterfactual_discrepancy": 0.475993,
+    "specificity_gain_over_nondiagnostic": 0.036806
+  },
+  "decision": "CRT_STAGE0E_COUNTERFACTUAL_REVIEW",
+  "note": "The dual diagnostic arm asks for predictions under seen and imagined hypotheses. It is compared with a single prediction and a dual non-diagnostic prediction on the same fixed test sequence. A REVIEW means the current design does not yet earn the counterfactual label; it is not evidence against the construct.",
+  "protocol": "ANIMUS-CRT-v1"
+}

@@ -19,7 +19,7 @@ Imagina/
 │   │   ├── api/               # REST endpoints (11 routers)
 │   │   ├── core/              # Config, constants, time, errors
 │   │   ├── evaluation/        # Cohort simulator, replay validator, metric sanity
-│   │   ├── research/          # Claim ledger, PRM/ART models, simulation, power
+│   │   ├── research/          # Claim ledger, PRM/ART/CRT models, simulation, power
 │   │   ├── reports/           # JSON and HTML report generators
 │   │   ├── schemas/           # Pydantic v2 models
 │   │   ├── services/          # Business logic (pid_iqi, curriculum, safety, etc.)

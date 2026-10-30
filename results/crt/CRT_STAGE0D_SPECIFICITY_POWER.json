@@ -1,0 +1,202 @@
+{
+  "analysis": "stage0d_specificity_and_active_selection",
+  "config": {
+    "max_tests": 2,
+    "n_participants": 60,
+    "n_trials": 120,
+    "seed": 20261029
+  },
+  "decision": "CRT_STAGE0D_SPECIFICITY_PASS",
+  "note": "Simulation-only design checks. The diagnostic-versus-nondiagnostic contrast tests prediction specificity; active, algorithm-adaptive, and random-passive arms decompose active selection. Neither check is human evidence.",
+  "protocol": "ANIMUS-CRT-v1",
+  "selection": {
+    "analysis": "stage0d_active_selection_control",
+    "condition_summaries": {
+      "active": {
+        "accuracy": 0.486667,
+        "brier_score": 0.20558,
+        "confounded_test_rate": 0.0,
+        "d_prime_seen_imagined": 0.898234,
+        "expected_calibration_error": 0.07332,
+        "imagination_inflation_rate": 0.105178,
+        "insufficient_tests": 463,
+        "mean_crte_eig": 0.511676,
+        "mean_crte_meta": 0.547586,
+        "mean_evidence_resolution": 0.276445,
+        "mean_tests": 1.777361,
+        "n_trials": 7200,
+        "prediction_accuracy": 0.630226,
+        "prediction_ece": 0.031198,
+        "source_counts": {
+          "0": 1800,
+          "1": 1800,
+          "2": 1800,
+          "3": 1800
+        },
+        "test_counts": {
+          "0": 2267,
+          "1": 3092,
+          "2": 2374,
+          "3": 1314,
+          "4": 3750,
+          "5": 0
+        }
+      },
+      "algorithm": {
+        "accuracy": 0.578472,
+        "brier_score": 0.190868,
+        "confounded_test_rate": 0.0,
+        "d_prime_seen_imagined": 1.307796,
+        "expected_calibration_error": 0.088531,
+        "imagination_inflation_rate": 0.054299,
+        "insufficient_tests": 0,
+        "mean_crte_eig": 0.831354,
+        "mean_crte_meta": 0.84885,
+        "mean_evidence_resolution": 0.363179,
+        "mean_tests": 2,
+        "n_trials": 7200,
+        "prediction_accuracy": 0.644375,
+        "prediction_ece": 0.033936,
+        "source_counts": {
+          "0": 1800,
+          "1": 1800,
+          "2": 1800,
+          "3": 1800
+        },
+        "test_counts": {
+          "0": 3768,
+          "1": 0,
+          "2": 0,
+          "3": 3432,
+          "4": 7200,
+          "5": 0
+        }
+      },
+      "random_passive": {
+        "accuracy": 0.45,
+        "brier_score": 0.212904,
+        "confounded_test_rate": 0.16875,
+        "d_prime_seen_imagined": 0.897368,
+        "expected_calibration_error": 0.075816,
+        "imagination_inflation_rate": 0.090177,
+        "insufficient_tests": 0,
+        "mean_crte_eig": 0.274657,
+        "mean_crte_meta": 0.2999,
+        "mean_evidence_resolution": 0.253013,
+        "mean_tests": 2,
+        "n_trials": 7200,
+        "prediction_accuracy": 0.614375,
+        "prediction_ece": 0.031222,
+        "source_counts": {
+          "0": 1800,
+          "1": 1800,
+          "2": 1800,
+          "3": 1800
+        },
+        "test_counts": {
+          "0": 2393,
+          "1": 2398,
+          "2": 2414,
+          "3": 2400,
+          "4": 2365,
+          "5": 2430
+        }
+      }
+    },
+    "config": {
+      "max_tests": 2,
+      "n_participants": 60,
+      "n_trials": 120,
+      "seed": 20261029
+    },
+    "contrasts": {
+      "active_choice_gain": 0.036667,
+      "active_vs_algorithm": -0.091805,
+      "adaptive_design_gain": 0.128472
+    },
+    "decision": "CRT_STAGE0D_SELECTION_PASS",
+    "note": "Simulation-only decomposition of active choice, algorithm-adaptive selection, and random-passive exposure. Active selection is not identified by matched yoking.",
+    "protocol": "ANIMUS-CRT-v1"
+  },
+  "specificity": {
+    "analysis": "stage0d_prediction_specificity_control",
+    "condition_summaries": {
+      "diagnostic": {
+        "accuracy": 0.515,
+        "brier_score": 0.209535,
+        "confounded_test_rate": 0.0,
+        "d_prime_seen_imagined": 1.530787,
+        "expected_calibration_error": 0.086723,
+        "imagination_inflation_rate": 0.086124,
+        "insufficient_tests": 0,
+        "mean_crte_eig": 0.587544,
+        "mean_crte_meta": 0.62884,
+        "mean_evidence_resolution": 0.32055,
+        "mean_tests": 2,
+        "n_trials": 7200,
+        "prediction_accuracy": 0.627431,
+        "prediction_ece": 0.028423,
+        "source_counts": {
+          "0": 1800,
+          "1": 1800,
+          "2": 1800,
+          "3": 1800
+        },
+        "test_counts": {
+          "0": 7200,
+          "1": 7200,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "nondiagnostic": {
+        "accuracy": 0.355,
+        "brier_score": 0.207931,
+        "confounded_test_rate": 0.0,
+        "d_prime_seen_imagined": 0.621611,
+        "expected_calibration_error": 0.023143,
+        "imagination_inflation_rate": 0.2,
+        "insufficient_tests": 0,
+        "mean_crte_eig": 0.62639,
+        "mean_crte_meta": 0.0,
+        "mean_evidence_resolution": 0.158221,
+        "mean_tests": 2,
+        "n_trials": 7200,
+        "prediction_accuracy": 0.506736,
+        "prediction_ece": 0.013687,
+        "source_counts": {
+          "0": 1800,
+          "1": 1800,
+          "2": 1800,
+          "3": 1800
+        },
+        "test_counts": {
+          "0": 7200,
+          "1": 7200,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      }
+    },
+    "config": {
+      "max_tests": 2,
+      "n_participants": 60,
+      "n_trials": 120,
+      "seed": 20261029
+    },
+    "contrasts": {
+      "accuracy_gain": 0.16,
+      "brier_gain": -0.001604,
+      "calibration_gain": -0.06358,
+      "prediction_accuracy_diagnostic": 0.627431,
+      "prediction_accuracy_nondiagnostic": 0.506736
+    },
+    "decision": "CRT_STAGE0D_SPECIFICITY_PASS",
+    "note": "Simulation-only specificity check. Both arms use the same fixed test sequence, participants, confidence report, cost, and time; only the prediction content differs. The non-diagnostic prediction is independent of source. A diagnostic advantage is required before a human specificity claim is allowed.",
+    "protocol": "ANIMUS-CRT-v1"
+  }
+}

@@ -637,7 +637,39 @@ boundary correctly.
 
 ---
 
-*Last updated: 2026-10-26 - RISK-055 procedural-world overclaiming*
+## RISK-056: Stage 0D theory signatures can be mistaken for human model evidence
+
+**Risk:** The five-model signature tournament uses hand-set design signatures and a nearest-signature
+classifier. A high balanced accuracy could be read as evidence that `crt_meta_eig` is the true human
+model, or that the models are identifiable in real data. Neither follows. The specificity control also
+uses a fixed test sequence, so it isolates prediction content but does not test active selection.
+**Impact:** High for theoretical overclaiming.
+**Mitigation:** Every artifact and doc calls the tournament a signature-separability analysis, not model
+recovery or model validation. Human model comparison remains a Stage 1 analysis with held-out
+participants. Active selection is estimated separately against random-passive exposure. The claim
+ceiling is unchanged, and no claim is linked to the Stage 0D gates.
+**Status:** Mitigated in code notes, docs, and registry language; the human comparison has not been run.
+
+---
+
+## RISK-057: Oracle prediction and prediction/outcome double counting inflated CRT results
+
+**Risk:** The Stage 0C/0D simulator predicted outcomes from the true source and then counted the
+prediction as an independent source likelihood. This can inflate prediction accuracy, source accuracy,
+and the diagnostic-specificity contrast. A reader could mistake the resulting PASS for human evidence.
+**Impact:** High for construct validity and for any claim based on Stage 0C/0D.
+**Mitigation:** Stage 0E replaces oracle prediction with a belief-based posterior-predictive readout and
+uses outcome-only source updating. The oracle path is retained only as a benchmark; `oracle_inflation`
+is reported (0.101). The Stage 0D specificity gate is superseded by a belief-based audit and downgraded
+to `LIMITED`; the historical artifact is preserved. New code defaults to `prediction_source="belief"` and
+`source_update="outcome"`. Tests replay the observed outcomes to verify that the final posterior equals
+the outcome-only posterior. The dual-prediction and policy gates are also `LIMITED`.
+**Status:** Mitigated in code, tests, registry, and docs; the repaired model still requires human
+calibration and full hierarchical SBC.
+
+---
+
+*Last updated: 2026-10-30 - RISK-057 oracle prediction and double counting*
 
 *Prior update: 2026-10-25 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
 RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits, RISK-054 generated-skybox

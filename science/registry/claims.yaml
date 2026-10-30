@@ -285,15 +285,17 @@ claims:
   - claim_id: claim.counterfactual_reality_testing_measurement
     statement: >-
       Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence
-      of a source-diagnostic test and uses prediction error to revise a seen/imagined/described/new
-      attribution, with reported uncertainty and explicit low-information states.
+      of a source-diagnostic test and uses the observed outcome to revise a
+      seen/imagined/described/new attribution, with reported uncertainty and explicit low-information
+      states. The prediction is a belief-based readout and policy signal, not independent source
+      evidence.
     status: UNVALIDATED
     ceiling: L1_BEHAVIORAL_ASSISTED
     gate_refs: []
     evidence: []
     n: null
     effect: null
-    uncertainty: "Stage 0C specification and simulation only; no human reliability or validity data"
+    uncertainty: "Stage 0E simulation only; specificity and policy gates LIMITED; no human reliability or validity data"
     forbidden_interpretations:
       - "Validated reality-testing instrument"
       - "Measures imagery strength"
@@ -302,11 +304,14 @@ claims:
       - "Decodes imagined content"
       - "Improves reality testing"
       - "First or revolutionary"
-    last_reviewed: "2026-10-29"
+    last_reviewed: "2026-10-30"
     notes: >-
-      Stage 0C adds the forward-model extension, a deterministic simulator, recovery and power checks,
-      and a preregistration draft. The claim remains UNVALIDATED until a registered study passes
-      reliability, invariance, incremental-validity, discriminant, and prediction-ablation gates.
+      Stage 0E repairs oracle prediction and prediction/outcome double counting. The Stage 0D
+      diagnostic-specificity advantage does not reproduce under belief-based prediction (source
+      accuracy 0.400; gain 0.026; diagnostic prediction accuracy 0.505), so the specificity gate is
+      LIMITED. Dual prediction and normative meta-EIG are also LIMITED. The claim remains UNVALIDATED
+      until a registered study passes reliability, invariance, incremental-validity, discriminant, and
+      prediction-ablation gates.
 
   - claim_id: claim.counterfactual_reality_testing_training
     statement: >-

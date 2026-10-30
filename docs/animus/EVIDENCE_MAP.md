@@ -79,16 +79,19 @@ Design decisions that follow:
 
 ## Counterfactual Reality Testing addendum
 
-This addendum covers the Stage 0C CRT extension. It is a design aid, not a systematic review.
+This addendum covers the Stage 0C and Stage 0D CRT extensions. It is a design aid, not a systematic
+review.
 
 | Claim | Evidence status | What CRT may say | What it must not say |
 |---|---|---|---|
-| Reality monitoring involves more than a single sensory cue | Review argues for higher-order evaluation of first-order signals (Dijkstra et al., 2022) | Predict a test consequence and compare prediction with outcome | "We have identified the reality monitor" |
+| Reality monitoring involves more than a single sensory cue | Review argues for higher-order evaluation of first-order signals (Dijkstra, Kok & Fleming, 2022) | Predict a test consequence and compare prediction with outcome | "We have identified the reality monitor" |
+| A higher-order precision model can explain reality monitoring | Formal account and preprint (Dijkstra & Fleming, 2026 preprint; Dijkstra, Fleming & Shea, 2026) | Treat it as the primary competitor and test incremental validity | "CRT has replaced the higher-order account" |
 | Memory precision is linked to source misattribution | Empirical association (Kwon et al., 2022) | Estimate prediction precision and source attribution separately | "Prediction precision is a diagnostic marker" |
 | People track the epistemic status of counterfactual alternatives | Experimental evidence (Espino & Byrne, 2021) | Ask whether the predicted outcome was real or imagined | "CRT reads counterfactual content" |
-| Counterfactual comparison informs agency | Experimental evidence (Kulakova et al., 2017) | Include agency value in the policy model | "CRT measures free will" |
+| Counterfactual comparison informs agency | Experimental evidence (Kulakova et al., 2017; Yavuz et al., 2025) | Include agency value in the policy model; treat intervention as a separate extension | "CRT measures free will" |
 | Counterfactual imagination can contaminate source memory | Experimental evidence (Dhammapeera et al., 2024; Libby, 2003) | Keep the prediction sparse and experimenter-defined | "Rich counterfactual imagination is safe" |
 | Forward models support imagery and sensory attenuation | Empirical and theoretical work (Okanou et al., 2026; Mifsud et al., 2018; Tian & Poeppel, 2010) | Use a forward-model precision parameter | "Imagery is a forward model" |
+| Metacognitive sensitivity predicts information-search quality | Experimental evidence (Hu et al., 2026) | Test meta-EIG against model-free search quality and working memory | "CRT measures metacognitive ability" |
 | Corollary discharge is associated with reality-monitoring deficits | Clinical evidence (Samantaray et al., 2025) | Motivate a future clinical collaboration | "CRT diagnoses psychosis" |
 | Confidence alone distinguishes imagination from reality | Contradicted by Dijkstra et al. (2024) | Do not use confidence as the sole index | "Confidence proves reality" |
 | Prospective counterfactual prediction with meta-EIG scoring is established | No indexed report found in a non-exhaustive search | Treat as a design hypothesis and test it | "First" / "revolutionary" / "proven" |
@@ -105,6 +108,12 @@ Design decisions that follow:
 22. **Matched yoking cannot identify active-selection superiority.** The yoked arm receives the same
     test distribution, so accuracy and calibration differences are expected to be near zero. A
     random-passive control is required before an active-selection claim.
+23. **Specificity requires a matched non-diagnostic prediction.** Generic engagement or a second
+    evidence channel must not be able to produce the same advantage.
+24. **The higher-order precision account is the primary competitor.** A CRT result that does not add
+    out-of-sample value beyond precision and confidence is a measurement result, not a new theory.
+25. **Test likelihoods are calibrated before confirmation.** The human calibration sample freezes the
+    table; Stage 0D only simulates the design.
 
 ## Open questions
 
@@ -153,10 +162,22 @@ experimental.
 - Butler, A. J., et al. (2012). MIQ-RS. https://doi.org/10.1155/2012/497289
 - Johnson, M. K., Hashtroudi, S., & Lindsay, D. S. (1993). Source monitoring.
   *Psychological Bulletin*. https://doi.org/10.1037/0033-2909.114.1.3
-- Dijkstra, N., Kok, P., & Fleming, S. M. (2022). Perceptual reality monitoring.
-  *Neuroscience & Biobehavioral Reviews*. https://doi.org/10.1016/j.neubiorev.2022.104557
-- Dijkstra, N., & Fleming, S. M. (2025). Perceptual reality monitoring as higher-order inference on
-  sensory precision. Preprint. https://doi.org/10.31234/osf.io/36xdz_v2
+- Dijkstra, N., Kok, P., & Fleming, S. M. (2022). Perceptual reality monitoring: Neural mechanisms
+  dissociating imagination from reality. *Neuroscience & Biobehavioral Reviews*.
+  https://doi.org/10.1016/j.neubiorev.2022.104557
+- Dijkstra, N., & Fleming, S. M. (2026). Distinguishing imagery and perception in generative models
+  of brain function. Preprint. https://doi.org/10.31234/osf.io/36xdz_v4
+- Dijkstra, N., Fleming, S. M., & Shea, N. (2026). Why do we need imagination-reality monitoring?
+  *Neuroscience of Consciousness*. https://doi.org/10.1093/nc/niag048
+- Coenen, A., Rehder, B., & Gureckis, T. M. (2015). Strategies to intervene on causal systems are
+  adaptively selected. *Cognitive Psychology*.
+  https://doi.org/10.1016/j.cogpsych.2015.02.004
+- Gong, T., Gerstenberg, T., Mayrhofer, R., & Bramley, N. R. (2023). Active causal structure learning
+  in continuous time. *Cognitive Psychology*. https://doi.org/10.1016/j.cogpsych.2022.101542
+- Yavuz, M., et al. (2025). Rational choice and counterfactual agency.
+  *Cognition*. https://doi.org/10.1016/j.cognition.2025.106062
+- Lavallé, L., et al. (2023). Reality and self-monitoring: a meta-analysis.
+  *Human Brain Mapping*. https://doi.org/10.1002/hbm.26387
 - Schulz, L., Fleming, S. M., & Dayan, P. (2023). Metacognitive computations for information search.
   *Psychological Review*. https://doi.org/10.1037/rev0000401
 - Hu, X., et al. (2026). Metacognitive sensitivity predicts the quality of information search.

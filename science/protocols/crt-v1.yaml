@@ -1,18 +1,21 @@
 protocol_id: ANIMUS-CRT-v1
-version: 0.1.0
+version: 0.3.0
+stage: 0E
 status: draft
 claim_ceiling: L1_BEHAVIORAL_ASSISTED
 registered: false
 registration_note: >-
-  Stage 0C specification only. No human data may be collected under this protocol until the
-  preregistration is registered and ethics approval is documented.
+  Stage 0C/0D/0E specification and simulation only. No human data may be collected under this
+  protocol until the preregistration is registered and ethics approval is documented.
 
 construct:
   name: counterfactual_reality_testing
+  provisional_name: prospective_reality_testing
   definition: >-
     The accuracy, calibration, and efficiency with which a person prospectively predicts the
-    consequence of a source-diagnostic test and uses prediction error to revise a seen, imagined,
-    described, or new attribution.
+    consequence of a source-diagnostic test and uses the observed outcome to revise a seen, imagined,
+    described, or new attribution. The prediction is a belief-based readout and policy signal, not an
+    independent source likelihood.
   not:
     - neural_decoding
     - diagnostic_classification
@@ -90,16 +93,52 @@ design:
     timing: before_outcome_reveal
     report_confidence: true
     prediction_is_not_a_source_judgment: true
+    prediction_source: belief
+    source_update: outcome_only
+    prediction_format: single
+    dual_hypothesis_format: available
+    oracle_benchmark_only: true
+    oracle_inflation_reporting_required: true
+
+specificity_substudy:
+  stage: 1C
+  n: 160
+  design: within_subject_fixed_sequence
+  arms: [active_predict_diagnostic, active_predict_nondiagnostic]
+  primary_outcome: source_accuracy
+  controls: [fixed_test_sequence, prediction_format, confidence_report, cost, time]
+  status: limited_after_stage0e
+  note: >-
+    The non-diagnostic prediction is source-neutral by construction. The Stage 0D diagnostic advantage
+    did not reproduce under belief-based prediction (Stage 0E source accuracy gain 0.026; diagnostic
+    prediction accuracy 0.505). A null or negative diagnostic contrast rejects the
+    counterfactual-prediction interpretation.
+
+selection_substudy:
+  stage: 1B
+  n: 160
+  design: within_subject_randomized_blocks
+  arms: [active_predict, random_passive, algorithm_adaptive]
+  primary_contrast: active_minus_random_passive
+  adaptive_design_contrast: algorithm_minus_random_passive
+  note: >-
+    Matched-sequence yoking cannot identify active-selection superiority. Algorithm-adaptive
+    selection is a benchmark, not a failed control.
 
 model:
   evidence_model: bayesian_source_posterior_with_forward_model
   evidence_gain: logit_scaled
-  prediction_model: logit_scaled_forward_model
+  prediction_model: belief_posterior_predictive
+  prediction_formula: "sigmoid(pi * logit(sum_s m_i(s) * p_as))"
+  source_update: outcome_only
+  oracle_benchmark: true
+  oracle_benchmark_note: "Oracle prediction is retained only to quantify inflation; it is not a human model."
+  dual_hypothesis_model: p_seen_and_p_imagined_readout
   policy: normalized_meta_expected_information_gain_minus_cost
   utility: "beta * (EIG_meta / max(EIG_meta) - lambda * cost - gamma * complexity) + alpha * agency"
   stopping: "softmax_includes_tau"
   source_choice: "MAP plus guess and externalization mixture"
-  baselines: [greedy_meta_eig, random_meta_eig, greedy_eig, positive_testing, fixed, heuristic, random]
+  baselines: [greedy_meta_eig, random_meta_eig, greedy_eig, positive_testing, fixed, heuristic, random, cost_only]
   parameters: [d, pi, b_pi, beta, lambda, gamma, tau, guess, bias, mix, alpha, lapse]
   crte_meta:
     numerator: human_meta_eig_minus_random_meta_eig
@@ -115,6 +154,7 @@ model:
 estimands:
   primary:
     - prediction_advantage
+    - specificity_advantage
     - crte_meta
     - prediction_ece
     - d_prime_seen_imagined
@@ -122,6 +162,7 @@ estimands:
   secondary:
     - active_calibration_advantage
     - active_accuracy_advantage
+    - active_selection_advantage
     - crte_eig
     - criterion_c
     - externalization_rate
@@ -133,6 +174,10 @@ estimands:
     - cost_sensitivity
     - mutual_information_test_source
     - meta_d_prime
+    - prediction_accuracy_seen
+    - prediction_accuracy_imagined
+    - mean_counterfactual_discrepancy
+    - mean_prediction_error
   forbidden:
     - composite_reality_score
     - diagnosis
@@ -143,8 +188,9 @@ estimands:
 
 reliability:
   model: ICC(2,1)
-  target: 0.75
-  lower_ci_target: 0.60
+  target: 0.80
+  lower_ci_target: 0.70
+  individual_use_target: 0.90
   sem: true
   mdc95: true
   occasion_pair_days: [0, 14]
@@ -152,12 +198,12 @@ reliability:
 validation:
   framework: COSMIN
   content_validity_n: 24
-  target_n: 180
+  target_n: 240
   pilot_n: 40
   strata:
-    aphantasia_or_hypophantasia: 60
-    typical: 60
-    hyperphantasia: 60
+    aphantasia_or_hypophantasia: 80
+    typical: 80
+    hyperphantasia: 80
   convergent: [sim_d_prime, sim_meta_d_prime, vviq2, siaq]
   discriminant: [beads_draws, working_memory]
   invariance:
@@ -170,19 +216,34 @@ gates:
     comprehension_min: 0.90
     serious_adverse_events_max: 0
   reliability:
-    icc_min: 0.75
-    lower_ci_min: 0.60
+    icc_min: 0.80
+    lower_ci_min: 0.70
   prediction:
     advantage_min: 0.03
     crte_meta_min: 0.30
     prediction_ece_max: 0.15
     fluency_choice_max: 0.10
+  specificity:
+    status: limited_after_stage0e
+    diagnostic_accuracy_gain_min: 0.02
+    diagnostic_prediction_accuracy_min: 0.55
+    fixed_sequence_required: true
+    historical_oracle_artifact: results/crt/CRT_STAGE0D_SPECIFICITY_POWER.json
+    belief_audit_artifact: results/crt/CRT_STAGE0E_SPECIFICITY_AUDIT.json
   active_selection:
     status: exploratory
+    stage: 1B
     matched_yoking_cannot_identify_superiority: true
     random_passive_control_required_for_superiority: true
+    algorithm_adaptive_benchmark: true
   policy:
+    status: limited_after_stage0e
     out_of_sample_advantage_required: true
+    cost_only_baseline_required: true
+  counterfactual:
+    status: limited_after_stage0e
+    dual_prediction_advantage_required: true
+    provisional_fallback_name: prospective_reality_testing
   incremental_validity:
     required: true
   discriminant:
@@ -208,3 +269,28 @@ stage0c:
   note: >-
     Simulation-only design gates. A PASS or REVIEW does not validate the task in humans and does not
     authorize a measurement claim.
+
+stage0d:
+  theory_artifact: results/crt/CRT_STAGE0D_MODEL_TOURNAMENT.json
+  specificity_artifact: results/crt/CRT_STAGE0D_SPECIFICITY_POWER.json
+  gtheory_artifact: results/crt/CRT_STAGE0D_GTHEORY.json
+  calibration_artifact: results/crt/CRT_STAGE0D_CALIBRATION.json
+  status: historical_oracle_path
+  note: >-
+    Simulation-only theory and design controls. The specificity result was generated with oracle
+    prediction and prediction/outcome double counting; it is retained as historical evidence only.
+
+stage0e:
+  model_repair_artifact: results/crt/CRT_STAGE0E_MODEL_REPAIR.json
+  specificity_audit_artifact: results/crt/CRT_STAGE0E_SPECIFICITY_AUDIT.json
+  counterfactual_artifact: results/crt/CRT_STAGE0E_COUNTERFACTUAL.json
+  policy_artifact: results/crt/CRT_STAGE0E_POLICY.json
+  psychometric_artifact: results/crt/CRT_STAGE0E_PSYCHOMETRIC.json
+  model_repair_gate: ANIMUS_P5_CRT_MODEL_REPAIR
+  counterfactual_gate: ANIMUS_P5_CRT_COUNTERFACTUAL
+  policy_gate: ANIMUS_P5_CRT_POLICY
+  psychometric_gate: ANIMUS_P5_CRT_PSYCHOMETRIC
+  note: >-
+    Belief-based prediction with outcome-only source updating. Oracle inflation 0.101. Specificity,
+    dual-prediction, and policy claims are LIMITED; psychometric facets and model repair pass in
+    simulation. No human study is authorized by these results.

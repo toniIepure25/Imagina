@@ -2,7 +2,7 @@
 
 ## Status
 
-- **Stage:** 0C, specification and simulation. No human data have been collected.
+- **Stage:** 0D, specification, simulation, and design controls. No human data have been collected.
 - **Claim ceiling:** `L1_BEHAVIORAL_ASSISTED`.
 - **Canonical claims:** `claim.counterfactual_reality_testing_measurement` (UNVALIDATED),
   `claim.counterfactual_reality_testing_training` (BLOCKED), and
@@ -12,13 +12,19 @@
   [`results/crt/CRT_STAGE0_SIMULATION.json`](../../results/crt/CRT_STAGE0_SIMULATION.json),
   [`results/crt/CRT_MODEL_RECOVERY.json`](../../results/crt/CRT_MODEL_RECOVERY.json), and
   [`results/crt/CRT_STAGE0_POWER.json`](../../results/crt/CRT_STAGE0_POWER.json).
+- **Stage 0D evidence:**
+  [`results/crt/CRT_STAGE0D_MODEL_TOURNAMENT.json`](../../results/crt/CRT_STAGE0D_MODEL_TOURNAMENT.json),
+  [`results/crt/CRT_STAGE0D_SPECIFICITY_POWER.json`](../../results/crt/CRT_STAGE0D_SPECIFICITY_POWER.json),
+  [`results/crt/CRT_STAGE0D_GTHEORY.json`](../../results/crt/CRT_STAGE0D_GTHEORY.json), and
+  [`results/crt/CRT_STAGE0D_CALIBRATION.json`](../../results/crt/CRT_STAGE0D_CALIBRATION.json).
 - **Preregistration:** draft in [`docs/program/CRT_PREREGISTRATION.md`](../program/CRT_PREREGISTRATION.md);
   not yet registered.
 
 This document specifies a behavioural instrument for **Counterfactual Reality Testing**: how a person
-predicts the consequence of a source-diagnostic test before seeing it, and uses the resulting
-prediction error to revise a source attribution. It is not a decoder, a diagnostic test, a measure of
-imagery strength, or a clinical instrument.
+predicts the consequence of a source-diagnostic test before seeing it, and uses the observed outcome to
+revise a source attribution. The prediction is a belief-based readout and policy signal, not independent
+source evidence. It is not a decoder, a diagnostic test, a measure of imagery strength, or a clinical
+instrument.
 
 ## Why this construct
 
@@ -56,11 +62,24 @@ a meta-EIG policy. This is a design hypothesis, not a priority claim. The words 
 person:
 
 1. predicts the consequence of a source-diagnostic test before observing it;
-2. uses the prediction and the observed outcome to revise a source attribution;
-3. selects further tests according to their expected **meta-information** value; and
+2. uses the observed outcome to revise a source attribution, while the prediction serves as a readout
+   and policy signal rather than independent evidence;
+3. selects further tests according to their expected information value, with meta-EIG treated as a
+   benchmark policy rather than a validated normative account; and
 4. reports confidence that tracks both source accuracy and prediction accuracy.
 
 The instrument reports separate axes. It does not combine them into a score.
+
+### Construct boundary
+
+The primary reality-monitoring estimand is **seen versus imagined**. The four-source accuracy is a
+broader source-monitoring estimand. The `described` and `new` sources are controls for verbal encoding
+and guessing; they must not be used to broaden the word "reality" beyond the experimental sources.
+
+CRT also does not identify a single dedicated reality signal. The leading higher-order precision account
+(Dijkstra, Kok & Fleming, 2022; Dijkstra & Fleming, 2026 preprint) predicts that no single first-order
+cue is sufficient. CRT's prediction term must therefore show incremental value beyond precision,
+confidence, `d'`, and outcome EIG; otherwise it is a measurement operationalization, not a new theory.
 
 | Axis | Definition | Primary metric | Status |
 | --- | --- | --- | --- |
@@ -70,7 +89,7 @@ The instrument reports separate axes. It does not combine them into a score.
 | Meta-information efficiency | Quality of selected tests relative to a computable meta-EIG baseline | `CRTE_meta` | Primary |
 | Outcome-information efficiency | Quality of selected tests relative to an outcome-EIG baseline | `CRTE_eig` | Secondary |
 | Imagination inflation | Externalization after prediction-consistent imagined experience | `imagination_inflation_rate` | Secondary |
-| Active selection | Selection benefit relative to a passive control | Calibration/accuracy contrast | Exploratory in Stage 0C |
+| Active selection | Selection benefit relative to a passive control | Calibration/accuracy contrast | Exploratory in Stage 0C; controlled in Stage 0D |
 
 ## Task
 
@@ -129,9 +148,15 @@ The Stage 1 design is a 2x2 plus an observational baseline:
   prediction contrast is `active_predict` minus `active_intervene`.
 
 Stage 0C found that **matched-sequence yoking cannot identify an active-selection superiority effect**
-on accuracy or calibration: both arms receive the same test distribution. The active-selection
-contrast is therefore exploratory in this protocol. A random-passive control matched on the number of
-tests is required before any active-selection claim.
+on accuracy or calibration: both arms receive the same test distribution. Stage 0D therefore adds two
+controls:
+
+- a matched **non-diagnostic prediction** arm, to separate counterfactual prediction from generic
+  engagement or a second evidence channel;
+- **random-passive** and **algorithm-adaptive** arms, to separate active choice from adaptive design.
+
+The active-selection contrast remains exploratory until a human study uses these controls. No claim of
+active-selection superiority is authorized by the Stage 0C or Stage 0D simulations.
 
 ### Encoding
 
@@ -158,30 +183,29 @@ source confidence, latency, and an optional abstention flag.
 
 ## Generative model
 
-For person `i`, source `s` in `(seen, imagined, described, new)`, test `a`, prior `pi_s`, test
-likelihood `p_as`, and outcome `O` in `{0,1}`:
+For person `i`, source `s` in `(seen, imagined, described, new)`, test `a`, current source posterior
+`m_i(s)`, prior `pi_s`, test likelihood `p_as`, and outcome `O` in `{0,1}`:
 
 ```text
 O | S=s, A=a ~ Bernoulli(sigmoid(d_i * logit(p_as)))
-P | S=s, A=a ~ Bernoulli(sigmoid(pi_i * logit(p_as)))
+q_i(a) = sum_s m_i(s) * p_as
+P | A=a, m_i ~ Bernoulli(sigmoid(pi_i * logit(q_i(a))))
 ```
 
-`d_i` is evidence gain; `pi_i` is prediction precision. When `pi_i = 0`, the prediction is independent
-of the source and CRT reduces to ART/AgRT. This nested relation is a testable model constraint, not a
-claim that people literally compute logits.
+`d_i` is evidence gain; `pi_i` is prediction-readout precision. The prediction is a **belief-based
+posterior predictive**, not a likelihood conditioned on the hidden source. When `pi_i = 0`, the
+prediction is source-neutral and carries no diagnostic content.
 
-The source posterior after a prediction-outcome pair is:
+The source posterior after an outcome is:
 
 ```text
-log p(S | P, O, A) proportional to log prior
-  + log P(P | S, A; pi_i)
-  + log P(O | S, A; d_i)
-  + b_pi * I(P = O) * m_i * I(S = seen)
+log p(S | O, A) proportional to log prior_s + log P(O | S, A; d_i)
 ```
 
-`b_pi` is the **imagination-inflation bias**: a prediction-consistent outcome receives extra weight
-for the `seen` source. `m_i` is prediction confidence. The bias is a measurement parameter, not a
-clinical process claim.
+The prediction does **not** enter the source likelihood. Counting a prediction generated from `m_i` as
+independent evidence would double count. The `b_pi` imagination-inflation bias is applied only at the
+final source-choice stage, not to the sequential source posterior. The oracle variant is a benchmark
+only and is never the default for a human-facing simulation.
 
 ### Meta-information gain
 
@@ -191,13 +215,15 @@ Outcome EIG is:
 EIG(a) = H(S) - E_{O|a}[H(S | O, a)]
 ```
 
-Meta-EIG includes the prediction as a second signal:
+The simulator's `EIG_meta` is a **design-policy benchmark** computed from the experimenter's
+source-conditional likelihood table. It scores tests that are both outcome-diagnostic and predictable
+under the forward model. It is not a second source likelihood and does not update `S`. For a purely
+belief-based prediction, `I(P; S | m_i) = 0`; the policy cannot be justified as source information.
+Stage 0E therefore treats the normative meta-EIG claim as `LIMITED` and compares it with cost-only and
+other policies.
 
-```text
-EIG_meta(a) = H(S) - E_{P,O|a}[H(S | P, O, a)]
-```
-
-Counterfactual discrimination is the mutual information between prediction and source:
+Counterfactual discrimination is the likelihood-table mutual information used to construct the test
+menu:
 
 ```text
 CD(a) = I(P; S | A=a)
@@ -301,21 +327,21 @@ people use meta-EIG.
   outcome-only active testing, with a standardized difference of at least 0.20 in the human study.
 - **H2 (meta-EIG policy):** a meta-EIG-cost policy predicts test choices better than outcome-EIG,
   positive-testing, fixed, heuristic, or random policies out of sample.
-- **H3 (reliability):** `CRTE_meta` has a 14-day ICC(2,1) of at least 0.75, with a lower 95% bound
-  above 0.60.
+- **H3 (reliability):** `CRTE_meta` has a 14-day ICC(2,1) of at least 0.80, with a lower 95% bound
+  above 0.70 for group-level use. Individual-level use requires ICC >= 0.90 and is not planned.
 - **H4 (prediction calibration):** prediction confidence tracks prediction correctness, with
   `prediction_ece <= 0.15`.
 - **H5 (imagination inflation):** prediction-consistent imagined trials show a higher seen-attribution
   rate than prediction-inconsistent imagined trials, controlling for source confidence and response
   bias.
-- **H6 (incremental validity):** `CRTE_meta` predicts source accuracy or calibration beyond `d_prime`
-  and `meta_d_prime`.
+- **H6 (incremental validity):** `CRTE_meta` predicts source accuracy or calibration beyond `d_prime`,
+  `meta_d_prime`, and a higher-order precision summary.
 - **H7 (discriminant):** `CRTE_meta` is distinct from beads-task draws-to-decision (r < 0.70).
 - **H8 (exploratory):** `CRTE_meta` relates to imagery vividness and schizotypy in a non-clinical
   sample. No clinical or continuum claim.
-- **H9 (exploratory active selection):** active selection improves calibration relative to a
-  matched-sequence yoked control. Stage 0C predicts a near-null; a random-passive control is required
-  before a superiority claim.
+- **H9 (exploratory active selection):** active selection improves accuracy relative to a
+  random-passive control matched on test count and time. Matched-sequence yoking cannot test this.
+  Stage 0D provides the control design; it does not provide human evidence.
 
 ## Reliability and validity plan
 
@@ -341,8 +367,9 @@ and `bias`. The artifacts report:
 
 - The prediction contrast is positive and large in simulation: `active_predict` exceeds
   `active_intervene` in source accuracy by about 0.14, and `active_predict` accuracy is about 0.48.
+  **This result used oracle prediction and double counting; Stage 0E shows it is inflated.**
 - `CRTE_meta` is about 0.54 for the meta-EIG policy, and prediction calibration is about 0.03 ECE,
-  within the design gate.
+  within the design gate. The Stage 0E repaired model does not reproduce the oracle specificity result.
 - The fluency trap rate is 0.00 for the rational meta-EIG policy.
 - The active-versus-yoked **calibration** contrast is about -0.004 under matched-sequence yoking. This
   is a structural identification result, not a human null: the yoked arm receives the same test
@@ -356,6 +383,51 @@ The Stage 0C simulation decision is `CRT_STAGE0_SIMULATION_REVIEW` because the a
 calibration gate is not met under matched yoking. The recovery and power decisions are
 `CRT_STAGE0_RECOVERY_PASS` and `CRT_STAGE0_POWER_PASS`. A REVIEW is a design result, not a failed
 implementation and not human evidence.
+
+## Stage 0D findings
+
+Stage 0D adds a theory tournament and design controls. It is simulation-only and does not authorize a
+human claim. The full protocol is in
+[`docs/program/CRT_STAGE0D_PROTOCOL.md`](../program/CRT_STAGE0D_PROTOCOL.md).
+
+- **Model signatures:** five models are separable at balanced accuracy 0.90 with 0.03 noise. The weakest
+  diagonal is the heuristic model at 0.775. This is signature separability, not human model evidence.
+- **Specificity:** under the historical oracle path, diagnostic prediction improves source accuracy by
+  0.160 over a matched non-diagnostic prediction. **This does not reproduce under belief-based
+  prediction:** Stage 0E source accuracy is 0.400 vs 0.374 (gain 0.026) and diagnostic prediction
+  accuracy is 0.505. The specificity gate is `LIMITED`; the oracle artifact is historical.
+- **Active selection:** active choice beats random-passive exposure by 0.037 under the historical oracle
+  path; algorithm-adaptive selection beats random-passive by 0.128 and beats active choice by 0.092.
+  The Stage 0E policy competition is `LIMITED` because meta-EIG loses to the best alternative by 0.012.
+- **Calibration:** four tests retain a strong simulated seen-versus-imagined likelihood ratio; the
+  fluency trap remains non-diagnostic.
+- **G-theory:** the simulated design reaches relative reliability 0.938 at two occasions. This is a
+  planning illustration, not a human reliability estimate.
+
+The specificity artifact's Brier and calibration gains are negative. The gate uses accuracy because the
+non-diagnostic prediction is constructed to be neutral, not to match the confidence distribution. Brier
+and ECE are reported as descriptive secondary checks.
+
+All Stage 0D gates are `PASS` except the pre-existing Stage 0C active-selection `REVIEW`, which remains
+the honest baseline. None of the Stage 0D results is human evidence. The Stage 0D specificity result is
+now historical; Stage 0E supersedes it with a belief-based audit and downgrades the gate to `LIMITED`.
+
+## Stage 0E findings
+
+Stage 0E repairs oracle prediction and prediction/outcome double counting. The full protocol is in
+[`docs/program/CRT_STAGE0E_PROTOCOL.md`](../program/CRT_STAGE0E_PROTOCOL.md).
+
+- **Model repair:** oracle prediction advantage 0.128 vs belief 0.026; oracle inflation 0.101. The
+  source is updated from the outcome only. Posterior PIT calibration passes.
+- **Specificity:** diagnostic source accuracy 0.400 vs 0.374 (gain 0.026); diagnostic prediction
+  accuracy 0.505 vs 0.494. Gate `LIMITED`.
+- **Dual prediction:** mean discrepancy 0.476, but no accuracy gain over single prediction on a fixed
+  sequence. Gate `LIMITED`; the construct is called **prospective reality testing** until a dual
+  advantage is demonstrated.
+- **Policy:** meta-EIG beats cost-only by 0.060 but loses to the best alternative by 0.012. Gate
+  `LIMITED`; the normative claim is descriptive only.
+- **Test facets:** minimum relative reliability 0.843; psychometric gate `PASS` in simulation only.
+- No human data were collected; training and clinical claims remain `BLOCKED`.
 
 ## Boundaries
 

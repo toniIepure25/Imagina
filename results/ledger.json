@@ -109,6 +109,66 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p5.crt.calibration",
+      "authority": "canonical",
+      "bytes": 3419,
+      "gate_id": "ANIMUS_P5_CRT_CALIBRATION",
+      "note": "Simulated Beta-Binomial calibration with 40 participants and 20 trials per source-test cell. Four tests retain a strong seen-versus-imagined likelihood ratio; the fluency trap remains non-diagnostic. A human calibration sample is still required before confirmatory data.",
+      "path": "results/crt/CRT_STAGE0D_CALIBRATION.json",
+      "raw_status": "CRT_STAGE0D_CALIBRATION_PASS",
+      "sha256": "e27dc33439d19b89e428fdb4272c687af7e7be103b985b687ff6a142c1b80373",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.counterfactual",
+      "authority": "canonical",
+      "bytes": 3902,
+      "gate_id": "ANIMUS_P5_CRT_COUNTERFACTUAL",
+      "note": "Dual-hypothesis prediction with 24 simulated participants and 60 trials. Mean perceived diagnosticity is 0.476, but dual prediction does not improve accuracy over single prediction on the fixed sequence (gain 0.0). The counterfactual label is not yet earned; the construct remains prospective reality testing.",
+      "path": "results/crt/CRT_STAGE0E_COUNTERFACTUAL.json",
+      "raw_status": "CRT_STAGE0E_COUNTERFACTUAL_REVIEW",
+      "sha256": "477568efd5c11da21fa7794594608ee9f163fb2334d20f395d753c6a03a4a03a",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.gtheory",
+      "authority": "canonical",
+      "bytes": 1932,
+      "gate_id": "ANIMUS_P5_CRT_GTHEORY",
+      "note": "Simulated person-by-occasion variance components and four-point decision study. Relative reliability is 0.938 at two occasions; the occasion component is zero in this draw. The N=240 power check for true ICC 0.80 and lower bound 0.70 is 0.949. These are planning illustrations, not human reliability estimates.",
+      "path": "results/crt/CRT_STAGE0D_GTHEORY.json",
+      "raw_status": "CRT_STAGE0D_GTHEORY_PASS",
+      "sha256": "d50038a0cbd58732ba0409467dfd217e472aca80153ee3005ed3956dfc5ae7fc",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.model_repair",
+      "authority": "canonical",
+      "bytes": 2669,
+      "gate_id": "ANIMUS_P5_CRT_MODEL_REPAIR",
+      "note": "Stage 0E oracle audit with 24 simulated participants and 60 trials. Oracle prediction advantage is 0.128 versus 0.026 under belief-based prediction, an oracle inflation of 0.101. The source is updated from the outcome only. Nested posterior PIT calibration passes (chi-square 15.92, critical 21.67). The historical oracle specificity gate is downgraded separately.",
+      "path": "results/crt/CRT_STAGE0E_MODEL_REPAIR.json",
+      "raw_status": "CRT_STAGE0E_MODEL_PASS",
+      "sha256": "4b4dc2153f97b07bcbd9d4424bf76dbba2f4196714efb050f4fba82cc8c8fb51",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.policy",
+      "authority": "canonical",
+      "bytes": 7408,
+      "gate_id": "ANIMUS_P5_CRT_POLICY",
+      "note": "Policy competition with 24 simulated participants and 60 trials. Meta-EIG exceeds cost-only by 0.060, but the best competing policy exceeds meta-EIG by 0.012. The normative meta-EIG claim is descriptive only (LIMITED).",
+      "path": "results/crt/CRT_STAGE0E_POLICY.json",
+      "raw_status": "CRT_STAGE0E_POLICY_REVIEW",
+      "sha256": "9eeb0b00dc46c3caf849d377de994e5a3ba20b0d181360914cf46b54131e1c8f",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "animus.p5.crt.power",
       "authority": "canonical",
       "bytes": 996,
@@ -117,6 +177,18 @@
       "path": "results/crt/CRT_STAGE0_POWER.json",
       "raw_status": "CRT_STAGE0_POWER_PASS",
       "sha256": "daa13c992968be65b04fe0711dadfc700d9232c6baecc5e9ba5152e395a70d5a",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.psychometric",
+      "authority": "canonical",
+      "bytes": 788,
+      "gate_id": "ANIMUS_P5_CRT_PSYCHOMETRIC",
+      "note": "Simulated test-facet reliability with 60 participants, six tests, and two occasions. Minimum relative reliability is 0.843 and mean is 0.863. This is a design check, not a human reliability estimate.",
+      "path": "results/crt/CRT_STAGE0E_PSYCHOMETRIC.json",
+      "raw_status": "CRT_STAGE0E_PSYCHOMETRIC_PASS",
+      "sha256": "864271ad48f934a991e2397036abff7ad415e7a88bbef88aa78b86c8a4cfea2f",
       "status": "PASS",
       "superseded_by": null
     },
@@ -142,6 +214,42 @@
       "raw_status": "CRT_STAGE0_SIMULATION_REVIEW",
       "sha256": "3b9c89ae29d29fed7b736dfba713cce3bc28b9f3f8c5d0042013847fe172219b",
       "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.specificity",
+      "authority": "historical",
+      "bytes": 6256,
+      "gate_id": "ANIMUS_P5_CRT_SPECIFICITY",
+      "note": "Historical Stage 0D specificity/selection artifact generated with oracle prediction. Preserved unmodified. Stage 0E did not reproduce the diagnostic-specificity advantage under belief-based prediction, so this artifact is superseded and its PASS is not a current claim.",
+      "path": "results/crt/CRT_STAGE0D_SPECIFICITY_POWER.json",
+      "raw_status": "CRT_STAGE0D_SPECIFICITY_PASS",
+      "sha256": "e1b39e8bce7a542ab24ef624c593bfc6b0c5bef70cdf1c1908eb3b741f23b072",
+      "status": "PASS",
+      "superseded_by": "animus.p5.crt.specificity.belief"
+    },
+    {
+      "artifact_id": "animus.p5.crt.specificity.belief",
+      "authority": "canonical",
+      "bytes": 3494,
+      "gate_id": "ANIMUS_P5_CRT_SPECIFICITY",
+      "note": "Belief-based re-analysis of the Stage 0D diagnostic-specificity control. Diagnostic prediction accuracy is 0.505 and the source accuracy gain is 0.026 (0.400 vs 0.374), below the pre-specified prediction accuracy floor of 0.55. The specificity claim is downgraded to LIMITED.",
+      "path": "results/crt/CRT_STAGE0E_SPECIFICITY_AUDIT.json",
+      "raw_status": "CRT_STAGE0D_SPECIFICITY_REVIEW",
+      "sha256": "b32d1267a6d12c77602e8ca5b6f8ea942c7843e2d7fd6a682f9936ee20e1c1ea",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.theory",
+      "authority": "canonical",
+      "bytes": 2213,
+      "gate_id": "ANIMUS_P5_CRT_THEORY",
+      "note": "Stage 0D signature-separability analysis with five competing models and 0.03 measurement noise. Balanced accuracy 0.90; the weakest diagonal is the heuristic model at 0.775. This is design evidence, not human model evidence.",
+      "path": "results/crt/CRT_STAGE0D_MODEL_TOURNAMENT.json",
+      "raw_status": "CRT_STAGE0D_THEORY_PASS",
+      "sha256": "7b050806160fafc42cf6f661c23588a678540bd1e2d915479961e1af51b73686",
+      "status": "PASS",
       "superseded_by": null
     },
     {
@@ -428,9 +536,9 @@
       "evidence": [],
       "gate_refs": [],
       "n": null,
-      "statement": "Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence of a source-diagnostic test and uses prediction error to revise a seen/imagined/described/new attribution, with reported uncertainty and explicit low-information states.",
+      "statement": "Counterfactual Reality Testing estimates whether a person prospectively predicts the consequence of a source-diagnostic test and uses the observed outcome to revise a seen/imagined/described/new attribution, with reported uncertainty and explicit low-information states. The prediction is a belief-based readout and policy signal, not independent source evidence.",
       "status": "UNVALIDATED",
-      "uncertainty": "Stage 0C specification and simulation only; no human reliability or validity data"
+      "uncertainty": "Stage 0E simulation only; specificity and policy gates LIMITED; no human reliability or validity data"
     },
     {
       "ceiling": "L1_BEHAVIORAL_ASSISTED",
@@ -588,11 +696,77 @@
       "name": "Counterfactual Reality Testing Stage 1 power check",
       "note": "Simulation-only planning gate. A PASS means N=180 has at least 80% power for the reliability lower-bound target under the stated approximation; it is not human evidence.",
       "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.theory",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_THEORY",
+      "name": "Counterfactual Reality Testing Stage 0D model-signature separability",
+      "note": "Simulation-only design-identifiability gate. A PASS means the five competing theory signatures are separable under the stated measurement noise. It is not a fit to human data and does not establish that any model is true.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.specificity.belief",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_SPECIFICITY",
+      "name": "Counterfactual Reality Testing specificity and active-selection controls",
+      "note": "Simulation-only control gate, now canonicalized on belief-based prediction. The historical oracle artifact is preserved but superseded; Stage 0E showed that the diagnostic-specificity advantage did not reproduce when the participant predicted from the current source posterior. The current status is LIMITED. Not human evidence.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.model_repair",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_MODEL_REPAIR",
+      "name": "Counterfactual Reality Testing belief-based prediction repair",
+      "note": "Simulation-only model-repair gate. A PASS means oracle inflation is quantified, the belief arm predicts from the current source posterior, the source is updated from the outcome only, and the nested posterior PIT calibration check passes. A PASS is design evidence, not human validation and not authorization for a measurement claim.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.counterfactual",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_COUNTERFACTUAL",
+      "name": "Counterfactual Reality Testing dual-hypothesis prediction",
+      "note": "Simulation-only construct gate. A PASS requires dual diagnostic prediction to improve accuracy over a single prediction and a dual non-diagnostic prediction on the same test sequence. A REVIEW means the counterfactual label is not yet earned; the construct remains prospective reality testing.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.policy",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_POLICY",
+      "name": "Counterfactual Reality Testing policy competition",
+      "note": "Simulation-only policy gate. A PASS requires meta-EIG selection to exceed both cost-only and the best competing policy. A REVIEW means the normative meta-EIG claim is descriptive only.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.psychometric",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_PSYCHOMETRIC",
+      "name": "Counterfactual Reality Testing test-facet reliability",
+      "note": "Simulation-only test-facet reliability gate. A PASS means every simulated test facet clears the pre-specified relative-reliability floor at two occasions. It is not a human reliability estimate.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.gtheory",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_GTHEORY",
+      "name": "Counterfactual Reality Testing generalizability decision study",
+      "note": "Simulation-only variance-component and decision-study gate. A PASS means the simulated person variance supports the stated relative-reliability target at two occasions; it is not an estimate of human reliability.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.calibration",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_CALIBRATION",
+      "name": "Counterfactual Reality Testing test-likelihood calibration design",
+      "note": "Simulation-only calibration gate. A PASS means at least four tests have a strong simulated seen-versus-imagined likelihood ratio and the fluency trap remains non-diagnostic. A human calibration sample must freeze the likelihood table before confirmatory data collection.",
+      "status": "PASS"
     }
   ],
   "generated_from": "science/registry",
   "operating_ceiling": "L1_BEHAVIORAL_ASSISTED",
   "reviewed_at": "2026-10-29",
   "schema_version": "1.0",
-  "warnings": []
+  "warnings": [
+    "animus.p5.crt.specificity: superseded_by 'animus.p5.crt.specificity.belief', but that artifact does not list it in supersedes"
+  ]
 }

@@ -3,7 +3,7 @@
 ## Registration status
 
 - **Status:** DRAFT. Not yet submitted to OSF or a registered-report venue.
-- **Version:** 0.1, 2026-10-29.
+- **Version:** 0.2, 2026-10-30.
 - **Protocol:** `ANIMUS-CRT-v1`.
 - **Claim ceiling:** `L1_BEHAVIORAL_ASSISTED`.
 - **Canonical claims:** `claim.counterfactual_reality_testing_measurement` (UNVALIDATED);
@@ -16,16 +16,18 @@ logged and reported.
 
 ## 1. Study title
 
-**Counterfactual Reality Testing (CRT): a preregistered validation of prospective prediction and
-prediction-error attribution in a behavioural source-monitoring task.**
+**Counterfactual Reality Testing (CRT): a preregistered validation of prospective prediction, test
+selection, and source attribution in a behavioural source-monitoring task.**
 
 ## 2. Background and rationale
 
 Source-monitoring research asks how people attribute an experience to perception or imagination. Most
 tasks ask for a post-hoc judgment after the evidence is fixed. ART adds active selection of evidence.
 CRT adds a prospective step: before a test outcome is revealed, the participant predicts it and reports
-confidence. The test then provides a counterfactual comparison between predicted and observed
-consequences.
+confidence. The test then provides a comparison between predicted and observed consequences. The
+prediction is a **readout of the participant's current source belief** and a policy signal; it is not
+treated as independent source evidence. The source is updated from the outcome only. This restriction is
+the Stage 0E repair and is fixed before human data collection.
 
 The rationale is that source attribution may depend not only on the evidence but on the **precision of
 the forward model** that generated the prediction. Lower memory precision has been linked to
@@ -39,7 +41,9 @@ memory for true actions (Dhammapeera et al., 2024) and is sensitive to imagery p
 criteria (Libby, 2003). The prediction is a sparse test consequence, not a new imagined episode.
 
 The study is **measurement validation**, not an intervention. A training RCT is conditional on the
-measurement gates and is specified separately.
+measurement gates and is specified separately. The Stage 0E simulation downgraded the specificity,
+dual-prediction, and normative-policy claims to `LIMITED`; the human study is not authorized by those
+results.
 
 ## 3. Hypotheses
 
@@ -49,10 +53,13 @@ measurement gates and is specified separately.
   relative to outcome-only active testing (`active_intervene`), with a standardized difference of at
   least 0.20.
 - **H2 (meta-EIG policy):** a meta-EIG-cost policy predicts test choices better than outcome-EIG,
-  positive-testing, fixed, heuristic, or random policies out of sample (expected log predictive density
-  advantage, pre-registered).
-- **H3 (reliability):** `CRTE_meta` has a 14-day test-retest ICC(2,1) of at least 0.75, with a lower
-  95% confidence bound above 0.60.
+  positive-testing, fixed, heuristic, cost-only, or random policies out of sample (expected log
+  predictive density advantage, pre-registered). Stage 0E simulation does not yet support the
+  normative claim (meta-EIG loses to the best competing policy by 0.012); H2 remains a testable
+  hypothesis, not a design result.
+- **H3 (reliability):** `CRTE_meta` has a 14-day test-retest ICC(2,1) of at least 0.80, with a lower
+  95% confidence bound above 0.70 for group-level use. Individual-level use requires ICC >= 0.90 and is
+  not planned.
 
 ### Secondary hypotheses
 
@@ -67,9 +74,10 @@ measurement gates and is specified separately.
   with the source measures (absolute r < 0.70 for the discriminant bound).
 - **H8 (invariance):** the instrument shows configural, metric, and scalar invariance across device
   class, order, and imagery stratum (Delta CFI < 0.01; Delta RMSEA < 0.015).
-- **H9 (exploratory active selection):** active selection improves calibration relative to a
-  matched-sequence yoked control. Stage 0C found a near-null under matched yoking; a random-passive
-  control matched on the number of tests is required before a superiority claim.
+- **H9 (exploratory active selection):** active selection improves accuracy relative to a
+  random-passive control matched on test count and time. Matched-sequence yoking cannot identify this;
+  Stage 0E supplies the control design but no human evidence, and the Stage 0E policy gate is
+  `LIMITED`.
 
 ### Exploratory
 
@@ -112,17 +120,54 @@ participant sees the same test identities but generates their own outcomes and p
 matched-sequence design controls information quantity and time on task. It cannot identify an
 active-selection superiority effect; that question requires a random-passive control.
 
+### Model restriction (Stage 0E repair)
+
+The participant's source posterior is `m_i(s)`. The predicted positive-outcome probability for test `a`
+is the belief-based readout
+
+```text
+q_i(a) = sum_s m_i(s) * p_as
+P(P = 1 | a, m_i; pi_i) = sigmoid(pi_i * logit(q_i(a)))
+```
+
+and the source update is outcome-only:
+
+```text
+p(s | O, a) proportional to prior_s * P(O | s, a; d_i)
+```
+
+The prediction is not an independent likelihood and is not counted twice. The oracle variant is a
+benchmark only. This restriction is fixed before human data collection; changing it requires a
+protocol amendment and a new registration.
+
+### Specificity sub-study (Stage 1C)
+
+A separate within-subject sample (N=160) completes `active_predict_diagnostic` and
+`active_predict_nondiagnostic` blocks in counterbalanced order. Both blocks use the same fixed test
+sequence, prediction format, confidence report, cost, and time. Only the prediction content differs.
+The primary outcome is source accuracy; Brier score and ECE are descriptive. A null or negative
+diagnostic contrast rejects the counterfactual-prediction interpretation even if the generic prediction
+arm beats outcome-only testing.
+
+### Selection sub-study (Stage 1B)
+
+A separate within-subject sample (N=160) completes `active_predict`, `random_passive`, and
+`algorithm_adaptive` blocks. The random-passive arm receives experimenter-selected tests matched on
+count and time. The algorithm arm receives the maximum-meta-EIG test. The primary selection contrast is
+active minus random-passive; algorithm minus random-passive estimates adaptive-design value. If the
+algorithm outperforms active choice, that is a benchmark result, not a failed control.
+
 ## 5. Participants
 
 ### Target
 
-N=180 analysed participants.
+N=240 analysed participants.
 
 Recruitment strata for exploratory invariance:
 
-- 60 with self-reported aphantasia or hypophantasia (VVIQ-2 lower extreme);
-- 60 typical imagery;
-- 60 hyperphantasia (upper extreme).
+- 80 with self-reported aphantasia or hypophantasia (VVIQ-2 lower extreme);
+- 80 typical imagery;
+- 80 hyperphantasia (upper extreme).
 
 The primary analysis is the full sample; stratum contrasts are secondary. Recruitment will screen
 approximately 2,000-3,000 adults to identify the extreme strata if enrichment is used.
@@ -146,11 +191,13 @@ impaired.
 
 ### Sample-size rationale
 
-N=180 is a planning target. Under the Stage 0C power approximation
-([`results/crt/CRT_STAGE0_POWER.json`](../../results/crt/CRT_STAGE0_POWER.json)), true ICC 0.75 with
-N=180 gives 0.961 power for a lower 95% bound above 0.60. This is a planning result, not human
-evidence. The study is powered for the reliability hypothesis; group differences are secondary and
-will be reported with confidence intervals, not as confirmatory tests.
+N=240 is the planning target for ICC 0.80 with a lower 95% bound above 0.70. Under the same
+normal-approximation simulation used in Stage 0C, true ICC 0.80 at N=240 gives power 0.949; at N=180
+it gives 0.876. The N=240 check is recorded in
+[`results/crt/CRT_STAGE0D_GTHEORY.json`](../../results/crt/CRT_STAGE0D_GTHEORY.json). This is a planning
+result, not human evidence. The registered analysis will use the actual ICC confidence-interval method
+and the observed variance components. The study is powered for the reliability hypothesis; group
+differences are secondary and will be reported with confidence intervals, not as confirmatory tests.
 
 ## 6. Materials
 
@@ -225,7 +272,7 @@ non-zero `pi` is necessary but not sufficient for a prediction-specific claim.
 | Gate | Criterion | If failed |
 | --- | --- | --- |
 | Feasibility | >=80% completion; >=90% comprehension; no serious adverse events | Revise task; do not proceed |
-| Reliability | ICC >=0.75; lower 95% CI >=0.60 for `CRTE_meta` | Publish psychometric null; stop training RCT |
+| Reliability | ICC >=0.80; lower 95% CI >=0.70 for `CRTE_meta` | Publish psychometric null; stop training RCT |
 | Prediction advantage | Standardized difference >=0.20 or calibration advantage with CI excluding 0 | Drop prediction-specific claim; retain descriptive |
 | Prediction calibration | `prediction_ece <= 0.15` | Revise prediction format; do not claim calibration |
 | Policy | Meta-EIG model beats alternatives out of sample | Report descriptive only; no normative claim |

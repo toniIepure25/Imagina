@@ -1,0 +1,199 @@
+{
+  "analysis": "stage0d_hierarchical_beta_binomial_test_calibration",
+  "config": {
+    "n_participants": 40,
+    "noise_sd": 0.02,
+    "prior_alpha": 1.0,
+    "prior_beta": 1.0,
+    "seed": 20261029,
+    "strong_lr_high": 1.33,
+    "strong_lr_low": 0.75,
+    "trials_per_cell": 20
+  },
+  "decision": "CRT_STAGE0D_CALIBRATION_PASS",
+  "fluency_lr": 1.004963,
+  "note": "Simulated calibration design only. A human calibration sample must freeze the likelihood table before the confirmatory CRT study; weak tests are dropped or redesigned.",
+  "protocol": "ANIMUS-CRT-v1",
+  "strong_tests": [
+    "viewpoint",
+    "generation",
+    "intend",
+    "description"
+  ],
+  "tests": [
+    {
+      "counts": [
+        [
+          631,
+          169
+        ],
+        [
+          290,
+          510
+        ],
+        [
+          191,
+          609
+        ],
+        [
+          157,
+          643
+        ]
+      ],
+      "fitted": [
+        0.78803,
+        0.362843,
+        0.239401,
+        0.197007
+      ],
+      "seen_vs_imagined_lr": 2.171821,
+      "strong": true,
+      "test": "viewpoint"
+    },
+    {
+      "counts": [
+        [
+          225,
+          575
+        ],
+        [
+          584,
+          216
+        ],
+        [
+          431,
+          369
+        ],
+        [
+          201,
+          599
+        ]
+      ],
+      "fitted": [
+        0.281796,
+        0.729426,
+        0.538653,
+        0.25187
+      ],
+      "seen_vs_imagined_lr": 0.386325,
+      "strong": true,
+      "test": "generation"
+    },
+    {
+      "counts": [
+        [
+          544,
+          256
+        ],
+        [
+          522,
+          278
+        ],
+        [
+          497,
+          303
+        ],
+        [
+          155,
+          645
+        ]
+      ],
+      "fitted": [
+        0.679551,
+        0.65212,
+        0.620948,
+        0.194514
+      ],
+      "seen_vs_imagined_lr": 1.042065,
+      "strong": false,
+      "test": "context"
+    },
+    {
+      "counts": [
+        [
+          149,
+          651
+        ],
+        [
+          557,
+          243
+        ],
+        [
+          200,
+          600
+        ],
+        [
+          162,
+          638
+        ]
+      ],
+      "fitted": [
+        0.187032,
+        0.695761,
+        0.250623,
+        0.203242
+      ],
+      "seen_vs_imagined_lr": 0.268817,
+      "strong": true,
+      "test": "intend"
+    },
+    {
+      "counts": [
+        [
+          211,
+          589
+        ],
+        [
+          416,
+          384
+        ],
+        [
+          640,
+          160
+        ],
+        [
+          148,
+          652
+        ]
+      ],
+      "fitted": [
+        0.264339,
+        0.51995,
+        0.799252,
+        0.185786
+      ],
+      "seen_vs_imagined_lr": 0.508393,
+      "strong": true,
+      "test": "description"
+    },
+    {
+      "counts": [
+        [
+          404,
+          396
+        ],
+        [
+          402,
+          398
+        ],
+        [
+          438,
+          362
+        ],
+        [
+          456,
+          344
+        ]
+      ],
+      "fitted": [
+        0.504988,
+        0.502494,
+        0.547382,
+        0.569825
+      ],
+      "seen_vs_imagined_lr": 1.004963,
+      "strong": false,
+      "test": "fluency"
+    }
+  ]
+}

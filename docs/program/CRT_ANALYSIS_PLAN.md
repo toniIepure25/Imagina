@@ -2,8 +2,8 @@
 
 ## Status
 
-- **Version:** 0.1, 2026-10-29.
-- **Applies to:** `ANIMUS-CRT-v1`, Stage 1 measurement validation.
+- **Version:** 0.2, 2026-10-30.
+- **Applies to:** `ANIMUS-CRT-v1`, Stage 0D design controls and Stage 1 measurement validation.
 - **Status:** draft for independent statistical review; not yet frozen.
 - **Companion documents:** [`COUNTERFACTUAL_REALITY_TESTING_SPEC.md`](../animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md),
   [`CRT_PREREGISTRATION.md`](CRT_PREREGISTRATION.md).
@@ -29,10 +29,15 @@ Let `i` index participants, `j` trials, `s_j` the true source in `(seen, imagine
 3. **Prediction calibration:** `prediction_ece` over all prediction-confidence bins.
 4. **Source discrimination:** `d_prime_seen_imagined` from the 2x2 seen/imagined confusion matrix.
 5. **Source calibration:** Brier score for source correctness.
+6. **Specificity advantage (Stage 1C):** diagnostic minus matched non-diagnostic prediction in source
+   accuracy, under a fixed test sequence. This is the primary test of whether the prediction effect is
+   specific to source-diagnostic content.
 
 ### Secondary estimands
 
 - `CRTE_eig`, `active_calibration_advantage`, `active_accuracy_advantage`.
+- Active-selection advantage (Stage 1B): active minus random-passive accuracy, with algorithm-adaptive
+  minus random-passive as the adaptive-design benchmark.
 - Criterion `c` and externalization rate.
 - ECE (10 equal-width bins) and overconfidence.
 - `imagination_inflation_rate`: seen attribution after a high-confidence, prediction-consistent
@@ -54,17 +59,27 @@ For person `i`, source `s`, test `a`, outcome `O` in `{0,1}`, and prediction `P`
 
 ```text
 P(O = 1 | s, a; d_i) = sigmoid(d_i * logit(p_as))
-P(P = 1 | s, a; pi_i) = sigmoid(pi_i * logit(p_as))
+q_i(a) = sum_s m_i(s) * p_as
+P(P = 1 | a, m_i; pi_i) = sigmoid(pi_i * logit(q_i(a)))
 ```
 
-The posterior after a prediction-outcome pair is:
+The prediction is a **belief-based posterior predictive readout**, not a likelihood conditioned on the
+hidden source. The source update after an outcome is:
 
 ```text
-log p(s | P, O, a) proportional to log prior_s
-  + log P(P | s, a; pi_i)
-  + log P(O | s, a; d_i)
-  + b_pi * I(P = O) * m_i * I(s = seen)
+log p(s | O, a) proportional to log prior_s + log P(O | s, a; d_i)
 ```
+
+The prediction does **not** enter the source likelihood. This is the Stage 0E repair: a prediction
+generated from `m_i` cannot be counted again as independent evidence. The seen-response bias `b_pi`
+is applied only at the final source-choice stage, not to the sequential source posterior.
+
+The oracle variant, retained only as a benchmark, replaces `q_i(a)` with
+`P(P = 1 | s_true, a; pi_i)`. Any result from that variant is reported as an oracle upper bound, with
+`oracle_inflation = advantage_oracle - advantage_belief`.
+
+An optional `M4` error-attribution extension may let prediction error change **later** test selection
+or confidence. It must not add the prediction as a second likelihood for the current source.
 
 The test policy uses normalized meta-EIG:
 
@@ -142,13 +157,15 @@ rank skew. If SBC fails, the model or priors are revised before registration.
 
 ### Power
 
-The Stage 0C power artifact uses a two-occasion ICC(2,1) with a normal-approximation lower bound. At
-N=180 and 2,000 simulations, power is 0.961 for true ICC 0.75 with the lower bound above 0.60
-([`results/crt/CRT_STAGE0_POWER.json`](../../results/crt/CRT_STAGE0_POWER.json)). This is a planning
-approximation. The registered analysis will compute the ICC confidence interval from the observed
-variance components.
+The Stage 0C power artifact uses a two-occasion ICC(2,1) with a normal-approximation lower bound. The
+Stage 0D planning check at N=240 gives power 0.949 for true ICC 0.80 with the lower bound above 0.70
+([`results/crt/CRT_STAGE0D_GTHEORY.json`](../../results/crt/CRT_STAGE0D_GTHEORY.json)). The earlier
+N=180 / ICC 0.75 / lower-bound 0.60 run is retained in
+[`results/crt/CRT_STAGE0_POWER.json`](../../results/crt/CRT_STAGE0_POWER.json) as historical planning
+evidence. Both are approximations; the registered analysis will compute the ICC confidence interval
+from the observed variance components.
 
-For the prediction contrast, N=180 gives high power for a standardized difference of 0.20; the pilot
+For the prediction contrast, N=240 gives high power for a standardized difference of 0.20; the pilot
 will estimate the variance components before the main study. The Stage 0C simulation is a design
 check, not a human effect-size estimate.
 
@@ -163,9 +180,20 @@ check, not a human effect-size estimate.
 
 Interpretation:
 
-- ICC >= 0.75 with lower 95% CI >= 0.60: passes.
-- ICC 0.60-0.75: provisional; requires revision and a second study before training.
-- ICC < 0.60: fails; publish the psychometric null and stop the training program.
+- ICC >= 0.80 with lower 95% CI >= 0.70: passes for group-level use.
+- ICC 0.70-0.80: provisional; requires revision and a second study before training.
+- ICC < 0.70: fails; publish the psychometric null and stop the training program.
+- Individual-level use requires ICC >= 0.90 and is not planned.
+
+### Generalizability theory
+
+- Design: persons crossed with occasions; report person, occasion, and residual variance components.
+- Compute relative and absolute reliability, SEM, and MDC95 for one to four occasions.
+- The decision study asks whether two occasions meet the group-level target and how many occasions would
+  be needed for individual-level use.
+- Negative variance components are set to zero for reporting but flagged; a zero occasion component is
+  not evidence that occasion effects are absent.
+- Stage 0D is a simulation illustration. The human study estimates the components from observed data.
 
 ## 5. Primary contrasts
 
@@ -196,6 +224,31 @@ Interpretation:
 - Reliability diagram and overconfidence by condition.
 - Sensitivity: equal-mass bins; logit-scaled calibration slope and intercept.
 
+### Specificity analysis
+
+- Contrast: `active_predict_diagnostic` minus `active_predict_nondiagnostic`.
+- Unit: participant-occasion; outcome: source accuracy.
+- The non-diagnostic arm is matched on prediction format, confidence report, fixed test sequence, test
+  count, cost, and time. The fixed sequence prevents a test-selection difference from masquerading as a
+  prediction-specificity effect.
+- Supported specificity requires a positive accuracy contrast with a 95% CI excluding zero and a
+  diagnostic prediction accuracy above chance.
+- A null or negative contrast rejects the counterfactual-prediction interpretation, even if the generic
+  prediction arm beats outcome-only testing.
+- Brier score and ECE are descriptive secondary outcomes; they are not used to rescue a failed accuracy
+  specificity contrast.
+
+### Test-likelihood calibration
+
+- Before the confirmatory study, a separate calibration sample estimates the six test likelihoods with a
+  hierarchical Beta-Binomial model.
+- The fitted table is frozen and hashed. The confirmatory analysis uses the frozen table, not
+  participant-specific re-estimation.
+- Tests with a seen-versus-imagined likelihood ratio inside `[0.75, 1.33]` are dropped or redesigned.
+- The fluency test must remain non-diagnostic; a strong fluency likelihood ratio is a calibration
+  failure and triggers a task review.
+- Stage 0D is a simulated calibration design only; it does not replace the human calibration sample.
+
 ### Imagination inflation
 
 - Outcome: seen attribution on imagined trials with a prediction-consistent high-confidence outcome.
@@ -205,19 +258,22 @@ Interpretation:
 - Primary contrast: prediction-consistent minus prediction-inconsistent imagined trials.
 - Report the `b_pi` posterior and a sensitivity analysis that fixes `b_pi = 0`.
 
-## 6. Active versus yoked
+## 6. Active selection and controls
 
 - Unit: participant-occasion.
 - Outcome: accuracy, Brier score, and `CRTE_meta`.
 - Model: linear mixed-effects model with random intercepts for participant and item; fixed effects for
-  block type, order, and their interaction.
-- Primary contrast: active minus yoked, standardized by the within-person SD.
+  condition, order, and their interaction.
+- **Primary selection contrast:** active prediction minus random-passive exposure, standardized by the
+  within-person SD.
+- **Adaptive-design contrast:** algorithm-adaptive selection minus random-passive exposure. This
+  separates the value of adaptive test choice from the value of human choice.
 - **Identification limitation:** matched-sequence yoking gives both arms the same test distribution.
-  Accuracy and calibration differences are expected to be near zero. The active-selection claim
-  requires a random-passive control matched on the number of tests; that control is a separate
-  exploratory arm.
+  Accuracy and calibration differences are expected to be near zero. Yoked contrasts are retained as a
+  manipulation check, not as the selection estimand.
 - If active is better on accuracy but not calibration, report the dissociation; do not combine into a
-  single benefit claim.
+  single benefit claim. If algorithm-adaptive selection beats active choice, report that human choice is
+  suboptimal rather than treating the control as failed.
 
 ## 7. Cost, complexity, and reliability manipulations
 
@@ -270,23 +326,42 @@ To avoid circularity:
 
 | Decision | Rule |
 | --- | --- |
-| Measurement pass | ICC >=0.75, lower CI >=0.60; prediction advantage; incremental validity; discriminant r<0.70 |
-| Provisional | ICC 0.60-0.75, or prediction advantage without calibration; revise and replicate |
-| Fail | ICC <0.60 or no prediction advantage; publish null; stop training |
+| Measurement pass | ICC >=0.80, lower CI >=0.70; prediction advantage; incremental validity; discriminant r<0.70 |
+| Provisional | ICC 0.70-0.80, or prediction advantage without calibration; revise and replicate |
+| Fail | ICC <0.70 or no prediction advantage; publish null; stop training |
 | Prediction support | Standardized difference >=0.20 or calibration advantage with CI excluding 0 |
 | Policy support | Meta-EIG model beats alternatives out of sample |
-| Active selection | Exploratory only under matched yoking; random-passive control required |
+| Specificity support | Diagnostic prediction beats matched non-diagnostic prediction; 95% CI excludes zero |
+| Active selection | Active beats random-passive; algorithm-adaptive is a benchmark, not a failed control |
 | Training | Only after measurement pass and separate RCT registration |
 | Clinical | Blocked; separate IRB and registration |
 
-## 13. Stage 0C caveats
+## 13. Stage 0C, 0D, and 0E caveats
 
 - The Stage 0C simulation fixes `alpha`, `d`, `guess`, and `bias` for recovery. The human analysis
   estimates them hierarchically.
-- Prediction-precision recovery in Stage 0C uses the known simulated source as an oracle
-  identifiability check. The human analysis uses posterior-weighted prediction likelihoods.
+- Prediction-precision recovery in Stage 0C used the known simulated source as an oracle
+  identifiability check. The Stage 0E repair replaces that with a belief-based posterior predictive
+  readout and an outcome-only source update. The oracle path is retained only as a benchmark.
+- Stage 0E shows the Stage 0D specificity result does not survive belief-based prediction: diagnostic
+  prediction accuracy is 0.505 (below the 0.55 floor) and the source accuracy gain is 0.026 over a
+  0.374 non-diagnostic baseline. The specificity gate is downgraded to `LIMITED`.
+- Stage 0E dual prediction has a large discrepancy (0.476) but no accuracy gain over single prediction
+  on the fixed sequence. The "counterfactual" label is provisional.
+- Stage 0E meta-EIG beats cost-only by 0.060 but loses to the best competing policy by 0.012. The
+  normative policy claim is downgraded to descriptive.
+- The Stage 0E posterior PIT check is not full hierarchical SBC. It tests the assumed generative model,
+  not the human likelihood table.
 - `b_pi` is the least precisely recovered Stage 0C parameter (full-run bias 0.010, RMSE 0.105). It is
   a secondary parameter and must be interpreted with SBC and sensitivity analyses.
 - The Stage 0C active-versus-yoked calibration contrast is near zero under matched-sequence yoking.
   This is a design identification result, not a human null.
-- No Stage 0C result is human evidence, and no claim is upgraded by a simulation PASS or REVIEW.
+- Stage 0D model signatures are design hypotheses, not human model evidence. The tournament does not fit
+  the models to human data.
+- Stage 0D specificity Brier and calibration gains are negative because the non-diagnostic arm is
+  constructed to be source-neutral, not confidence-matched. Accuracy is the gate; Brier and ECE are
+  descriptive.
+- Stage 0D algorithm-adaptive selection beats active choice in simulation. That is a benchmark result,
+  not evidence that human choice is useless.
+- No Stage 0C or Stage 0D result is human evidence, and no claim is upgraded by a simulation PASS or
+  REVIEW.

@@ -139,6 +139,32 @@ def prediction_likelihood(
     return _sigmoid(pi * _logit(float(likelihoods[test][source])))
 
 
+def posterior_predictive(
+    prior: Sequence[float],
+    test: int,
+    pi: float = 1.0,
+    likelihoods: Sequence[Sequence[float]] = TEST_LIKELIHOODS,
+) -> float:
+    """Belief-based probability of a positive test outcome.
+
+    A person who does not know the true source predicts from the current source posterior, not
+    from the simulator's oracle source. ``pi`` is a metacognitive distortion of that readout:
+    ``pi = 1`` uses the posterior predictive exactly; ``pi = 0`` is source-neutral.
+    """
+
+    if pi < 0:
+        raise ValueError("pi must be non-negative")
+    _validate_test(test)
+    if len(prior) != len(SOURCES):
+        raise ValueError("prior must have one probability per source")
+    belief = normalize(prior)
+    if pi == 0.0:
+        return 0.5
+    base = sum(belief[source] * float(likelihoods[test][source]) for source in range(len(SOURCES)))
+    return _sigmoid(pi * _logit(base))
+
+
+
 def outcome_likelihood(
     test: int,
     source: int,
@@ -572,6 +598,7 @@ __all__ = [
     "outcome_likelihood",
     "posterior_from_outcome",
     "posterior_from_prediction_outcome",
+    "posterior_predictive",
     "prediction_likelihood",
     "softmax",
 ]

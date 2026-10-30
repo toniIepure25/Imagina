@@ -263,3 +263,133 @@ artifacts:
     note: >-
       Planning check for N=180 with 2,000 simulations. Power for true ICC 0.75 with lower 95%
       bound above 0.60 is 0.961 under a normal approximation. Not human evidence.
+
+  - artifact_id: animus.p5.crt.theory
+    path: results/crt/CRT_STAGE0D_MODEL_TOURNAMENT.json
+    gate_id: ANIMUS_P5_CRT_THEORY
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0D_THEORY_PASS: PASS
+      CRT_STAGE0D_THEORY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, balanced_accuracy, signatures, confusion]
+    note: >-
+      Stage 0D signature-separability analysis with five competing models and 0.03 measurement
+      noise. Balanced accuracy 0.90; the weakest diagonal is the heuristic model at 0.775. This is
+      design evidence, not human model evidence.
+
+  - artifact_id: animus.p5.crt.specificity
+    path: results/crt/CRT_STAGE0D_SPECIFICITY_POWER.json
+    gate_id: ANIMUS_P5_CRT_SPECIFICITY
+    authority: historical
+    status_path: decision
+    status_map:
+      CRT_STAGE0D_SPECIFICITY_PASS: PASS
+      CRT_STAGE0D_SPECIFICITY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, specificity, selection]
+    superseded_by: animus.p5.crt.specificity.belief
+    note: >-
+      Historical Stage 0D specificity/selection artifact generated with oracle prediction. Preserved
+      unmodified. Stage 0E did not reproduce the diagnostic-specificity advantage under belief-based
+      prediction, so this artifact is superseded and its PASS is not a current claim.
+
+  - artifact_id: animus.p5.crt.specificity.belief
+    path: results/crt/CRT_STAGE0E_SPECIFICITY_AUDIT.json
+    gate_id: ANIMUS_P5_CRT_SPECIFICITY
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0D_SPECIFICITY_PASS: PASS
+      CRT_STAGE0D_SPECIFICITY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, specificity]
+    note: >-
+      Belief-based re-analysis of the Stage 0D diagnostic-specificity control. Diagnostic prediction
+      accuracy is 0.505 and the source accuracy gain is 0.026 (0.400 vs 0.374), below the
+      pre-specified prediction accuracy floor of 0.55. The specificity claim is downgraded to LIMITED.
+
+  - artifact_id: animus.p5.crt.gtheory
+    path: results/crt/CRT_STAGE0D_GTHEORY.json
+    gate_id: ANIMUS_P5_CRT_GTHEORY
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0D_GTHEORY_PASS: PASS
+      CRT_STAGE0D_GTHEORY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, variance_components, d_study]
+    note: >-
+      Simulated person-by-occasion variance components and four-point decision study. Relative
+      reliability is 0.938 at two occasions; the occasion component is zero in this draw. The
+      N=240 power check for true ICC 0.80 and lower bound 0.70 is 0.949. These are planning
+      illustrations, not human reliability estimates.
+
+  - artifact_id: animus.p5.crt.calibration
+    path: results/crt/CRT_STAGE0D_CALIBRATION.json
+    gate_id: ANIMUS_P5_CRT_CALIBRATION
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0D_CALIBRATION_PASS: PASS
+      CRT_STAGE0D_CALIBRATION_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, tests, strong_tests, fluency_lr]
+    note: >-
+      Simulated Beta-Binomial calibration with 40 participants and 20 trials per source-test cell.
+      Four tests retain a strong seen-versus-imagined likelihood ratio; the fluency trap remains
+      non-diagnostic. A human calibration sample is still required before confirmatory data.
+
+  - artifact_id: animus.p5.crt.model_repair
+    path: results/crt/CRT_STAGE0E_MODEL_REPAIR.json
+    gate_id: ANIMUS_P5_CRT_MODEL_REPAIR
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0E_MODEL_PASS: PASS
+      CRT_STAGE0E_MODEL_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, oracle, belief, audit, pit_calibration]
+    note: >-
+      Stage 0E oracle audit with 24 simulated participants and 60 trials. Oracle prediction advantage
+      is 0.128 versus 0.026 under belief-based prediction, an oracle inflation of 0.101. The source is
+      updated from the outcome only. Nested posterior PIT calibration passes (chi-square 15.92,
+      critical 21.67). The historical oracle specificity gate is downgraded separately.
+
+  - artifact_id: animus.p5.crt.counterfactual
+    path: results/crt/CRT_STAGE0E_COUNTERFACTUAL.json
+    gate_id: ANIMUS_P5_CRT_COUNTERFACTUAL
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0E_COUNTERFACTUAL_PASS: PASS
+      CRT_STAGE0E_COUNTERFACTUAL_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, condition_summaries, contrasts]
+    note: >-
+      Dual-hypothesis prediction with 24 simulated participants and 60 trials. Mean perceived
+      diagnosticity is 0.476, but dual prediction does not improve accuracy over single prediction on
+      the fixed sequence (gain 0.0). The counterfactual label is not yet earned; the construct remains
+      prospective reality testing.
+
+  - artifact_id: animus.p5.crt.policy
+    path: results/crt/CRT_STAGE0E_POLICY.json
+    gate_id: ANIMUS_P5_CRT_POLICY
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0E_POLICY_PASS: PASS
+      CRT_STAGE0E_POLICY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, condition_summaries, contrasts]
+    note: >-
+      Policy competition with 24 simulated participants and 60 trials. Meta-EIG exceeds cost-only by
+      0.060, but the best competing policy exceeds meta-EIG by 0.012. The normative meta-EIG claim is
+      descriptive only (LIMITED).
+
+  - artifact_id: animus.p5.crt.psychometric
+    path: results/crt/CRT_STAGE0E_PSYCHOMETRIC.json
+    gate_id: ANIMUS_P5_CRT_PSYCHOMETRIC
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0E_PSYCHOMETRIC_PASS: PASS
+      CRT_STAGE0E_PSYCHOMETRIC_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, test_reliability, summary]
+    note: >-
+      Simulated test-facet reliability with 60 participants, six tests, and two occasions. Minimum
+      relative reliability is 0.843 and mean is 0.863. This is a design check, not a human reliability
+      estimate.

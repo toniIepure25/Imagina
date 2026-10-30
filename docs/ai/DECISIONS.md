@@ -1856,4 +1856,93 @@ episode.
 
 ---
 
-*Last updated: 2026-10-29 - ADR-069 Counterfactual Reality Testing and the prospective forward-model extension*
+*Last updated: 2026-10-30 - ADR-070 CRT Stage 0D theory tournament and design controls*
+
+## ADR-070: CRT Stage 0D — theory tournament, specificity, and active-selection controls
+
+**Status:** Accepted (Stage 0D simulation only)
+**Date:** 2026-10-30
+**Context:** Stage 0C produced a positive prediction contrast but an unresolved active-selection
+contrast. The missing piece was not more simulation of the same design; it was a theory audit and
+controls that could distinguish CRT from generic prediction, SDT/confidence, and the higher-order
+precision account (Dijkstra, Kok & Fleming, 2022; Dijkstra & Fleming, 2026 preprint). Stage 0D was
+approved as a simulation-only slice before any human protocol.
+
+**Decision:**
+
+1. Add a **model-signature tournament** with five models: `crt_meta_eig`, `eig_only`,
+   `higher_order_precision`, `sdt_confidence`, and `heuristic_source`. The tournament asks whether the
+   design signatures are separable under measurement noise; it does not fit human data.
+2. Add a **matched non-diagnostic prediction** arm. The non-diagnostic prediction is source-neutral by
+   construction (`pi = 0`) and controls for generic engagement, confidence reporting, and a second
+   evidence channel.
+3. Add **random-passive** and **algorithm-adaptive** arms. Active selection is estimated against
+   random-passive exposure; algorithm-adaptive selection is a benchmark for adaptive design.
+4. Add a **human test-likelihood calibration** design. Stage 0D simulates it, but the likelihood table
+   must be estimated and frozen in a human calibration sample before confirmatory data collection.
+5. Add a **generalizability-theory decision study** and a stricter reliability target: ICC >= 0.80 with
+   lower 95% bound >= 0.70 for group-level use; individual-level use requires ICC >= 0.90 and is not
+   planned.
+6. Stage 0D remains simulation-only: no API, database, frontend, human data, neural data, clinical
+   sample, or claim upgrade is authorized.
+7. `claim.counterfactual_reality_testing_measurement` remains `UNVALIDATED`; training and clinical
+   claims remain `BLOCKED`. No "first" or "revolutionary" language is permitted.
+
+**Consequences:**
+
+- New modules `theory.py`, `gtheory.py`, and `calibration.py` in `backend/app/research/crt/`.
+- New CLI `backend/app/cli/crt_stage0d.py` and simulation-only gates `ANIMUS_P5_CRT_THEORY`,
+  `ANIMUS_P5_CRT_SPECIFICITY`, `ANIMUS_P5_CRT_GTHEORY`, and `ANIMUS_P5_CRT_CALIBRATION`.
+- Stage 0D artifacts may return `REVIEW`. A PASS is design evidence, not human evidence.
+- The higher-order precision model is the primary theoretical competitor. If CRT does not add
+  out-of-sample value beyond it, CRT must be repositioned as a measurement assay.
+- The N=240 planning target is supported by a power check in the G-theory artifact; the earlier N=180
+  run remains historical planning evidence.
+- Human Stage 1A remains gated by PI approval, IRB, funding, registration, and an independent second
+  screener.
+
+---
+
+## ADR-071: CRT Stage 0E — remove oracle prediction and prediction/outcome double counting
+
+**Status:** Accepted (Stage 0E simulation only)
+**Date:** 2026-10-30
+**Context:** Stage 0C/0D predicted test outcomes from the true source and then treated the prediction as
+an independent source likelihood. Both are oracle assumptions. They inflated prediction accuracy and
+could manufacture the Stage 0D diagnostic-specificity advantage. The Stage 0D protocol did not disclose
+oracle use for the main simulation; the earlier analysis-plan disclosure covered recovery only.
+
+**Decision:**
+
+1. Replace oracle prediction with a **belief-based posterior-predictive readout**:
+   `q_i(a) = sum_s m_i(s) * p_as`, `P(P=1|a,m_i) = sigmoid(pi_i * logit(q_i(a)))`.
+2. Update the source from the **outcome only**. The prediction does not enter the source likelihood.
+3. Retain the oracle path only as a benchmark and report
+   `oracle_inflation = advantage_oracle - advantage_belief`.
+4. Add dual-hypothesis prediction (`seen`, `imagined`) with hypothesis-specific accuracy, error, and
+   `counterfactual_discrepancy`. If it does not improve accuracy over single prediction on a fixed
+   sequence, use **prospective reality testing** rather than "counterfactual."
+5. Add policy competition against `cost_only` and the best competing policy. If meta-EIG does not win,
+   the normative claim becomes descriptive.
+6. Add test-facet reliability and randomized posterior PIT calibration. These are design checks, not
+   human evidence.
+7. Supersede the Stage 0D specificity artifact with a belief-based audit; downgrade the gate to
+   `LIMITED`. Preserve the historical artifact unmodified.
+8. No human data, API, DB, UI, clinical sample, neural data, or claim upgrade is authorized.
+   `claim.counterfactual_reality_testing_measurement` remains `UNVALIDATED`; training and clinical claims
+   remain `BLOCKED`.
+
+**Consequences:**
+
+- New modules `model_repair.py`, `counterfactual.py`, `policy.py`, `psychometrics.py`, and `pit.py`.
+- New CLI `backend/app/cli/crt_stage0e.py` and gates `ANIMUS_P5_CRT_MODEL_REPAIR`,
+  `ANIMUS_P5_CRT_COUNTERFACTUAL`, `ANIMUS_P5_CRT_POLICY`, and `ANIMUS_P5_CRT_PSYCHOMETRIC`.
+- `ANIMUS_P5_CRT_SPECIFICITY` is `LIMITED`; its canonical artifact is the belief-based audit.
+- Stage 0C prediction results and Stage 0D specificity results are provisional/historical, not human
+  evidence.
+- The next steps are model fitting, policy-level dual manipulation, and hierarchical SBC; human work
+  remains PI/IRB/funding/registration-gated.
+
+---
+
+*Last updated: 2026-10-30 - ADR-071 CRT Stage 0E model repair and construct audit*
