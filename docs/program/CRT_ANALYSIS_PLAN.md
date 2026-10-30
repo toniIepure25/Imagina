@@ -155,6 +155,12 @@ Before fitting human data:
 Acceptance: 95% interval coverage between 0.93 and 0.97 for the primary parameters; no systematic
 rank skew. If SBC fails, the model or priors are revised before registration.
 
+Stage 0E adds a **conditional** recovery/SBC screening for the belief readout: `pi` is recovered with
+`d`, guessing, and response bias fixed, and the rank histogram uses 200 simulated datasets. The artifact
+is [`CRT_STAGE0E_RECOVERY.json`](../../results/crt/CRT_STAGE0E_RECOVERY.json). This is not the full
+hierarchical SBC specified above; full SBC with group-level parameters and misspecified likelihoods is
+still required before human registration.
+
 ### Power
 
 The Stage 0C power artifact uses a two-occasion ICC(2,1) with a normal-approximation lower bound. The
@@ -352,6 +358,9 @@ To avoid circularity:
   normative policy claim is downgraded to descriptive.
 - The Stage 0E posterior PIT check is not full hierarchical SBC. It tests the assumed generative model,
   not the human likelihood table.
+- The Stage 0E recovery/SBC artifact is conditional: `d`, guessing, and response bias are fixed, and only
+  `M0` versus `M2` is recovered. It does not replace full hierarchical SBC or joint nuisance-parameter
+  recovery.
 - `b_pi` is the least precisely recovered Stage 0C parameter (full-run bias 0.010, RMSE 0.105). It is
   a secondary parameter and must be interpreted with SBC and sensitivity analyses.
 - The Stage 0C active-versus-yoked calibration contrast is near zero under matched-sequence yoking.

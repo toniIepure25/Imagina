@@ -28,6 +28,7 @@
 | ANIMUS_P5_CRT_THEORY | Counterfactual Reality Testing Stage 0D model-signature separability | `PASS` | `animus.p5.crt.theory` | Simulation-only design-identifiability gate. A PASS means the five competing theory signatures are separable under the stated measurement noise. It is not a fit to human data and does not establish that any model is true. |
 | ANIMUS_P5_CRT_SPECIFICITY | Counterfactual Reality Testing specificity and active-selection controls | `LIMITED` | `animus.p5.crt.specificity.belief` | Simulation-only control gate, now canonicalized on belief-based prediction. The historical oracle artifact is preserved but superseded; Stage 0E showed that the diagnostic-specificity advantage did not reproduce when the participant predicted from the current source posterior. The current status is LIMITED. Not human evidence. |
 | ANIMUS_P5_CRT_MODEL_REPAIR | Counterfactual Reality Testing belief-based prediction repair | `PASS` | `animus.p5.crt.model_repair` | Simulation-only model-repair gate. A PASS means oracle inflation is quantified, the belief arm predicts from the current source posterior, the source is updated from the outcome only, and the nested posterior PIT calibration check passes. A PASS is design evidence, not human validation and not authorization for a measurement claim. |
+| ANIMUS_P5_CRT_RECOVERY_BELIEF | Counterfactual Reality Testing belief-readout recovery and conditional SBC | `PASS` | `animus.p5.crt.recovery.belief` | Simulation-only identifiability gate for the repaired belief readout. A PASS requires conditional parameter recovery of pi (relative RMSE, bias, correlation), a uniform conditional SBC rank histogram, and above-threshold recovery of M0 versus M2. d, guessing, and response bias are fixed; this is not full hierarchical SBC and not human evidence. |
 | ANIMUS_P5_CRT_COUNTERFACTUAL | Counterfactual Reality Testing dual-hypothesis prediction | `LIMITED` | `animus.p5.crt.counterfactual` | Simulation-only construct gate. A PASS requires dual diagnostic prediction to improve accuracy over a single prediction and a dual non-diagnostic prediction on the same test sequence. A REVIEW means the counterfactual label is not yet earned; the construct remains prospective reality testing. |
 | ANIMUS_P5_CRT_POLICY | Counterfactual Reality Testing policy competition | `LIMITED` | `animus.p5.crt.policy` | Simulation-only policy gate. A PASS requires meta-EIG selection to exceed both cost-only and the best competing policy. A REVIEW means the normative meta-EIG claim is descriptive only. |
 | ANIMUS_P5_CRT_PSYCHOMETRIC | Counterfactual Reality Testing test-facet reliability | `PASS` | `animus.p5.crt.psychometric` | Simulation-only test-facet reliability gate. A PASS means every simulated test facet clears the pre-specified relative-reliability floor at two occasions. It is not a human reliability estimate. |
@@ -65,10 +66,6 @@
 - `c3xat.r1.blocked1` (`C3XAT_R1_BLOCKED_EXECUTION_INCOMPLETE` -> `BLOCKED`) is superseded by `c3xat.r1.final`.
 - `c3xat.r1.blocked2` (`C3XAT_R1_BLOCKED_PERCEPTION_ESTIMAND` -> `BLOCKED`) is superseded by `c3xat.r1.final`.
 
-### Warnings
-
-- animus.p5.crt.specificity: superseded_by 'animus.p5.crt.specificity.belief', but that artifact does not list it in supersedes
-
 ## Provenance
 
 | Artifact | Gate | Authority | Mapped status | SHA-256 | Bytes |
@@ -90,6 +87,7 @@
 | `animus.p5.crt.power` | ANIMUS_P5_CRT_POWER | canonical | `PASS` | `daa13c992968be65b04fe0711dadfc700d9232c6baecc5e9ba5152e395a70d5a` | 996 |
 | `animus.p5.crt.psychometric` | ANIMUS_P5_CRT_PSYCHOMETRIC | canonical | `PASS` | `864271ad48f934a991e2397036abff7ad415e7a88bbef88aa78b86c8a4cfea2f` | 788 |
 | `animus.p5.crt.recovery` | ANIMUS_P5_CRT_RECOVERY | canonical | `PASS` | `d5976cd23bb3081c69f9f8f01f1becf724472507b35e5f96fdd1b83b1a4c462b` | 7565 |
+| `animus.p5.crt.recovery.belief` | ANIMUS_P5_CRT_RECOVERY_BELIEF | canonical | `PASS` | `a2592e714f745b940869c9875162da6ba38b7343d640741f8211742ff7b122c7` | 2531 |
 | `animus.p5.crt.sim` | ANIMUS_P5_CRT_SIM | canonical | `LIMITED` | `3b9c89ae29d29fed7b736dfba713cce3bc28b9f3f8c5d0042013847fe172219b` | 5442 |
 | `animus.p5.crt.specificity` | ANIMUS_P5_CRT_SPECIFICITY | historical | `PASS` | `e1b39e8bce7a542ab24ef624c593bfc6b0c5bef70cdf1c1908eb3b741f23b072` | 6256 |
 | `animus.p5.crt.specificity.belief` | ANIMUS_P5_CRT_SPECIFICITY | canonical | `LIMITED` | `b32d1267a6d12c77602e8ca5b6f8ea942c7843e2d7fd6a682f9936ee20e1c1ea` | 3494 |

@@ -143,6 +143,16 @@ gates:
       the nested posterior PIT calibration check passes. A PASS is design evidence, not human
       validation and not authorization for a measurement claim.
 
+  - gate_id: ANIMUS_P5_CRT_RECOVERY_BELIEF
+    name: Counterfactual Reality Testing belief-readout recovery and conditional SBC
+    canonical_artifact: animus.p5.crt.recovery.belief
+    claim_ids: []
+    note: >-
+      Simulation-only identifiability gate for the repaired belief readout. A PASS requires
+      conditional parameter recovery of pi (relative RMSE, bias, correlation), a uniform conditional
+      SBC rank histogram, and above-threshold recovery of M0 versus M2. d, guessing, and response bias
+      are fixed; this is not full hierarchical SBC and not human evidence.
+
   - gate_id: ANIMUS_P5_CRT_COUNTERFACTUAL
     name: Counterfactual Reality Testing dual-hypothesis prediction
     canonical_artifact: animus.p5.crt.counterfactual

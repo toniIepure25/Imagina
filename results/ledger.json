@@ -205,6 +205,18 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p5.crt.recovery.belief",
+      "authority": "canonical",
+      "bytes": 2531,
+      "gate_id": "ANIMUS_P5_CRT_RECOVERY_BELIEF",
+      "note": "Conditional recovery audit for the repaired readout. pi is recovered with fixed d, guessing, and response bias; conditional SBC uses 200 simulated participants over a uniform pi prior; M0 versus M2 is compared by BIC. This is design identifiability evidence, not human evidence and not full hierarchical SBC.",
+      "path": "results/crt/CRT_STAGE0E_RECOVERY.json",
+      "raw_status": "CRT_STAGE0E_RECOVERY_PASS",
+      "sha256": "a2592e714f745b940869c9875162da6ba38b7343d640741f8211742ff7b122c7",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "animus.p5.crt.sim",
       "authority": "canonical",
       "bytes": 5442,
@@ -722,6 +734,14 @@
       "status": "PASS"
     },
     {
+      "canonical_artifact": "animus.p5.crt.recovery.belief",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_RECOVERY_BELIEF",
+      "name": "Counterfactual Reality Testing belief-readout recovery and conditional SBC",
+      "note": "Simulation-only identifiability gate for the repaired belief readout. A PASS requires conditional parameter recovery of pi (relative RMSE, bias, correlation), a uniform conditional SBC rank histogram, and above-threshold recovery of M0 versus M2. d, guessing, and response bias are fixed; this is not full hierarchical SBC and not human evidence.",
+      "status": "PASS"
+    },
+    {
       "canonical_artifact": "animus.p5.crt.counterfactual",
       "claims": [],
       "gate_id": "ANIMUS_P5_CRT_COUNTERFACTUAL",
@@ -766,7 +786,5 @@
   "operating_ceiling": "L1_BEHAVIORAL_ASSISTED",
   "reviewed_at": "2026-10-29",
   "schema_version": "1.0",
-  "warnings": [
-    "animus.p5.crt.specificity: superseded_by 'animus.p5.crt.specificity.belief', but that artifact does not list it in supersedes"
-  ]
+  "warnings": []
 }

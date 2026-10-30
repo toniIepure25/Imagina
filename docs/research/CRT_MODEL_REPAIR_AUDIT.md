@@ -125,6 +125,19 @@ For 1,000 simulations and two tests:
 This is a **posterior calibration** check for the assumed generative model. It is not full hierarchical
 SBC and does not validate the likelihood table against human data.
 
+### 5.1 Conditional recovery and SBC
+
+The follow-up audit fixes `d`, guessing, and response bias and recovers prediction precision `pi` over
+a uniform prior on `[0.40, 2.00]`:
+
+- parameter recovery: relative RMSE `0.201650`, bias `0.037556`, correlation `0.776806`;
+- conditional SBC: mean PIT `0.539280`, chi-square `8.50` with 9 df (critical `21.67`);
+- `M0` versus `M2` BIC recovery: balanced accuracy `0.937500`.
+
+The artifact is [`CRT_STAGE0E_RECOVERY.json`](../../results/crt/CRT_STAGE0E_RECOVERY.json), gate
+`ANIMUS_P5_CRT_RECOVERY_BELIEF`. This is **conditional** SBC, not full hierarchical SBC, and it does not
+identify `M3` or `M4`.
+
 ## 6. Consequences
 
 1. The Stage 0D specificity gate is downgraded from `PASS` to `LIMITED`.
@@ -142,11 +155,13 @@ SBC and does not validate the likelihood table against human data.
   independent calibration data.
 - The PIT check assumes the prior and likelihood are correct; it does not detect all misspecification.
 - The dual-prediction model has not yet been fitted to the simulated data; its parameters are not
-  recovered.
+  recovered. Only `M0` versus `M2` is covered by the conditional recovery audit.
+- The conditional recovery fixes `d`, guessing, and response bias; a joint recovery with those
+  parameters free remains untested.
 - The source update still assumes conditional independence of tests given the source. Real tests may
   share method variance.
 
 ## 8. Next step
 
-Fit `M2`–`M4` to the repaired simulated data, add a policy-level dual manipulation, and run a
-misspecified-likelihood calibration study before registering a human-factors pilot.
+Extend recovery to `M3` and `M4`, add a policy-level dual manipulation, and run a misspecified-likelihood
+calibration study before registering a human-factors pilot.

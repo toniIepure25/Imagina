@@ -10,6 +10,7 @@ from app.research.crt.model_repair import ModelRepairConfig, run_model_repair
 from app.research.crt.pit import PitConfig, run_pit_calibration
 from app.research.crt.policy import PolicyConfig, run_policy_tournament
 from app.research.crt.psychometrics import PsychometricConfig, run_psychometrics
+from app.research.crt.recovery import RecoveryConfig, run_recovery
 from app.research.crt.simulate import SimulationConfig, run_specificity_simulation
 
 DEFAULT_OUT = Path("results/crt")
@@ -24,6 +25,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--trials", type=int, default=60)
     parser.add_argument("--seed", type=int, default=20261030)
     parser.add_argument("--max-tests", type=int, default=2)
+    parser.add_argument(
+        "--recovery",
+        action="store_true",
+        help="also run the slow conditional SBC and model-recovery audit",
+    )
     return parser
 
 
@@ -77,7 +83,7 @@ def _specificity_audit(args: argparse.Namespace) -> dict[str, object]:
 
 
 def _reports(args: argparse.Namespace) -> dict[str, dict[str, object]]:
-    return {
+    reports = {
         "CRT_STAGE0E_MODEL_REPAIR.json": _model_report(
             args.participants, args.trials, args.seed, args.max_tests
         ),
@@ -102,6 +108,9 @@ def _reports(args: argparse.Namespace) -> dict[str, dict[str, object]]:
             PsychometricConfig(n_participants=60, n_tests=6, seed=args.seed)
         ),
     }
+    if getattr(args, "recovery", False):
+        reports["CRT_STAGE0E_RECOVERY.json"] = run_recovery(RecoveryConfig(seed=args.seed))
+    return reports
 
 
 def _write_reports(out_dir: Path, reports: dict[str, dict[str, object]]) -> None:

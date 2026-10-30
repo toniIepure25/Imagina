@@ -286,11 +286,14 @@ stage0e:
   counterfactual_artifact: results/crt/CRT_STAGE0E_COUNTERFACTUAL.json
   policy_artifact: results/crt/CRT_STAGE0E_POLICY.json
   psychometric_artifact: results/crt/CRT_STAGE0E_PSYCHOMETRIC.json
+  recovery_artifact: results/crt/CRT_STAGE0E_RECOVERY.json
   model_repair_gate: ANIMUS_P5_CRT_MODEL_REPAIR
+  recovery_gate: ANIMUS_P5_CRT_RECOVERY_BELIEF
   counterfactual_gate: ANIMUS_P5_CRT_COUNTERFACTUAL
   policy_gate: ANIMUS_P5_CRT_POLICY
   psychometric_gate: ANIMUS_P5_CRT_PSYCHOMETRIC
   note: >-
     Belief-based prediction with outcome-only source updating. Oracle inflation 0.101. Specificity,
-    dual-prediction, and policy claims are LIMITED; psychometric facets and model repair pass in
-    simulation. No human study is authorized by these results.
+    dual-prediction, and policy claims are LIMITED; psychometric facets, model repair, and conditional
+    belief-readout recovery pass in simulation. The recovery check fixes d, guessing, and response
+    bias and is not full hierarchical SBC. No human study is authorized by these results.

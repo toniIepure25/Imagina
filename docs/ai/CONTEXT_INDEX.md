@@ -39,15 +39,17 @@
 
 1. `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md` — CRT construct, task, model, and boundaries
 2. `docs/program/CRT_STAGE0E_PROTOCOL.md` — model repair, dual prediction, policy competition,
-   psychometrics, and current gate decisions
+   psychometrics, conditional recovery/SBC, and current gate decisions
 3. `docs/program/CRT_STAGE0D_PROTOCOL.md` — historical theory tournament and controls; specificity
    result superseded
 4. `docs/research/CRT_MODEL_REPAIR_AUDIT.md`, `CRT_COUNTERFACTUAL_SPEC.md`, and
    `CRT_THEORY_AUDIT.md` — oracle/double-counting audit, dual-prediction specification, and rapid
    evidence review; not systematic
 5. `backend/app/research/crt/` — model, design, metrics, simulation, recovery, power, theory, G-theory,
-   calibration, model repair, counterfactual, policy, psychometrics, PIT calibration screening
-6. Run `python -m app.cli.crt_stage0e --check` and `--write` from `backend/`; then regenerate the
+   calibration, model repair, counterfactual, policy, psychometrics, PIT calibration screening, and
+   conditional parameter/SBC/model recovery
+6. Run `python -m app.cli.crt_stage0e --check` and `--write` from `backend/`; use
+   `--write --recovery` to regenerate the slow conditional recovery artifact; then regenerate the
    ledger. The Stage 0D CLI is pinned to the historical oracle path. Human calibration and Stage 1A
    remain gated by PI/IRB/funding/registration.
 

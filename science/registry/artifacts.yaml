@@ -302,6 +302,7 @@ artifacts:
       CRT_STAGE0D_SPECIFICITY_PASS: PASS
       CRT_STAGE0D_SPECIFICITY_REVIEW: LIMITED
     required_fields: [protocol, analysis, decision, config, specificity]
+    supersedes: [animus.p5.crt.specificity]
     note: >-
       Belief-based re-analysis of the Stage 0D diagnostic-specificity control. Diagnostic prediction
       accuracy is 0.505 and the source accuracy gain is 0.026 (0.400 vs 0.374), below the
@@ -350,6 +351,21 @@ artifacts:
       is 0.128 versus 0.026 under belief-based prediction, an oracle inflation of 0.101. The source is
       updated from the outcome only. Nested posterior PIT calibration passes (chi-square 15.92,
       critical 21.67). The historical oracle specificity gate is downgraded separately.
+
+  - artifact_id: animus.p5.crt.recovery.belief
+    path: results/crt/CRT_STAGE0E_RECOVERY.json
+    gate_id: ANIMUS_P5_CRT_RECOVERY_BELIEF
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0E_RECOVERY_PASS: PASS
+      CRT_STAGE0E_RECOVERY_REVIEW: LIMITED
+    required_fields: [protocol, analysis, decision, config, parameter_recovery, sbc, model_recovery]
+    note: >-
+      Conditional recovery audit for the repaired readout. pi is recovered with fixed d, guessing, and
+      response bias; conditional SBC uses 200 simulated participants over a uniform pi prior; M0 versus
+      M2 is compared by BIC. This is design identifiability evidence, not human evidence and not full
+      hierarchical SBC.
 
   - artifact_id: animus.p5.crt.counterfactual
     path: results/crt/CRT_STAGE0E_COUNTERFACTUAL.json

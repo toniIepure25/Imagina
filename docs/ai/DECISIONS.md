@@ -1945,4 +1945,36 @@ oracle use for the main simulation; the earlier analysis-plan disclosure covered
 
 ---
 
-*Last updated: 2026-10-30 - ADR-071 CRT Stage 0E model repair and construct audit*
+## ADR-072: CRT Stage 0E — conditional recovery and SBC, not full hierarchical validation
+
+**Status:** Accepted (simulation only)
+**Date:** 2026-10-30
+**Context:** The Stage 0E plan required SBC/model recovery. A full hierarchical SBC with group-level
+parameters and misspecified likelihoods is not feasible in the current simulator slice. Skipping the
+requirement would leave `pi` identifiability untested; calling the PIT check "SBC" would overclaim.
+
+**Decision:**
+
+1. Add a **conditional** recovery audit in `backend/app/research/crt/recovery.py`. Fix `d`, guessing, and
+   response bias; recover prediction precision `pi` over a uniform `[0.40, 2.00]` prior.
+2. Report relative RMSE, absolute bias, correlation, a 10-bin conditional SBC rank histogram, and a
+   BIC comparison of `M0` (no prediction) versus `M2` (single belief readout plus prediction bias).
+3. Gate the result as `ANIMUS_P5_CRT_RECOVERY_BELIEF` with artifact
+   `results/crt/CRT_STAGE0E_RECOVERY.json`.
+4. State explicitly in the artifact note and protocol that this is **not full hierarchical SBC**, does not
+   cover `M3`/`M4`, and is not human evidence.
+5. Keep the slow audit behind `python -m app.cli.crt_stage0e --write --recovery`; the normal `--write`
+   path remains fast.
+6. A PASS does not authorize a human study, a measurement claim, or training/clinical use.
+
+**Consequences:**
+
+- `pi` is identifiable in the 240-trial fixed design with the stated fixed parameters; recovery is weaker
+  at the 60-trial confirmatory design, so the result is a design check only.
+- `M0`/`M2` recovery is strong (`0.9375` balanced accuracy); `M3`/`M4` remain future work.
+- Full hierarchical SBC and misspecified-likelihood calibration remain required before a human-factors
+  pilot.
+
+---
+
+*Last updated: 2026-10-30 - ADR-072 conditional CRT recovery and SBC*

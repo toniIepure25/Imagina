@@ -4,15 +4,17 @@
 
 **Goal:** repair the Stage 0C/0D oracle prediction and prediction/outcome double counting, add a
 dual-hypothesis counterfactual prediction assay, run policy competition, add test-facet reliability
-and posterior PIT calibration, regenerate the canonical simulation artifacts, and downgrade claims
-that do not survive. Simulation only. No human data, API, DB, UI, clinical sample, or neural data.
+and posterior PIT calibration, add conditional SBC/model recovery, regenerate the canonical simulation
+artifacts, and downgrade claims that do not survive. Simulation only. No human data, API, DB, UI,
+clinical sample, or neural data.
 
 **Scope**
 - `backend/app/research/crt/model.py`: belief-based posterior-predictive prediction.
 - `backend/app/research/crt/simulate.py`: `prediction_source`, `prediction_format`, `source_update`;
   outcome-only posterior; dual prediction fields; `cost_only` policy.
-- New modules: `model_repair.py`, `counterfactual.py`, `policy.py`, `psychometrics.py`, `pit.py`.
-- `backend/app/cli/crt_stage0e.py` and five focused test files.
+- New modules: `model_repair.py`, `counterfactual.py`, `policy.py`, `psychometrics.py`, `pit.py`,
+  `recovery.py`.
+- `backend/app/cli/crt_stage0e.py` and six focused test files.
 - Stage 0E artifacts in `results/crt/CRT_STAGE0E_*.json`; new registry gates; downgrade Stage 0D
   specificity gate to `LIMITED` via a superseding belief-based artifact.
 - Docs: Stage 0E protocol, model-repair audit, counterfactual specification, evidence update; update
@@ -28,13 +30,15 @@ that do not survive. Simulation only. No human data, API, DB, UI, clinical sampl
 **Acceptance**
 - `python -m app.cli.crt_stage0e --check` passes.
 - `python -m app.cli.crt_stage0d --check` still passes on the preserved historical oracle path.
-- `ANIMUS_P5_CRT_MODEL_REPAIR=PASS`, `_PSYCHOMETRIC=PASS`; `_SPECIFICITY=LIMITED`,
-  `_COUNTERFACTUAL=LIMITED`, `_POLICY=LIMITED` in the ledger.
+- `ANIMUS_P5_CRT_MODEL_REPAIR=PASS`, `_PSYCHOMETRIC=PASS`, `_RECOVERY_BELIEF=PASS`;
+  `_SPECIFICITY=LIMITED`, `_COUNTERFACTUAL=LIMITED`, `_POLICY=LIMITED` in the ledger.
 - Ruff, focused CRT tests, ledger check, docs links, and `python scripts/verify.py --quick` pass.
 - Each Stage 0E artifact is reproducible from the documented CLI command.
 - No claim status increases; training and clinical remain `BLOCKED`.
 
-**Status:** implemented; verification recorded in the 2026-10-30 Stage 0E session-log entry.
+**Status:** implemented; the recovery artifact is generated with
+`python -m app.cli.crt_stage0e --write --recovery`; verification recorded in the 2026-10-30 Stage 0E
+session-log entry.
 
 ---
 

@@ -669,7 +669,20 @@ calibration and full hierarchical SBC.
 
 ---
 
-*Last updated: 2026-10-30 - RISK-057 oracle prediction and double counting*
+## RISK-058: Conditional recovery could be mistaken for full hierarchical validation
+
+**Risk:** The Stage 0E recovery gate fixes `d`, guessing, and response bias, covers only `M0` versus `M2`,
+and uses a uniform `pi` prior. A PASS could be over-read as full hierarchical SBC or human validation.
+**Impact:** Medium for claim discipline; high if it is used to justify a human study prematurely.
+**Mitigation:** The artifact note, protocol, ADR-072, and gate note state the conditional scope explicitly.
+The recovery audit is opt-in (`--recovery`) so the fast verification path does not imply it was rerun.
+Full hierarchical SBC, joint recovery with free nuisance parameters, and `M3`/`M4` recovery remain
+required before a human-factors pilot.
+**Status:** Documented; not a substitute for human calibration.
+
+---
+
+*Last updated: 2026-10-30 - RISK-058 conditional recovery scope*
 
 *Prior update: 2026-10-25 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
 RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits, RISK-054 generated-skybox

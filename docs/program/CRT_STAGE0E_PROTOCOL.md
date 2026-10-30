@@ -103,6 +103,16 @@ downgrades the claim to descriptive.
 - Fixed-sequence specificity control.
 - Explicit no-double-counting replay test.
 
+### 0E-6 Conditional recovery and SBC
+
+- Recover prediction precision `pi` with `d`, guessing, and response bias fixed.
+- Run a conditional SBC rank histogram over a uniform `pi` prior.
+- Compare `M0` (no prediction) with `M2` (single belief readout plus prediction bias) by BIC.
+- Report relative RMSE, bias, correlation, and the recovery confusion matrix.
+
+This is **conditional** SBC, not full hierarchical SBC. It tests whether the repaired readout is
+identifiable under the stated simulation design; it is not human evidence.
+
 ## 4. Registered artifacts
 
 | Artifact | Path | Gate | Expected status |
@@ -112,6 +122,7 @@ downgrades the claim to descriptive.
 | Dual prediction | [`CRT_STAGE0E_COUNTERFACTUAL.json`](../../results/crt/CRT_STAGE0E_COUNTERFACTUAL.json) | `ANIMUS_P5_CRT_COUNTERFACTUAL` | LIMITED |
 | Policy competition | [`CRT_STAGE0E_POLICY.json`](../../results/crt/CRT_STAGE0E_POLICY.json) | `ANIMUS_P5_CRT_POLICY` | LIMITED |
 | Test facets | [`CRT_STAGE0E_PSYCHOMETRIC.json`](../../results/crt/CRT_STAGE0E_PSYCHOMETRIC.json) | `ANIMUS_P5_CRT_PSYCHOMETRIC` | PASS (simulation only) |
+| Conditional recovery | [`CRT_STAGE0E_RECOVERY.json`](../../results/crt/CRT_STAGE0E_RECOVERY.json) | `ANIMUS_P5_CRT_RECOVERY_BELIEF` | PASS (conditional) |
 
 The historical Stage 0D specificity artifact is preserved unmodified and marked historical. The
 canonical specificity gate now points to the belief-based audit.
@@ -171,6 +182,18 @@ the simulation still supports a descriptive analysis of policy fit.
 
 The weakest facet is fluency (`0.842731`); this is a simulated design property, not a human estimate.
 
+### 5.6 Conditional recovery and SBC
+
+- Parameter recovery: relative RMSE `0.201650`, bias `0.037556`, correlation `0.776806`.
+- Conditional SBC: mean PIT `0.539280`, chi-square `8.50` with 9 df (critical `21.67`).
+- Model recovery (`M0` vs `M2`): balanced accuracy `0.937500`; 21/24 `M2` datasets recovered, 24/24
+  `M0` datasets recovered.
+- Decision: `CRT_STAGE0E_RECOVERY_PASS`.
+
+The repaired readout is identifiable when `d`, guessing, and response bias are fixed and the design
+uses 240 trials. Recovery is weaker at the short 60-trial design; the artifact therefore supports a
+design check, not a claim that the model is true.
+
 ## 6. Decisions
 
 1. **Do not use the Stage 0D oracle specificity result as evidence.** The canonical gate is `LIMITED`.
@@ -182,11 +205,16 @@ The weakest facet is fluency (`0.842731`); this is a simulated design property, 
 5. **Do not register a human study on the basis of Stage 0E.** The next step is a human-factors pilot
    with PI, IRB, funding, and registration gates, not a confirmatory claim.
 6. **Do not upgrade claims.** Training and clinical claims remain `BLOCKED`.
+7. **Treat recovery as conditional.** The `pi` recovery and SBC checks fix `d`, guessing, and response
+   bias; they do not establish full hierarchical identifiability or human validity.
 
 ## 7. Limitations
 
 - All results are simulation-only and depend on the assumed likelihood table.
 - The PIT check is a posterior calibration check, not full hierarchical SBC.
+- The recovery check fixes `d`, guessing, and response bias; it is conditional SBC, not a hierarchical
+  group-level analysis, and it does not include misspecified likelihoods.
+- Model recovery covers `M0` versus `M2` only; `M3` and `M4` are not yet recovered.
 - The dual-prediction arm uses the same fixed test sequence; a policy-level dual advantage has not been
   tested.
 - The test-facet simulation uses a simple additive model; it is not a human generalizability study.
@@ -195,8 +223,8 @@ The weakest facet is fluency (`0.842731`); this is a simulated design property, 
 
 ## 8. Next experiments
 
-1. Fit `M2` (single belief readout), `M3` (dual counterfactual), and `M4` (dual plus error attribution)
-   to simulated data and compare out-of-sample predictive fit.
+1. Extend model recovery to `M3` (dual counterfactual) and `M4` (dual plus error attribution) and
+   compare out-of-sample predictive fit.
 2. Run dual-prediction with a **policy-level** manipulation to test whether counterfactual simulation
    changes test selection, not only report content.
 3. Add full hierarchical SBC with group-level parameters and misspecified likelihoods.
@@ -210,6 +238,7 @@ From `backend/`:
 ```powershell
 python -m app.cli.crt_stage0e --check
 python -m app.cli.crt_stage0e --write --out-dir ..\results\crt
+python -m app.cli.crt_stage0e --write --recovery --out-dir ..\results\crt
 python -m app.cli.science_ledger --check
 python -m app.cli.science_ledger --write
 ```
