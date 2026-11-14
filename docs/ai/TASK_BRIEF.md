@@ -1,6 +1,142 @@
 # TASK_BRIEF.md
 
-## Current task — Phase 0E: CRT model repair, counterfactual audit, and psychometrics (2026-10-30)
+## Current task — Phase 0I: identification-first adjudication and policy layer (2026-10-31)
+
+**Goal:** make the CRT package top-tier by fixing the full-model likelihood bug, auditing sources,
+adding formal pairwise identifiability and full-joint-model design screening, a policy-choice layer,
+an optional NumPyro backend, and Stage 0I registry gates. Computational and documentation only.
+
+**Scope**
+- `analysis/crt/full_model.py`, `identifiability.py`, `policy_model.py`, `inference.py`,
+  `design_optimization.py`.
+- `backend/app/cli/crt_stage0i.py`; `backend/app/tests/test_crt_stage0i.py`.
+- `science/protocols/crt-v1.yaml` v0.7.0; Stage 0I artifacts and seven gates.
+- `docs/research/CRT_SOURCE_AUDIT.md`, `CRT_STAGE0I_PROTOCOL.md`.
+
+**Non-goals**
+- No human data, pilot, IRB, recruitment, clinical sample, API/DB/UI, or neural data.
+- No claim upgrade; no “first”, “revolutionary”, or priority language.
+- Quick screening is not target-scale SBC; no threshold tuning is authorized.
+
+**Acceptance**
+- Full-model prediction double count is fixed and regression-tested.
+- Source audit and Stage 0I artifacts exist with honest decisions.
+- Protocol audit, focused tests, ruff, ledger, docs links, and `verify.py --quick` pass.
+- Human collection remains blocked.
+
+**Status:** implemented and verified at the code-path/governance level. Source audit PASS; inference
+backend BLOCKED (NumPyro absent); quick identifiability, design, policy calibration, policy recovery,
+full-model Laplace SBC/recovery, target projection, and target readout design are REVIEW/LIMITED;
+readiness is BLOCKED. The target readout screen runs at N=432/T=240 but fails to recover M7, so the
+next step is a full-model design/SBC revision under NUTS, not recruitment.
+
+---
+
+## Previous task — Phase 0H: rival-account models, design optimization, and adversarial package (2026-10-31)
+
+**Goal:** make CRT a theory-discriminating program by implementing M6/M7, adding an offline
+model-discrimination design screen, a full joint latent-source model, pre-specified SBC/recovery gates,
+and an adversarial/Registered Report package. Computational and documentation only.
+
+**Scope**
+- `analysis/crt/trial_model.py` (M6/M7), `analysis/crt/design_optimization.py`,
+  `analysis/crt/full_model.py`.
+- `backend/app/cli/crt_stage0h.py`; `backend/app/tests/test_crt_stage0h.py`.
+- `docs/program/CRT_STAGE0H_PROTOCOL.md`, `CRT_ADVERSARIAL_COLLABORATION.md`,
+  `CRT_REGISTERED_REPORT_PACKAGE.md`, `CRT_NEURAL_EXTENSION.md`.
+- `science/protocols/crt-v1.yaml` v0.6.0; registry artifacts/gates; Stage 0H results.
+
+**Non-goals**
+- No human data, pilot, IRB, recruitment, clinical sample, API/DB/UI, or neural data.
+- No claim upgrade; no "first"/"revolutionary"/priority language.
+- The full joint model observes test choice; it is not the policy POMDP.
+
+**Acceptance**
+- M0–M7 model space and M6/M7 covariates are explicit and tested.
+- Design optimization, full-model SBC, and recovery artifacts are generated with honest decisions.
+- Protocol audit, focused tests, ledger, ruff, docs links, and `verify.py --quick` pass.
+- Human collection remains blocked.
+
+**Status:** implemented and verified. Model space passes; design optimization is `REVIEW` (0.625 minimum
+pairwise); full-model screening SBC/recovery are `REVIEW`; readiness is `BLOCKED`. `verify.py --quick`
+passes (4 passed, 2 skipped; backend 684.9s). The result is a design diagnosis, not human evidence.
+
+---
+
+## Previous task — Phase 0G: CRT theory adjudication, trial-level model, and calibration planning (2026-10-31)
+
+**Goal:** make CRT a theory-adjudicating registered program by adding a formal three-account test,
+a trial-level hierarchical readout model with SBC/recovery, an N=480/d=0.20 design, and a calibration
+protocol. Computational and documentation only.
+
+**Scope**
+- `docs/research/CRT_STAGE0G_SCOPING_PROTOCOL.md`; `docs/program/CRT_THEORY_ADJUDICATION.md`;
+  `docs/program/CRT_STAGE0G_PROTOCOL.md`; `docs/program/CRT_CALIBRATION_PROTOCOL.md`.
+- `analysis/crt/trial_model.py` and `backend/app/tests/test_crt_trial_model.py`.
+- `science/protocols/crt-v1.yaml` version 0.5.0; `backend/app/research/crt/protocol.py` Stage 0G
+  design fields; preregistration/analysis-plan/spec H1 SESOI updates.
+- New Stage 0G artifacts; registry gates and docs.
+
+**Non-goals**
+- No human calibration, pilot, confirmatory study, IRB, recruitment, or clinical sample.
+- No API, DB, UI, neural data, training RCT, or claim upgrade.
+- No “first”, “revolutionary”, or priority language.
+- The trial-level readout model is not the full CRT POMDP; that remains a registration blocker.
+
+**Acceptance**
+- Scoping protocol and theory table exist with exact query counts and non-systematic caveat.
+- Trial-level SBC and recovery artifacts are generated with scope strings and explicit limitations.
+- Protocol audit accepts N=480/d=0.20/calibration N=80; preregistration and analysis plan match.
+- Focused tests, ruff, ledger check, docs links, and `python scripts/verify.py --quick` pass.
+- No claim status increases; human collection remains blocked.
+
+**Status:** implemented as a computational/documentation slice. Trial-level readout SBC passes (target
+`delta_d` coverage 0.955). Recovery is a post hoc M0/M2/M4 conditional pass (0.90) after the full-set
+runs failed (0.375 prior-averaged; 0.733 effect-conditioned); the gate is `LIMITED`. Calibration is
+protocol-only. Registration remains `BLOCKED`; full joint CRT POMDP SBC, pre-specified full-set
+recovery, calibration, model-based power, independent review, and ethics remain required.
+
+---
+
+## Previous task — Phase 0F: CRT protocol integrity, design power, and distortion assay (2026-10-30)
+
+**Goal:** make the CRT registration decision-complete and falsifiable by fixing trial arithmetic and
+contrast confounding, quantifying design power, validating a false-seen distortion assay, adding a
+conditional hierarchical screening and endpoint-level full SBC/model recovery, and blocking
+registration until the remaining statistical work is done. Simulation and documentation only.
+
+**Scope**
+- `science/protocols/crt-v1.yaml` version 0.4.0 and `backend/app/research/crt/protocol.py`.
+- `backend/app/research/crt/design.py` design-power grid; `distortion.py` assay; `hierarchical.py`
+  screening.
+- `analysis/crt/hierarchical_sbc.py`: standalone endpoint-level full hierarchical SBC and M0/M2/M3/M4
+  recovery.
+- `backend/app/cli/crt_stage0f.py`; `app/tests/test_crt_stage0f.py`.
+- Canonical artifacts `results/crt/CRT_STAGE0F_*.json`; registry gates.
+- Docs: Stage 0F protocol, preregistration, analysis plan, counterfactual spec, literature positioning,
+  ADR-073, RISK-059, task brief, session log, status.
+
+**Non-goals**
+- No human calibration, pilot, confirmatory study, IRB, recruitment, or clinical sample.
+- No API, DB, UI, neural data, training RCT, or claim upgrade.
+- No trial-level CRT hierarchical SBC; endpoint-level SBC is complete.
+- No “first”, “revolutionary”, or priority language.
+
+**Acceptance**
+- `python -m app.cli.crt_stage0f --check` passes protocol integrity.
+- Protocol audit passes; design power, distortion, hierarchical screening, endpoint hierarchical SBC,
+  and M0/M2/M3/M4 recovery artifacts are regenerated; registration package is `BLOCKED` with explicit
+  blockers.
+- Focused tests, ruff, ledger check, docs links, and `python scripts/verify.py --quick` pass.
+- No claim status increases; human collection remains blocked.
+
+**Status:** implemented; the design-power result is `REVIEW` because N=240 is underpowered for d=0.20.
+Endpoint SBC and M0/M2/M3/M4 recovery pass; registration is blocked pending design revision and a
+trial-level CRT hierarchical SBC.
+
+---
+
+## Previous task — Phase 0E: CRT model repair, counterfactual audit, and psychometrics (2026-10-30)
 
 **Goal:** repair the Stage 0C/0D oracle prediction and prediction/outcome double counting, add a
 dual-hypothesis counterfactual prediction assay, run policy competition, add test-facet reliability

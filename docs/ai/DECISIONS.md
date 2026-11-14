@@ -1977,4 +1977,168 @@ requirement would leave `pi` identifiability untested; calling the PIT check "SB
 
 ---
 
-*Last updated: 2026-10-30 - ADR-072 conditional CRT recovery and SBC*
+## ADR-073: CRT Stage 0F — fix protocol arithmetic, yoked primary contrast, and block registration
+
+**Status:** Accepted (simulation and documentation only)
+**Date:** 2026-10-30
+**Context:** The Stage 1 documents contained contradictory trial counts and a primary contrast
+(`active_predict` versus `active_intervene`) that mixed prediction with self-selected test policy. The
+N=240 power claim for d=0.20 had no condition-contrast simulation. Registering the study without repair
+would have made the headline result uninterpretable.
+
+**Decision:**
+
+1. Canonical design: 120 trials per occasion = 4 cells × 25 + 20 `observe`; 240 total.
+2. Primary H1 is `yoked_predict` minus `yoked_intervene`. The active contrast is a secondary package
+   effect.
+3. Add `backend/app/research/crt/protocol.py` and `science/protocols/crt-v1.yaml` as the machine-readable
+   source of truth; gate `ANIMUS_P5_CRT_PROTOCOL_INTEGRITY`.
+4. Add a design-power surface. At N=240 and d=0.20, power is approximately 0.61, so the registered design
+   is **REVIEW**. Defensible alternatives are N≈520 for d=0.20 or d=0.30 for N=240.
+5. Add a distortion assay validated against an injected +5pp shift. Separate the `b_pi=0` readout-only
+   null from a `b_pi=0.4` model-predicted bias channel.
+6. Add a conditional group-mean screening **and** a standalone endpoint-level full hierarchical SBC
+   with M0/M2/M3/M4 recovery (`analysis/crt/hierarchical_sbc.py`). The endpoint model covers the
+   Stage 1D paired false-seen contrast, not the trial-level CRT source-monitoring model.
+7. Registration is **BLOCKED** until design power, a trial-level CRT hierarchical SBC, independent
+   review, and ethics approval are complete.
+8. No human data, clinical claim, measurement claim, or priority claim is authorized.
+
+**Consequences:**
+
+- The arithmetic and contrast defects are fixed in the preregistration and spec.
+- The N=240/d=0.20 design can no longer be described as adequately powered.
+- Endpoint SBC passes (mean rank 0.505, coverage 0.936); M0/M2/M3/M4 endpoint recovery balanced
+  accuracy is 0.855, just above threshold.
+- Stage 1D (single vs dual vs dual-nondiagnostic) is the human test of the counterfactual cost.
+- The `counterfactual_reality_testing` label remains provisional; the fallback is prospective reality
+  testing.
+
+---
+
+## ADR-074: CRT Stage 0G — three-account adjudication, N=480, and trial-level readout validation
+
+**Status:** Accepted (computational and documentation only)
+**Date:** 2026-10-31
+**Context:** Stage 0F fixed the design arithmetic but left CRT as a single hypothesis. The 2025–2026
+literature contains a credible signal-strength account and a higher-order precision account; a
+top-tier contribution must adjudicate among them. The N=240/d=0.20 design is underpowered.
+
+**Decision:**
+
+1. Stage 0G tests three accounts: signal-strength threshold, higher-order precision, and active
+   prospective inference. The decision table and falsification rules are in
+   `docs/program/CRT_THEORY_ADJUDICATION.md`.
+2. The main design is N=480, d=0.20, two occasions, 120 trials/day. N=360 is acceptable only with
+   d=0.25 pre-registered.
+3. `analysis/crt/trial_model.py` adds a trial-level hierarchical **readout** model with M0–M5,
+   numerical-Hessian Laplace posterior, SBC, and BIC recovery. Scope is
+   `trial_level_hierarchical_readout_not_full_crt_pomdp`; it is not the full CRT POMDP. Full-set
+   recovery failed (0.375 prior-averaged; 0.733 effect-conditioned); a post hoc M0/M2/M4 sensitivity
+   reaches 0.90 and is recorded as `CONDITIONAL_PASS`, not `PASS`.
+4. `science/protocols/crt-v1.yaml` moves to version 0.5.0 with N=480, d=0.20, calibration N=80, and a
+   model-based primary endpoint.
+5. Registration remains **BLOCKED**. Full joint trial-level SBC/recovery, calibration, independent
+   review, and ethics are still required.
+6. No human data, clinical claim, neural-decoding claim, measurement upgrade, or priority claim.
+
+**Consequences:**
+
+- The preregistration no longer uses d=0.30 to compensate for an underpowered N=240 design.
+- The theory competition is explicit and falsifiable rather than implied.
+- The readout model is a validation step; it cannot substitute for the full source/policy model.
+- The rapid scoping review is labelled non-systematic and cannot support a priority claim.
+
+---
+
+## ADR-075: CRT Stage 0H — rival-account models, design optimization, and an honest REVIEW
+
+**Status:** Accepted (computational and documentation only)
+**Date:** 2026-10-31
+**Context:** Stage 0G declared three accounts but did not implement the M6/M7 rivals. Its trial-level
+readout recovery was `LIMITED`, and a design that cannot separate M2/M4/M6/M7 cannot support a
+confirmatory theory claim. A stronger package must make the rivals estimable and stop when the design
+does not discriminate.
+
+**Decision:**
+
+1. Implement M6 (vividness/signal strength) and M7 (higher-order precision) in
+   `analysis/crt/trial_model.py`; the confirmatory set is M0/M2/M4/M6/M7 and M1/M3/M5 are exploratory.
+2. Add `analysis/crt/design_optimization.py` for offline maximin model-discrimination screening and
+   `analysis/crt/full_model.py` for a joint latent-source model with observed test choice.
+3. Protocol moves to v0.6.0, Stage 0H, with the model space, design-optimization requirement,
+   full-model scope, adversarial-review draft, and optional neural extension recorded.
+4. Report the gates as recorded: model space `PASS`; design optimization `REVIEW`; full-model SBC
+   `REVIEW`; full-model recovery `REVIEW`; readiness `BLOCKED`. Do not relabel `REVIEW` as `PASS`.
+5. The full joint model is not the policy POMDP; the scope string is
+   `full_joint_source_monitoring_latent_state_not_policy_pomdp`.
+6. No human data, clinical claim, neural-decoding claim, measurement upgrade, priority claim, or
+   "revolutionary"/"first" language.
+
+**Consequences:**
+
+- The package now has a real falsification target for the strongest rivals, but the current design
+  cannot yet separate them; the next step is model/design revision, not recruitment.
+- The Stage 0H artifacts are screening evidence, not publication-grade validation.
+- Registration remains blocked, with the blockers enumerated in `CRT_STAGE0H_PACKAGE.json`.
+
+---
+
+## ADR-076: CRT Stage 0I — identification-first adjudication, policy layer, and corrected likelihood
+
+**Status:** Accepted (computational and documentation only)
+**Date:** 2026-10-31
+**Context:** Stage 0H produced a full-model artifact that counted the prediction-source coefficient
+twice, used a readout surrogate for design optimization, and had no formal pairwise identifiability or
+policy-choice comparison. A top-tier package must first show that its model space is identifiable and
+that its design can separate rivals, or honestly narrow the claim.
+
+**Decision:**
+
+1. Fix the full-model prediction probability to `expit(pi * logit(q))`; add a regression test that
+   fails if `alpha_pi` is counted twice.
+2. Replace the readout-only design claim with `run_hierarchical_design_optimization`, which uses the
+   full joint likelihood and can PASS only with the complete confirmatory model set.
+3. Add `analysis/crt/identifiability.py`; PASS requires all five confirmatory models plus Wilson
+   lower-bound margins. A REVIEW is a negative design diagnosis, not a threshold to tune.
+4. Add `analysis/crt/policy_model.py`; its “SBC” is explicitly a discrete policy-model rank
+   calibration, not continuous-parameter SBC. Policy recovery is not human evidence.
+5. Add optional NumPyro/JAX via the `crt` extra. When unavailable, the inference gate is BLOCKED and
+   Laplace remains screening-only. Do not present Laplace as confirmatory.
+6. Move protocol to v0.7.0/Stage 0I and add seven Stage 0I artifacts/gates. Quick-screen artifacts do
+   not establish target-scale identifiability.
+7. No human data, clinical claim, decoding claim, measurement upgrade, priority claim, or
+   "revolutionary"/"first" language.
+
+**Consequences:**
+
+- The corrected full model invalidates any Stage 0H prediction-source numerical result that depended
+  on the double count; Stage 0H artifacts remain historical.
+- The current package is source-audited and executable but not empirically ready. Readiness remains
+  BLOCKED on the target-scale run, NumPyro, independent review, adversarial agreement, calibration,
+  registration, and ethics.
+- The honest contribution is an identification-first Bayesian adversarial adjudication of reality
+  monitoring, conditional on the design eventually separating the models.
+
+---
+
+## ADR-077: Target-scale design screen uses the bounded hierarchical readout, not a projection
+
+**Status:** Accepted (screening only)
+**Date:** 2026-10-31
+**Context:** A full N=432/T=240 joint-model fit is not feasible with numerical gradients and a
+finite-difference Hessian, so the target-scale design question had only a pilot projection.
+
+**Decision:** Add a target-scale N=432/T=240 screen with the hierarchical readout model and
+`laplace=False`; bound the random-effect optimization to prevent boundary overflow. Record it as
+`CRT_STAGE0I_TARGET_DESIGN_READOUT` and map both PASS and REVIEW to `LIMITED`. The pilot projection
+remains a separate artifact and is not a substitute.
+
+**Consequences:** The screen runs in ~9 minutes for two candidates and is a genuine target-size
+hierarchical computation, but it is still a readout surrogate, not the full joint model, not SBC, and
+not human evidence. A failure is a design/model diagnosis, not proof that the full model is
+unidentifiable.
+
+---
+
+*Last updated: 2026-10-31 - ADR-076 CRT Stage 0I identification-first package; ADR-077 target readout screen*
