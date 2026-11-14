@@ -1,0 +1,90 @@
+{
+  "analysis": "stage0i_policy_recovery",
+  "config": {
+    "agency_weight": 0.1,
+    "complexity_weight": 0.1,
+    "cost_weight": 0.25,
+    "lapse": 0.02,
+    "n_parameter_draws": 20,
+    "n_parameter_sbc": 2,
+    "n_participants": 4,
+    "n_simulations": 1,
+    "n_trials": 12,
+    "parameter_sbc_high": 0.99,
+    "parameter_sbc_low": 0.9,
+    "positive_bias": 0.75,
+    "recovery_threshold": 0.85,
+    "seed": 20261031,
+    "temperature": 1.0
+  },
+  "confusion": [
+    [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
+  ],
+  "decision": "CRT_STAGE0I_POLICY_RECOVERY_REVIEW",
+  "minimum_accuracy": 0.0,
+  "note": "Policy-choice recovery in simulation; it does not show that participants use a policy.",
+  "per_policy_accuracy": {
+    "cost_only": 0.0,
+    "fixed": 1.0,
+    "meta_eig": 0.0,
+    "outcome_eig": 0.0,
+    "positive_testing": 0.0,
+    "random": 1.0
+  },
+  "policies": [
+    "fixed",
+    "random",
+    "meta_eig",
+    "outcome_eig",
+    "positive_testing",
+    "cost_only"
+  ],
+  "scope": "policy_choice_simulation_not_human_evidence"
+}

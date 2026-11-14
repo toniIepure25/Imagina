@@ -1,0 +1,25 @@
+{
+  "protocol": "ANIMUS-CRT-v1",
+  "analysis": "stage0g_calibration_protocol",
+  "status": "PROTOCOL_ONLY_HUMAN_DATA_GATED",
+  "n_participants": 80,
+  "trials_per_participant": 120,
+  "sources": {
+    "seen": 30,
+    "imagined": 30,
+    "described": 30,
+    "new": 30
+  },
+  "primary_endpoint": "source_by_test_accuracy_matrix",
+  "model": "hierarchical_beta_binomial",
+  "pass_rules": {
+    "minimum_retained_diagnosticity": 0.65,
+    "maximum_credible_interval_width": 0.15,
+    "maximum_standardized_invariance_difference": 0.25,
+    "minimum_test_retest_icc": 0.70,
+    "posterior_predictive_misfit": "none_systematic"
+  },
+  "fallback": "raw_source_accuracy_endpoint_if_calibration_fails",
+  "blinding": "calibration analyst independent of main confirmatory analysis",
+  "note": "Protocol only. No human calibration data exist. Not a measurement-validation claim and not evidence for CRT."
+}

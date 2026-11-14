@@ -25,6 +25,59 @@
 
 ---
 
+## Research protocol or simulation change
+
+1. `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md` — ART construct, task, model, and boundaries
+2. `docs/program/ART_PREREGISTRATION.md` and `docs/program/ART_ANALYSIS_PLAN.md` — draft study and
+   statistical plan
+3. `science/protocols/art-v1.yaml` — machine-readable `ANIMUS-ART-v1`
+4. `backend/app/research/art/` — model, design, metrics, simulator, power
+5. Run `python -m app.cli.art_simulate --check` and `python -m app.cli.art_power --check` from
+   `backend/`; regenerate artifacts only with the documented CLI commands.
+
+## CRT protocol or theory change
+
+1. `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md` — CRT construct, task, model, and boundaries
+2. `docs/research/CRT_STAGE0I_PROTOCOL.md` — Stage 0I identification-first design, policy layer,
+   inference backend, artifact statuses, and blockers
+3. `docs/research/CRT_SOURCE_AUDIT.md` — Stage 0I DOI/PMID metadata, Corcoran correction, and
+   non-systematic caveat
+4. `docs/program/CRT_STAGE0H_PROTOCOL.md` — historical Stage 0H model space, design optimization, full
+   joint model, adversarial review package, and `REVIEW`/`BLOCKED` gates
+5. `docs/program/CRT_STAGE0G_PROTOCOL.md` — historical Stage 0G theory adjudication, N=480,
+   trial-level readout model, calibration plan, and blockers
+6. `docs/program/CRT_THEORY_ADJUDICATION.md` — signal-strength vs higher-order precision vs active
+   prospective inference; eight predictions and falsification rules
+7. `docs/program/CRT_ADVERSARIAL_COLLABORATION.md` and `CRT_REGISTERED_REPORT_PACKAGE.md` — review
+   roles, red-team tests, and Stage 1/Stage 2 package
+8. `docs/program/CRT_NEURAL_EXTENSION.md` — optional Stage 1E EEG component, BIDS/QC, no decoding claim
+9. `docs/research/CRT_STAGE0G_SCOPING_PROTOCOL.md` — exact query log, eligibility, screening, and
+   non-systematic caveat
+10. `docs/program/CRT_CALIBRATION_PROTOCOL.md` — independent N=80 likelihood-table calibration,
+    invariance, ICC, freeze/fallback rules
+11. `docs/program/CRT_STAGE0F_PROTOCOL.md` — historical Stage 0F protocol audit, design power, distortion
+    assay, hierarchical screening, and registration blockers
+12. `docs/research/CRT_LITERATURE_POSITIONING.md` — source-to-claim trail and gap caveat
+13. `docs/program/CRT_STAGE0E_PROTOCOL.md` — model repair, dual prediction, policy competition,
+   psychometrics, conditional recovery/SBC, and current gate decisions
+9. `docs/program/CRT_STAGE0D_PROTOCOL.md` — historical theory tournament and controls; specificity
+   result superseded
+10. `docs/research/CRT_MODEL_REPAIR_AUDIT.md`, `CRT_COUNTERFACTUAL_SPEC.md`, and
+    `CRT_THEORY_AUDIT.md` — oracle/double-counting audit, dual-prediction specification, and rapid
+    evidence review; not systematic
+11. `backend/app/research/crt/` — model, design, metrics, simulation, recovery, power, theory, G-theory,
+    calibration, model repair, counterfactual, policy, psychometrics, PIT calibration screening,
+    conditional parameter/SBC/model recovery, protocol audit, design power, distortion, and hierarchical
+    screening; `analysis/crt/hierarchical_sbc.py` — standalone endpoint-level full SBC/model recovery;
+    `analysis/crt/trial_model.py` — trial-level readout SBC/recovery
+12. Run `python -m app.cli.crt_stage0f --check` and `--write` from `backend/` for Stage 0F; run
+    `python -m analysis.crt.trial_model --sbc --model M2` and `--recovery` from the repository root for
+    Stage 0G; run `python -m app.cli.crt_stage0e --check` and `--write` for the preserved Stage 0E
+    artifacts; use `--write --recovery` to regenerate the slow conditional recovery artifact; then
+    regenerate the ledger. Human calibration and Stage 1A remain gated by PI/IRB/funding/registration.
+
+---
+
 ## Multimodal acquisition / closed-loop work
 
 1. `docs/multimodal_platform.md` — architecture, status table, limitations
@@ -145,6 +198,22 @@
 
 ---
 
+---
+
+## Source Monitoring / ART / CRT
+
+1. `docs/animus/SOURCE_MONITORING_SPEC.md` — passive source-monitoring construct
+2. `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md` — active evidence selection and `ARTE`
+3. `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md` — prospective prediction, meta-EIG, and `CRTE`
+4. `docs/program/PRM_PREREGISTRATION.md`, `ART_PREREGISTRATION.md`, `CRT_PREREGISTRATION.md` — draft registered reports
+5. `docs/program/PRM_ANALYSIS_PLAN.md`, `ART_ANALYSIS_PLAN.md`, `CRT_ANALYSIS_PLAN.md` — draft statistical analysis plans
+6. `science/protocols/prm-v1.yaml`, `art-v1.yaml`, `crt-v1.yaml` — machine-readable protocols
+7. `backend/app/research/prm/`, `art/`, `crt/` — simulation cores; no API, DB, or human-data surface
+8. `results/prm/`, `results/art/`, `results/crt/` — canonical Stage 0 artifacts
+9. `science/registry/claims.yaml`, `gates.yaml`, `artifacts.yaml` — claim/gate/artifact registry
+
+---
+
 ## Writing Tests
 
 1. `docs/ai/TASK_BRIEF.md` — acceptance criteria and verification
@@ -163,4 +232,4 @@
 
 ---
 
-*Last updated: 2026-10-23*
+*Last updated: 2026-10-29*

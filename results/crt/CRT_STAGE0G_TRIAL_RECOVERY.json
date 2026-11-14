@@ -1,0 +1,46 @@
+{
+  "balanced_accuracy": 0.9,
+  "config": {
+    "coverage_high": 0.97,
+    "coverage_low": 0.93,
+    "max_iter": 1000,
+    "n_participants": 32,
+    "n_posterior_draws": 100,
+    "n_recovery": 10,
+    "n_sbc": 1000,
+    "n_trials": 160,
+    "recovery_threshold": 0.85,
+    "seed": 20261031
+  },
+  "confusion": [
+    [
+      7,
+      2,
+      1
+    ],
+    [
+      0,
+      10,
+      0
+    ],
+    [
+      0,
+      0,
+      10
+    ]
+  ],
+  "decision": "CRT_STAGE0G_TRIAL_RECOVERY_CONDITIONAL_PASS",
+  "models": [
+    "M0",
+    "M2",
+    "M4"
+  ],
+  "note": "BIC-based recovery among effect-conditioned trial-level readout models; not a full CRT POMDP comparison. The conditioning is necessary because the models are nested and a prior-averaged draw would often generate a null effect that M0 should win. A conditional pass after reducing the model set is not equivalent to a pre-specified full-set pass.",
+  "recovery_conditions": {
+    "conditioning": "each active condition effect has |delta| >= min_abs_effect",
+    "effect_scale": 0.8,
+    "min_abs_effect": 0.25
+  },
+  "scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+  "selection_status": "post_hoc_after_full_set_review"
+}

@@ -1,0 +1,38 @@
+{
+  "config": {
+    "coverage_high": 0.97,
+    "coverage_low": 0.93,
+    "max_iter": 1000,
+    "n_participants": 20,
+    "n_posterior_draws": 200,
+    "n_recovery": 100,
+    "n_sbc": 1000,
+    "n_trials": 60,
+    "recovery_threshold": 0.85,
+    "seed": 20261031
+  },
+  "convergence_rate": 0.99,
+  "decision": "CRT_STAGE0G_TRIAL_SBC_PASS",
+  "metrics": {
+    "alpha_d": {
+      "chi_square": 111.82000000000001,
+      "coverage": 0.838,
+      "max_bin": 168,
+      "mean_rank": 0.490285,
+      "min_bin": 67
+    },
+    "delta_d": {
+      "chi_square": 21.66,
+      "coverage": 0.955,
+      "max_bin": 129,
+      "mean_rank": 0.502495,
+      "min_bin": 84
+    }
+  },
+  "model": "M2",
+  "note": "Laplace-approximate trial-level readout model; not a full CRT POMDP posterior. The decision uses the active condition-effect parameters; alpha_d is diagnostic.",
+  "scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+  "target_parameters": [
+    "delta_d"
+  ]
+}

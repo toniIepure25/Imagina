@@ -1,0 +1,161 @@
+protocol_id: ANIMUS-ART-v1
+version: 0.1.0
+status: draft
+claim_ceiling: L1_BEHAVIORAL_ASSISTED
+registered: false
+registration_note: >-
+  Stage 0B specification only. No human data may be collected under this protocol until the
+  preregistration is registered and ethics approval is documented.
+
+construct:
+  name: active_reality_testing
+  definition: >-
+    The accuracy, calibration, and efficiency with which a person selects and uses evidence to
+    resolve uncertainty about whether an experience was seen, imagined, described, or is new.
+  not:
+    - neural_decoding
+    - diagnostic_classification
+    - imagery_strength
+    - composite_score
+    - clinical_prediction
+
+sources: [seen, imagined, described, new]
+
+cards:
+  - card_id: perceptual
+    name: Perceptual detail
+    likelihood_positive: {seen: 0.80, imagined: 0.35, described: 0.25, new: 0.20}
+    cost: 1.0
+  - card_id: generation
+    name: Generation tag
+    likelihood_positive: {seen: 0.30, imagined: 0.75, described: 0.55, new: 0.20}
+    cost: 1.0
+  - card_id: context
+    name: Context tag
+    likelihood_positive: {seen: 0.70, imagined: 0.65, described: 0.60, new: 0.20}
+    cost: 1.0
+  - card_id: novelty
+    name: Novelty tag
+    likelihood_positive: {seen: 0.20, imagined: 0.25, described: 0.30, new: 0.80}
+    cost: 1.0
+
+design:
+  task: four_alternative_source_judgment_with_evidence_selection
+  confidence_range: [0.05, 1.0]
+  abstention_allowed: true
+  trials_per_occasion: 80
+  active_trials_per_occasion: 40
+  yoked_trials_per_occasion: 40
+  max_queries_per_trial: 2
+  card_replacement: false
+  budget_points: 60
+  occasions_days: [0, 14]
+  blocks: [active, yoked_passive]
+  order: counterbalanced
+  cost_manipulation: [low, high]
+  reliability_manipulation: [high, low]
+  training_trials: 10
+  meta_d_prime_min_trials: 200
+  yoked:
+    match: item_order_card_sequence_time_on_task
+    fallback: stratified_random
+    fallback_logged: true
+
+model:
+  evidence_model: naive_bayes_source_posterior
+  evidence_gain: logit_scaled
+  policy: normalized_expected_information_gain_minus_cost
+  utility: "beta * (EIG / max(EIG) - lambda * cost)"
+  stopping: "softmax_includes_tau"
+  baselines: [greedy_eig, random_eig, fixed_threshold, heuristic, confidence_in_control]
+  parameters: [d, bias, meta_d_prime, beta, lambda, tau, lapse]
+  art_e:
+    numerator: human_eig_minus_random_eig
+    denominator: greedy_eig_minus_random_eig
+    bounds: [0, 1]
+    insufficient_queries: null
+
+estimands:
+  primary:
+    - art_e
+    - d_prime_seen_imagined
+    - brier_score
+    - active_vs_yoked_accuracy_or_calibration
+  secondary:
+    - criterion_c
+    - externalization_rate
+    - expected_calibration_error
+    - overconfidence
+    - sampling_quality
+    - termination_quality
+    - number_of_cards
+    - cost_sensitivity
+    - mutual_information_card_source
+    - meta_d_prime
+  forbidden:
+    - composite_reality_score
+    - diagnosis
+    - imagery_strength
+    - neural_content
+    - clinical_prediction
+
+reliability:
+  model: ICC(2,1)
+  target: 0.75
+  lower_ci_target: 0.60
+  sem: true
+  mdc95: true
+  occasion_pair_days: [0, 14]
+
+validation:
+  framework: COSMIN
+  content_validity_n: 24
+  target_n: 180
+  pilot_n: 40
+  strata:
+    aphantasia_or_hypophantasia: 60
+    typical: 60
+    hyperphantasia: 60
+  convergent: [sim_d_prime, sim_meta_d_prime, vviq2, siaq]
+  discriminant: [beads_draws, working_memory]
+  invariance:
+    delta_cfi_max: 0.01
+    delta_rmsea_max: 0.015
+
+gates:
+  feasibility:
+    completion_min: 0.80
+    comprehension_min: 0.90
+    serious_adverse_events_max: 0
+  reliability:
+    icc_min: 0.75
+    lower_ci_min: 0.60
+  active_benefit:
+    standardized_difference_min: 0.20
+  policy:
+    out_of_sample_advantage_required: true
+  incremental_validity:
+    required: true
+  discriminant:
+    beads_r_max: 0.70
+  training:
+    blocked_until_measurement_pass: true
+  clinical:
+    blocked: true
+
+boundaries:
+  clinical_sample: false
+  neural_data: false
+  diagnosis: false
+  llm_in_loop: false
+  external_api: false
+  priority_claim: false
+  revolutionary_language: false
+
+stage0b:
+  simulation_artifact: results/art/ART_STAGE0_SIMULATION.json
+  power_artifact: results/art/ART_STAGE0_POWER.json
+  recovery_artifact: results/art/ART_MODEL_RECOVERY.json
+  note: >-
+    Simulation-only design gates. A PASS does not validate the task in humans and does not authorize
+    a measurement claim.

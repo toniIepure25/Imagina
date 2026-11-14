@@ -1,0 +1,83 @@
+{
+  "comparison": {
+    "adaptive": {
+      "mean_final_entropy": 0.814693,
+      "recovery_bias": 0.050867,
+      "recovery_rmse": 0.197359
+    },
+    "entropy_reduction_fraction": 0.289328,
+    "fixed": {
+      "mean_final_entropy": 1.14637,
+      "recovery_bias": 0.074045,
+      "recovery_rmse": 0.256548
+    },
+    "gate": "PASS",
+    "note": "Stage 0 uses a fixed stratified schedule as a stand-in for the human yoked control; the human study implements true yoking."
+  },
+  "config": {
+    "n_items": 60,
+    "n_participants": 120,
+    "n_trials": 120,
+    "seed": 20261029,
+    "true_d_mean": 1.5,
+    "true_d_sd": 0.35
+  },
+  "decision": "PRM_STAGE0_SIMULATION_PASS",
+  "design": "adaptive",
+  "example": {
+    "accuracy": 0.358333,
+    "brier": 0.255713,
+    "confusion": {
+      "described": {
+        "described": 10,
+        "imagined": 4,
+        "new": 19,
+        "seen": 3
+      },
+      "imagined": {
+        "described": 27,
+        "imagined": 5,
+        "new": 6,
+        "seen": 10
+      },
+      "new": {
+        "described": 6,
+        "imagined": 0,
+        "new": 12,
+        "seen": 0
+      },
+      "seen": {
+        "described": 1,
+        "imagined": 1,
+        "new": 0,
+        "seen": 16
+      }
+    },
+    "criterion": -0.16366,
+    "d_prime": 1.910597,
+    "ece": 0.254666,
+    "meta_d_prime": null,
+    "meta_d_prime_status": "insufficient_trials",
+    "n_imagined": 48,
+    "n_seen": 18,
+    "n_trials": 120,
+    "overconfidence": 0.210932
+  },
+  "measurement": {
+    "condition_counts": {
+      "described": 3026,
+      "imagined": 5683,
+      "new": 2160,
+      "seen": 3531
+    },
+    "mean_accuracy": 0.438611,
+    "mean_final_entropy": 0.814693
+  },
+  "protocol": "ANIMUS-SIM-v1",
+  "recovery": {
+    "bias": 0.050867,
+    "mean_estimated_d": 1.541781,
+    "mean_true_d": 1.490913,
+    "rmse": 0.197359
+  }
+}

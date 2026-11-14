@@ -1,0 +1,134 @@
+{
+  "analysis": "stage0e_belief_parameter_sbc_and_model_recovery",
+  "config": {
+    "fixed_parameters": [
+      "d=1.0",
+      "guess=0.0",
+      "bias=0.0"
+    ],
+    "max_tests": 2,
+    "n_model_participants": 24,
+    "n_participants": 24,
+    "n_sbc": 200,
+    "n_trials": 240,
+    "pi_grid": [
+      0.4,
+      2.0,
+      0.05
+    ],
+    "seed": 20261030
+  },
+  "decision": "CRT_STAGE0E_RECOVERY_PASS",
+  "model_recovery": {
+    "balanced_accuracy": 0.9375,
+    "confusion": {
+      "M0": {
+        "M0": 24,
+        "M2": 0
+      },
+      "M2": {
+        "M0": 3,
+        "M2": 21
+      }
+    },
+    "models": [
+      "M0",
+      "M2"
+    ],
+    "n_participants_per_model": 24,
+    "passed": true,
+    "threshold": 0.8
+  },
+  "note": "Conditional SBC and recovery for the belief-based prediction precision pi, plus a BIC comparison of M0 (no prediction) and M2 (single belief readout). d, guessing, and response bias are fixed. This is not full hierarchical SBC and not human evidence.",
+  "parameter_recovery": {
+    "bias": 0.037556,
+    "correlation": 0.776806,
+    "estimated_pi": [
+      1.45,
+      0.85,
+      1.85,
+      1.35,
+      0.6,
+      0.4,
+      1.45,
+      1.4,
+      0.4,
+      1.6,
+      1.65,
+      1.0,
+      1.5,
+      1.8,
+      1.2,
+      1.65,
+      2.0,
+      0.4,
+      0.4,
+      0.8,
+      1.65,
+      1.7,
+      0.9,
+      1.05
+    ],
+    "n_participants": 24,
+    "n_trials": 240,
+    "passed": true,
+    "relative_rmse": 0.20165,
+    "rmse": 0.32264,
+    "thresholds": {
+      "max_abs_bias": 0.15,
+      "max_relative_rmse": 0.25,
+      "min_correlation": 0.7
+    },
+    "true_pi": [
+      1.488798,
+      0.921916,
+      1.450983,
+      1.659403,
+      0.450659,
+      0.557908,
+      1.643062,
+      1.319184,
+      0.497928,
+      0.71138,
+      1.08478,
+      0.772346,
+      1.410601,
+      1.119842,
+      1.07738,
+      1.870452,
+      1.923751,
+      0.535664,
+      0.908075,
+      1.066975,
+      1.741522,
+      1.667462,
+      1.175618,
+      1.092975
+    ]
+  },
+  "protocol": "ANIMUS-CRT-v1",
+  "sbc": {
+    "chi_square": 8.5,
+    "chi_square_critical": 21.666,
+    "histogram": [
+      12,
+      16,
+      23,
+      15,
+      23,
+      23,
+      21,
+      21,
+      20,
+      26
+    ],
+    "max_bin_deviation": 0.4,
+    "mean_pit": 0.53928,
+    "n_simulations": 200,
+    "passed": true,
+    "true_pi_range": [
+      0.4,
+      2.0
+    ]
+  }
+}

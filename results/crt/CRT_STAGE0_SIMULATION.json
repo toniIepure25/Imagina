@@ -1,0 +1,189 @@
+{
+  "analysis": "stage0_counterfactual_reality_testing_simulation",
+  "condition_comparison": {
+    "accuracy": {
+      "active_intervene": 0.344167,
+      "active_predict": 0.483958,
+      "observe": 0.251597,
+      "yoked_intervene": 0.341458,
+      "yoked_predict": 0.467292
+    },
+    "active_accuracy_advantage": 0.016666,
+    "active_advantage": -0.003723,
+    "active_brier_advantage": 0.000592,
+    "active_calibration_advantage": -0.003723,
+    "active_intervention_advantage": 0.002709,
+    "interaction": 0.013957,
+    "prediction_advantage": 0.139791,
+    "prediction_advantage_yoked": 0.125834
+  },
+  "condition_summaries": {
+    "active_intervene": {
+      "accuracy": 0.344167,
+      "brier_score": 0.20362,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.33239,
+      "expected_calibration_error": 0.011208,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 975,
+      "mean_crte_eig": 0.527792,
+      "mean_crte_meta": 0.569506,
+      "mean_evidence_resolution": 0.136613,
+      "mean_tests": 1.772014,
+      "n_trials": 14400,
+      "prediction_accuracy": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 3600,
+        "1": 3600,
+        "2": 3600,
+        "3": 3600
+      },
+      "test_counts": {
+        "0": 4462,
+        "1": 6155,
+        "2": 4803,
+        "3": 2490,
+        "4": 7607,
+        "5": 0
+      }
+    },
+    "active_predict": {
+      "accuracy": 0.483958,
+      "brier_score": 0.209932,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.881232,
+      "expected_calibration_error": 0.078787,
+      "imagination_inflation_rate": 0.099515,
+      "insufficient_tests": 957,
+      "mean_crte_eig": 0.508628,
+      "mean_crte_meta": 0.544525,
+      "mean_evidence_resolution": 0.273626,
+      "mean_tests": 1.769514,
+      "n_trials": 14400,
+      "prediction_accuracy": 0.62788,
+      "prediction_ece": 0.026694,
+      "source_counts": {
+        "0": 3600,
+        "1": 3600,
+        "2": 3600,
+        "3": 3600
+      },
+      "test_counts": {
+        "0": 4417,
+        "1": 6186,
+        "2": 4760,
+        "3": 2667,
+        "4": 7451,
+        "5": 0
+      }
+    },
+    "observe": {
+      "accuracy": 0.251597,
+      "brier_score": 0.190499,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.072214,
+      "expected_calibration_error": 0.025865,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 14400,
+      "mean_crte_eig": null,
+      "mean_crte_meta": null,
+      "mean_evidence_resolution": 0.0,
+      "mean_tests": 0,
+      "n_trials": 14400,
+      "prediction_accuracy": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 3600,
+        "1": 3600,
+        "2": 3600,
+        "3": 3600
+      },
+      "test_counts": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      }
+    },
+    "yoked_intervene": {
+      "accuracy": 0.341458,
+      "brier_score": 0.203656,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.364425,
+      "expected_calibration_error": 0.01134,
+      "imagination_inflation_rate": null,
+      "insufficient_tests": 975,
+      "mean_crte_eig": 0.497617,
+      "mean_crte_meta": 0.538537,
+      "mean_evidence_resolution": 0.133675,
+      "mean_tests": 1.772014,
+      "n_trials": 14400,
+      "prediction_accuracy": null,
+      "prediction_ece": null,
+      "source_counts": {
+        "0": 3600,
+        "1": 3600,
+        "2": 3600,
+        "3": 3600
+      },
+      "test_counts": {
+        "0": 4462,
+        "1": 6155,
+        "2": 4803,
+        "3": 2490,
+        "4": 7607,
+        "5": 0
+      }
+    },
+    "yoked_predict": {
+      "accuracy": 0.467292,
+      "brier_score": 0.210524,
+      "confounded_test_rate": 0.0,
+      "d_prime_seen_imagined": 0.861459,
+      "expected_calibration_error": 0.075064,
+      "imagination_inflation_rate": 0.104785,
+      "insufficient_tests": 957,
+      "mean_crte_eig": 0.456047,
+      "mean_crte_meta": 0.490474,
+      "mean_evidence_resolution": 0.266585,
+      "mean_tests": 1.769514,
+      "n_trials": 14400,
+      "prediction_accuracy": 0.630234,
+      "prediction_ece": 0.02882,
+      "source_counts": {
+        "0": 3600,
+        "1": 3600,
+        "2": 3600,
+        "3": 3600
+      },
+      "test_counts": {
+        "0": 4417,
+        "1": 6186,
+        "2": 4760,
+        "3": 2667,
+        "4": 7451,
+        "5": 0
+      }
+    }
+  },
+  "config": {
+    "cost_multiplier": 1.0,
+    "max_tests": 2,
+    "n_participants": 120,
+    "n_trials": 120,
+    "seed": 20261029
+  },
+  "decision": "CRT_STAGE0_SIMULATION_REVIEW",
+  "note": "Simulation-only design gate. PASS does not validate the task in humans. The yoked arm receives a matched donor sequence, so source accuracy is not expected to differ by construction; the active benefit gate uses calibration. If prediction_advantage or CRTE_meta fails, AgRT-only is the appropriate next step.",
+  "prediction_ablation": {
+    "active_accuracy_advantage": 0.016666,
+    "active_calibration_advantage": -0.003723,
+    "interaction": 0.013957,
+    "prediction_advantage": 0.139791,
+    "primary_contrast": "active_predict_minus_active_intervene"
+  },
+  "protocol": "ANIMUS-CRT-v1"
+}

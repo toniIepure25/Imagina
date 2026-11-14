@@ -51,6 +51,70 @@ inherits their findings.
     unidentifiable; the observatory says `insufficient` rather than reporting a misleading coefficient.
 14. **No composite.** d′, threshold, side bias, Brier, coverage, and reliability stay separate.
 
+## Active Reality Testing addendum
+
+This addendum covers the Stage 0B ART extension. It is a design aid, not a systematic review.
+
+| Claim | Evidence status | What ART may say | What it must not say |
+|---|---|---|---|
+| Source monitoring is a measurable attribution process | Supported framework (Johnson et al., 1993) and meta-analytic evidence in psychosis (Damiani et al., 2024) | Measure source discrimination, bias, and calibration separately | "Validated clinical test" |
+| Reality monitoring is not solved by a single sensory cue | Review argues for higher-order evaluation of first-order signals (Dijkstra et al., 2022) | Compare models; do not assume SDT is the mechanism | "We have identified the reality monitor" |
+| Confidence can regulate information search | Theoretical and empirical work (Schulz et al., 2023; Hu et al., 2026) | Test whether query selection tracks expected information gain | "Confidence proves the source judgment is correct" |
+| Evidence gathering is altered in delusions | Meta-analysis of jumping-to-conclusions (Dudley et al., 2016) | Use beads task as a discriminant and future clinical bridge | "ART diagnoses psychosis" |
+| Source-monitoring deficits are large in clinical psychosis | Meta-analysis, discrimination d≈−0.65 (Damiani et al., 2024) | Support future clinical collaboration | "ART predicts hallucinations" |
+| Healthy hallucination-prone people do not show the same deficit | Null result in two experiments (Garrison et al., 2017) | Avoid a simple continuum claim | "ART measures psychosis risk" |
+| Classification images can index imagery objectively | Standard and evolutionary paradigms, test-retest r=.58/.42 (Maiello et al., 2024) | Use as a convergent criterion in a subsample | "Classification images are ground truth" |
+| Active source monitoring with EIG scoring is established | No indexed report found in a non-exhaustive search | Treat as a design hypothesis and test it | "First" / "revolutionary" / "proven" |
+
+Design decisions that follow:
+
+15. **ART is a separate construct.** Passive source monitoring and active evidence selection are
+    measured and reported separately; no composite score.
+16. **Yoked passive is mandatory.** Active-versus-passive comparisons control information quantity,
+    time, and motor engagement.
+17. **ARTE has a model-free companion.** Mutual-information sampling quality is reported alongside the
+    model-based EIG metric to reduce circularity.
+18. **Clinical language is blocked.** The Garrison null and the Damiani clinical effect are both
+    retained; no continuum or diagnostic claim is licensed.
+
+## Counterfactual Reality Testing addendum
+
+This addendum covers the Stage 0C and Stage 0D CRT extensions. It is a design aid, not a systematic
+review.
+
+| Claim | Evidence status | What CRT may say | What it must not say |
+|---|---|---|---|
+| Reality monitoring involves more than a single sensory cue | Review argues for higher-order evaluation of first-order signals (Dijkstra, Kok & Fleming, 2022) | Predict a test consequence and compare prediction with outcome | "We have identified the reality monitor" |
+| A higher-order precision model can explain reality monitoring | Formal account and preprint (Dijkstra & Fleming, 2026 preprint; Dijkstra, Fleming & Shea, 2026) | Treat it as the primary competitor and test incremental validity | "CRT has replaced the higher-order account" |
+| Memory precision is linked to source misattribution | Empirical association (Kwon et al., 2022) | Estimate prediction precision and source attribution separately | "Prediction precision is a diagnostic marker" |
+| People track the epistemic status of counterfactual alternatives | Experimental evidence (Espino & Byrne, 2021) | Ask whether the predicted outcome was real or imagined | "CRT reads counterfactual content" |
+| Counterfactual comparison informs agency | Experimental evidence (Kulakova et al., 2017; Yavuz et al., 2025) | Include agency value in the policy model; treat intervention as a separate extension | "CRT measures free will" |
+| Counterfactual imagination can contaminate source memory | Experimental evidence (Dhammapeera et al., 2024; Libby, 2003) | Keep the prediction sparse and experimenter-defined | "Rich counterfactual imagination is safe" |
+| Forward models support imagery and sensory attenuation | Empirical and theoretical work (Okanou et al., 2026; Mifsud et al., 2018; Tian & Poeppel, 2010) | Use a forward-model precision parameter | "Imagery is a forward model" |
+| Metacognitive sensitivity predicts information-search quality | Experimental evidence (Hu et al., 2026) | Test meta-EIG against model-free search quality and working memory | "CRT measures metacognitive ability" |
+| Corollary discharge is associated with reality-monitoring deficits | Clinical evidence (Samantaray et al., 2025) | Motivate a future clinical collaboration | "CRT diagnoses psychosis" |
+| Confidence alone distinguishes imagination from reality | Contradicted by Dijkstra et al. (2024) | Do not use confidence as the sole index | "Confidence proves reality" |
+| Prospective counterfactual prediction with meta-EIG scoring is established | No indexed report found in a non-exhaustive search | Treat as a design hypothesis and test it | "First" / "revolutionary" / "proven" |
+
+Design decisions that follow:
+
+19. **CRT is a separate construct.** Prospective prediction, source attribution, and active selection
+    are measured and reported separately; no composite score.
+20. **Prediction is sparse.** The participant predicts a test consequence, not a rich autobiographical
+    counterfactual episode. This reduces source contamination.
+21. **Meta-EIG has an outcome-EIG companion.** `CRTE_meta` and `CRTE_eig` are both reported, and the
+    nested `pi = 0` model is tested. This reduces circularity and tests whether prediction adds
+    information beyond outcome evidence.
+22. **Matched yoking cannot identify active-selection superiority.** The yoked arm receives the same
+    test distribution, so accuracy and calibration differences are expected to be near zero. A
+    random-passive control is required before an active-selection claim.
+23. **Specificity requires a matched non-diagnostic prediction.** Generic engagement or a second
+    evidence channel must not be able to produce the same advantage.
+24. **The higher-order precision account is the primary competitor.** A CRT result that does not add
+    out-of-sample value beyond precision and confidence is a measurement result, not a new theory.
+25. **Test likelihoods are calibrated before confirmation.** The human calibration sample freezes the
+    table; Stage 0D only simulates the design.
+
 ## Open questions
 
 - Are the five dimensions separable, or do they collapse into one general factor?
@@ -96,3 +160,54 @@ experimental.
 - Challenge Point scoping review (2025). *Journal of Motor Behavior*.
   https://doi.org/10.1080/00222895.2025.2508283
 - Butler, A. J., et al. (2012). MIQ-RS. https://doi.org/10.1155/2012/497289
+- Johnson, M. K., Hashtroudi, S., & Lindsay, D. S. (1993). Source monitoring.
+  *Psychological Bulletin*. https://doi.org/10.1037/0033-2909.114.1.3
+- Dijkstra, N., Kok, P., & Fleming, S. M. (2022). Perceptual reality monitoring: Neural mechanisms
+  dissociating imagination from reality. *Neuroscience & Biobehavioral Reviews*.
+  https://doi.org/10.1016/j.neubiorev.2022.104557
+- Dijkstra, N., & Fleming, S. M. (2026). Distinguishing imagery and perception in generative models
+  of brain function. Preprint. https://doi.org/10.31234/osf.io/36xdz_v4
+- Dijkstra, N., Fleming, S. M., & Shea, N. (2026). Why do we need imagination-reality monitoring?
+  *Neuroscience of Consciousness*. https://doi.org/10.1093/nc/niag048
+- Coenen, A., Rehder, B., & Gureckis, T. M. (2015). Strategies to intervene on causal systems are
+  adaptively selected. *Cognitive Psychology*.
+  https://doi.org/10.1016/j.cogpsych.2015.02.004
+- Gong, T., Gerstenberg, T., Mayrhofer, R., & Bramley, N. R. (2023). Active causal structure learning
+  in continuous time. *Cognitive Psychology*. https://doi.org/10.1016/j.cogpsych.2022.101542
+- Yavuz, M., et al. (2025). Rational choice and counterfactual agency.
+  *Cognition*. https://doi.org/10.1016/j.cognition.2025.106062
+- Lavallé, L., et al. (2023). Reality and self-monitoring: a meta-analysis.
+  *Human Brain Mapping*. https://doi.org/10.1002/hbm.26387
+- Schulz, L., Fleming, S. M., & Dayan, P. (2023). Metacognitive computations for information search.
+  *Psychological Review*. https://doi.org/10.1037/rev0000401
+- Hu, X., et al. (2026). Metacognitive sensitivity predicts the quality of information search.
+  *Cognition*. https://doi.org/10.1016/j.cognition.2025.106410
+- Damiani, S., et al. (2024). The noise in our brain: source monitoring in psychosis.
+  *Journal of Psychiatric Research*. https://doi.org/10.1016/j.jpsychires.2023.11.036
+- Garrison, J. R., et al. (2017). No reduction in source monitoring ability in healthy individuals
+  prone to auditory hallucinations. *Cortex*. https://doi.org/10.1016/j.cortex.2016.11.011
+- Dudley, R., et al. (2016). Psychosis, delusions and the jumping-to-conclusions reasoning bias.
+  *Schizophrenia Bulletin*. https://doi.org/10.1093/schbul/sbv150
+- Maiello, G., et al. (2024). Individual differences in visual mental imagery assessed through
+  standard and evolutionary classification images. *Journal of Vision*.
+  https://doi.org/10.1167/jov.24.10.534
+- Kwon, M., et al. (2022). Memory precision and reality monitoring.
+  https://doi.org/10.1162/jocn_a_01814
+- Espino, O., & Byrne, R. M. J. (2021). The epistemic status of counterfactual alternatives.
+  https://doi.org/10.1037/xlm0000965
+- Kulakova, E., et al. (2017). Counterfactual comparison and sense of agency.
+  https://doi.org/10.1016/j.concog.2017.01.013
+- Dhammapeera, P., et al. (2024). Counterfactual imagination and memory for true actions.
+  https://doi.org/10.1080/17588928.2024.2315814
+- Libby, L. K. (2003). Imagination inflation and imagery perspective.
+  https://doi.org/10.3758/bf03196128
+- Okanou, T., et al. (2026). Visual motor imagery and forward models.
+  https://doi.org/10.1016/j.neuroscience.2026.07.015
+- Mifsud, N. G., et al. (2018). Visual sensory attenuation for self-initiated stimuli.
+  https://doi.org/10.1016/j.cognition.2018.06.005
+- Tian, X., & Poeppel, D. (2010). Mental imagery as internal forward models.
+  https://doi.org/10.3389/fpsyg.2010.00166
+- Samantaray, S., et al. (2025). Corollary discharge and reality monitoring.
+  https://doi.org/10.1016/j.schres.2025.07.003
+- Dijkstra, N., et al. (2024). Confidence does not distinguish imagination from reality.
+  https://doi.org/10.1167/jov.24.5.13

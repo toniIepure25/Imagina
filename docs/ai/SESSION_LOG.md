@@ -2,6 +2,264 @@
 
 ---
 
+## 2026-10-31 — CRT Stage 0H: rival-account models and design optimization
+
+**Objective:** implement M6/M7, a design-optimization screen, a full joint latent-source model, and an
+adversarial/Registered Report package without collecting human data or upgrading claims.
+
+**Delivered**
+- `analysis/crt/trial_model.py`: M6/M7 readout terms, missing-input errors, 11 group parameters, and
+  PSD-safe Laplace draws.
+- `analysis/crt/design_optimization.py`: maximin pairwise model-discrimination screen with power proxy.
+- `analysis/crt/full_model.py`: full joint latent-source model with observed test choice, numerical
+  Laplace, SBC, and BIC recovery.
+- `backend/app/cli/crt_stage0h.py`; `backend/app/tests/test_crt_stage0h.py`.
+- `science/protocols/crt-v1.yaml` v0.6.0; `protocol.py` model-space/Stage 0H fields.
+- Docs: Stage 0H protocol, adversarial collaboration, Registered Report package, optional neural
+  extension; updated theory, preregistration, analysis plan, literature, novelty, ADR-075, RISK-061.
+- Artifacts: `CRT_STAGE0H_MODEL_SPACE.json` (PASS), `CRT_STAGE0H_DESIGN_OPTIMIZATION.json` (REVIEW),
+  `CRT_STAGE0H_FULL_MODEL_SBC.json` (REVIEW), `CRT_STAGE0H_FULL_MODEL_RECOVERY.json` (REVIEW),
+  `CRT_STAGE0H_PACKAGE.json` (BLOCKED).
+
+**Results**
+- Design optimization: best candidate `combined_manipulation` at 0.625 minimum pairwise accuracy,
+  below the 0.85 threshold; decision `REVIEW`.
+- Full-model screening: 4 SBC draws, 1 recovery replicate, N=6/T=20; M6 coverage 0.75, recovery
+  balanced accuracy 0.60; both `REVIEW`.
+- Focused CRT tests: 21 passed. `python scripts/verify.py --quick`: 4 passed, 2 skipped (npm and
+  Docker unavailable), exit 0; backend `core or research` 684.9s; docs links 134 files.
+- Ledger: 45 artifacts, 39 gates, 17 claims; Stage 0H readiness `BLOCKED`.
+- No human data, API, DB, UI, neural data, or claim upgrade.
+
+**Risks**
+- The design does not yet separate M2/M4/M6/M7; the full-model run is a screening run, not the planned
+  1,000-draw validation. Both are recorded as limitations.
+- The full joint model treats test choice as observed; policy inference remains separate.
+
+---
+
+## 2026-10-31 — CRT Stage 0G: theory adjudication and trial-level model
+
+**Objective:** make CRT a theory-adjudicating registered program by adding a three-account decision
+table, a trial-level hierarchical readout model with SBC/recovery, an N=480/d=0.20 design, and a
+calibration protocol. Computational and documentation only.
+
+**Delivered**
+- `docs/research/CRT_STAGE0G_SCOPING_PROTOCOL.md`: exact query counts, eligibility, screening, and
+  non-systematic caveat.
+- `docs/program/CRT_THEORY_ADJUDICATION.md`: signal-strength vs higher-order precision vs active
+  prospective inference, six predictions, and falsification rules.
+- `docs/program/CRT_STAGE0G_PROTOCOL.md`: Stage 0G scope, design, model, calibration, and boundaries.
+- `docs/program/CRT_CALIBRATION_PROTOCOL.md`: independent N=80 likelihood-table calibration,
+  invariance/ICC rules, freeze/fallback, blinding, and artifact plan.
+- `analysis/crt/trial_model.py`: trial-level hierarchical readout model, M0–M5, numerical-Hessian
+  Laplace posterior, SBC and BIC recovery; scope explicitly not the full CRT POMDP.
+- `backend/app/tests/test_crt_trial_model.py`: gradient, scope, SBC, and recovery smoke tests.
+- `science/protocols/crt-v1.yaml` v0.5.0 with N=480, d=0.20, calibration N=80, model-based endpoint;
+  `protocol.py` audit fields and tests.
+- Updated preregistration, analysis plan, counterfactual spec, literature positioning, novelty matrix,
+  theory audit, and Stage 0F historical note.
+
+**Results**
+- Focused tests: 13 passed (trial model + Stage 0F protocol).
+- Trial-level SBC (M2, 1,000 draws, N=20, 60 trials): target `delta_d` mean rank 0.5025, coverage
+  0.955, chi-square 21.66, convergence 0.99; decision `CRT_STAGE0G_TRIAL_SBC_PASS`. Intercept
+  `alpha_d` coverage is 0.838 and is diagnostic only. The model is a readout validation, not the full
+  CRT POMDP.
+- Stage 0G design power at N=480/d=0.20: 0.90 in the paired approximation; artifact
+  `CRT_STAGE0G_DESIGN_POWER.json`.
+- Trial-level readout recovery: prior-averaged M0–M5 balanced accuracy 0.375; effect-conditioned
+  full-set 0.733; post hoc confirmatory M0/M2/M4 0.90, recorded as
+  `CRT_STAGE0G_TRIAL_RECOVERY_CONDITIONAL_PASS` with `selection_status=post_hoc_after_full_set_review`.
+  The gate is `LIMITED`, not `PASS`; registration remains blocked.
+- `docs/program/CRT_CALIBRATION_PROTOCOL.md` and
+  `results/crt/CRT_STAGE0G_CALIBRATION_PROTOCOL.json` specify N=80 calibration, invariance/ICC rules,
+  freeze/fallback, and blinding. Protocol only; no human data.
+- Protocol audit accepts the N=480/0.20/80 fields.
+- `python scripts/verify.py --quick`: 4 passed, 2 skipped (npm and Docker unavailable), exit 0;
+  docs links, ruff, ledgers, and the 465.0s backend `core or research` gate pass.
+- Focused CRT tests: 13 passed. Trial-model CLI `--check` exits 0.
+- Registration remains `BLOCKED`; no human data, API, DB, UI, neural data, or claim upgrade.
+
+**Risks**
+- The trial-level readout model is not the full policy/source model; a full joint model is still
+  required.
+- SBC at N=40 was unstable under the numerical Hessian; the validated SBC uses N=20 as an algorithm
+  check, not a design-power estimate.
+- The scoping review is rapid and single-screener; it cannot support a priority claim.
+
+---
+
+## 2026-10-30 — CRT Stage 0F: protocol integrity, design power, and distortion assay
+
+**Objective:** fix the contradictory trial arithmetic and the confounded primary contrast in the CRT
+registration package, quantify design power for the condition contrast, validate a false-seen
+distortion assay, add a conditional hierarchical screening, and block registration until the remaining
+statistical work is complete. Simulation and documentation only.
+
+**Delivered**
+- `science/protocols/crt-v1.yaml` v0.4.0: 120 trials/occasion = 4×25 + 20 observe; 240 total; yoked
+  primary contrast; active contrast labelled a package effect; Stage 1D N=160 dual sub-study.
+- `backend/app/research/crt/protocol.py`: canonical design spec and audit.
+- `backend/app/research/crt/design.py`: vectorized paired design-power simulation and 108-scenario grid
+  with alternatives.
+- `backend/app/research/crt/distortion.py`: injected-effect assay plus `b_pi=0` readout-only and
+  `b_pi=0.4` bias-channel checks.
+- `backend/app/research/crt/hierarchical.py`: conditional group-mean screening, explicitly not full SBC.
+- `analysis/crt/hierarchical_sbc.py`: standalone endpoint-level full hierarchical Bayes, 1,000 SBC
+  draws, and M0/M2/M3/M4 recovery.
+- `backend/app/cli/crt_stage0f.py`; `app/tests/test_crt_stage0f.py` (7 tests).
+- Five Stage 0F artifacts; registry gates for protocol integrity, design power, distortion assay,
+  hierarchical screening, and registration readiness.
+- Docs: `CRT_STAGE0F_PROTOCOL.md`, `CRT_LITERATURE_POSITIONING.md`, ADR-073, RISK-059; updated
+  preregistration, analysis plan, counterfactual spec, task brief, and status.
+
+**Results**
+- Protocol audit `CRT_STAGE0F_PROTOCOL_PASS`; no arithmetic or contrast errors.
+- Design power at N=240, 50 trials/condition, d=0.20, 10% attrition: approximately 0.61; gate
+  `CRT_STAGE0F_DESIGN_REVIEW`. Alternatives: N≈520 for d=0.20 (0.915) or d=0.30 at N=240 (0.928).
+- Distortion assay detects an injected +5pp shift with power 1.0; `b_pi=0` readout-only contrast is
+  null; `b_pi=0.4` channel produces a +10pp model-predicted shift.
+- Hierarchical screening coverage 0.95, RMSE 0.140, bias -0.012; screening only, not full SBC.
+- Endpoint hierarchical SBC: primary mean rank 0.505/coverage 0.936, second 0.491/0.954; pass.
+- Endpoint model recovery M0/M2/M3/M4: balanced accuracy 0.855; pass, but M3/M4 confusions are
+  non-trivial.
+- Registration package `BLOCKED`: design power and missing trial-level CRT hierarchical SBC.
+
+**Risks / limits**
+- The design-power approximation is not the CRT generative model; the N≈520 estimate needs confirmation
+  with the registered hierarchical analysis.
+- The distortion assay validates sensitivity, not a human effect.
+- The endpoint hierarchical model is not a trial-level CRT source-monitoring model; that SBC remains
+  required, as do misspecified-likelihood checks.
+- No human data, claim upgrade, clinical use, or priority claim.
+
+**Verification**
+- `python -m pytest` focused CRT suite: 93 passed (185 s); endpoint smoke: 3 passed.
+- `python -m ruff check app/research/crt app/cli/crt_stage0f.py app/tests/test_crt_stage0f.py`: pass.
+- `python -m analysis.crt.hierarchical_sbc ...`: endpoint SBC and recovery artifacts generated.
+- `python -m app.cli.science_ledger --check` and `--write`: pass; 37 artifacts, 31 gates, 17 claims.
+- `python scripts/check_docs_links.py`: pass.
+- `python scripts/verify.py --quick`: pass (4 passed, 2 skipped: npm/docker unavailable).
+
+---
+
+## 2026-10-30 — CRT Stage 0E: model repair and construct audit
+
+**Objective:** repair the oracle prediction and prediction/outcome double-counting defects in the CRT
+simulator, quantify how much of the Stage 0D result depended on them, add dual-hypothesis prediction,
+policy competition, test-facet reliability, and posterior PIT calibration, and downgrade unsupported
+claims. Simulation only; no human data, API, DB, UI, clinical sample, or claim upgrade.
+
+**Delivered**
+- `backend/app/research/crt/model.py`: `posterior_predictive` and updated exports.
+- `backend/app/research/crt/simulate.py`: `prediction_source` (`belief`, `oracle`, `prior`),
+  `prediction_format` (`single`, `dual`), `source_update` (`outcome`, `legacy`), dual-prediction fields,
+  outcome-only posterior by default, `cost_only` policy.
+- `backend/app/research/crt/metrics.py`: hypothesis-specific prediction fields and summary metrics.
+- New `model_repair.py`, `counterfactual.py`, `policy.py`, `psychometrics.py`, `pit.py`, `recovery.py`.
+- `backend/app/cli/crt_stage0e.py`; `crt_stage0d.py` pinned to the historical oracle path.
+- Six new test files; 86 CRT tests pass.
+- Six Stage 0E artifacts; new registry gates; Stage 0D specificity gate superseded by a
+  belief-based audit and downgraded to `LIMITED`.
+- Docs: `CRT_STAGE0E_PROTOCOL.md`, `CRT_MODEL_REPAIR_AUDIT.md`, `CRT_COUNTERFACTUAL_SPEC.md`,
+  `CRT_EVIDENCE_UPDATE.md`; updated theory audit, Stage 0D protocol, analysis plan, preregistration,
+  protocol YAML, claim note, task brief, and risks.
+
+**Results**
+- Oracle prediction advantage 0.127778 vs belief 0.026389; oracle inflation 0.101389.
+- Oracle prediction accuracy 0.623165 vs belief 0.532993; gap 0.090172.
+- Stage 0D specificity does not reproduce: diagnostic source accuracy 0.400 vs nondiagnostic 0.374
+  (gain 0.026); diagnostic prediction accuracy 0.505; gate `LIMITED`.
+- Dual prediction discrepancy 0.475993, but dual gain over single 0.0; gate `LIMITED`.
+- Meta-EIG beats cost-only by 0.060416 but loses to the best alternative by 0.011806; gate `LIMITED`.
+- Test-facet minimum relative reliability 0.842731; psychometric gate PASS (simulation only).
+- Posterior PIT chi-square 15.92 with 9 df (critical 21.666); PIT screening PASS, not full SBC.
+- Conditional recovery: pi relative RMSE 0.201650, bias 0.037556, correlation 0.776806; SBC chi-square
+  8.50 with 9 df; M0/M2 balanced accuracy 0.937500; `ANIMUS_P5_CRT_RECOVERY_BELIEF=PASS` (conditional).
+- The recovery artifact is generated by `python -m app.cli.crt_stage0e --write --recovery`; the normal
+  `--write` path remains fast and excludes the slow audit.
+
+**Risks / limits**
+- All results are simulation-only and depend on the hand-specified likelihood table.
+- The PIT check is not full hierarchical SBC; the recovery check is conditional SBC with fixed `d`,
+  guessing, and response bias and covers only M0 versus M2.
+- Dual prediction was tested only on a fixed sequence; the policy channel is untested.
+- Stage 0C recovery still uses an oracle identifiability path; it is not human evidence.
+- The literature update is rapid and non-systematic; no priority claim is possible.
+- No human study is authorized; training and clinical claims remain `BLOCKED`.
+
+**Verification**
+- `python -m pytest` focused CRT suite: 86 passed.
+- `python -m ruff check app/research/crt app/cli/crt_stage0d.py app/cli/crt_stage0e.py app/tests/test_crt_*.py`: pass.
+- `python -m app.cli.crt_stage0d --check`: pass.
+- `python -m app.cli.crt_stage0e --check`: pass.
+- `python -m app.cli.science_ledger --check` and `--write`: pass.
+- `python scripts/verify.py --quick`: 4 passed, 2 skipped (`npm` and Docker unavailable); docs links,
+  ruff, ledger, and the `core or research` pytest gate passed.
+
+---
+
+## 2026-10-30 -- CRT Stage 0D: theory tournament and design controls
+
+**Objective:** implement the approved Stage 0D simulation slice for Counterfactual Reality Testing:
+test whether the competing theories are separable, add a matched non-diagnostic prediction control and
+active/random-passive/algorithm arms, design a human test-likelihood calibration step, and add a
+G-theory decision study. No human data, API, DB, UI, clinical sample, or claim upgrade.
+
+**Delivered**
+- `backend/app/research/crt/theory.py`: five models, five-dimensional design signatures, nearest-signature
+  classification, confusion matrix, balanced accuracy, and `CRT_STAGE0D_THEORY_PASS/REVIEW`.
+- `backend/app/research/crt/gtheory.py`: person-by-occasion variance components, relative/absolute
+  reliability, SEM, MDC95, four-point decision study, and `CRT_STAGE0D_GTHEORY_PASS/REVIEW`.
+- `backend/app/research/crt/calibration.py`: hierarchical Beta-Binomial test-likelihood calibration,
+  likelihood ratios, strong-test selection, fluency-trap check, and
+  `CRT_STAGE0D_CALIBRATION_PASS/REVIEW`.
+- `backend/app/research/crt/simulate.py`: `prediction_mode` (`diagnostic`, `nondiagnostic`, `none`) and
+  `selection_mode` (`policy`, `algorithm`, `random_passive`); specificity and selection simulations;
+  `check_specificity`, `check_selection`, `check_controls`.
+- `backend/app/cli/crt_stage0d.py`: `--check` and `--write`; writes four canonical artifacts.
+- Tests: 27 new tests across theory, controls, G-theory, and calibration; existing 35 CRT Stage 0 tests
+  still pass (62 total).
+- Registry: `ANIMUS_P5_CRT_THEORY`, `ANIMUS_P5_CRT_SPECIFICITY`, `ANIMUS_P5_CRT_GTHEORY`, and
+  `ANIMUS_P5_CRT_CALIBRATION`; 24 artifacts and 19 gates total.
+- `science/protocols/crt-v1.yaml` v0.2.0: specificity and selection sub-studies, ICC 0.80/0.70,
+  N=240, and Stage 0D artifact references.
+- Docs: `docs/research/CRT_THEORY_AUDIT.md`, `CRT_NOVELTY_MATRIX.md`, `CRT_MODEL_PREDICTIONS.md`;
+  `docs/program/CRT_STAGE0D_PROTOCOL.md`; updated CRT spec, preregistration, and analysis plan;
+  ADR-070; evidence-map addendum.
+
+**Results**
+- Model-signature separability: balanced accuracy 0.90; weakest diagonal 0.775 (heuristic).
+- Specificity: diagnostic accuracy gain 0.160; non-diagnostic prediction accuracy 0.507; PASS.
+  Both arms use the same fixed test sequence.
+- Active selection: active-choice gain 0.037; adaptive-design gain 0.128; active is 0.092 below
+  algorithm-adaptive; PASS.
+- Calibration: four strong tests; fluency likelihood ratio 1.005; PASS.
+- G-theory: relative reliability 0.938 at two occasions; occasion component zero in this draw; PASS.
+- N=240 power check: 0.949 for true ICC 0.80 / lower bound 0.70.
+- All Brier and calibration specificity gains are negative; the gate uses accuracy and this is
+  documented as a construct-neutral, not confidence-matched, control.
+
+**Risks / limits**
+- All Stage 0D results are simulation-only. No model is shown to be true in humans.
+- The theory signatures are design hypotheses, not fitted effects. The tournament measures separability,
+  not model evidence.
+- Algorithm-adaptive selection beats active choice in simulation; this is a benchmark, not a failed
+  control.
+- The human calibration sample, pilot, and Stage 1A remain blocked on PI/IRB/funding/registration.
+- N=180 Stage 0C power remains historical planning evidence; the N=240 target is the current plan.
+
+**Verification**
+- `python -m app.cli.crt_stage0d --check` — pass.
+- `python -m pytest app/tests/test_crt_*.py -q` — 62 passed.
+- `python -m ruff check app/research/crt app/cli/crt_stage0d.py app/tests/test_crt_*.py` — pass.
+- `python -m app.cli.science_ledger --check` and `--write` — pass.
+- `python scripts/verify.py --quick` — pass: 4 passed, 2 skipped (`npm` and `docker` unavailable);
+  backend core/research suite green.
+
+---
+
 ## 2026-10-26 -- Lumen: world grammar, layered renderer, and interface overhaul
 
 **Objective:** turn `/animus/imagine` from a flat primitive scatter into a credible first-person world engine and a
@@ -5412,3 +5670,206 @@ C3XAT-R1 is `LIMITED` (1/6 pass); C1/C2/C3/C3M are `NULL`.
 **Known gaps:** the ledger registers canonical gate artifacts, not all 378 result JSONs; there is no
 automatic discovery of unregistered result files yet. `frontend/lib/claims.json` remains separate.
 No human data, no ethics approval, no new neural result.
+
+---
+
+## 2026-10-29 - Stage 0: epistemic source-monitoring specification and simulation
+
+**Task:** implement the first slice of the approved IMAGINA 3.0 program without adding an API, UI, or
+human-data surface.
+
+**Built:**
+- `docs/animus/SOURCE_MONITORING_SPEC.md`: construct definition, four-source task, generative model,
+  adaptive EIG over person parameters, yoked control, estimands, COSMIN validation matrix, and
+  explicit non-goals.
+- `docs/program/PRM_PREREGISTRATION.md` and `docs/program/PRM_ANALYSIS_PLAN.md`: draft OSF/registered
+  report protocol and statistical analysis plan; both marked DRAFT and not registered.
+- `science/protocols/prm-v1.yaml`: machine-readable `ANIMUS-SIM-v1` protocol.
+- `backend/app/research/prm/`: dependency-free model, metrics, adaptive design, and simulator.
+- `backend/app/cli/prm_simulate.py`: deterministic `--check` and configurable simulation CLI.
+- `backend/app/research/prm/power.py`, `backend/app/cli/prm_power.py`: simulation-based ICC power
+  check for the N=180 reliability target.
+- `backend/app/tests/test_prm_stage0.py`: 15 tests covering probability normalization, d-prime
+  separation and null recovery, Brier/ECE bounds, meta-d-prime gating, EIG item preference, entropy
+  reduction, coverage, schedule balance, determinism, design comparison, ICC, power, and the
+  simulation gate.
+- `results/prm/PRM_STAGE0_SIMULATION.json`: 120 simulated participants x 120 trials. Recovery bias
+  +0.051, RMSE 0.197, PASS. Adaptive EIG reduced final posterior entropy by 28.9% versus the fixed
+  stratified schedule. Coverage counts: described 21.0%, imagined 39.5%, new 15.0%, seen 24.5%.
+- `results/prm/PRM_STAGE0_POWER.json`: 2,000 simulations at N=180; power 0.961 for true ICC 0.75
+  with a lower bound above 0.60, PASS.
+- Registry: three new claims (`claim.source_monitoring_measurement` UNVALIDATED,
+  `claim.source_monitoring_training` BLOCKED, `claim.source_monitoring_clinical` BLOCKED), two
+  simulation-only gates (`ANIMUS_P3_SIM`, `ANIMUS_P3_POWER`), and two canonical artifacts.
+
+**Verification (actually run):**
+- `python -m app.cli.prm_simulate --check`: PASS.
+- `python -m app.cli.prm_power --check`: PASS.
+- `pytest app/tests/test_prm_stage0.py`: 15 passed.
+- `ruff check app/research/prm app/cli/prm_simulate.py app/cli/prm_power.py app/tests/test_prm_stage0.py`: clean.
+- `python -m app.cli.science_ledger --check`: 14 artifacts, 9 gates, 11 claims; `ANIMUS_P3_SIM=PASS`, `ANIMUS_P3_POWER=PASS`.
+- `python -m app.cli.science_ledger --write`: regenerated `PROGRAM_STATUS.md` and `ledger.json`.
+
+**Decisions:** ADR-067 records source monitoring as the next scientific object, with Stage 0 limited
+to specification and simulation.
+
+**Known gaps:** the simulator uses a fixed stratified schedule as a stand-in for the human yoked
+control; the human study implements true yoking. `meta_d_prime` is gated but not estimated in Stage 0.
+No human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.
+
+---
+
+## 2026-10-29 - Stage 0B: Active Reality Testing specification and simulation
+
+**Task:** implement the active-inquiry extension approved in IMAGINA 4.0 without adding an API, UI,
+human-data surface, or clinical claim.
+
+**Built:**
+- `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md`: construct definition, four-source task, three
+  evidence cards, active/yoked design, normalized-EIG policy, `ARTE`, estimands, COSMIN matrix, and
+  explicit non-goals.
+- `docs/program/ART_PREREGISTRATION.md` and `docs/program/ART_ANALYSIS_PLAN.md`: draft registered-
+  report protocol and statistical analysis plan; both marked DRAFT and not registered.
+- `science/protocols/art-v1.yaml`: machine-readable `ANIMUS-ART-v1` protocol.
+- `backend/app/research/art/`: dependency-free model, design, metrics, simulator, and power.
+- `backend/app/cli/art_simulate.py`, `app/cli/art_power.py`, and `app/cli/art_recover.py`.
+- `backend/app/tests/test_art_stage0.py`: 26 tests covering likelihood normalization, posterior
+  direction, EIG bounds and ordering, greedy-versus-random sampling, softmax, schedule balance,
+  yoking, determinism, query limits, costs, ARTE bounds, metric bounds, recovery, policy comparison,
+  power, and invalid configuration.
+- `results/art/ART_STAGE0_SIMULATION.json`: 120 simulated participants x 120 trials, four cards and
+  at most two samples per trial. Mean accuracy 0.458, mean ARTE 0.444, mean queries 1.79, mean
+  sampling quality 0.875, PASS.
+- `results/art/ART_MODEL_RECOVERY.json`: 60 participants x 80 trials. Beta bias -0.131 (RMSE 0.595),
+  lambda bias -0.035 (RMSE 0.198), tau bias -0.025 (RMSE 0.471), PASS. Policy comparison: EIG ARTE
+  0.446 versus fixed 0.354, heuristic 0.077, random 0.325.
+- `results/art/ART_STAGE0_POWER.json`: 2,000 simulations at N=180; power 0.961 for true ICC 0.75
+  with a lower bound above 0.60, PASS.
+- Registry: three claims (`claim.active_reality_testing_measurement` UNVALIDATED,
+  `claim.active_reality_testing_training` BLOCKED, `claim.active_reality_testing_clinical` BLOCKED),
+  three simulation-only gates (`ANIMUS_P4_ART_SIM`, `ANIMUS_P4_ART_POWER`,
+  `ANIMUS_P4_ART_RECOVERY`), and three canonical artifacts.
+- ADR-068 and an evidence-map addendum covering source monitoring, information search, JTC, the
+  Garrison null, and the classification-image test-retest evidence.
+
+**Verification (actually run):**
+- `python -m app.cli.art_simulate --check`: PASS.
+- `python -m app.cli.art_power --check`: PASS.
+- `pytest app/tests/test_art_stage0.py`: 26 passed.
+- `ruff check app/research/art app/cli/art_simulate.py app/cli/art_power.py app/cli/art_recover.py app/tests/test_art_stage0.py`: clean.
+- `python -m app.cli.science_ledger --check`: 17 artifacts, 12 gates, 14 claims; all three ART gates
+  `PASS`.
+- `python -m app.cli.science_ledger --write`: regenerated `PROGRAM_STATUS.md` and `ledger.json`.
+- `python scripts/verify.py --quick`: docs links and ruff passed; the backend gate initially failed
+  only because the status document was stale after the registry edit. `--write` fixed it and the
+  focused `test_generated_status_document_is_current` passed. The full quick gate is re-run before
+  sign-off.
+
+**Decisions:** ADR-068 records ART as a separate construct, fixes the normalized-EIG policy, requires
+yoked passive blocks, and keeps training and clinical claims blocked. The Stage 0B gates are
+simulation-only.
+
+**Known gaps:** the simulator uses a known likelihood table and a known EIG feature matrix; it does
+not recover the full hierarchical measurement model or validate the task in humans. The human yoked
+control, pilot N=40, main N=180, invariance testing, and clinical extension are not executed. No
+human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.
+
+---
+
+## 2026-10-29 - Stage 0C: Counterfactual Reality Testing specification and simulation
+
+**Task:** add the prospective forward-model extension approved for IMAGINA 4.0, without an API, UI,
+human data, clinical sample, or neural data.
+
+**Built:**
+- `backend/app/research/crt/`: dependency-free six-test model with prediction precision `pi` and
+  imagination-inflation bias `b_pi`; 2x2 design; metrics; deterministic simulator; policy, precision,
+  and bias recovery; power.
+- `backend/app/cli/crt_simulate.py`, `crt_recover.py`, and `crt_power.py`.
+- `backend/app/tests/test_crt_stage0.py`: 35 tests covering nested `pi=0` equivalence, meta-EIG,
+  counterfactual discrimination, the fluency trap, schedule balance, yoking, determinism, metrics,
+  policy comparison, recovery, power, and invalid configuration.
+- `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md`, `docs/program/CRT_PREREGISTRATION.md`,
+  `docs/program/CRT_ANALYSIS_PLAN.md`, and `science/protocols/crt-v1.yaml`.
+- ADR-069, an evidence-map addendum, and updates to the task brief, project context, and context index.
+- Three CRT claims (measurement UNVALIDATED; training and clinical BLOCKED), three simulation-only
+  gates, and three canonical artifacts.
+- Fixed the ART default-EIG helpers to use the full four-card menu; added a regression test.
+
+**Full artifacts:**
+- `results/crt/CRT_STAGE0_SIMULATION.json`: 120 participants x 120 trials, seed 20261029.
+  `active_predict` accuracy 0.484 vs `active_intervene` 0.344 (prediction advantage 0.140);
+  `CRTE_meta` 0.545; prediction accuracy 0.628; prediction ECE 0.027; confounded-test rate 0.000;
+  d' 0.881. Active calibration advantage -0.004 under matched-sequence yoking.
+  Decision `CRT_STAGE0_SIMULATION_REVIEW`.
+- `results/crt/CRT_MODEL_RECOVERY.json`: 60 participants x 120 trials. Beta bias -0.016, lambda
+  -0.033, gamma -0.009, tau 0.227, pi -0.010, b_pi 0.010; b_pi RMSE 0.105.
+  Decision `CRT_STAGE0_RECOVERY_PASS`.
+- `results/crt/CRT_STAGE0_POWER.json`: N=180, 2,000 simulations; power 0.961 at true ICC 0.75.
+  Decision `CRT_STAGE0_POWER_PASS`.
+
+**Verification (actually run):**
+- `python -m pytest app/tests/test_crt_stage0.py -q`: 35 passed.
+- `python -m pytest app/tests/test_art_stage0.py -q`: 27 passed.
+- `ruff check` on CRT and ART packages/CLIs/tests: clean.
+- `python -m app.cli.crt_simulate --check`: PASS.
+- `python -m app.cli.crt_recover` and `crt_power`: generated the canonical artifacts.
+- `python -m app.cli.art_simulate --check` and `art_power --check`: PASS.
+- `python -m app.cli.science_ledger --check`: 20 artifacts, 15 gates, 17 claims; CRT gates
+  `SIM=LIMITED`, `RECOVERY=PASS`, `POWER=PASS`.
+
+**Decisions:** ADR-069 records CRT as a separate construct, keeps AgRT as the `active_intervene` arm,
+requires the nested `pi=0` test, and treats matched-sequence yoking as unable to identify
+active-selection superiority. The simulation REVIEW is therefore retained rather than forced to PASS.
+Training and clinical claims remain blocked.
+
+**Known gaps:** the simulator uses a known likelihood table and fixed `alpha`, `d`, `guess`, and
+`bias`; it does not recover the full hierarchical measurement model or validate the task in humans.
+The human pilot N=40, main N=180, invariance testing, random-passive control, and clinical extension are
+not executed. No human data, ethics approval, API, migration, or UI. The claim ceiling is unchanged.
+
+---
+
+## 2026-10-31 — Stage 0I identification-first CRT package
+
+**What changed:**
+- Fixed the full-model prediction double count (`expit(pi * logit(q))`) and added two regression tests.
+- Added `analysis/crt/identifiability.py`, `policy_model.py`, `inference.py`, and full-joint-model
+  design screening in `design_optimization.py`.
+- Added `backend/app/cli/crt_stage0i.py` and seven Stage 0I artifacts/gates.
+- Corrected the Corcoran et al. (2023) role and added `docs/research/CRT_SOURCE_AUDIT.md`.
+- Moved protocol to v0.7.0/Stage 0I and added policy/inference/identifiability/source-audit fields.
+- Added `docs/research/CRT_STAGE0I_PROTOCOL.md`.
+
+**Actual results:**
+- Source audit `PASS` for the audited records; not a systematic review.
+- Inference backend `BLOCKED` because NumPyro/JAX is not installed.
+- Quick identifiability `REVIEW` (tiny N=6/T=20 full confirmatory set; minimum pairwise 0.00).
+- Quick design screen `REVIEW` because only M0/M6 were screened.
+- Policy calibration `REVIEW` (top-1 0.50); policy recovery `REVIEW` (minimum 0.00).
+- Policy parameter SBC `REVIEW` (Laplace; coverage too wide).
+- Full-model SBC all confirmatory models `REVIEW` (Laplace, one draw/model).
+- Full-model recovery all confirmatory models `REVIEW` (balanced accuracy 0.60).
+- Target design projection `REVIEW` (pilot N=6/T=20 projected to N=432/T=240; minimum 0.50).
+- Target readout screen `REVIEW` at N=432/T=240: bounded hierarchical readout, 664.6 s for two
+  candidates; selected balanced design minimum pairwise **0.50**, with **M7 at 0.00**.
+- Package readiness `BLOCKED`.
+
+**Verification actually run:**
+- `python -m pytest app/tests/test_crt_full_model.py app/tests/test_crt_stage0i.py app/tests/test_crt_stage0h.py -q`:
+  **16 passed** (194.64s).
+- `python -m ruff check .`: clean.
+- `python -m app.cli.crt_stage0i --check --quick`: completed with the statuses above.
+- `python -m app.cli.crt_stage0i --write --quick`; artifacts moved to canonical `results/crt/`.
+- `python -m app.cli.science_ledger --check`: 57 artifacts, 51 gates, 17 claims; Stage 0I gates recorded.
+- `python -m app.cli.science_ledger --write`: regenerated `results/ledger.json` and
+  `docs/program/PROGRAM_STATUS.md`.
+- `python scripts/verify.py --quick`: **4 passed, 2 skipped** (frontend/npm and docker absent);
+  docs links, ruff, ledger, and backend core/research suite passed (614.9s pytest).
+- `backend/pyproject.toml` now sets `pythonpath = [".."]` so the top-level `analysis/` package is
+  importable without a shell `PYTHONPATH`; this fixed the first verify attempt's collection errors.
+
+**Known gaps:** target-scale N=480/T=240 SBC and design runs; NumPyro full-model NUTS; policy
+parameters are not hierarchically estimated; quick-screen artifacts are not evidence of
+identifiability; independent review, adversarial agreement, calibration, registration, and ethics are
+still missing. Human collection remains blocked; no claim upgrade.

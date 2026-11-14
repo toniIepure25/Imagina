@@ -1,0 +1,1118 @@
+{
+  "protocol": "ANIMUS-CRT-v1",
+  "analysis": "stage0f_design_power_grid",
+  "seed": 20261030,
+  "n_simulations": 400,
+  "n_scenarios": 108,
+  "n_passing": 0,
+  "recommended": {
+    "n_participants": 240,
+    "trials_per_cell_per_occasion": 25,
+    "within_correlation": 0.5,
+    "attrition": 0.1,
+    "power": 0.61,
+    "false_seen_power": 1.0,
+    "reliability_power": 0.9325,
+    "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+  },
+  "alternatives": [
+    {
+      "label": "n_for_d020",
+      "n_participants": 520,
+      "sesoi_d": 0.2,
+      "power": 0.915,
+      "decision": "CRT_STAGE0F_DESIGN_PASS"
+    },
+    {
+      "label": "d_for_n240",
+      "n_participants": 240,
+      "sesoi_d": 0.3,
+      "power": 0.9275,
+      "decision": "CRT_STAGE0F_DESIGN_PASS"
+    }
+  ],
+  "scenarios": [
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.425,
+      "false_seen_power": 0.995,
+      "reliability_power": 0.82,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.4075,
+      "false_seen_power": 0.9875,
+      "reliability_power": 0.8025,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.325,
+      "false_seen_power": 0.9875,
+      "reliability_power": 0.7775,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.475,
+      "false_seen_power": 0.995,
+      "reliability_power": 0.825,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.4,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.775,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.3525,
+      "false_seen_power": 0.99,
+      "reliability_power": 0.705,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.5875,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.82,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.5,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.775,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.455,
+      "false_seen_power": 0.9925,
+      "reliability_power": 0.6975,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.405,
+      "false_seen_power": 0.995,
+      "reliability_power": 0.815,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.405,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.79,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.3125,
+      "false_seen_power": 0.985,
+      "reliability_power": 0.7125,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.55,
+      "false_seen_power": 0.995,
+      "reliability_power": 0.7825,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.4775,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.79,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.4525,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.735,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.6275,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.8525,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.5875,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.77,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.5225,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.7075,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.445,
+      "false_seen_power": 0.9925,
+      "reliability_power": 0.865,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.43,
+      "false_seen_power": 0.99,
+      "reliability_power": 0.7925,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.41,
+      "false_seen_power": 0.9875,
+      "reliability_power": 0.75,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.5275,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.825,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.445,
+      "false_seen_power": 0.995,
+      "reliability_power": 0.76,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.4475,
+      "false_seen_power": 0.995,
+      "reliability_power": 0.7125,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.6425,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.82,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.625,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.805,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 160,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.5625,
+      "false_seen_power": 0.99,
+      "reliability_power": 0.695,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.515,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.46,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8575,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.445,
+      "false_seen_power": 0.99,
+      "reliability_power": 0.8275,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.53,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.91,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.49,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8775,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.455,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.82,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.685,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.88,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.625,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8975,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.6125,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.83,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.5225,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9025,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.4775,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.8675,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.4075,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.81,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.615,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8875,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.555,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8825,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.53,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.84,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.7325,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8975,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.6675,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.8575,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.6375,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.82,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.525,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9175,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.4975,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.8725,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.4225,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8225,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.63,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.895,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.625,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8625,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.5425,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.85,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.7425,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.895,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.69,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8675,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 200,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.67,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.85,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.53,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.945,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.565,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.935,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.4625,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8675,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.695,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.955,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.5925,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9175,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.55,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.89,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.74,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9525,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.7,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9425,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.6625,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9225,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.59,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9325,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.565,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.9275,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.5225,
+      "false_seen_power": 0.995,
+      "reliability_power": 0.9075,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.6925,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9425,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.61,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9325,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.575,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9025,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.7725,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9475,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.7275,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9225,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.6775,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.61,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.95,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.5325,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9325,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.495,
+      "false_seen_power": 0.9975,
+      "reliability_power": 0.8875,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.7075,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9425,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.6775,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.91,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.645,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.905,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.8375,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9425,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.8025,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.93,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 240,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.73,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.8775,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.5825,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9925,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.57,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.965,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.5525,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9225,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.7475,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.96,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.6525,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9575,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.6025,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9375,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.82,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9825,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.7925,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9575,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 20,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.7225,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9225,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.6225,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.97,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.6475,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9775,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.5775,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.91,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.7175,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.96,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.725,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.945,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.6425,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.935,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.845,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.97,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.845,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9675,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 25,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.765,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.93,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.0,
+      "power": 0.7075,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9725,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.1,
+      "power": 0.65,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.96,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.3,
+      "attrition": 0.2,
+      "power": 0.585,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.94,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.0,
+      "power": 0.765,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.975,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.1,
+      "power": 0.715,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.955,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.5,
+      "attrition": 0.2,
+      "power": 0.685,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9325,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.0,
+      "power": 0.8725,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.96,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.1,
+      "power": 0.8525,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.945,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    },
+    {
+      "n_participants": 280,
+      "trials_per_cell_per_occasion": 30,
+      "within_correlation": 0.7,
+      "attrition": 0.2,
+      "power": 0.795,
+      "false_seen_power": 1.0,
+      "reliability_power": 0.9275,
+      "decision": "CRT_STAGE0F_DESIGN_REVIEW"
+    }
+  ],
+  "decision": "CRT_STAGE0F_DESIGN_REVIEW",
+  "note": "Grid is a planning surface, not a substitute for the registered analysis. The recommended cell is the provisional 120-trial design at N=240 with 10% attrition."
+}

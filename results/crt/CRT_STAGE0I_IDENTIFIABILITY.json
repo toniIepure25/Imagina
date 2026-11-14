@@ -1,0 +1,179 @@
+{
+  "analysis": "stage0i_identifiability",
+  "config": {
+    "effect_scale": 0.8,
+    "lower_bound_threshold": 0.8,
+    "max_iter": 80,
+    "min_abs_effect": 0.25,
+    "models": [
+      "M0",
+      "M2",
+      "M4",
+      "M6",
+      "M7"
+    ],
+    "n_participants": 6,
+    "n_posterior_draws": 20,
+    "n_simulations": 1,
+    "n_trials": 20,
+    "recovery_threshold": 0.85,
+    "seed": 20261031
+  },
+  "confusion": [
+    [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
+  ],
+  "decision": "CRT_STAGE0I_IDENTIFIABILITY_REVIEW",
+  "evidence": {
+    "M0_vs_M2": {
+      "mean_expected_log_evidence_difference": -0.7386272639077447
+    },
+    "M0_vs_M4": {
+      "mean_expected_log_evidence_difference": -1.1799361019400862
+    },
+    "M0_vs_M6": {
+      "mean_expected_log_evidence_difference": 0.1653668984148453
+    },
+    "M0_vs_M7": {
+      "mean_expected_log_evidence_difference": 0.002630146169337877
+    },
+    "M2_vs_M4": {
+      "mean_expected_log_evidence_difference": -0.016158878813939737
+    },
+    "M2_vs_M6": {
+      "mean_expected_log_evidence_difference": 0.8306471195531913
+    },
+    "M2_vs_M7": {
+      "mean_expected_log_evidence_difference": 0.819956305173605
+    },
+    "M4_vs_M6": {
+      "mean_expected_log_evidence_difference": 0.30580544557795974
+    },
+    "M4_vs_M7": {
+      "mean_expected_log_evidence_difference": 0.08461032980915206
+    },
+    "M6_vs_M7": {
+      "mean_expected_log_evidence_difference": -0.058363647839883015
+    }
+  },
+  "fisher_condition_max": 16.907956981413378,
+  "minimum_pairwise_accuracy": 0.0,
+  "minimum_pairwise_lower_bound": 0.0,
+  "minimum_per_model_accuracy": 0.0,
+  "models": [
+    "M0",
+    "M2",
+    "M4",
+    "M6",
+    "M7"
+  ],
+  "note": "Simulation-only pairwise model recovery. A REVIEW means the declared design does not separate the confirmatory models with the required uncertainty margin; it is not human evidence.",
+  "pairwise": {
+    "M0_vs_M2": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M0_vs_M4": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M0_vs_M6": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M0_vs_M7": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M2_vs_M4": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M2_vs_M6": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M2_vs_M7": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M4_vs_M6": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M4_vs_M7": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    },
+    "M6_vs_M7": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0,
+      "n": 2
+    }
+  },
+  "per_model": {
+    "M0": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0
+    },
+    "M2": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0
+    },
+    "M4": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0
+    },
+    "M6": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0
+    },
+    "M7": {
+      "accuracy": 0.0,
+      "lower_bound": 0.0
+    }
+  },
+  "scope": "offline_pairwise_identifiability_simulation_not_human_evidence"
+}

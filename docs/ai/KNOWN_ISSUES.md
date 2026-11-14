@@ -637,7 +637,152 @@ boundary correctly.
 
 ---
 
-*Last updated: 2026-10-26 - RISK-055 procedural-world overclaiming*
+## RISK-056: Stage 0D theory signatures can be mistaken for human model evidence
+
+**Risk:** The five-model signature tournament uses hand-set design signatures and a nearest-signature
+classifier. A high balanced accuracy could be read as evidence that `crt_meta_eig` is the true human
+model, or that the models are identifiable in real data. Neither follows. The specificity control also
+uses a fixed test sequence, so it isolates prediction content but does not test active selection.
+**Impact:** High for theoretical overclaiming.
+**Mitigation:** Every artifact and doc calls the tournament a signature-separability analysis, not model
+recovery or model validation. Human model comparison remains a Stage 1 analysis with held-out
+participants. Active selection is estimated separately against random-passive exposure. The claim
+ceiling is unchanged, and no claim is linked to the Stage 0D gates.
+**Status:** Mitigated in code notes, docs, and registry language; the human comparison has not been run.
+
+---
+
+## RISK-057: Oracle prediction and prediction/outcome double counting inflated CRT results
+
+**Risk:** The Stage 0C/0D simulator predicted outcomes from the true source and then counted the
+prediction as an independent source likelihood. This can inflate prediction accuracy, source accuracy,
+and the diagnostic-specificity contrast. A reader could mistake the resulting PASS for human evidence.
+**Impact:** High for construct validity and for any claim based on Stage 0C/0D.
+**Mitigation:** Stage 0E replaces oracle prediction with a belief-based posterior-predictive readout and
+uses outcome-only source updating. The oracle path is retained only as a benchmark; `oracle_inflation`
+is reported (0.101). The Stage 0D specificity gate is superseded by a belief-based audit and downgraded
+to `LIMITED`; the historical artifact is preserved. New code defaults to `prediction_source="belief"` and
+`source_update="outcome"`. Tests replay the observed outcomes to verify that the final posterior equals
+the outcome-only posterior. The dual-prediction and policy gates are also `LIMITED`.
+**Status:** Mitigated in code, tests, registry, and docs; the repaired model still requires human
+calibration and full hierarchical SBC.
+
+---
+
+## RISK-058: Conditional recovery could be mistaken for full hierarchical validation
+
+**Risk:** The Stage 0E recovery gate fixes `d`, guessing, and response bias, covers only `M0` versus `M2`,
+and uses a uniform `pi` prior. A PASS could be over-read as full hierarchical SBC or human validation.
+**Impact:** Medium for claim discipline; high if it is used to justify a human study prematurely.
+**Mitigation:** The artifact note, protocol, ADR-072, and gate note state the conditional scope explicitly.
+The recovery audit is opt-in (`--recovery`) so the fast verification path does not imply it was rerun.
+Full hierarchical SBC, joint recovery with free nuisance parameters, and `M3`/`M4` recovery remain
+required before a human-factors pilot.
+**Status:** Documented; not a substitute for human calibration.
+
+---
+
+## RISK-059: Stage 0F could treat a design audit as human evidence
+
+**Risk:** The Stage 0F protocol audit, design-power grid, and distortion assay are simulations. A
+reader could mistake `CRT_STAGE0F_PROTOCOL_PASS` or `CRT_STAGE0F_DISTORTION_PASS` for evidence that the
+task works in humans.
+**Impact:** High for claim discipline and for the counterfactual label.
+**Mitigation:** All artifacts carry a `note` stating simulation-only status; the registration package is
+`BLOCKED`; the design-power gate is `LIMITED` because N=240 is underpowered for d=0.20. The distortion
+artifact separates the `b_pi=0` readout null from the `b_pi=0.4` model-predicted bias channel. The
+endpoint SBC covers the Stage 1D paired false-seen contrast, not the trial-level CRT source model; the
+artifact `scope` field says so. Stage 1D is the human test. No “revolutionary”, “first”, priority,
+clinical, decoding, or measurement claim is permitted.
+**Status:** Documented and gated; human collection remains blocked.
+
+---
+
+## RISK-060: Trial-level readout model could be mistaken for the full CRT POMDP
+
+**Risk:** `analysis/crt/trial_model.py` fits participant random effects and condition effects on
+prediction/source outcomes, but it is not the full source-monitoring posterior or the meta-EIG policy.
+Its SBC PASS could be over-read as full CRT validation.
+**Impact:** High if used to justify registration without the full joint model.
+**Mitigation:** Every artifact carries the scope string
+`trial_level_hierarchical_readout_not_full_crt_pomdp`; the theory document, Stage 0G protocol, ADR-074,
+and test names say “readout”. The recovery artifact records
+`selection_status=post_hoc_after_full_set_review`; its 0.90 M0/M2/M4 result is a conditional pass, so
+the gate is `LIMITED`, not `PASS`. The registration package remains `BLOCKED` until a pre-specified
+full-set or full joint POMDP SBC, calibration, independent review, and ethics pass.
+**Status:** Documented; model is a validation step, not a substitute.
+
+---
+
+## RISK-061: Stage 0H design and full-model gates are REVIEW, not validation
+
+**Risk:** The Stage 0H package implements M6/M7 and a joint latent-source model, but the design
+optimization (best minimum pairwise accuracy 0.625) and the small full-model screening run (SBC
+coverage 0.75; recovery balanced accuracy 0.60) are `REVIEW`. A reader could mistake implementation
+for empirical support.
+**Impact:** High for claim discipline and for any recruitment decision.
+**Mitigation:** The artifacts record the exact configs (four SBC draws, one recovery replicate,
+N=6/T=20), the stage protocol states the deviation from the planned 1,000 draws, and the readiness
+artifact is `BLOCKED`. The correct next step is model/design revision or a narrower claim, not human
+data. No "revolutionary", "first", priority, clinical, decoding, or measurement claim is permitted.
+**Status:** Documented and gated; human collection remains blocked.
+
+---
+
+## RISK-062: Stage 0I quick screening is not target-scale identifiability
+
+**Risk:** The `CRT_STAGE0I_*` artifacts currently in `results/crt/` were generated with `--quick`:
+small N/T, subsets of the confirmatory model set, one policy replicate, and no NumPyro backend. Their
+`REVIEW`/`LIMITED` statuses are honest code-path checks, not the target-scale N=480/T=240 result. A
+reader could misread the source-audit PASS or a subset design PASS as evidence that the design works.
+**Impact:** High for claim discipline and for any decision to proceed to registration.
+**Mitigation:** The artifact configs and the Stage 0I protocol state “quick screening”; the design and
+identifiability modules require the full confirmatory set for PASS; the readiness artifact is
+`BLOCKED`; no claim is upgraded. Target-scale SBC/recovery, NumPyro, calibration, independent review,
+adversarial agreement, registration, and ethics remain blockers.
+**Status:** Documented and gated; human collection remains blocked.
+
+---
+
+## RISK-063: Policy “SBC” is a discrete rank calibration, not parameter SBC
+
+**Risk:** `CRT_STAGE0I_POLICY_SBC.json` records `sbc_type=discrete_policy_model_rank_not_continuous_parameter_sbc`.
+It can be mistaken for continuous-parameter simulation-based calibration.
+**Impact:** Medium–high if cited as posterior calibration.
+**Mitigation:** The field name, artifact note, Stage 0I protocol, gate note, and tests all label it a
+discrete policy-model rank calibration. Full continuous-parameter SBC remains a target-scale blocker.
+**Status:** Documented and gated.
+
+---
+
+## RISK-064: Target design projection is not a target-scale fit
+
+**Risk:** `CRT_STAGE0I_TARGET_DESIGN_PROJECTION.json` projects pilot BIC separation to N=432/T=240
+with a normal approximation. It can be mistaken for a target-scale fit or SBC result, and the pilot
+sample is small.
+**Impact:** High for any claim that the target design is identified or adequately powered.
+**Mitigation:** Scope and note say `target_scale_bic_projection_not_target_fit_or_human_evidence`; the
+gate maps both PASS and REVIEW to `LIMITED`; the package still lists “target-scale N=432/T=240 full
+fit and SBC not run” as a blocker. The target-scale fit remains required.
+**Status:** Documented and gated; human collection remains blocked.
+
+---
+
+## RISK-065: Target readout screen fails to recover M7 and is not the full model
+
+**Risk:** The N=432/T=240 readout screen selects a balanced design with minimum pairwise 0.50; M7
+recovers at 0.00. This could be read as proof that the full model is unidentifiable or that the trial
+design is adequate.
+**Impact:** High for design claims and for any decision to proceed to registration.
+**Mitigation:** Scope says `target_scale_hierarchical_readout_design_not_full_model_or_human_evidence`;
+the gate maps both outcomes to `LIMITED`; the protocol records the M7 failure as a design/model
+diagnosis. A full joint-model design and NUTS SBC remain required.
+**Status:** Open; target readout artifact and gate recorded.
+
+---
+
+*Last updated: 2026-10-31 - RISK-062 Stage 0I quick-screen scope; RISK-063 policy SBC label;
+RISK-064 target projection scope; RISK-065 target readout M7 failure*
 
 *Prior update: 2026-10-25 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
 RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits, RISK-054 generated-skybox

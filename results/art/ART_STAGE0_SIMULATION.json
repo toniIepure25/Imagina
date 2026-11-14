@@ -1,0 +1,55 @@
+{
+  "config": {
+    "beta_mean": 2.0,
+    "cost_multiplier": 1.0,
+    "d_mean": 1.0,
+    "lam_mean": 0.25,
+    "lapse": 0.02,
+    "max_queries": 2,
+    "n_participants": 120,
+    "n_trials": 120,
+    "seed": 20261029,
+    "tau_mean": -0.2
+  },
+  "decision": "ART_STAGE0_SIMULATION_PASS",
+  "design": "eig",
+  "measurement": {
+    "card_counts": {
+      "context": 4473,
+      "generation": 5990,
+      "novelty": 7659,
+      "perceptual": 7680
+    },
+    "example": {
+      "accuracy": 0.441667,
+      "brier_score": 0.227237,
+      "d_prime_seen_imagined": 0.86252,
+      "expected_calibration_error": 0.100016,
+      "insufficient_queries": 12,
+      "mean_arte": 0.488709,
+      "mean_evidence_resolution": 0.129603,
+      "mean_queries": 1.733333,
+      "mean_sampling_quality": 0.873666,
+      "n_trials": 120
+    },
+    "insufficient_query_trials": 891,
+    "mean_accuracy": 0.4575,
+    "mean_arte": 0.44364,
+    "mean_brier_score": 0.233998,
+    "mean_d_prime_seen_imagined": 0.832085,
+    "mean_evidence_resolution": 0.141523,
+    "mean_expected_calibration_error": 0.088517,
+    "mean_queries": 1.791806,
+    "mean_sampling_quality": 0.875339,
+    "n_participants": 120,
+    "n_trials": 14400,
+    "source_counts": {
+      "described": 3600,
+      "imagined": 3600,
+      "new": 3600,
+      "seen": 3600
+    }
+  },
+  "note": "Simulation-only design gate. A PASS means the EIG agent is above chance and its query choices are efficient under the stated model; it is not human evidence.",
+  "protocol": "ANIMUS-ART-v1"
+}

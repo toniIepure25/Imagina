@@ -111,3 +111,10 @@ results/.c3_strict_replay_checkpoint.pkl
 
 # Local agent scratch space
 .codex-tmp/
+
+# Unregistered CRT design screens and pod benchmarks (regenerate before registering)
+results/crt/*_SCREEN.json
+results/crt/POD_*.json
+
+# Local code bundles for compute pods
+imagina_*_code.zip

@@ -19,6 +19,7 @@ Imagina/
 │   │   ├── api/               # REST endpoints (11 routers)
 │   │   ├── core/              # Config, constants, time, errors
 │   │   ├── evaluation/        # Cohort simulator, replay validator, metric sanity
+│   │   ├── research/          # Claim ledger, PRM/ART/CRT models, simulation, power
 │   │   ├── reports/           # JSON and HTML report generators
 │   │   ├── schemas/           # Pydantic v2 models
 │   │   ├── services/          # Business logic (pid_iqi, curriculum, safety, etc.)
@@ -44,6 +45,8 @@ Imagina/
 │   ├── package.json
 │   └── tsconfig.json
 ├── docs/                      # Architecture, metrics, ethics, claims, demo, experiments, evaluation
+│   ├── animus/                # ANIMUS specs, including SIM and ART
+│   ├── program/               # Preregistration, analysis plans, generated program status
 │   └── ai/                    # AI agent context files
 ├── data/                      # Local SQLite DB, session data, exports
 ├── research/                  # Config files (curriculum_v1.yaml, demo_session.yaml), notebooks
@@ -267,6 +270,11 @@ Interpretation thresholds:
 | `frontend/scripts/verify-animus-ui.cjs` | Playwright end-to-end loop + screenshots |
 | `science/registry/`, `science/schemas/` | Canonical claim/gate/artifact registry and JSON Schemas |
 | `backend/app/research/ledger.py`, `backend/app/cli/science_ledger.py` | Validates the registry and generates the program status document |
+| `backend/app/research/prm/`, `backend/app/cli/prm_simulate.py`, `backend/app/cli/prm_power.py` | Stage 0 source-monitoring model, adaptive design, metrics, simulation, and power; no API or DB |
+| `backend/app/research/art/`, `backend/app/cli/art_*.py` | Stage 0B Active Reality Testing model, design, metrics, simulation, recovery, and power; no API or DB |
+| `backend/app/research/crt/`, `backend/app/cli/crt_*.py` | Stage 0C Counterfactual Reality Testing model, design, metrics, simulation, recovery, and power; no API or DB |
+| `docs/animus/SOURCE_MONITORING_SPEC.md`, `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md`, `docs/animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md` | Source-monitoring, ART, and CRT specifications |
+| `docs/program/PRM_*`, `docs/program/ART_*`, `docs/program/CRT_*`, `science/protocols/prm-v1.yaml`, `art-v1.yaml`, `crt-v1.yaml` | Draft preregistrations, analysis plans, and machine-readable protocols |
 | `docs/program/PROGRAM_STATUS.md`, `results/ledger.json` | Generated canonical gate/claim status; never edit by hand |
 | `docs/animus/` | Vision, architecture, API contract, interface principles, claims boundary, roadmap, demo, README |
 

@@ -1,0 +1,25 @@
+{
+  "analysis": "stage0e_test_facet_reliability",
+  "config": {
+    "min_reliability": 0.7,
+    "n_occasions": 2,
+    "n_participants": 60,
+    "n_tests": 6,
+    "seed": 20261030
+  },
+  "decision": "CRT_STAGE0E_PSYCHOMETRIC_PASS",
+  "note": "Simulated test-facet reliability, not human evidence. The model includes a shared person effect and a shared test effect; the D-study uses two occasions. A REVIEW means the current test menu does not clear the pre-specified facet floor.",
+  "protocol": "ANIMUS-CRT-v1",
+  "summary": {
+    "mean": 0.86329,
+    "minimum": 0.842731
+  },
+  "test_reliability": {
+    "context": 0.862627,
+    "description": 0.877623,
+    "fluency": 0.842731,
+    "generation": 0.89356,
+    "intend": 0.857471,
+    "viewpoint": 0.845729
+  }
+}

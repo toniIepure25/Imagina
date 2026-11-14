@@ -1,0 +1,197 @@
+{
+  "analysis": "stage0i_full_model_sbc_all",
+  "config": {
+    "coverage_high": 0.99,
+    "coverage_low": 0.9,
+    "max_iter": 60,
+    "n_participants": 6,
+    "n_posterior_draws": 20,
+    "n_recovery": 1,
+    "n_sbc": 1,
+    "n_trials": 20,
+    "recovery_threshold": 0.85,
+    "seed": 20261031
+  },
+  "convergence_rate": 1.0,
+  "decision": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+  "models": [
+    "M0",
+    "M2",
+    "M4",
+    "M6",
+    "M7"
+  ],
+  "note": "Laplace parameter SBC for the full latent-source model. It is not NUTS and not human evidence; the policy POMDP is calibrated separately.",
+  "per_model": {
+    "M0": {
+      "analysis": "stage0i_full_model_sbc",
+      "config": {
+        "coverage_high": 0.99,
+        "coverage_low": 0.9,
+        "max_iter": 60,
+        "n_participants": 6,
+        "n_posterior_draws": 20,
+        "n_recovery": 1,
+        "n_sbc": 1,
+        "n_trials": 20,
+        "recovery_threshold": 0.85,
+        "seed": 20261031
+      },
+      "convergence_rate": 1.0,
+      "decision": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+      "metrics": {
+        "alpha_d": {
+          "chi_square": 9.0,
+          "coverage": 0.0,
+          "max_bin": 1,
+          "mean_rank": 1.0,
+          "min_bin": 0
+        }
+      },
+      "model": "M0",
+      "note": "Full joint latent-source model with observed test choice; not the policy POMDP. Coverage thresholds are screening criteria, not human evidence.",
+      "scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "target_parameters": [
+        "alpha_d"
+      ]
+    },
+    "M2": {
+      "analysis": "stage0i_full_model_sbc",
+      "config": {
+        "coverage_high": 0.99,
+        "coverage_low": 0.9,
+        "max_iter": 60,
+        "n_participants": 6,
+        "n_posterior_draws": 20,
+        "n_recovery": 1,
+        "n_sbc": 1,
+        "n_trials": 20,
+        "recovery_threshold": 0.85,
+        "seed": 20261031
+      },
+      "convergence_rate": 1.0,
+      "decision": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+      "metrics": {
+        "delta_b": {
+          "chi_square": 9.0,
+          "coverage": 1.0,
+          "max_bin": 1,
+          "mean_rank": 0.85,
+          "min_bin": 0
+        }
+      },
+      "model": "M2",
+      "note": "Full joint latent-source model with observed test choice; not the policy POMDP. Coverage thresholds are screening criteria, not human evidence.",
+      "scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "target_parameters": [
+        "delta_b"
+      ]
+    },
+    "M4": {
+      "analysis": "stage0i_full_model_sbc",
+      "config": {
+        "coverage_high": 0.99,
+        "coverage_low": 0.9,
+        "max_iter": 60,
+        "n_participants": 6,
+        "n_posterior_draws": 20,
+        "n_recovery": 1,
+        "n_sbc": 1,
+        "n_trials": 20,
+        "recovery_threshold": 0.85,
+        "seed": 20261031
+      },
+      "convergence_rate": 1.0,
+      "decision": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+      "metrics": {
+        "delta_b": {
+          "chi_square": 8.999999999999998,
+          "coverage": 1.0,
+          "max_bin": 1,
+          "mean_rank": 0.7,
+          "min_bin": 0
+        },
+        "delta_dual": {
+          "chi_square": 8.999999999999998,
+          "coverage": 1.0,
+          "max_bin": 1,
+          "mean_rank": 0.65,
+          "min_bin": 0
+        }
+      },
+      "model": "M4",
+      "note": "Full joint latent-source model with observed test choice; not the policy POMDP. Coverage thresholds are screening criteria, not human evidence.",
+      "scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "target_parameters": [
+        "delta_b",
+        "delta_dual"
+      ]
+    },
+    "M6": {
+      "analysis": "stage0i_full_model_sbc",
+      "config": {
+        "coverage_high": 0.99,
+        "coverage_low": 0.9,
+        "max_iter": 60,
+        "n_participants": 6,
+        "n_posterior_draws": 20,
+        "n_recovery": 1,
+        "n_sbc": 1,
+        "n_trials": 20,
+        "recovery_threshold": 0.85,
+        "seed": 20261031
+      },
+      "convergence_rate": 1.0,
+      "decision": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+      "metrics": {
+        "gamma_v": {
+          "chi_square": 8.999999999999998,
+          "coverage": 1.0,
+          "max_bin": 1,
+          "mean_rank": 0.2,
+          "min_bin": 0
+        }
+      },
+      "model": "M6",
+      "note": "Full joint latent-source model with observed test choice; not the policy POMDP. Coverage thresholds are screening criteria, not human evidence.",
+      "scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "target_parameters": [
+        "gamma_v"
+      ]
+    },
+    "M7": {
+      "analysis": "stage0i_full_model_sbc",
+      "config": {
+        "coverage_high": 0.99,
+        "coverage_low": 0.9,
+        "max_iter": 60,
+        "n_participants": 6,
+        "n_posterior_draws": 20,
+        "n_recovery": 1,
+        "n_sbc": 1,
+        "n_trials": 20,
+        "recovery_threshold": 0.85,
+        "seed": 20261031
+      },
+      "convergence_rate": 1.0,
+      "decision": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+      "metrics": {
+        "gamma_c": {
+          "chi_square": 8.999999999999998,
+          "coverage": 1.0,
+          "max_bin": 1,
+          "mean_rank": 0.05,
+          "min_bin": 0
+        }
+      },
+      "model": "M7",
+      "note": "Full joint latent-source model with observed test choice; not the policy POMDP. Coverage thresholds are screening criteria, not human evidence.",
+      "scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "target_parameters": [
+        "gamma_c"
+      ]
+    }
+  },
+  "posterior_backend": "laplace_screening_not_nuts",
+  "scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp"
+}

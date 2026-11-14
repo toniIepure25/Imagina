@@ -23,6 +23,11 @@ science = [
     "PyYAML>=6.0,<7",
     "jsonschema>=4.20,<5",
 ]
+crt = [
+    "numpyro>=0.16,<1",
+    "jax>=0.4,<1",
+    "arviz>=0.20,<1",
+]
 neural = [
     "numpy>=1.24,<3",
     "scipy>=1.11,<2",
@@ -141,6 +146,7 @@ select = ["E", "F", "I", "W"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["app/tests"]
+pythonpath = [".."]
 addopts = "--strict-markers"
 markers = [
     "core: hermetic core pipeline tests (default merge-gate suite)",

@@ -1,6 +1,283 @@
 # TASK_BRIEF.md
 
-## Current task — Phase 1: canonical claim registry and results ledger (2026-10-29)
+## Current task — Phase 0I: identification-first adjudication and policy layer (2026-10-31)
+
+**Goal:** make the CRT package top-tier by fixing the full-model likelihood bug, auditing sources,
+adding formal pairwise identifiability and full-joint-model design screening, a policy-choice layer,
+an optional NumPyro backend, and Stage 0I registry gates. Computational and documentation only.
+
+**Scope**
+- `analysis/crt/full_model.py`, `identifiability.py`, `policy_model.py`, `inference.py`,
+  `design_optimization.py`.
+- `backend/app/cli/crt_stage0i.py`; `backend/app/tests/test_crt_stage0i.py`.
+- `science/protocols/crt-v1.yaml` v0.7.0; Stage 0I artifacts and seven gates.
+- `docs/research/CRT_SOURCE_AUDIT.md`, `CRT_STAGE0I_PROTOCOL.md`.
+
+**Non-goals**
+- No human data, pilot, IRB, recruitment, clinical sample, API/DB/UI, or neural data.
+- No claim upgrade; no “first”, “revolutionary”, or priority language.
+- Quick screening is not target-scale SBC; no threshold tuning is authorized.
+
+**Acceptance**
+- Full-model prediction double count is fixed and regression-tested.
+- Source audit and Stage 0I artifacts exist with honest decisions.
+- Protocol audit, focused tests, ruff, ledger, docs links, and `verify.py --quick` pass.
+- Human collection remains blocked.
+
+**Status:** implemented and verified at the code-path/governance level. Source audit PASS; inference
+backend BLOCKED (NumPyro absent); quick identifiability, design, policy calibration, policy recovery,
+full-model Laplace SBC/recovery, target projection, and target readout design are REVIEW/LIMITED;
+readiness is BLOCKED. The target readout screen runs at N=432/T=240 but fails to recover M7, so the
+next step is a full-model design/SBC revision under NUTS, not recruitment.
+
+---
+
+## Previous task — Phase 0H: rival-account models, design optimization, and adversarial package (2026-10-31)
+
+**Goal:** make CRT a theory-discriminating program by implementing M6/M7, adding an offline
+model-discrimination design screen, a full joint latent-source model, pre-specified SBC/recovery gates,
+and an adversarial/Registered Report package. Computational and documentation only.
+
+**Scope**
+- `analysis/crt/trial_model.py` (M6/M7), `analysis/crt/design_optimization.py`,
+  `analysis/crt/full_model.py`.
+- `backend/app/cli/crt_stage0h.py`; `backend/app/tests/test_crt_stage0h.py`.
+- `docs/program/CRT_STAGE0H_PROTOCOL.md`, `CRT_ADVERSARIAL_COLLABORATION.md`,
+  `CRT_REGISTERED_REPORT_PACKAGE.md`, `CRT_NEURAL_EXTENSION.md`.
+- `science/protocols/crt-v1.yaml` v0.6.0; registry artifacts/gates; Stage 0H results.
+
+**Non-goals**
+- No human data, pilot, IRB, recruitment, clinical sample, API/DB/UI, or neural data.
+- No claim upgrade; no "first"/"revolutionary"/priority language.
+- The full joint model observes test choice; it is not the policy POMDP.
+
+**Acceptance**
+- M0–M7 model space and M6/M7 covariates are explicit and tested.
+- Design optimization, full-model SBC, and recovery artifacts are generated with honest decisions.
+- Protocol audit, focused tests, ledger, ruff, docs links, and `verify.py --quick` pass.
+- Human collection remains blocked.
+
+**Status:** implemented and verified. Model space passes; design optimization is `REVIEW` (0.625 minimum
+pairwise); full-model screening SBC/recovery are `REVIEW`; readiness is `BLOCKED`. `verify.py --quick`
+passes (4 passed, 2 skipped; backend 684.9s). The result is a design diagnosis, not human evidence.
+
+---
+
+## Previous task — Phase 0G: CRT theory adjudication, trial-level model, and calibration planning (2026-10-31)
+
+**Goal:** make CRT a theory-adjudicating registered program by adding a formal three-account test,
+a trial-level hierarchical readout model with SBC/recovery, an N=480/d=0.20 design, and a calibration
+protocol. Computational and documentation only.
+
+**Scope**
+- `docs/research/CRT_STAGE0G_SCOPING_PROTOCOL.md`; `docs/program/CRT_THEORY_ADJUDICATION.md`;
+  `docs/program/CRT_STAGE0G_PROTOCOL.md`; `docs/program/CRT_CALIBRATION_PROTOCOL.md`.
+- `analysis/crt/trial_model.py` and `backend/app/tests/test_crt_trial_model.py`.
+- `science/protocols/crt-v1.yaml` version 0.5.0; `backend/app/research/crt/protocol.py` Stage 0G
+  design fields; preregistration/analysis-plan/spec H1 SESOI updates.
+- New Stage 0G artifacts; registry gates and docs.
+
+**Non-goals**
+- No human calibration, pilot, confirmatory study, IRB, recruitment, or clinical sample.
+- No API, DB, UI, neural data, training RCT, or claim upgrade.
+- No “first”, “revolutionary”, or priority language.
+- The trial-level readout model is not the full CRT POMDP; that remains a registration blocker.
+
+**Acceptance**
+- Scoping protocol and theory table exist with exact query counts and non-systematic caveat.
+- Trial-level SBC and recovery artifacts are generated with scope strings and explicit limitations.
+- Protocol audit accepts N=480/d=0.20/calibration N=80; preregistration and analysis plan match.
+- Focused tests, ruff, ledger check, docs links, and `python scripts/verify.py --quick` pass.
+- No claim status increases; human collection remains blocked.
+
+**Status:** implemented as a computational/documentation slice. Trial-level readout SBC passes (target
+`delta_d` coverage 0.955). Recovery is a post hoc M0/M2/M4 conditional pass (0.90) after the full-set
+runs failed (0.375 prior-averaged; 0.733 effect-conditioned); the gate is `LIMITED`. Calibration is
+protocol-only. Registration remains `BLOCKED`; full joint CRT POMDP SBC, pre-specified full-set
+recovery, calibration, model-based power, independent review, and ethics remain required.
+
+---
+
+## Previous task — Phase 0F: CRT protocol integrity, design power, and distortion assay (2026-10-30)
+
+**Goal:** make the CRT registration decision-complete and falsifiable by fixing trial arithmetic and
+contrast confounding, quantifying design power, validating a false-seen distortion assay, adding a
+conditional hierarchical screening and endpoint-level full SBC/model recovery, and blocking
+registration until the remaining statistical work is done. Simulation and documentation only.
+
+**Scope**
+- `science/protocols/crt-v1.yaml` version 0.4.0 and `backend/app/research/crt/protocol.py`.
+- `backend/app/research/crt/design.py` design-power grid; `distortion.py` assay; `hierarchical.py`
+  screening.
+- `analysis/crt/hierarchical_sbc.py`: standalone endpoint-level full hierarchical SBC and M0/M2/M3/M4
+  recovery.
+- `backend/app/cli/crt_stage0f.py`; `app/tests/test_crt_stage0f.py`.
+- Canonical artifacts `results/crt/CRT_STAGE0F_*.json`; registry gates.
+- Docs: Stage 0F protocol, preregistration, analysis plan, counterfactual spec, literature positioning,
+  ADR-073, RISK-059, task brief, session log, status.
+
+**Non-goals**
+- No human calibration, pilot, confirmatory study, IRB, recruitment, or clinical sample.
+- No API, DB, UI, neural data, training RCT, or claim upgrade.
+- No trial-level CRT hierarchical SBC; endpoint-level SBC is complete.
+- No “first”, “revolutionary”, or priority language.
+
+**Acceptance**
+- `python -m app.cli.crt_stage0f --check` passes protocol integrity.
+- Protocol audit passes; design power, distortion, hierarchical screening, endpoint hierarchical SBC,
+  and M0/M2/M3/M4 recovery artifacts are regenerated; registration package is `BLOCKED` with explicit
+  blockers.
+- Focused tests, ruff, ledger check, docs links, and `python scripts/verify.py --quick` pass.
+- No claim status increases; human collection remains blocked.
+
+**Status:** implemented; the design-power result is `REVIEW` because N=240 is underpowered for d=0.20.
+Endpoint SBC and M0/M2/M3/M4 recovery pass; registration is blocked pending design revision and a
+trial-level CRT hierarchical SBC.
+
+---
+
+## Previous task — Phase 0E: CRT model repair, counterfactual audit, and psychometrics (2026-10-30)
+
+**Goal:** repair the Stage 0C/0D oracle prediction and prediction/outcome double counting, add a
+dual-hypothesis counterfactual prediction assay, run policy competition, add test-facet reliability
+and posterior PIT calibration, add conditional SBC/model recovery, regenerate the canonical simulation
+artifacts, and downgrade claims that do not survive. Simulation only. No human data, API, DB, UI,
+clinical sample, or neural data.
+
+**Scope**
+- `backend/app/research/crt/model.py`: belief-based posterior-predictive prediction.
+- `backend/app/research/crt/simulate.py`: `prediction_source`, `prediction_format`, `source_update`;
+  outcome-only posterior; dual prediction fields; `cost_only` policy.
+- New modules: `model_repair.py`, `counterfactual.py`, `policy.py`, `psychometrics.py`, `pit.py`,
+  `recovery.py`.
+- `backend/app/cli/crt_stage0e.py` and six focused test files.
+- Stage 0E artifacts in `results/crt/CRT_STAGE0E_*.json`; new registry gates; downgrade Stage 0D
+  specificity gate to `LIMITED` via a superseding belief-based artifact.
+- Docs: Stage 0E protocol, model-repair audit, counterfactual specification, evidence update; update
+  CRT protocol, preregistration, analysis plan, theory audit, Stage 0D protocol, task brief, session
+  log, and risks.
+
+**Non-goals**
+- No human calibration, pilot, confirmatory study, IRB, recruitment, or clinical sample.
+- No API, database migration, frontend route, neural data, training RCT, or claim upgrade.
+- No composite score, diagnosis, imagery-strength claim, neural decoding, or LLM in the loop.
+- No "first", "revolutionary", or priority language.
+
+**Acceptance**
+- `python -m app.cli.crt_stage0e --check` passes.
+- `python -m app.cli.crt_stage0d --check` still passes on the preserved historical oracle path.
+- `ANIMUS_P5_CRT_MODEL_REPAIR=PASS`, `_PSYCHOMETRIC=PASS`, `_RECOVERY_BELIEF=PASS`;
+  `_SPECIFICITY=LIMITED`, `_COUNTERFACTUAL=LIMITED`, `_POLICY=LIMITED` in the ledger.
+- Ruff, focused CRT tests, ledger check, docs links, and `python scripts/verify.py --quick` pass.
+- Each Stage 0E artifact is reproducible from the documented CLI command.
+- No claim status increases; training and clinical remain `BLOCKED`.
+
+**Status:** implemented; the recovery artifact is generated with
+`python -m app.cli.crt_stage0e --write --recovery`; verification recorded in the 2026-10-30 Stage 0E
+session-log entry.
+
+---
+
+## Previous task — Phase 0D: CRT theory tournament and design controls (2026-10-30)
+
+**Goal:** implement the approved CRT Stage 0D slice: a theory audit and competing-model signature
+analysis, specificity and active-selection controls, test-likelihood calibration design, G-theory
+decision study, simulation-only gates, and the documents needed for PI/adversarial review. No human
+data, API, migration, UI, clinical sample, or neural data.
+
+**Scope**
+- `backend/app/research/crt/theory.py`, `gtheory.py`, `calibration.py`; extend `simulate.py` with
+  `prediction_mode` and `selection_mode`.
+- `backend/app/cli/crt_stage0d.py` and focused tests.
+- Canonical artifacts in `results/crt/CRT_STAGE0D_*.json`; four simulation-only registry gates.
+- `science/protocols/crt-v1.yaml` updated with Stage 0D controls, sub-studies, and N=240 targets.
+- Theory audit, novelty matrix, model predictions, Stage 0D protocol; update CRT spec, preregistration,
+  analysis plan, ADR-070, evidence map.
+- N=240 reliability planning target with a power check at true ICC 0.80 / lower bound 0.70.
+
+**Non-goals**
+- No human calibration, pilot, or confirmatory study; no IRB, recruitment, or clinical sample.
+- No API, database migration, frontend route, neural data, training RCT, or claim upgrade.
+- No composite score, diagnosis, imagery-strength claim, neural decoding, or LLM in the loop.
+- No "first" or "revolutionary" language.
+
+**Acceptance**
+- `python -m app.cli.crt_stage0d --check` passes.
+- `ANIMUS_P5_CRT_THEORY`, `_SPECIFICITY`, `_GTHEORY`, and `_CALIBRATION` are `PASS` in the ledger.
+- Existing Stage 0C gates retain their status; no claim status changes.
+- Ruff, focused tests, ledger check, and `python scripts/verify.py --quick` pass.
+- Each Stage 0D artifact is reproducible from the documented CLI command.
+
+**Status:** implemented; verification recorded in the 2026-10-30 session-log entry.
+
+---
+
+## Previous task — Phase 3B: Stage 0B Active Reality Testing (2026-10-29)
+
+**Goal:** implement the approved active-inquiry extension as a simulation-only slice: formal model,
+deterministic simulator, power and policy recovery, Stage 0 tests, protocol and registry entries. No
+human data, API, migration, or UI.
+
+**Scope**
+- `docs/animus/ACTIVE_REALITY_TESTING_SPEC.md`, `docs/program/ART_PREREGISTRATION.md`,
+  `docs/program/ART_ANALYSIS_PLAN.md`, `science/protocols/art-v1.yaml`.
+- `backend/app/research/art/` model, design, metrics, simulator, power; `app/cli/art_simulate.py`,
+  `app/cli/art_power.py`, `app/cli/art_recover.py`.
+- `backend/app/tests/test_art_stage0.py`.
+- `results/art/ART_STAGE0_SIMULATION.json`, `ART_STAGE0_POWER.json`, `ART_MODEL_RECOVERY.json`; three
+  simulation-only registry gates and three claims.
+- ADR-068, evidence-map addendum, and session log.
+
+**Non-goals**
+- No API, database migration, frontend route, human recruitment, clinical sample, or neural data.
+- No claim above `L1_BEHAVIORAL_ASSISTED`; no diagnosis, imagery-strength, decoding, or
+  "revolutionary"/"first" claim.
+- No training RCT or clinical extension; both remain blocked.
+
+**Acceptance**
+- `art_simulate --check`, `art_power --check`, and the 26 Stage 0 tests pass.
+- `ANIMUS_P4_ART_SIM=PASS`, `ANIMUS_P4_ART_POWER=PASS`, and `ANIMUS_P4_ART_RECOVERY=PASS` in the
+  ledger.
+- Ruff clean; `verify.py --quick` passes; docs links pass.
+- Each artifact is reproducible from the documented CLI command.
+
+**Status:** implemented; verification recorded in the 2026-10-29 ART session-log entry.
+
+---
+
+## Previous task — Phase 3: Stage 0 epistemic source monitoring (2026-10-29)
+
+**Goal:** implement the approved first slice of the source-monitoring program: specification,
+preregistration draft, analysis plan, machine-readable protocol, claim-registry entries, and a
+dependency-free simulation core that passes its design gate. No human data, API, migration, or UI.
+
+**Scope**
+- `docs/animus/SOURCE_MONITORING_SPEC.md`, `docs/program/PRM_PREREGISTRATION.md`,
+  `docs/program/PRM_ANALYSIS_PLAN.md`, `science/protocols/prm-v1.yaml`.
+- `backend/app/research/prm/` model, metrics, adaptive design, simulator, power; `app/cli/prm_simulate.py`,
+  `app/cli/prm_power.py`.
+- `backend/app/tests/test_prm_stage0.py`.
+- `results/prm/PRM_STAGE0_SIMULATION.json`, `results/prm/PRM_STAGE0_POWER.json`, and registry entries for
+  the two simulation-only gates.
+- ADR-067 and session log.
+
+**Non-goals**
+- No API, database migration, frontend route, human recruitment, clinical sample, or neural data.
+- No claim above `L1_BEHAVIORAL_ASSISTED`; no diagnosis, imagery-strength, or decoding claim.
+- No `meta_d_prime` estimate in Stage 0; it is gated.
+
+**Acceptance**
+- Simulation `--check` and 15 Stage 0 tests pass.
+- `ANIMUS_P3_SIM=PASS` and `ANIMUS_P3_POWER=PASS` in the ledger; 11 claims with the three new
+  source-monitoring claims.
+- Ruff clean; `verify.py --quick` passes; docs links pass.
+- The artifact is reproducible from the documented CLI command.
+
+**Status:** implemented; verification recorded in the 2026-10-29 session-log entry.
+
+---
+
+## Previous task — Phase 1: canonical claim registry and results ledger (2026-10-29)
 
 **Goal:** replace hand-maintained, contradictory scientific status prose with one machine-readable
 claim registry and one hash-chained results ledger, then generate the program status document from
@@ -380,3 +657,24 @@ human-participant studies (after further validation work).
 ---
 
 *Created: 2026-07-10*
+
+---
+
+## 2026-10-29 - CRT Stage 0C
+
+**Goal:** implement Counterfactual Reality Testing (CRT) Stage 0C as a simulation/specification
+slice, with no human data, API, DB, UI, clinical sample, or neural data.
+
+**Acceptance criteria:**
+
+- [x] Fix the ART default card menu and add a regression test.
+- [x] Add `backend/app/research/crt/` with model, design, metrics, simulation, recovery, and power.
+- [x] Add deterministic CLIs for simulation, recovery, and power.
+- [x] Add `backend/app/tests/test_crt_stage0.py` with 35 tests.
+- [x] Add `ANIMUS-CRT-v1`, draft preregistration, draft analysis plan, ADR-069, and evidence-map
+      addendum.
+- [x] Add CRT claims (UNVALIDATED/BLOCKED), simulation-only gates, and canonical artifacts.
+- [x] Regenerate the ledger/status and run the focused verification.
+
+**Non-goals:** human pilot or main study, API, migration, frontend, clinical sample, neural data,
+training RCT, claim upgrade, priority claim, or "revolutionary" language.

@@ -1,0 +1,72 @@
+{
+  "analysis": "stage0d_generalizability_theory_decision_study",
+  "config": {
+    "error_sd": 0.5,
+    "min_relative_reliability": 0.7,
+    "n_occasions": 2,
+    "n_participants": 60,
+    "occasion_sd": 0.2,
+    "person_sd": 1.0,
+    "seed": 20261029
+  },
+  "d_study": [
+    {
+      "absolute_reliability": 0.883862,
+      "mdc95": 1.197886,
+      "mdc95_absolute": 1.197886,
+      "n_occasions": 1.0,
+      "relative_reliability": 0.883862,
+      "sem": 0.432168,
+      "sem_absolute": 0.432168,
+      "sem_relative": 0.432168
+    },
+    {
+      "absolute_reliability": 0.938351,
+      "mdc95": 0.847033,
+      "mdc95_absolute": 0.847033,
+      "n_occasions": 2.0,
+      "relative_reliability": 0.938351,
+      "sem": 0.305589,
+      "sem_absolute": 0.305589,
+      "sem_relative": 0.305589
+    },
+    {
+      "absolute_reliability": 0.958038,
+      "mdc95": 0.6916,
+      "mdc95_absolute": 0.6916,
+      "n_occasions": 3.0,
+      "relative_reliability": 0.958038,
+      "sem": 0.249512,
+      "sem_absolute": 0.249512,
+      "sem_relative": 0.249512
+    },
+    {
+      "absolute_reliability": 0.968195,
+      "mdc95": 0.598943,
+      "mdc95_absolute": 0.598943,
+      "n_occasions": 4.0,
+      "relative_reliability": 0.968195,
+      "sem": 0.216084,
+      "sem_absolute": 0.216084,
+      "sem_relative": 0.216084
+    }
+  ],
+  "decision": "CRT_STAGE0D_GTHEORY_PASS",
+  "note": "Simulation-only variance-component recovery and decision study. It does not estimate reliability from human data or authorize an individual-level claim.",
+  "power_n240": {
+    "mean_estimate": 0.79945,
+    "mean_lower_bound": 0.748695,
+    "power": 0.949,
+    "true_icc": 0.8
+  },
+  "protocol": "ANIMUS-CRT-v1",
+  "variance_components": {
+    "error": 0.186769,
+    "negative": [
+      "occasion"
+    ],
+    "occasion": 0.0,
+    "person": 1.421397,
+    "total": 1.608166
+  }
+}

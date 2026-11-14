@@ -1,0 +1,192 @@
+{
+  "analysis": "conditional_logit_grid_recovery",
+  "comparison": {
+    "analysis": "policy_comparison",
+    "config": {
+      "n_participants": 60,
+      "n_trials": 80,
+      "seed": 20261029
+    },
+    "decision": "ART_STAGE0_POLICY_PASS",
+    "note": "Descriptive comparison of simulated agents. The EIG agent is expected to show the highest sampling efficiency; this is not a model-comparison result from human data.",
+    "policies": {
+      "eig": {
+        "card_counts": {
+          "context": 1556,
+          "generation": 1947,
+          "novelty": 2541,
+          "perceptual": 2514
+        },
+        "example": {
+          "accuracy": 0.475,
+          "brier_score": 0.208911,
+          "d_prime_seen_imagined": 1.003591,
+          "expected_calibration_error": 0.128675,
+          "insufficient_queries": 8,
+          "mean_arte": 0.535194,
+          "mean_evidence_resolution": 0.132209,
+          "mean_queries": 1.7375,
+          "mean_sampling_quality": 0.873595,
+          "n_trials": 80
+        },
+        "insufficient_query_trials": 295,
+        "mean_accuracy": 0.458125,
+        "mean_arte": 0.445612,
+        "mean_brier_score": 0.233282,
+        "mean_d_prime_seen_imagined": 0.854039,
+        "mean_evidence_resolution": 0.140113,
+        "mean_expected_calibration_error": 0.095417,
+        "mean_queries": 1.782917,
+        "mean_sampling_quality": 0.873927,
+        "n_participants": 60,
+        "n_trials": 4800,
+        "source_counts": {
+          "described": 1200,
+          "imagined": 1200,
+          "new": 1200,
+          "seen": 1200
+        }
+      },
+      "fixed": {
+        "card_counts": {
+          "context": 0,
+          "generation": 4800,
+          "novelty": 0,
+          "perceptual": 4800
+        },
+        "example": {
+          "accuracy": 0.5,
+          "brier_score": 0.228096,
+          "d_prime_seen_imagined": 1.299409,
+          "expected_calibration_error": 0.041243,
+          "insufficient_queries": 0,
+          "mean_arte": 0.379734,
+          "mean_evidence_resolution": 0.150908,
+          "mean_queries": 2,
+          "mean_sampling_quality": 0.912609,
+          "n_trials": 80
+        },
+        "insufficient_query_trials": 0,
+        "mean_accuracy": 0.4825,
+        "mean_arte": 0.3537,
+        "mean_brier_score": 0.24423,
+        "mean_d_prime_seen_imagined": 1.460854,
+        "mean_evidence_resolution": 0.157794,
+        "mean_expected_calibration_error": 0.087404,
+        "mean_queries": 2,
+        "mean_sampling_quality": 0.917534,
+        "n_participants": 60,
+        "n_trials": 4800,
+        "source_counts": {
+          "described": 1200,
+          "imagined": 1200,
+          "new": 1200,
+          "seen": 1200
+        }
+      },
+      "heuristic": {
+        "card_counts": {
+          "context": 4800,
+          "generation": 0,
+          "novelty": 0,
+          "perceptual": 4800
+        },
+        "example": {
+          "accuracy": 0.4875,
+          "brier_score": 0.238803,
+          "d_prime_seen_imagined": 1.003591,
+          "expected_calibration_error": 0.044402,
+          "insufficient_queries": 0,
+          "mean_arte": 0.068826,
+          "mean_evidence_resolution": 0.135576,
+          "mean_queries": 2,
+          "mean_sampling_quality": 0.737248,
+          "n_trials": 80
+        },
+        "insufficient_query_trials": 0,
+        "mean_accuracy": 0.471667,
+        "mean_arte": 0.077337,
+        "mean_brier_score": 0.243213,
+        "mean_d_prime_seen_imagined": 1.188765,
+        "mean_evidence_resolution": 0.143234,
+        "mean_expected_calibration_error": 0.084619,
+        "mean_queries": 2,
+        "mean_sampling_quality": 0.743149,
+        "n_participants": 60,
+        "n_trials": 4800,
+        "source_counts": {
+          "described": 1200,
+          "imagined": 1200,
+          "new": 1200,
+          "seen": 1200
+        }
+      },
+      "random": {
+        "card_counts": {
+          "context": 2396,
+          "generation": 2424,
+          "novelty": 2417,
+          "perceptual": 2363
+        },
+        "example": {
+          "accuracy": 0.4375,
+          "brier_score": 0.226047,
+          "d_prime_seen_imagined": 1.274968,
+          "expected_calibration_error": 0.083819,
+          "insufficient_queries": 0,
+          "mean_arte": 0.316439,
+          "mean_evidence_resolution": 0.157877,
+          "mean_queries": 2,
+          "mean_sampling_quality": 0.846771,
+          "n_trials": 80
+        },
+        "insufficient_query_trials": 0,
+        "mean_accuracy": 0.474583,
+        "mean_arte": 0.324985,
+        "mean_brier_score": 0.237509,
+        "mean_d_prime_seen_imagined": 0.952953,
+        "mean_evidence_resolution": 0.151127,
+        "mean_expected_calibration_error": 0.099173,
+        "mean_queries": 2,
+        "mean_sampling_quality": 0.821152,
+        "n_participants": 60,
+        "n_trials": 4800,
+        "source_counts": {
+          "described": 1200,
+          "imagined": 1200,
+          "new": 1200,
+          "seen": 1200
+        }
+      }
+    },
+    "protocol": "ANIMUS-ART-v1"
+  },
+  "config": {
+    "n_participants": 60,
+    "n_trials": 80,
+    "seed": 20261029
+  },
+  "decision": "ART_STAGE0_RECOVERY_PASS",
+  "note": "Policy-parameter recovery conditional on the known EIG feature matrix. It does not recover the full hierarchical measurement model or validate the task in humans.",
+  "protocol": "ANIMUS-ART-v1",
+  "recovery": {
+    "beta": {
+      "bias": -0.130675,
+      "mean_estimated": 1.866667,
+      "mean_true": 1.997341,
+      "rmse": 0.594997
+    },
+    "lam": {
+      "bias": -0.034948,
+      "mean_estimated": 0.236667,
+      "mean_true": 0.271615,
+      "rmse": 0.198314
+    },
+    "tau": {
+      "bias": -0.025362,
+      "mean_estimated": -0.24,
+      "mean_true": -0.214638,
+      "rmse": 0.470853
+    }
+  }
+}
