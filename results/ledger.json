@@ -133,6 +133,30 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p5.crt.design_power",
+      "authority": "canonical",
+      "bytes": 31864,
+      "gate_id": "ANIMUS_P5_CRT_DESIGN_POWER",
+      "note": "Simulation-based planning surface for the prediction contrast, false-seen assay, and reliability. A REVIEW means the current design must not be registered as confirmatory.",
+      "path": "results/crt/CRT_STAGE0F_DESIGN_POWER.json",
+      "raw_status": "CRT_STAGE0F_DESIGN_REVIEW",
+      "sha256": "95eaf3f37fd8b73a052d1dff932d70f08bd1586690631b3e2d5d79a31f714675",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.distortion",
+      "authority": "canonical",
+      "bytes": 2204,
+      "gate_id": "ANIMUS_P5_CRT_DISTORTION_ASSAY",
+      "note": "Assay-validation artifact. Sensitivity is established against an injected 5pp effect. The readout-only model is null with b_pi=0; a separate b_pi=0.4 run shows a model-predicted prediction-consistency bias. Human distortion remains a testable misspecification question.",
+      "path": "results/crt/CRT_STAGE0F_DISTORTION.json",
+      "raw_status": "CRT_STAGE0F_DISTORTION_PASS",
+      "sha256": "7d41618ac7d3c2f3a2f290c3037c94d341bc867d0c30c8126b48ae287f5b9fbd",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "animus.p5.crt.gtheory",
       "authority": "canonical",
       "bytes": 1932,
@@ -141,6 +165,42 @@
       "path": "results/crt/CRT_STAGE0D_GTHEORY.json",
       "raw_status": "CRT_STAGE0D_GTHEORY_PASS",
       "sha256": "d50038a0cbd58732ba0409467dfd217e472aca80153ee3005ed3956dfc5ae7fc",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.hierarchical_sbc",
+      "authority": "canonical",
+      "bytes": 1993,
+      "gate_id": "ANIMUS_P5_CRT_HIERARCHICAL_SBC",
+      "note": "Full hierarchical SBC for the Stage 1D paired false-seen endpoint, not a trial-level CRT model. 1,000 prior draws; primary mean rank 0.505, coverage 0.936, chi-square 7.12; second endpoint mean rank 0.491, coverage 0.954, chi-square 5.52. Model recovery balanced accuracy 0.855. No human evidence.",
+      "path": "results/crt/CRT_STAGE0F_HIERARCHICAL_SBC.json",
+      "raw_status": "CRT_STAGE0F_HIERARCHICAL_ENDPOINT_PASS",
+      "sha256": "b4236c12ced46992a6d642d4835dad81cbfa46e987804c48f13059759c5ed5d6",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.hierarchical_screening",
+      "authority": "canonical",
+      "bytes": 923,
+      "gate_id": "ANIMUS_P5_CRT_HIERARCHICAL_SCREENING",
+      "note": "Conditional group-mean recovery screening with participant-level pi variation. It is not joint hierarchical SBC and does not recover M3/M4; full hierarchical validation remains required.",
+      "path": "results/crt/CRT_STAGE0F_HIERARCHICAL_SCREENING.json",
+      "raw_status": "CRT_STAGE0F_HIERARCHICAL_SCREENING_PASS",
+      "sha256": "b9845e502855ad0417e0529fe64c694aaff3e44a16e8b7b5b498f392450470e9",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.model_recovery",
+      "authority": "canonical",
+      "bytes": 1353,
+      "gate_id": "ANIMUS_P5_CRT_MODEL_RECOVERY_DUAL",
+      "note": "Hierarchical endpoint recovery for M0/M2/M3/M4 parameterizations. Balanced accuracy 0.855, just above the 0.85 threshold; M3/M4 confusions are non-trivial. These are endpoint models, not the Stage 0D theory models.",
+      "path": "results/crt/CRT_STAGE0F_MODEL_RECOVERY.json",
+      "raw_status": "CRT_STAGE0F_MODEL_RECOVERY_PASS",
+      "sha256": "e1b6030d35f39b8b63e485a1dd89c4d9c9c67639b4c2e829b4729dfce9620817",
       "status": "PASS",
       "superseded_by": null
     },
@@ -181,6 +241,18 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p5.crt.protocol_audit",
+      "authority": "canonical",
+      "bytes": 1513,
+      "gate_id": "ANIMUS_P5_CRT_PROTOCOL_INTEGRITY",
+      "note": "Stage 0F design-integrity audit. It resolves the 120/240 trial arithmetic, moves the primary prediction contrast to the yoked comparison, and labels the active contrast as a package effect.",
+      "path": "results/crt/CRT_STAGE0F_PROTOCOL_AUDIT.json",
+      "raw_status": "CRT_STAGE0F_PROTOCOL_PASS",
+      "sha256": "3d09db58e1a164aae002adedcd37fcb724e1acc5cd57c744934b84fd05f926c0",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "animus.p5.crt.psychometric",
       "authority": "canonical",
       "bytes": 788,
@@ -214,6 +286,18 @@
       "raw_status": "CRT_STAGE0E_RECOVERY_PASS",
       "sha256": "a2592e714f745b940869c9875162da6ba38b7343d640741f8211742ff7b122c7",
       "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.registration_package",
+      "authority": "canonical",
+      "bytes": 1117,
+      "gate_id": "ANIMUS_P5_CRT_REGISTRATION_READY",
+      "note": "Stage 0G registration-readiness summary. BLOCKED is expected until the full joint CRT source/policy POMDP SBC, model-based power, calibration, independent review, and ethics are complete. The trial-level readout SBC passes but recovery is REVIEW. It does not authorize human data.",
+      "path": "results/crt/CRT_STAGE0G_REGISTRATION_PACKAGE.json",
+      "raw_status": "BLOCKED",
+      "sha256": "ee9fb4c9fa13a042831ee02b2a675309230191c1d269d90e5e5ad1cd8c74b06b",
+      "status": "BLOCKED",
       "superseded_by": null
     },
     {
@@ -253,6 +337,222 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p5.crt.stage0g_design_power",
+      "authority": "canonical",
+      "bytes": 1185,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0G_DESIGN_POWER",
+      "note": "Paired normal approximation at N=480/d=0.20 (power 0.90 in this run). It must be rechecked with the trial-level model-based endpoint before registration.",
+      "path": "results/crt/CRT_STAGE0G_DESIGN_POWER.json",
+      "raw_status": "CRT_STAGE0G_DESIGN_POWER_PASS",
+      "sha256": "dd253acc99c83050d38f764eede31757545d1a466071f39ecbca4794b06b765d",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0h_design_optimization",
+      "authority": "canonical",
+      "bytes": 11079,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_DESIGN_OPTIMIZATION",
+      "note": "Offline maximin model-discrimination screening. A PASS requires power >=0.90 and minimum pairwise balanced accuracy >=0.85. It selects a trial composition; it is not a hypothesis test or human evidence.",
+      "path": "results/crt/CRT_STAGE0H_DESIGN_OPTIMIZATION.json",
+      "raw_status": "CRT_STAGE0H_DESIGN_OPTIMIZATION_REVIEW",
+      "sha256": "557c518da74c5214ee12f3f7d526a5cc1724ae66daa63f02e9afa59a00105f48",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0h_full_model_recovery",
+      "authority": "canonical",
+      "bytes": 1098,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_RECOVERY",
+      "note": "BIC recovery among pre-specified full joint models. A PASS requires balanced accuracy >=0.85. Simulation identifiability, not evidence that humans use a model.",
+      "path": "results/crt/CRT_STAGE0H_FULL_MODEL_RECOVERY.json",
+      "raw_status": "CRT_STAGE0H_FULL_MODEL_RECOVERY_REVIEW",
+      "sha256": "a4e35f4897771981ce5a04d9a80e6f361ddb7b56a482c58653d1536419d4c8bd",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0h_full_model_sbc",
+      "authority": "canonical",
+      "bytes": 869,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_SBC",
+      "note": "Full joint latent-source SBC with observed test choice. It is not the policy POMDP; a PASS is simulation calibration only.",
+      "path": "results/crt/CRT_STAGE0H_FULL_MODEL_SBC.json",
+      "raw_status": "CRT_STAGE0H_FULL_MODEL_SBC_REVIEW",
+      "sha256": "9693c10e974f844cedc9625bbea91dd9dd2e4704741d4b479c79925cf85597d3",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0h_model_space",
+      "authority": "canonical",
+      "bytes": 4078,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_MODEL_SPACE",
+      "note": "Stage 0H model-space declaration. M0-M7 with M0/M2/M4/M6/M7 confirmatory; M1/M3/M5 exploratory. A declaration is not evidence for any model.",
+      "path": "results/crt/CRT_STAGE0H_MODEL_SPACE.json",
+      "raw_status": "CRT_STAGE0H_MODEL_SPACE_PASS",
+      "sha256": "441a07d4bf8cf5a5909a8d416f966c2fc96beb1eb2a1b3034c5394cc09ef20d3",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0h_package",
+      "authority": "canonical",
+      "bytes": 763,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_READINESS",
+      "note": "Stage 0H readiness summary. BLOCKED is expected until the computational gates, adversarial review, calibration, registration, and ethics are complete. It does not authorize human data.",
+      "path": "results/crt/CRT_STAGE0H_PACKAGE.json",
+      "raw_status": "BLOCKED",
+      "sha256": "b695bad207dd36ea2a12a5edfbfa9e9df6fc6f591a039de51e2aa91b9738ffca",
+      "status": "BLOCKED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_design_ado",
+      "authority": "canonical",
+      "bytes": 3499,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_DESIGN_ADO",
+      "note": "Full-joint-model design screen. A PASS requires the complete confirmatory model set and minimum pairwise recovery above threshold; it is design evidence, not human evidence.",
+      "path": "results/crt/CRT_STAGE0I_DESIGN_ADO.json",
+      "raw_status": "CRT_STAGE0I_DESIGN_ADO_REVIEW",
+      "sha256": "a9d51fd130a299fadd8631c9ef4adf30c1f7b67703c459a41d52f65e70319306",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_full_model_recovery",
+      "authority": "canonical",
+      "bytes": 1096,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_RECOVERY",
+      "note": "BIC recovery across all confirmatory latent-source models. A PASS is simulation identifiability, not evidence that humans use a model.",
+      "path": "results/crt/CRT_STAGE0I_FULL_MODEL_RECOVERY.json",
+      "raw_status": "CRT_STAGE0I_FULL_MODEL_RECOVERY_REVIEW",
+      "sha256": "4f8f61b06166a3896b899eeeb7af164ff5cfb1a4d88269100a5f46725e225bb3",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_full_model_sbc",
+      "authority": "canonical",
+      "bytes": 5968,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_SBC",
+      "note": "Laplace parameter SBC for all confirmatory latent-source models. A PASS is screening calibration, not NUTS and not human evidence.",
+      "path": "results/crt/CRT_STAGE0I_FULL_MODEL_SBC.json",
+      "raw_status": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+      "sha256": "f1e6af35f3ee0358461a32798d875543a7453e7b33ca7fe82fd39f297dff7497",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_identifiability",
+      "authority": "canonical",
+      "bytes": 3623,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_IDENTIFIABILITY",
+      "note": "Simulation-only pairwise full-model identifiability. A PASS requires all confirmatory models and uncertainty lower bounds above the pre-specified threshold; it is not human evidence.",
+      "path": "results/crt/CRT_STAGE0I_IDENTIFIABILITY.json",
+      "raw_status": "CRT_STAGE0I_IDENTIFIABILITY_REVIEW",
+      "sha256": "9d914c01a59f7f0207efecf9b6ef1850b26f87ba78f3d8b976e4629c09c368d8",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_inference_backend",
+      "authority": "canonical",
+      "bytes": 725,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND",
+      "note": "Optional NumPyro/JAX readiness check. BLOCKED means the publication-grade posterior backend is unavailable; Laplace remains screening-only and cannot satisfy a confirmatory gate.",
+      "path": "results/crt/CRT_STAGE0I_INFERENCE_BACKEND.json",
+      "raw_status": "CRT_STAGE0I_INFERENCE_BACKEND_BLOCKED",
+      "sha256": "1f0355b93220ef335acac23c3a5c3defa0a13d2de87571a630d5b1b20e94c98b",
+      "status": "BLOCKED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_package",
+      "authority": "canonical",
+      "bytes": 1685,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_READINESS",
+      "note": "Stage 0I readiness summary. BLOCKED is expected until computational gates, independent review, adversarial agreement, calibration, registration, and ethics are complete. It never authorizes human collection.",
+      "path": "results/crt/CRT_STAGE0I_PACKAGE.json",
+      "raw_status": "BLOCKED",
+      "sha256": "b406598a07269d9134aa87f01edada43366501386f99e01034ca0416de563492",
+      "status": "BLOCKED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_policy_parameter_sbc",
+      "authority": "canonical",
+      "bytes": 1408,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_POLICY_PARAMETER_SBC",
+      "note": "Laplace approximate continuous-parameter SBC for the meta-EIG policy's temperature, cost, and positive-testing parameters. It is not NUTS and not human evidence.",
+      "path": "results/crt/CRT_STAGE0I_POLICY_PARAMETER_SBC.json",
+      "raw_status": "CRT_STAGE0I_POLICY_PARAMETER_SBC_REVIEW",
+      "sha256": "b6df62140fa7f64922b7af7e57c57737d55e509b4c7e5e29588b91c810d37b88",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_policy_recovery",
+      "authority": "canonical",
+      "bytes": 1482,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_POLICY_RECOVERY",
+      "note": "Policy-choice recovery in simulation. A PASS is identifiability evidence for the policy layer, not evidence that humans use a policy.",
+      "path": "results/crt/CRT_STAGE0I_POLICY_RECOVERY.json",
+      "raw_status": "CRT_STAGE0I_POLICY_RECOVERY_REVIEW",
+      "sha256": "b14387bd366363ff5f5ea7bf7f27b1f16dd8ac80bbe3ba50f603851a1c7953e0",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_policy_sbc",
+      "authority": "canonical",
+      "bytes": 831,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_POLICY_SBC",
+      "note": "Discrete policy-model calibration, not continuous-parameter SBC. A PASS means the simulated policy is selected above threshold; it does not show that participants use that policy.",
+      "path": "results/crt/CRT_STAGE0I_POLICY_SBC.json",
+      "raw_status": "CRT_STAGE0I_POLICY_SBC_REVIEW",
+      "sha256": "9746954af4a8fc7eafadf8f7a6fc9cbe65e0396ff9e8271b3e02906d9ec98a3d",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_source_integrity",
+      "authority": "canonical",
+      "bytes": 4017,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_SOURCE_INTEGRITY",
+      "note": "Source-integrity audit for Stage 0I. A PASS means cited DOI/PMID metadata and status were checked and the Corcoran et al. role was corrected; it is not a systematic review or priority claim.",
+      "path": "results/crt/CRT_STAGE0I_SOURCE_AUDIT.json",
+      "raw_status": "CRT_STAGE0I_SOURCE_INTEGRITY_PASS",
+      "sha256": "9c346e203ed74f9d727aa4d53a1da164878cae388fe4764b8156c9fb853feaa6",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_target_design_projection",
+      "authority": "canonical",
+      "bytes": 6401,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION",
+      "note": "Pilot-to-target normal projection of full-model BIC separation. Both PASS and REVIEW map to LIMITED because this is not a target-scale fit or target-scale SBC.",
+      "path": "results/crt/CRT_STAGE0I_TARGET_DESIGN_PROJECTION.json",
+      "raw_status": "CRT_STAGE0I_TARGET_DESIGN_PROJECTION_REVIEW",
+      "sha256": "069303aa9c4df69d2aca3897b1b30383721ae42ee45598863184af4cf6c5c40c",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.stage0i_target_design_readout",
+      "authority": "canonical",
+      "bytes": 5790,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT",
+      "note": "Target-scale N=432/T=240 hierarchical readout design screen. Both outcomes map to LIMITED because this is not a full joint-model fit, not SBC, and not human evidence.",
+      "path": "results/crt/CRT_STAGE0I_TARGET_DESIGN_READOUT.json",
+      "raw_status": "CRT_STAGE0I_DESIGN_OPTIMIZATION_REVIEW",
+      "sha256": "53502f02eb904afb1ad1c5051d64651e4480ede03d612a1fa6b6539db9ff92eb",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "animus.p5.crt.theory",
       "authority": "canonical",
       "bytes": 2213,
@@ -261,6 +561,30 @@
       "path": "results/crt/CRT_STAGE0D_MODEL_TOURNAMENT.json",
       "raw_status": "CRT_STAGE0D_THEORY_PASS",
       "sha256": "7b050806160fafc42cf6f661c23588a678540bd1e2d915479961e1af51b73686",
+      "status": "PASS",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.trial_recovery",
+      "authority": "canonical",
+      "bytes": 1236,
+      "gate_id": "ANIMUS_P5_CRT_TRIAL_RECOVERY",
+      "note": "BIC-based effect-conditioned recovery among the pre-specified confirmatory readout models M0/M2/M4. M1/M3/M5 remain exploratory. It is a readout-family check, not the full CRT theory tournament.",
+      "path": "results/crt/CRT_STAGE0G_TRIAL_RECOVERY.json",
+      "raw_status": "CRT_STAGE0G_TRIAL_RECOVERY_CONDITIONAL_PASS",
+      "sha256": "2c04d6107ef6cfc6c7f3f18fa05b9c8bfb2f0617b3253c2704db9dc3f7d824fb",
+      "status": "LIMITED",
+      "superseded_by": null
+    },
+    {
+      "artifact_id": "animus.p5.crt.trial_sbc",
+      "authority": "canonical",
+      "bytes": 1002,
+      "gate_id": "ANIMUS_P5_CRT_TRIAL_SBC",
+      "note": "Trial-level hierarchical readout SBC. Scope string is trial_level_hierarchical_readout_not_full_crt_pomdp. It is a validation step, not the full CRT source/policy model.",
+      "path": "results/crt/CRT_STAGE0G_TRIAL_SBC.json",
+      "raw_status": "CRT_STAGE0G_TRIAL_SBC_PASS",
+      "sha256": "e0d7f0c25db52f5fa1f39a022af13132dab8319e485146d2515ce9f91f7c81e4",
       "status": "PASS",
       "superseded_by": null
     },
@@ -780,6 +1104,222 @@
       "name": "Counterfactual Reality Testing test-likelihood calibration design",
       "note": "Simulation-only calibration gate. A PASS means at least four tests have a strong simulated seen-versus-imagined likelihood ratio and the fluency trap remains non-diagnostic. A human calibration sample must freeze the likelihood table before confirmatory data collection.",
       "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.protocol_audit",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_PROTOCOL_INTEGRITY",
+      "name": "Counterfactual Reality Testing Stage 0F protocol integrity",
+      "note": "Design-integrity gate for the Stage 0F protocol. A PASS requires consistent trial arithmetic, a yoked primary prediction contrast, a labelled active package contrast, six tests, the fluency trap, and a session duration within the 75-minute cap. It does not authorize human collection.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.design_power",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_DESIGN_POWER",
+      "name": "Counterfactual Reality Testing Stage 0F design power",
+      "note": "Simulation-only planning gate. A PASS requires at least 90% power for the stated smallest effect of interest, 80% for the false-seen distortion assay, and 80% for the reliability lower bound. A REVIEW means the current N/trial design is not adequately powered and must not be registered as confirmatory.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.distortion",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_DISTORTION_ASSAY",
+      "name": "Counterfactual Reality Testing Stage 0F distortion assay",
+      "note": "Simulation-only assay-validation gate. A PASS means the paired false-seen assay detects an injected 5-percentage-point shift with at least 80% power while the b_pi=0 readout-only model remains null. A separate b_pi>0 run illustrates a model-predicted bias channel. It does not show that dual prediction causes distortion in humans.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.hierarchical_screening",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_HIERARCHICAL_SCREENING",
+      "name": "Counterfactual Reality Testing Stage 0F hierarchical recovery screening",
+      "note": "Conditional group-mean screening with participant-level pi variation. A PASS is screening evidence only; it is not joint hierarchical SBC and does not recover M3/M4. The endpoint-level hierarchical SBC is reported separately; the trial-level CRT model remains outstanding.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.hierarchical_sbc",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_HIERARCHICAL_SBC",
+      "name": "Counterfactual Reality Testing Stage 0F endpoint hierarchical SBC",
+      "note": "Full hierarchical Bayes for the Stage 1D paired false-seen endpoint (group means, between-person SD, participant-level differences, known binomial SEs), with 1,000 prior draws. A PASS means the endpoint rank histogram is calibrated and 95% coverage is in range. It is not a trial-level CRT source-monitoring SBC.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.model_recovery",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_MODEL_RECOVERY_DUAL",
+      "name": "Counterfactual Reality Testing Stage 0F endpoint model recovery",
+      "note": "Hierarchical endpoint recovery among four parameterizations: no format effect (M0), common format effect (M2), dual-specific effect (M3), and dual plus nondiagnostic-demand effect (M4). A PASS requires balanced accuracy >=0.85. These are endpoint models, not the Stage 0D theory models.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0g_design_power",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0G_DESIGN_POWER",
+      "name": "Counterfactual Reality Testing Stage 0G design power",
+      "note": "Planning approximation at N=480 and d=0.20. A PASS requires at least 90% power for the primary yoked contrast. It is not trial-level model power and is not human evidence.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.trial_sbc",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_TRIAL_SBC",
+      "name": "Counterfactual Reality Testing Stage 0G trial-level SBC",
+      "note": "Trial-level hierarchical readout SBC with participant random effects and condition effects. A PASS means the target condition-effect ranks/coverage are calibrated for the readout model. It is not the full CRT source-monitoring POMDP and does not authorize human collection.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.trial_recovery",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_TRIAL_RECOVERY",
+      "name": "Counterfactual Reality Testing Stage 0G trial-level model recovery",
+      "note": "BIC-based effect-conditioned recovery among the confirmatory M0/M2/M4 readout models; M1/M3/M5 are exploratory. A PASS requires balanced accuracy >=0.85. It validates the readout model family, not the full CRT theory tournament.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0h_model_space",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_MODEL_SPACE",
+      "name": "Counterfactual Reality Testing Stage 0H model space",
+      "note": "Declares M0-M7 and the confirmatory M0/M2/M4/M6/M7 set. A PASS means the model space and exploratory labels are explicit; it is not evidence for any model.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0h_design_optimization",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_DESIGN_OPTIMIZATION",
+      "name": "Counterfactual Reality Testing Stage 0H design optimization",
+      "note": "Offline screening of trial compositions for model discrimination under a power floor. A PASS means a candidate reaches the discrimination and power thresholds; it is not human evidence and the classifier used to rank candidates is not a hypothesis test.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0h_full_model_sbc",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_SBC",
+      "name": "Counterfactual Reality Testing Stage 0H full-model SBC",
+      "note": "Full joint latent-source SBC with observed test choice. A PASS means the declared target parameters are calibrated for this likelihood; it is not the policy POMDP or human evidence.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0h_full_model_recovery",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_RECOVERY",
+      "name": "Counterfactual Reality Testing Stage 0H full-model recovery",
+      "note": "BIC recovery among the pre-specified full joint models. A PASS requires balanced accuracy >=0.85 under the recorded simulation conditions; it is identifiability evidence only.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0h_package",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0H_READINESS",
+      "name": "Counterfactual Reality Testing Stage 0H readiness",
+      "note": "Documentation-quality gate. BLOCKED is expected until computational gates, adversarial review, calibration, registration, and ethics are complete. It never authorizes human collection.",
+      "status": "BLOCKED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_source_integrity",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_SOURCE_INTEGRITY",
+      "name": "Counterfactual Reality Testing Stage 0I source integrity",
+      "note": "Source metadata and correction audit. A PASS means the cited DOI/PMID records and the Corcoran role correction were checked; it is not a systematic review.",
+      "status": "PASS"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_inference_backend",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND",
+      "name": "Counterfactual Reality Testing Stage 0I inference backend",
+      "note": "Optional NumPyro/JAX readiness. BLOCKED means confirmatory posterior inference is not installed; Laplace remains approximate and cannot pass a confirmatory gate.",
+      "status": "BLOCKED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_identifiability",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_IDENTIFIABILITY",
+      "name": "Counterfactual Reality Testing Stage 0I identifiability",
+      "note": "Simulation-only pairwise full-model recovery. A PASS requires all confirmatory models and lower uncertainty bounds above threshold; it is not human evidence.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_design_ado",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_DESIGN_ADO",
+      "name": "Counterfactual Reality Testing Stage 0I design optimization",
+      "note": "Full-joint-model design screen. A PASS requires the complete confirmatory set and minimum pairwise recovery above threshold; it is design evidence, not a hypothesis test.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_target_design_readout",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT",
+      "name": "Counterfactual Reality Testing Stage 0I target readout design",
+      "note": "Target-scale N=432/T=240 hierarchical readout screen. It is not a full joint-model fit, SBC, or human evidence, so both PASS and REVIEW map to LIMITED.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_target_design_projection",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION",
+      "name": "Counterfactual Reality Testing Stage 0I target design projection",
+      "note": "Pilot full-model BIC separation projected to N=432/T=240 by a normal approximation. It is a planning projection, not a target-scale fit, target-scale SBC, or human evidence.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_policy_sbc",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_POLICY_SBC",
+      "name": "Counterfactual Reality Testing Stage 0I policy calibration",
+      "note": "Discrete policy-model calibration, not continuous-parameter SBC. It does not show that humans use the policy.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_policy_parameter_sbc",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_POLICY_PARAMETER_SBC",
+      "name": "Counterfactual Reality Testing Stage 0I policy parameter SBC",
+      "note": "Laplace approximate SBC for meta-EIG policy parameters. It is not NUTS and does not establish that participants use the policy.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_full_model_sbc",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_SBC",
+      "name": "Counterfactual Reality Testing Stage 0I full-model SBC",
+      "note": "Laplace SBC for all confirmatory latent-source models. A PASS is screening calibration, not NUTS.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_full_model_recovery",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_RECOVERY",
+      "name": "Counterfactual Reality Testing Stage 0I full-model recovery",
+      "note": "BIC recovery across all confirmatory latent-source models. A PASS is simulation identifiability, not human evidence.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_policy_recovery",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_POLICY_RECOVERY",
+      "name": "Counterfactual Reality Testing Stage 0I policy recovery",
+      "note": "Policy-choice recovery in simulation. A PASS is policy identifiability, not human evidence.",
+      "status": "LIMITED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0i_package",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0I_READINESS",
+      "name": "Counterfactual Reality Testing Stage 0I readiness",
+      "note": "Documentation-quality readiness gate. BLOCKED is expected until computational gates, independent review, adversarial agreement, calibration, registration, and ethics are complete.",
+      "status": "BLOCKED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.registration_package",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_REGISTRATION_READY",
+      "name": "Counterfactual Reality Testing registration readiness",
+      "note": "Documentation-quality gate. READY_FOR_INDEPENDENT_REVIEW means the Stage 0F package is complete enough for PI, statistician, adversarial, and ethics review; it does not authorize human data collection or upgrade any claim. BLOCKED means at least one prerequisite is missing. Endpoint SBC is complete and a trial-level readout SBC is reported, but trial-level readout recovery is a post hoc conditional pass (LIMITED), not a pre-specified full-set pass; the full CRT POMDP SBC, calibration, model-based power, independent review, and ethics remain blockers.",
+      "status": "BLOCKED"
     }
   ],
   "generated_from": "science/registry",

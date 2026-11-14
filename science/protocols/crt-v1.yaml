@@ -1,12 +1,13 @@
 protocol_id: ANIMUS-CRT-v1
-version: 0.3.0
-stage: 0E
+version: 0.7.0
+stage: 0I
 status: draft
 claim_ceiling: L1_BEHAVIORAL_ASSISTED
 registered: false
 registration_note: >-
-  Stage 0C/0D/0E specification and simulation only. No human data may be collected under this
-  protocol until the preregistration is registered and ethics approval is documented.
+  Stage 0G theory adjudication, trial-level model validation, and calibration planning only. No human
+  data may be collected under this protocol until the preregistration is registered and ethics
+  approval is documented.
 
 construct:
   name: counterfactual_reality_testing
@@ -69,14 +70,47 @@ design:
   task: prospective_counterfactual_prediction_with_source_judgment
   confidence_range: [0.05, 1.0]
   abstention_allowed: true
-  trials_per_occasion: 60
-  observe_trials_per_occasion: 10
+  main_n: 480
+  analysed_n_at_10pct_attrition: 432
+  sesoi_d: 0.20
+  planned_power_at_sesoi: 0.925
+  primary_endpoint: model_based_source_sensitivity
+  secondary_endpoint: raw_source_accuracy
+  calibration_n: 80
+  calibration_status: protocol_only_human_data_gated
+  theory_adjudication: signal_strength_vs_higher_order_precision_vs_active_prospective_inference
+  model_space: [M0, M1, M2, M3, M4, M5, M6, M7]
+  confirmatory_models: [M0, M2, M4, M6, M7]
+  exploratory_models: [M1, M3, M5]
+  design_optimization_status: required_before_registration
+  design_optimization_objective: maximin_pairwise_model_discrimination_with_power_floor
+  design_optimization_method: full_joint_model_bic_screen_then_target_scale_sbc
+  adversarial_review_status: package_draft_not_yet_reviewed
+  adversarial_bayesian_status: protocol_draft_not_yet_reviewed
+  full_model_scope: full_joint_source_monitoring_latent_state_not_policy_pomdp
+  policy_model_status: required_before_registration
+  inference_backend: numpyro_nuts_with_laplace_screening_fallback
+  identifiability_status: required_before_registration
+  source_audit_status: required
+  calibration_table_status: required_before_main
+  neural_extension_status: optional_separate_stage_1e_not_required
+  stage0h_status: historical_computational_only_human_data_gated
+  stage0i_status: computational_only_human_data_gated
+  trials_per_occasion: 120
+  total_trials: 240
+  observe_trials_per_occasion: 20
   cells:
     - active_intervene
     - active_predict
     - yoked_intervene
     - yoked_predict
-  trials_per_cell_per_occasion: 15
+  trials_per_cell_per_occasion: 25
+  primary_contrast: yoked_predict_minus_yoked_intervene
+  secondary_contrast: active_predict_minus_active_intervene
+  primary_contrast_note: >-
+    The yoked contrast fixes the test sequence, so it is the clean prediction anchor. The active
+    contrast is a package effect of prediction plus self-selected testing and is secondary.
+  session_cap_minutes: 75
   max_tests_per_trial: 2
   test_replacement: false
   budget_points: 80
@@ -113,6 +147,22 @@ specificity_substudy:
     did not reproduce under belief-based prediction (Stage 0E source accuracy gain 0.026; diagnostic
     prediction accuracy 0.505). A null or negative diagnostic contrast rejects the
     counterfactual-prediction interpretation.
+
+dual_substudy:
+  stage: 1D
+  n: 160
+  design: within_subject_fixed_sequence
+  arms:
+    - active_predict_single
+    - active_predict_dual
+    - active_predict_dual_nondiagnostic
+  primary_outcome: false_seen_rate_for_imagined_items
+  secondary_outcomes: [source_accuracy, source_confidence, criterion_bias]
+  controls: [fixed_test_sequence, confidence_report, cost, time]
+  status: human_test_pending_registration
+  note: >-
+    Tests whether dual counterfactual prediction improves discrimination or increases false seen
+    attributions. A null or harmful result is informative and blocks a benefit claim.
 
 selection_substudy:
   stage: 1B
@@ -296,4 +346,27 @@ stage0e:
     Belief-based prediction with outcome-only source updating. Oracle inflation 0.101. Specificity,
     dual-prediction, and policy claims are LIMITED; psychometric facets, model repair, and conditional
     belief-readout recovery pass in simulation. The recovery check fixes d, guessing, and response
-    bias and is not full hierarchical SBC. No human study is authorized by these results.
+    bias and is not the full trial-level CRT hierarchical SBC. No human study is authorized by these
+    results.
+
+stage0f:
+  protocol_audit_artifact: results/crt/CRT_STAGE0F_PROTOCOL_AUDIT.json
+  design_power_artifact: results/crt/CRT_STAGE0F_DESIGN_POWER.json
+  distortion_artifact: results/crt/CRT_STAGE0F_DISTORTION.json
+  hierarchical_screening_artifact: results/crt/CRT_STAGE0F_HIERARCHICAL_SCREENING.json
+  hierarchical_sbc_artifact: results/crt/CRT_STAGE0F_HIERARCHICAL_SBC.json
+  model_recovery_artifact: results/crt/CRT_STAGE0F_MODEL_RECOVERY.json
+  registration_artifact: results/crt/CRT_STAGE0F_REGISTRATION_PACKAGE.json
+  protocol_gate: ANIMUS_P5_CRT_PROTOCOL_INTEGRITY
+  design_power_gate: ANIMUS_P5_CRT_DESIGN_POWER
+  distortion_gate: ANIMUS_P5_CRT_DISTORTION_ASSAY
+  hierarchical_screening_gate: ANIMUS_P5_CRT_HIERARCHICAL_SCREENING
+  hierarchical_sbc_gate: ANIMUS_P5_CRT_HIERARCHICAL_SBC
+  model_recovery_gate: ANIMUS_P5_CRT_MODEL_RECOVERY_DUAL
+  registration_gate: ANIMUS_P5_CRT_REGISTRATION_READY
+  status: blocked
+  note: >-
+    Stage 0F repairs trial arithmetic and the primary-contrast confound, checks design power and the
+    dual-prediction distortion assay, and adds endpoint-level hierarchical SBC and M0/M2/M3/M4
+    recovery. Registration remains BLOCKED on design power; a trial-level CRT hierarchical SBC is
+    still outstanding. No human data collection is authorized.

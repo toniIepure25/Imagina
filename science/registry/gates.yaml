@@ -197,3 +197,234 @@ gates:
       Simulation-only calibration gate. A PASS means at least four tests have a strong simulated
       seen-versus-imagined likelihood ratio and the fluency trap remains non-diagnostic. A human
       calibration sample must freeze the likelihood table before confirmatory data collection.
+
+  - gate_id: ANIMUS_P5_CRT_PROTOCOL_INTEGRITY
+    name: Counterfactual Reality Testing Stage 0F protocol integrity
+    canonical_artifact: animus.p5.crt.protocol_audit
+    claim_ids: []
+    note: >-
+      Design-integrity gate for the Stage 0F protocol. A PASS requires consistent trial arithmetic,
+      a yoked primary prediction contrast, a labelled active package contrast, six tests, the fluency
+      trap, and a session duration within the 75-minute cap. It does not authorize human collection.
+
+  - gate_id: ANIMUS_P5_CRT_DESIGN_POWER
+    name: Counterfactual Reality Testing Stage 0F design power
+    canonical_artifact: animus.p5.crt.design_power
+    claim_ids: []
+    note: >-
+      Simulation-only planning gate. A PASS requires at least 90% power for the stated smallest effect
+      of interest, 80% for the false-seen distortion assay, and 80% for the reliability lower bound.
+      A REVIEW means the current N/trial design is not adequately powered and must not be registered
+      as confirmatory.
+
+  - gate_id: ANIMUS_P5_CRT_DISTORTION_ASSAY
+    name: Counterfactual Reality Testing Stage 0F distortion assay
+    canonical_artifact: animus.p5.crt.distortion
+    claim_ids: []
+    note: >-
+      Simulation-only assay-validation gate. A PASS means the paired false-seen assay detects an
+      injected 5-percentage-point shift with at least 80% power while the b_pi=0 readout-only model
+      remains null. A separate b_pi>0 run illustrates a model-predicted bias channel. It does not show
+      that dual prediction causes distortion in humans.
+
+  - gate_id: ANIMUS_P5_CRT_HIERARCHICAL_SCREENING
+    name: Counterfactual Reality Testing Stage 0F hierarchical recovery screening
+    canonical_artifact: animus.p5.crt.hierarchical_screening
+    claim_ids: []
+    note: >-
+      Conditional group-mean screening with participant-level pi variation. A PASS is screening
+      evidence only; it is not joint hierarchical SBC and does not recover M3/M4. The endpoint-level
+      hierarchical SBC is reported separately; the trial-level CRT model remains outstanding.
+
+  - gate_id: ANIMUS_P5_CRT_HIERARCHICAL_SBC
+    name: Counterfactual Reality Testing Stage 0F endpoint hierarchical SBC
+    canonical_artifact: animus.p5.crt.hierarchical_sbc
+    claim_ids: []
+    note: >-
+      Full hierarchical Bayes for the Stage 1D paired false-seen endpoint (group means, between-person
+      SD, participant-level differences, known binomial SEs), with 1,000 prior draws. A PASS means the
+      endpoint rank histogram is calibrated and 95% coverage is in range. It is not a trial-level CRT
+      source-monitoring SBC.
+
+  - gate_id: ANIMUS_P5_CRT_MODEL_RECOVERY_DUAL
+    name: Counterfactual Reality Testing Stage 0F endpoint model recovery
+    canonical_artifact: animus.p5.crt.model_recovery
+    claim_ids: []
+    note: >-
+      Hierarchical endpoint recovery among four parameterizations: no format effect (M0), common
+      format effect (M2), dual-specific effect (M3), and dual plus nondiagnostic-demand effect (M4).
+      A PASS requires balanced accuracy >=0.85. These are endpoint models, not the Stage 0D theory
+      models.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0G_DESIGN_POWER
+    name: Counterfactual Reality Testing Stage 0G design power
+    canonical_artifact: animus.p5.crt.stage0g_design_power
+    claim_ids: []
+    note: >-
+      Planning approximation at N=480 and d=0.20. A PASS requires at least 90% power for the primary
+      yoked contrast. It is not trial-level model power and is not human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_TRIAL_SBC
+    name: Counterfactual Reality Testing Stage 0G trial-level SBC
+    canonical_artifact: animus.p5.crt.trial_sbc
+    claim_ids: []
+    note: >-
+      Trial-level hierarchical readout SBC with participant random effects and condition effects. A PASS
+      means the target condition-effect ranks/coverage are calibrated for the readout model. It is not
+      the full CRT source-monitoring POMDP and does not authorize human collection.
+
+  - gate_id: ANIMUS_P5_CRT_TRIAL_RECOVERY
+    name: Counterfactual Reality Testing Stage 0G trial-level model recovery
+    canonical_artifact: animus.p5.crt.trial_recovery
+    claim_ids: []
+    note: >-
+      BIC-based effect-conditioned recovery among the confirmatory M0/M2/M4 readout models; M1/M3/M5 are
+      exploratory. A PASS requires balanced accuracy >=0.85. It validates the readout model family, not
+      the full CRT theory tournament.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0H_MODEL_SPACE
+    name: Counterfactual Reality Testing Stage 0H model space
+    canonical_artifact: animus.p5.crt.stage0h_model_space
+    claim_ids: []
+    note: >-
+      Declares M0-M7 and the confirmatory M0/M2/M4/M6/M7 set. A PASS means the model space and
+      exploratory labels are explicit; it is not evidence for any model.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0H_DESIGN_OPTIMIZATION
+    name: Counterfactual Reality Testing Stage 0H design optimization
+    canonical_artifact: animus.p5.crt.stage0h_design_optimization
+    claim_ids: []
+    note: >-
+      Offline screening of trial compositions for model discrimination under a power floor. A PASS
+      means a candidate reaches the discrimination and power thresholds; it is not human evidence and
+      the classifier used to rank candidates is not a hypothesis test.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_SBC
+    name: Counterfactual Reality Testing Stage 0H full-model SBC
+    canonical_artifact: animus.p5.crt.stage0h_full_model_sbc
+    claim_ids: []
+    note: >-
+      Full joint latent-source SBC with observed test choice. A PASS means the declared target
+      parameters are calibrated for this likelihood; it is not the policy POMDP or human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_RECOVERY
+    name: Counterfactual Reality Testing Stage 0H full-model recovery
+    canonical_artifact: animus.p5.crt.stage0h_full_model_recovery
+    claim_ids: []
+    note: >-
+      BIC recovery among the pre-specified full joint models. A PASS requires balanced accuracy >=0.85
+      under the recorded simulation conditions; it is identifiability evidence only.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0H_READINESS
+    name: Counterfactual Reality Testing Stage 0H readiness
+    canonical_artifact: animus.p5.crt.stage0h_package
+    claim_ids: []
+    note: >-
+      Documentation-quality gate. BLOCKED is expected until computational gates, adversarial review,
+      calibration, registration, and ethics are complete. It never authorizes human collection.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_SOURCE_INTEGRITY
+    name: Counterfactual Reality Testing Stage 0I source integrity
+    canonical_artifact: animus.p5.crt.stage0i_source_integrity
+    claim_ids: []
+    note: >-
+      Source metadata and correction audit. A PASS means the cited DOI/PMID records and the Corcoran
+      role correction were checked; it is not a systematic review.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND
+    name: Counterfactual Reality Testing Stage 0I inference backend
+    canonical_artifact: animus.p5.crt.stage0i_inference_backend
+    claim_ids: []
+    note: >-
+      Optional NumPyro/JAX readiness. BLOCKED means confirmatory posterior inference is not installed;
+      Laplace remains approximate and cannot pass a confirmatory gate.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_IDENTIFIABILITY
+    name: Counterfactual Reality Testing Stage 0I identifiability
+    canonical_artifact: animus.p5.crt.stage0i_identifiability
+    claim_ids: []
+    note: >-
+      Simulation-only pairwise full-model recovery. A PASS requires all confirmatory models and lower
+      uncertainty bounds above threshold; it is not human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_DESIGN_ADO
+    name: Counterfactual Reality Testing Stage 0I design optimization
+    canonical_artifact: animus.p5.crt.stage0i_design_ado
+    claim_ids: []
+    note: >-
+      Full-joint-model design screen. A PASS requires the complete confirmatory set and minimum pairwise
+      recovery above threshold; it is design evidence, not a hypothesis test.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT
+    name: Counterfactual Reality Testing Stage 0I target readout design
+    canonical_artifact: animus.p5.crt.stage0i_target_design_readout
+    claim_ids: []
+    note: >-
+      Target-scale N=432/T=240 hierarchical readout screen. It is not a full joint-model fit, SBC,
+      or human evidence, so both PASS and REVIEW map to LIMITED.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION
+    name: Counterfactual Reality Testing Stage 0I target design projection
+    canonical_artifact: animus.p5.crt.stage0i_target_design_projection
+    claim_ids: []
+    note: >-
+      Pilot full-model BIC separation projected to N=432/T=240 by a normal approximation. It is a
+      planning projection, not a target-scale fit, target-scale SBC, or human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_POLICY_SBC
+    name: Counterfactual Reality Testing Stage 0I policy calibration
+    canonical_artifact: animus.p5.crt.stage0i_policy_sbc
+    claim_ids: []
+    note: >-
+      Discrete policy-model calibration, not continuous-parameter SBC. It does not show that humans use
+      the policy.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_POLICY_PARAMETER_SBC
+    name: Counterfactual Reality Testing Stage 0I policy parameter SBC
+    canonical_artifact: animus.p5.crt.stage0i_policy_parameter_sbc
+    claim_ids: []
+    note: >-
+      Laplace approximate SBC for meta-EIG policy parameters. It is not NUTS and does not establish
+      that participants use the policy.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_SBC
+    name: Counterfactual Reality Testing Stage 0I full-model SBC
+    canonical_artifact: animus.p5.crt.stage0i_full_model_sbc
+    claim_ids: []
+    note: >-
+      Laplace SBC for all confirmatory latent-source models. A PASS is screening calibration, not NUTS.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_RECOVERY
+    name: Counterfactual Reality Testing Stage 0I full-model recovery
+    canonical_artifact: animus.p5.crt.stage0i_full_model_recovery
+    claim_ids: []
+    note: >-
+      BIC recovery across all confirmatory latent-source models. A PASS is simulation identifiability,
+      not human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_POLICY_RECOVERY
+    name: Counterfactual Reality Testing Stage 0I policy recovery
+    canonical_artifact: animus.p5.crt.stage0i_policy_recovery
+    claim_ids: []
+    note: >-
+      Policy-choice recovery in simulation. A PASS is policy identifiability, not human evidence.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0I_READINESS
+    name: Counterfactual Reality Testing Stage 0I readiness
+    canonical_artifact: animus.p5.crt.stage0i_package
+    claim_ids: []
+    note: >-
+      Documentation-quality readiness gate. BLOCKED is expected until computational gates, independent
+      review, adversarial agreement, calibration, registration, and ethics are complete.
+
+  - gate_id: ANIMUS_P5_CRT_REGISTRATION_READY
+    name: Counterfactual Reality Testing registration readiness
+    canonical_artifact: animus.p5.crt.registration_package
+    claim_ids: []
+    note: >-
+      Documentation-quality gate. READY_FOR_INDEPENDENT_REVIEW means the Stage 0F package is complete
+      enough for PI, statistician, adversarial, and ethics review; it does not authorize human data
+      collection or upgrade any claim. BLOCKED means at least one prerequisite is missing. Endpoint
+      SBC is complete and a trial-level readout SBC is reported, but trial-level readout recovery is a
+      post hoc conditional pass (LIMITED), not a pre-specified full-set pass; the full CRT POMDP SBC,
+      calibration, model-based power, independent review, and ethics remain blockers.
