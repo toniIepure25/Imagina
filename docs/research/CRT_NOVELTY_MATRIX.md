@@ -2,7 +2,7 @@
 
 ## Status
 
-- **Date:** 2026-10-30.
+- **Date:** 2026-10-31 (Stage 0H).
 - **Claim ceiling:** `L1_BEHAVIORAL_ASSISTED`.
 - **Use:** internal design review. This is not a priority claim and does not use "first" or
   "revolutionary."
@@ -59,6 +59,7 @@ Each addition needs a control:
 | Diagnostic-versus-non-diagnostic prediction control | A- | Directly addresses generic-prediction confound; appears uncommon in this literature. |
 | Active-versus-random-passive decomposition | A- | Resolves the Stage 0C identifiability problem; strong methodological contribution. |
 | Higher-order precision competition | A- | Necessary for a top-tier theoretical contribution; not yet run. |
+| Three-account adjudication (signal strength vs precision vs active prospective inference) | A- | The strongest credible novelty: a causal test that can reject CRT, not a new label. See [`CRT_THEORY_ADJUDICATION.md`](../program/CRT_THEORY_ADJUDICATION.md). Stage 0H adds M6/M7, but the design-optimization gate is `REVIEW`; the novelty is not yet demonstrated. |
 | Interventionist reality testing (CIT) | B+ high risk | Conceptually novel, but no direct evidence and substantial demand-characteristic risk. |
 | Neural add-on | B | Interesting, but separate collaboration and no decoding claim. |
 

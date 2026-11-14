@@ -2,7 +2,9 @@
 
 ## Status
 
-- **Stage:** 0D, specification, simulation, and design controls. No human data have been collected.
+- **Stage:** 0H, specification, simulation, and design controls. No human data have been collected.
+- **Stage 0H package:** [`CRT_STAGE0H_PROTOCOL.md`](../program/CRT_STAGE0H_PROTOCOL.md); model space
+  `PASS`, design optimization `REVIEW`, full-model SBC/recovery `REVIEW`, readiness `BLOCKED`.
 - **Claim ceiling:** `L1_BEHAVIORAL_ASSISTED`.
 - **Canonical claims:** `claim.counterfactual_reality_testing_measurement` (UNVALIDATED),
   `claim.counterfactual_reality_testing_training` (BLOCKED), and
@@ -139,13 +141,19 @@ The Stage 1 design is a 2x2 plus an observational baseline:
 | `yoked_intervene` | donor sequence | no |
 | `yoked_predict` | donor sequence | yes |
 
-- 120 trials per occasion: 4 cells x 30 trials, plus 20 `observe` trials.
-- Two occasions: day 0 and day 14; 60 trials per occasion, 15 per cell plus 10 observe.
+- 120 trials per occasion: 4 cells x 25 trials, plus 20 `observe` trials.
+- Two occasions: day 0 and day 14; 240 trials total.
+- The earlier 30-per-cell/60-per-occasion text was arithmetically inconsistent; Stage 0F fixes it.
 - The order of cells is counterbalanced.
 - The donor sequence is taken from a matched participant and a matched item position; the yoked
   participant sees the same test identities but generates their own outcomes and predictions.
 - `active_predict` uses a meta-EIG policy. `active_intervene` uses an outcome-EIG policy. The primary
-  prediction contrast is `active_predict` minus `active_intervene`.
+  prediction contrast is `yoked_predict` minus `yoked_intervene`, where the sequence is fixed. The
+  active contrast is a secondary package effect and must not be described as prediction alone.
+
+Stage 1D adds a separate within-subject dual-prediction study (N=160): single, dual, and
+dual-nondiagnostic blocks on a fixed sequence. Its primary outcome is the false-seen rate for imagined
+items. This is the human test of whether counterfactual prediction is beneficial, harmful, or both.
 
 Stage 0C found that **matched-sequence yoking cannot identify an active-selection superiority effect**
 on accuracy or calibration: both arms receive the same test distribution. Stage 0D therefore adds two
@@ -291,7 +299,8 @@ people use meta-EIG.
 
 ### Primary
 
-- `prediction_advantage`: `active_predict` minus `active_intervene` in source accuracy.
+- `prediction_advantage`: `yoked_predict` minus `yoked_intervene` in source accuracy; the active
+  contrast is a secondary package effect.
 - `CRTE_meta`: meta-information efficiency.
 - `prediction_ece`: calibration of prediction correctness.
 - `d_prime_seen_imagined`: 2x2 discrimination between seen and imagined trials.
@@ -324,7 +333,8 @@ people use meta-EIG.
 ## Hypotheses
 
 - **H1 (prediction advantage):** prospective prediction improves source accuracy relative to
-  outcome-only active testing, with a standardized difference of at least 0.20 in the human study.
+  outcome-only active testing in the yoked comparison, with a standardized difference of at least
+  0.20 in the human study. The active comparison is a package effect.
 - **H2 (meta-EIG policy):** a meta-EIG-cost policy predicts test choices better than outcome-EIG,
   positive-testing, fixed, heuristic, or random policies out of sample.
 - **H3 (reliability):** `CRTE_meta` has a 14-day ICC(2,1) of at least 0.80, with a lower 95% bound

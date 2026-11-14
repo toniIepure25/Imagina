@@ -133,3 +133,12 @@ evidence for `crt_meta_eig`.
 
 Write the model-prediction table into the Stage 0D protocol; recruit an independent second screener and
 an adversarial collaborator before any human study. Until then, all novelty language is provisional.
+
+## 8. Stage 0G update (2026-10-30)
+
+The rapid audit now feeds a formal three-account adjudication rather than a single CRT-versus-null test:
+signal strength (Dijkstra & Fleming 2023; Dijkstra et al. 2025), higher-order precision (Dijkstra &
+Fleming preprint), and active prospective inference (CRT). The decision table and falsification rules are
+in [`CRT_THEORY_ADJUDICATION.md`](../program/CRT_THEORY_ADJUDICATION.md); the review protocol and exact
+query log are in [`CRT_STAGE0G_SCOPING_PROTOCOL.md`](CRT_STAGE0G_SCOPING_PROTOCOL.md). This remains a
+rapid, non-systematic review and cannot support a priority claim.

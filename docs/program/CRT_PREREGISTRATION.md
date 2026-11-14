@@ -3,8 +3,9 @@
 ## Registration status
 
 - **Status:** DRAFT. Not yet submitted to OSF or a registered-report venue.
-- **Version:** 0.2, 2026-10-30.
-- **Protocol:** `ANIMUS-CRT-v1`.
+- **Version:** 1.2-draft, 2026-10-31 (Stage 0H: M0–M7, confirmatory M0/M2/M4/M6/M7; design-optimization REVIEW).
+- **Protocol:** `ANIMUS-CRT-v1` v0.6.0.
+- **Stage 0H package:** `CRT_STAGE0H_PACKAGE.json` (BLOCKED).
 - **Claim ceiling:** `L1_BEHAVIORAL_ASSISTED`.
 - **Canonical claims:** `claim.counterfactual_reality_testing_measurement` (UNVALIDATED);
   `claim.counterfactual_reality_testing_training` and
@@ -13,6 +14,10 @@
 This draft must be reviewed by the PI, an independent statistician, an adversarial collaborator, and
 an ethics board before any human data are collected. Deviations from the registered version will be
 logged and reported.
+
+**Stage 0H stop rule:** the design-optimization gate is currently `REVIEW` (the best candidate did not
+reach 0.85 minimum pairwise model discrimination). The full-model SBC/recovery artifacts are screening
+checks. Registration remains `BLOCKED`; no human data may be collected or simulated as if observed.
 
 ## 1. Study title
 
@@ -49,9 +54,11 @@ results.
 
 ### Primary hypotheses
 
-- **H1 (prediction advantage):** prospective prediction (`active_predict`) improves source accuracy
-  relative to outcome-only active testing (`active_intervene`), with a standardized difference of at
-  least 0.20.
+- **H1 (prediction advantage):** prospective prediction improves source accuracy in the **yoked**
+  comparison (`yoked_predict` minus `yoked_intervene`), where the test sequence is fixed, with a
+  standardized difference of at least 0.20 (the pre-registered SESOI). The active comparison
+  (`active_predict` minus `active_intervene`) is a secondary **package effect**, because prediction
+  may change test selection as well as source updating.
 - **H2 (meta-EIG policy):** a meta-EIG-cost policy predicts test choices better than outcome-EIG,
   positive-testing, fixed, heuristic, cost-only, or random policies out of sample (expected log
   predictive density advantage, pre-registered). Stage 0E simulation does not yet support the
@@ -78,6 +85,15 @@ results.
   random-passive control matched on test count and time. Matched-sequence yoking cannot identify this;
   Stage 0E supplies the control design but no human evidence, and the Stage 0E policy gate is
   `LIMITED`.
+- **H10 (counterfactual cost; Stage 1D):** dual diagnostic prediction increases the false-seen rate
+  for imagined items relative to single diagnostic prediction, and the dual-nondiagnostic control
+  separates response-demand from hypothesis-specific content. A benefit on source accuracy and a cost
+  on false-seen attribution may coexist; both are reported.
+- **H11 (theory adjudication; Stage 0H):** among the pre-specified confirmatory models
+  M0/M2/M4/M6/M7, the active-prospective model must beat the best signal-strength (M6) and
+  higher-order precision (M7) model out of sample by the pre-registered margin, after adjustment for
+  vividness and pre-outcome confidence. If it does not, the rival account is retained and the active
+  claim is rejected. M1/M3/M5 are exploratory and cannot carry a confirmatory claim.
 
 ### Exploratory
 
@@ -93,8 +109,10 @@ prediction-by-agency manipulation and an observational baseline.
 
 **Occasions:** day 0 and day 14. Alternate forms A/B counterbalanced across occasions.
 
-**Trials:** 120 per occasion: 30 in each of the four cells plus 20 `observe` trials. Two occasions
+**Trials:** 120 per occasion: 25 in each of the four cells plus 20 `observe` trials. Two occasions
 provide 240 trials total. The `observe` baseline is not included in the primary prediction contrast.
+The earlier draft's 30-per-cell/120-total text was arithmetically inconsistent; Stage 0F fixes it to
+25 per cell and records the audit in `results/crt/CRT_STAGE0F_PROTOCOL_AUDIT.json`.
 
 **Cells:**
 
@@ -102,6 +120,9 @@ provide 240 trials total. The `observe` baseline is not included in the primary 
 - `active_predict`: participant selects tests; predicts each test outcome before reveal.
 - `yoked_intervene`: donor test sequence; no prediction.
 - `yoked_predict`: donor test sequence; predicts each test outcome before reveal.
+
+The primary prediction contrast is `yoked_predict` minus `yoked_intervene`. The active contrast is a
+package effect and cannot isolate prediction from self-selected testing.
 
 **Test menu:** six tests, at most two per trial, without replacement. Viewpoint, generation, context,
 intention, description, and fluency. The fluency test is a zero-diagnosticity trap with equal
@@ -149,6 +170,16 @@ The primary outcome is source accuracy; Brier score and ECE are descriptive. A n
 diagnostic contrast rejects the counterfactual-prediction interpretation even if the generic prediction
 arm beats outcome-only testing.
 
+### Dual-prediction sub-study (Stage 1D)
+
+A separate within-subject sample (N=160) completes `active_predict_single`,
+`active_predict_dual`, and `active_predict_dual_nondiagnostic` blocks in counterbalanced order. All
+three blocks use the same fixed test sequence, prediction confidence report, cost, and time. The
+primary outcome is the **false-seen rate for imagined items**; source accuracy and criterion bias are
+secondary. The dual-nondiagnostic arm controls for the extra response demand of the dual format.
+This is the human test of whether counterfactual prediction is a benefit, a cost, or both. A null
+result is reported as equivalence, not as support for a benefit claim.
+
 ### Selection sub-study (Stage 1B)
 
 A separate within-subject sample (N=160) completes `active_predict`, `random_passive`, and
@@ -161,16 +192,16 @@ algorithm outperforms active choice, that is a benchmark result, not a failed co
 
 ### Target
 
-N=240 analysed participants.
+N=480 enrolled participants, with approximately 432 analysed at 10% attrition.
 
 Recruitment strata for exploratory invariance:
 
-- 80 with self-reported aphantasia or hypophantasia (VVIQ-2 lower extreme);
-- 80 typical imagery;
-- 80 hyperphantasia (upper extreme).
+- 160 with self-reported aphantasia or hypophantasia (VVIQ-2 lower extreme);
+- 160 typical imagery;
+- 160 hyperphantasia (upper extreme).
 
 The primary analysis is the full sample; stratum contrasts are secondary. Recruitment will screen
-approximately 2,000-3,000 adults to identify the extreme strata if enrichment is used.
+approximately 4,000-6,000 adults to identify the extreme strata if enrichment is used.
 
 ### Inclusion
 
@@ -191,13 +222,15 @@ impaired.
 
 ### Sample-size rationale
 
-N=240 is the planning target for ICC 0.80 with a lower 95% bound above 0.70. Under the same
-normal-approximation simulation used in Stage 0C, true ICC 0.80 at N=240 gives power 0.949; at N=180
-it gives 0.876. The N=240 check is recorded in
-[`results/crt/CRT_STAGE0D_GTHEORY.json`](../../results/crt/CRT_STAGE0D_GTHEORY.json). This is a planning
-result, not human evidence. The registered analysis will use the actual ICC confidence-interval method
-and the observed variance components. The study is powered for the reliability hypothesis; group
-differences are secondary and will be reported with confidence intervals, not as confirmatory tests.
+The Stage 0F design check estimates only about 0.61-0.65 power for a standardized prediction effect of
+0.20 at N=240 with 50 trials per condition and 10% attrition. The approved Stage 0G design decision is
+therefore N=480 and d=0.20 as the smallest effect of interest; the current paired approximation gives
+approximately 0.925 power at N=480 (0.938 at N=520, 0.80 at N=360). N=360 is acceptable only if d=0.25
+is pre-registered as the SESOI before data collection. Do not retain d=0.20 with N=240. The design
+decision must be rechecked against the trial-level model-based endpoint before registration. The
+Stage 0F artifact is
+[`results/crt/CRT_STAGE0F_DESIGN_POWER.json`](../../results/crt/CRT_STAGE0F_DESIGN_POWER.json).
+This is a planning result, not human evidence.
 
 ## 6. Materials
 
@@ -230,9 +263,11 @@ Each occasion is capped at 75 minutes. Participants may stop at any time. A fati
 
 ### Primary
 
-1. `prediction_advantage`: `active_predict` minus `active_intervene` in source accuracy.
+1. `prediction_advantage`: `yoked_predict` minus `yoked_intervene` in source accuracy.
 2. `CRTE_meta` at day 14, ICC(2,1) with 95% CI.
 3. Out-of-sample predictive advantage of the meta-EIG-cost policy over alternatives.
+4. Stage 1D `false_seen_inflation`: dual diagnostic minus single diagnostic in the imagined-item
+   false-seen rate, with the dual-nondiagnostic arm as the demand control.
 
 ### Secondary
 
@@ -271,9 +306,13 @@ non-zero `pi` is necessary but not sufficient for a prediction-specific claim.
 
 | Gate | Criterion | If failed |
 | --- | --- | --- |
+| Stage 0F protocol | `CRT_STAGE0F_PROTOCOL_PASS` | Fix arithmetic/contrast before registration |
+| Stage 0F power | >=0.90 for the chosen SESOI; >=0.80 for the false-seen assay | Revise N/trials/SESOI; do not register as confirmatory |
+| Full hierarchical SBC | 95% coverage 0.93-0.97; no rank skew | Revise model/priors; no human data |
+| M3/M4 recovery | Balanced accuracy >=0.85 | Drop the dual claim; retain single prediction |
 | Feasibility | >=80% completion; >=90% comprehension; no serious adverse events | Revise task; do not proceed |
 | Reliability | ICC >=0.80; lower 95% CI >=0.70 for `CRTE_meta` | Publish psychometric null; stop training RCT |
-| Prediction advantage | Standardized difference >=0.20 or calibration advantage with CI excluding 0 | Drop prediction-specific claim; retain descriptive |
+| Prediction advantage | Yoked standardized difference >=0.20 or calibration advantage with CI excluding 0 | Drop prediction-specific claim; retain descriptive |
 | Prediction calibration | `prediction_ece <= 0.15` | Revise prediction format; do not claim calibration |
 | Policy | Meta-EIG model beats alternatives out of sample | Report descriptive only; no normative claim |
 | Incremental validity | `CRTE_meta` adds prediction beyond `d_prime`/`meta_d_prime` | Narrow the construct claim |
@@ -296,9 +335,16 @@ non-zero `pi` is necessary but not sufficient for a prediction-specific claim.
 
 - Target: Registered Report Stage 1 at a general-interest human behaviour journal; fallback *Cortex*
   or *eLife*.
+- Stage 0F status: protocol audit passes; design power is **REVIEW** at d=0.20/N=240; the distortion
+  assay is validated against an injected effect and separates a `b_pi=0` null from a `b_pi>0` bias
+  channel; endpoint-level hierarchical SBC and M0/M2/M3/M4 recovery pass. A trial-level CRT
+  hierarchical SBC is still outstanding. Stage 0G raises the main design to N=480/d=0.20 and adds the
+  three-account theory adjudication. Registration remains **BLOCKED** until trial-level SBC/recovery,
+  calibration, and independent review pass.
 - The analysis code will be frozen and hashed before the primary analysis.
 - The pilot (N=40) is feasibility-only and will be reported separately; it is not used to support
-  confirmatory claims.
+  confirmatory claims. An independent calibration sample (N=80) freezes the test-likelihood table
+  before confirmatory analysis.
 - Any deviation from this draft will be recorded with date, reason, and whether it was blinded.
 - The final registered version supersedes this draft.
 

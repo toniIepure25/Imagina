@@ -2,9 +2,11 @@
 
 ## Status
 
-- **Version:** 0.2, 2026-10-30.
-- **Applies to:** `ANIMUS-CRT-v1`, Stage 0D design controls and Stage 1 measurement validation.
+- **Version:** 0.3, 2026-10-31.
+- **Applies to:** `ANIMUS-CRT-v1` v0.6.0, Stage 0H and Stage 1 measurement validation.
 - **Status:** draft for independent statistical review; not yet frozen.
+- **Stage 0H model space:** M0–M7; confirmatory M0/M2/M4/M6/M7; exploratory M1/M3/M5.
+- **Stage 0H design gate:** `REVIEW`; the full-model SBC/recovery are screening checks.
 - **Companion documents:** [`COUNTERFACTUAL_REALITY_TESTING_SPEC.md`](../animus/COUNTERFACTUAL_REALITY_TESTING_SPEC.md),
   [`CRT_PREREGISTRATION.md`](CRT_PREREGISTRATION.md).
 
@@ -137,7 +139,15 @@ A non-zero `pi` is necessary but not sufficient for a prediction-specific claim.
 - SDT versus higher-order precision;
 - meta-EIG versus outcome-EIG, positive-testing, fixed, heuristic, random, and agency policies;
 - ideal-observer confidence versus metacognitive-noise confidence;
-- with and without the `b_pi` imagination-inflation term.
+- with and without the `b_pi` imagination-inflation term;
+- signal-strength (M6) versus higher-order precision (M7) versus active prospective (M2/M4), with
+  vividness and pre-outcome confidence as trial-level covariates;
+- M0/M2/M4/M6/M7 confirmatory; M1/M3/M5 exploratory and excluded from the primary adjudication.
+
+The full joint model in `analysis/crt/full_model.py` treats test choice as observed and marginalizes
+the latent source over four states. It is not the policy POMDP. A model-comparison claim requires both
+the design-optimization gate and the full-model recovery/SBC gates to pass; the current design gate is
+`REVIEW`, so no confirmatory model claim is available.
 
 Criteria: LOO/WAIC, posterior predictive checks, and parameter recovery. A complex model is retained
 only if it improves out-of-sample prediction and passes recovery.
@@ -161,6 +171,20 @@ is [`CRT_STAGE0E_RECOVERY.json`](../../results/crt/CRT_STAGE0E_RECOVERY.json). T
 hierarchical SBC specified above; full SBC with group-level parameters and misspecified likelihoods is
 still required before human registration.
 
+Stage 0F adds a conditional **group-mean screening** with participant-level `pi` variation
+([`CRT_STAGE0F_HIERARCHICAL_SCREENING.json`](../../results/crt/CRT_STAGE0F_HIERARCHICAL_SCREENING.json))
+and a standalone **endpoint-level full hierarchical SBC** for the Stage 1D paired false-seen contrast
+([`CRT_STAGE0F_HIERARCHICAL_SBC.json`](../../results/crt/CRT_STAGE0F_HIERARCHICAL_SBC.json)). The
+endpoint SBC passes (mean rank 0.505, coverage 0.936) and endpoint M0/M2/M3/M4 recovery reaches
+balanced accuracy 0.855. These are not trial-level CRT model checks; that SBC remains a blocking
+requirement and must not be replaced by the endpoint result.
+
+Stage 0G adds a trial-level readout SBC (`CRT_STAGE0G_TRIAL_SBC.json`: target `delta_d` coverage 0.955)
+and an effect-conditioned recovery sensitivity analysis. The full M0–M5 recovery is 0.733; the post hoc
+confirmatory M0/M2/M4 set reaches 0.90 but is recorded as a conditional pass, not a pre-specified
+full-set success (`CRT_STAGE0G_TRIAL_RECOVERY.json`). Full CRT POMDP SBC and pre-specified recovery
+remain requirements.
+
 ### Power
 
 The Stage 0C power artifact uses a two-occasion ICC(2,1) with a normal-approximation lower bound. The
@@ -171,9 +195,15 @@ N=180 / ICC 0.75 / lower-bound 0.60 run is retained in
 evidence. Both are approximations; the registered analysis will compute the ICC confidence interval
 from the observed variance components.
 
-For the prediction contrast, N=240 gives high power for a standardized difference of 0.20; the pilot
-will estimate the variance components before the main study. The Stage 0C simulation is a design
-check, not a human effect-size estimate.
+For the prediction contrast, the Stage 0F planning approximation estimates only about 0.61-0.65 power
+for a standardized difference of 0.20 at N=240 with 50 trials per condition and 10% attrition. The
+Stage 0G design decision is N=480 and d=0.20 as the SESOI, which gives approximately 0.925 power in the
+same approximation (0.938 at N=520; 0.80 at N=360). N=360 is acceptable only with d=0.25 pre-registered
+as the SESOI. The Stage 0F artifact is
+[`results/crt/CRT_STAGE0F_DESIGN_POWER.json`](../../results/crt/CRT_STAGE0F_DESIGN_POWER.json).
+This is a design check, not a human effect-size estimate. The model-based endpoint must be rechecked
+before registration; the registration remains blocked until trial-level SBC/recovery and calibration
+pass.
 
 ## 4. Reliability
 
@@ -209,7 +239,8 @@ Interpretation:
 - Outcome: source accuracy and Brier score.
 - Model: linear mixed-effects model with random intercepts for participant and item; fixed effects for
   prediction condition, agency condition, order, and their interaction.
-- Primary contrast: `active_predict` minus `active_intervene`, standardized by the within-person SD.
+- Primary contrast: `yoked_predict` minus `yoked_intervene`, standardized by the within-person SD.
+- Secondary package contrast: `active_predict` minus `active_intervene`.
 - Equivalence: final `d_prime` difference within +/-0.20 (TOST) to check that prediction did not change
   the source construct.
 - Sensitivity: exclude sessions with >20% missing trials; repeat with all sessions.
@@ -335,7 +366,7 @@ To avoid circularity:
 | Measurement pass | ICC >=0.80, lower CI >=0.70; prediction advantage; incremental validity; discriminant r<0.70 |
 | Provisional | ICC 0.70-0.80, or prediction advantage without calibration; revise and replicate |
 | Fail | ICC <0.70 or no prediction advantage; publish null; stop training |
-| Prediction support | Standardized difference >=0.20 or calibration advantage with CI excluding 0 |
+| Prediction support | Yoked standardized difference >=0.20 or calibration advantage with CI excluding 0 |
 | Policy support | Meta-EIG model beats alternatives out of sample |
 | Specificity support | Diagnostic prediction beats matched non-diagnostic prediction; 95% CI excludes zero |
 | Active selection | Active beats random-passive; algorithm-adaptive is a benchmark, not a failed control |
