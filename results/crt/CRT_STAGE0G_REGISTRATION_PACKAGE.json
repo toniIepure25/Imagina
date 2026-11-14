@@ -1,0 +1,22 @@
+{
+  "protocol": "ANIMUS-CRT-v1",
+  "analysis": "stage0g_registration_readiness",
+  "stage": "0G",
+  "status": "BLOCKED",
+  "blockers": [
+    "full joint CRT source/policy POMDP SBC remains outstanding",
+    "trial-level recovery is a post hoc M0/M2/M4 conditional pass, not a pre-specified full-set pass",
+    "independent calibration of the test-likelihood table is protocol-only; no human data",
+    "design power must be rechecked with the model-based endpoint",
+    "independent statistical/adversarial review and ethics approval are outstanding"
+  ],
+  "decisions": {
+    "protocol_integrity": "CRT_STAGE0F_PROTOCOL_PASS",
+    "stage0g_design_power": "CRT_STAGE0G_DESIGN_POWER_PASS",
+    "trial_level_sbc": "CRT_STAGE0G_TRIAL_SBC_PASS",
+    "trial_level_recovery": "CRT_STAGE0G_TRIAL_RECOVERY_CONDITIONAL_PASS",
+    "endpoint_sbc": "CRT_STAGE0F_HIERARCHICAL_ENDPOINT_PASS",
+    "endpoint_recovery": "CRT_STAGE0F_MODEL_RECOVERY_PASS"
+  },
+  "note": "Documentation-quality gate only. BLOCKED is expected. It does not authorize human data collection, a measurement claim, a clinical claim, or any claim upgrade."
+}

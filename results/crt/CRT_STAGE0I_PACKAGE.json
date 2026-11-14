@@ -1,0 +1,35 @@
+{
+  "analysis": "stage0i_package",
+  "blockers": [
+    "inference=CRT_STAGE0I_INFERENCE_BACKEND_BLOCKED",
+    "identifiability=CRT_STAGE0I_IDENTIFIABILITY_REVIEW",
+    "design=CRT_STAGE0I_DESIGN_ADO_REVIEW",
+    "target_design=CRT_STAGE0I_TARGET_DESIGN_PROJECTION_REVIEW",
+    "policy_sbc=CRT_STAGE0I_POLICY_SBC_REVIEW",
+    "policy_parameter_sbc=CRT_STAGE0I_POLICY_PARAMETER_SBC_REVIEW",
+    "policy_recovery=CRT_STAGE0I_POLICY_RECOVERY_REVIEW",
+    "full_sbc=CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+    "full_recovery=CRT_STAGE0I_FULL_MODEL_RECOVERY_REVIEW",
+    "independent PI/statistician review not complete",
+    "adversarial-collaboration agreement not signed",
+    "calibration N=80 not run",
+    "target-scale N=432/T=240 full fit and SBC not run",
+    "ethics approval and registration not present"
+  ],
+  "decisions": {
+    "design": "CRT_STAGE0I_DESIGN_ADO_REVIEW",
+    "full_recovery": "CRT_STAGE0I_FULL_MODEL_RECOVERY_REVIEW",
+    "full_sbc": "CRT_STAGE0I_FULL_MODEL_SBC_REVIEW",
+    "identifiability": "CRT_STAGE0I_IDENTIFIABILITY_REVIEW",
+    "inference": "CRT_STAGE0I_INFERENCE_BACKEND_BLOCKED",
+    "policy_parameter_sbc": "CRT_STAGE0I_POLICY_PARAMETER_SBC_REVIEW",
+    "policy_recovery": "CRT_STAGE0I_POLICY_RECOVERY_REVIEW",
+    "policy_sbc": "CRT_STAGE0I_POLICY_SBC_REVIEW",
+    "source_audit": "CRT_STAGE0I_SOURCE_INTEGRITY_PASS",
+    "target_design": "CRT_STAGE0I_TARGET_DESIGN_PROJECTION_REVIEW"
+  },
+  "note": "A READY status would not authorize human data collection or upgrade the claim ceiling.",
+  "protocol": "ANIMUS-CRT-v1",
+  "scope": "documentation_and_computational_readiness_not_human_evidence",
+  "status": "BLOCKED"
+}

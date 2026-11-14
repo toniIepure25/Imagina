@@ -1,0 +1,27 @@
+{
+  "analysis": "stage0i_policy_sbc",
+  "config": {
+    "agency_weight": 0.1,
+    "complexity_weight": 0.1,
+    "cost_weight": 0.25,
+    "lapse": 0.02,
+    "n_parameter_draws": 20,
+    "n_parameter_sbc": 2,
+    "n_participants": 4,
+    "n_simulations": 1,
+    "n_trials": 12,
+    "parameter_sbc_high": 0.99,
+    "parameter_sbc_low": 0.9,
+    "positive_bias": 0.75,
+    "recovery_threshold": 0.85,
+    "seed": 20261031,
+    "temperature": 1.0
+  },
+  "decision": "CRT_STAGE0I_POLICY_SBC_REVIEW",
+  "mean_rank": 1.6666666666666667,
+  "n": 6,
+  "note": "Discrete policy-choice calibration; not a substitute for continuous-parameter SBC.",
+  "sbc_type": "discrete_policy_model_rank_not_continuous_parameter_sbc",
+  "scope": "policy_choice_simulation_not_human_evidence",
+  "top1_accuracy": 0.3333333333333333
+}

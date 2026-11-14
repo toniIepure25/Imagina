@@ -1,0 +1,16 @@
+{
+  "protocol": "ANIMUS-CRT-v1",
+  "analysis": "stage0f_registration_readiness",
+  "status": "BLOCKED",
+  "blockers": [
+    "design power",
+    "trial-level CRT hierarchical SBC remains outstanding"
+  ],
+  "decisions": {
+    "protocol": "CRT_STAGE0F_PROTOCOL_PASS",
+    "design_power": "CRT_STAGE0F_DESIGN_REVIEW",
+    "distortion": "CRT_STAGE0F_DISTORTION_PASS",
+    "hierarchical_screening": "CRT_STAGE0F_HIERARCHICAL_SCREENING_PASS"
+  },
+  "note": "Registration readiness is a documentation gate. A READY status would still require PI, statistician, adversarial review, and ethics approval before any human data collection."
+}

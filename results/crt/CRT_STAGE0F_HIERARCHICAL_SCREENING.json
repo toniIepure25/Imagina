@@ -1,0 +1,32 @@
+{
+  "protocol": "ANIMUS-CRT-v1",
+  "analysis": "stage0f_hierarchical_recovery_screening",
+  "status": "screening_only_not_full_sbc",
+  "config": {
+    "n_participants": 12,
+    "n_trials": 60,
+    "n_replicates": 40,
+    "seed": 20261030,
+    "mu_mean": 1.2,
+    "mu_sd": 0.2,
+    "sigma_mean": 0.2,
+    "sigma_sd": 0.1,
+    "pi_bounds": [
+      0.4,
+      2.0
+    ]
+  },
+  "group_mean_recovery": {
+    "bias": -0.012403,
+    "rmse": 0.140245,
+    "coverage": 0.95,
+    "target_coverage": [
+      0.9,
+      0.99
+    ],
+    "mean_estimate": 1.19125,
+    "mean_truth": 1.203653
+  },
+  "decision": "CRT_STAGE0F_HIERARCHICAL_SCREENING_PASS",
+  "note": "Conditional group-mean screening with the existing per-participant readout fit. It does not sample a joint hierarchical posterior, does not recover M3/M4, and does not replace the full hierarchical SBC required before human registration."
+}

@@ -1,0 +1,145 @@
+{
+  "analysis": "stage0i_hierarchical_design",
+  "config": {
+    "candidates": [
+      {
+        "confidence_spread": 0.0,
+        "design_id": "balanced",
+        "diagnosticity_high": 1.0,
+        "diagnosticity_low": 0.0,
+        "dual_probability": 0.5,
+        "predict_probability": 0.5,
+        "trials_per_cell": 25,
+        "vividness_spread": 0.0
+      },
+      {
+        "confidence_spread": 0.0,
+        "design_id": "high_diagnosticity",
+        "diagnosticity_high": 1.0,
+        "diagnosticity_low": 0.6,
+        "dual_probability": 0.5,
+        "predict_probability": 0.5,
+        "trials_per_cell": 25,
+        "vividness_spread": 0.0
+      }
+    ],
+    "effect_scale": 0.8,
+    "max_iter": 60,
+    "min_abs_effect": 0.25,
+    "models": [
+      "M0",
+      "M6"
+    ],
+    "n_participants": 6,
+    "n_replicates": 1,
+    "n_trials": 20,
+    "recovery_threshold": 0.85,
+    "seed": 20261031
+  },
+  "decision": "CRT_STAGE0I_DESIGN_ADO_REVIEW",
+  "method": "full_joint_model_bic_screen",
+  "models": [
+    "M0",
+    "M6"
+  ],
+  "note": "Target-scale screening with the full joint likelihood. A PASS requires all confirmatory models and is design evidence only; the final candidate still requires SBC, recovery, calibration, and independent review.",
+  "results": [
+    {
+      "candidate": {
+        "confidence_spread": 0.0,
+        "design_id": "balanced",
+        "diagnosticity_high": 1.0,
+        "diagnosticity_low": 0.0,
+        "dual_probability": 0.5,
+        "predict_probability": 0.5,
+        "trials_per_cell": 25,
+        "vividness_spread": 0.0
+      },
+      "confusion": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "design_id": "balanced",
+      "min_pairwise_accuracy": 1.0,
+      "overall_balanced_accuracy": 1.0,
+      "pairwise_accuracy": {
+        "M0_vs_M6": 1.0
+      },
+      "per_model_accuracy": {
+        "M0": 1.0,
+        "M6": 1.0
+      }
+    },
+    {
+      "candidate": {
+        "confidence_spread": 0.0,
+        "design_id": "high_diagnosticity",
+        "diagnosticity_high": 1.0,
+        "diagnosticity_low": 0.6,
+        "dual_probability": 0.5,
+        "predict_probability": 0.5,
+        "trials_per_cell": 25,
+        "vividness_spread": 0.0
+      },
+      "confusion": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "design_id": "high_diagnosticity",
+      "min_pairwise_accuracy": 0.5,
+      "overall_balanced_accuracy": 0.5,
+      "pairwise_accuracy": {
+        "M0_vs_M6": 0.5
+      },
+      "per_model_accuracy": {
+        "M0": 0.0,
+        "M6": 1.0
+      }
+    }
+  ],
+  "scope": "offline_full_model_design_screening_not_human_evidence",
+  "selected_design": {
+    "candidate": {
+      "confidence_spread": 0.0,
+      "design_id": "balanced",
+      "diagnosticity_high": 1.0,
+      "diagnosticity_low": 0.0,
+      "dual_probability": 0.5,
+      "predict_probability": 0.5,
+      "trials_per_cell": 25,
+      "vividness_spread": 0.0
+    },
+    "confusion": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "design_id": "balanced",
+    "min_pairwise_accuracy": 1.0,
+    "overall_balanced_accuracy": 1.0,
+    "pairwise_accuracy": {
+      "M0_vs_M6": 1.0
+    },
+    "per_model_accuracy": {
+      "M0": 1.0,
+      "M6": 1.0
+    }
+  }
+}

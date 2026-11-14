@@ -1,0 +1,20 @@
+{
+  "analysis": "stage0h_registration_package",
+  "blockers": [
+    "design optimization",
+    "full-model SBC",
+    "full-model recovery",
+    "independent PI/statistician review",
+    "adversarial review",
+    "ethics approval"
+  ],
+  "decisions": {
+    "design_optimization": "CRT_STAGE0H_DESIGN_OPTIMIZATION_REVIEW",
+    "full_model_recovery": "CRT_STAGE0H_FULL_MODEL_RECOVERY_REVIEW",
+    "full_model_sbc": "CRT_STAGE0H_FULL_MODEL_SBC_REVIEW",
+    "model_space": "CRT_STAGE0H_MODEL_SPACE_PASS"
+  },
+  "note": "Stage 0H is computational and documentation-only. A READY status would still require independent review, calibration, registration, and ethics approval before human data.",
+  "protocol": "ANIMUS-CRT-v1",
+  "status": "BLOCKED"
+}

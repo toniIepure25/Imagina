@@ -1,0 +1,21 @@
+{
+  "analysis": "stage0i_inference_backend",
+  "available": false,
+  "backend": "numpyro",
+  "config": {
+    "backend": "numpyro",
+    "chains": 4,
+    "draws": 2000,
+    "seed": 20261031,
+    "target_accept": 0.95,
+    "warmup": 2000
+  },
+  "decision": "CRT_STAGE0I_INFERENCE_BACKEND_BLOCKED",
+  "jax_version": null,
+  "laplace_role": "screening_only_not_confirmatory",
+  "note": "A ready backend still requires the full-model NUTS implementation and SBC/recovery run. Absence of NumPyro blocks the confirmatory gate; it does not invalidate prior screening.",
+  "numpyro_version": null,
+  "python": "3.13.5",
+  "requested_backend": "numpyro",
+  "scope": "inference_backend_readiness_not_human_evidence"
+}

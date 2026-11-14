@@ -1,0 +1,64 @@
+{
+  "analysis": "stage0h_full_model_recovery",
+  "balanced_accuracy": 0.6,
+  "config": {
+    "coverage_high": 0.99,
+    "coverage_low": 0.9,
+    "max_iter": 40,
+    "n_participants": 6,
+    "n_posterior_draws": 30,
+    "n_recovery": 1,
+    "n_sbc": 4,
+    "n_trials": 20,
+    "recovery_threshold": 0.85,
+    "seed": 20261031
+  },
+  "confusion": [
+    [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      0
+    ]
+  ],
+  "decision": "CRT_STAGE0H_FULL_MODEL_RECOVERY_REVIEW",
+  "models": [
+    "M0",
+    "M2",
+    "M4",
+    "M6",
+    "M7"
+  ],
+  "note": "BIC-based recovery among pre-specified full joint models. A PASS is simulation evidence of identifiability, not evidence that humans use any model.",
+  "scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+  "selection_status": "pre_specified"
+}

@@ -1,0 +1,58 @@
+{
+  "protocol": "ANIMUS-CRT-v1",
+  "analysis": "stage0f_counterfactual_distortion_assay",
+  "config": {
+    "n_participants": 160,
+    "n_imagined_per_arm": 40,
+    "n_simulations": 1000,
+    "seed": 20261030,
+    "baseline_false_seen": 0.2,
+    "injected_effect": 0.05,
+    "between_sd": 0.12,
+    "equivalence_margin": 0.03,
+    "alpha": 0.05
+  },
+  "injected_assay": {
+    "injected_effect": 0.05,
+    "n_simulations": 1000,
+    "mean_recovered_effect": 0.049751,
+    "power_to_detect_positive_shift": 1.0,
+    "note": "Assay sensitivity is evaluated against an injected +5pp effect. This is not evidence that dual prediction causes the effect in humans."
+  },
+  "readout_only_model": {
+    "n_participants": 12,
+    "n_trials": 60,
+    "b_pi": 0.0,
+    "single_false_seen_rate": 0.227778,
+    "dual_false_seen_rate": 0.255556,
+    "paired_effect": {
+      "mean": 0.027778,
+      "sd": 0.146221,
+      "t": 0.658081,
+      "p": 0.510486,
+      "ci_low": -0.054953,
+      "ci_high": 0.110508
+    },
+    "null_as_expected": true,
+    "note": "Readout-only check with b_pi fixed at zero. A near-zero effect is expected because prediction does not enter the source likelihood; a non-zero effect would indicate a simulator bug or another format-dependent channel."
+  },
+  "bias_channel_model": {
+    "n_participants": 12,
+    "n_trials": 60,
+    "b_pi": 0.4,
+    "single_false_seen_rate": 0.2,
+    "dual_false_seen_rate": 0.3,
+    "paired_effect": {
+      "mean": 0.1,
+      "sd": 0.159545,
+      "t": 2.171241,
+      "p": 0.029913,
+      "ci_low": 0.009731,
+      "ci_high": 0.190269
+    },
+    "model_predicted_shift": true,
+    "note": "Prediction-consistency bias channel with b_pi fixed at 0.4. A positive shift is a model prediction (M5-like), not human evidence; the human study tests whether this channel exists."
+  },
+  "decision": "CRT_STAGE0F_DISTORTION_PASS",
+  "note": "The assay is sensitive to a synthetic +5pp shift. With b_pi=0 the readout-only model is null; with b_pi>0 a prediction-consistency bias can produce a shift. The human study tests whether that channel exists; it cannot borrow a distortion claim from simulation."
+}

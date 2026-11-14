@@ -1,0 +1,55 @@
+{
+  "protocol": "ANIMUS-CRT-v1",
+  "analysis": "stage0f_protocol_integrity_audit",
+  "spec": {
+    "protocol_id": "ANIMUS-CRT-v1",
+    "version": "0.4.0",
+    "stage": "0F",
+    "status": "draft",
+    "trials_per_occasion": 120,
+    "observe_trials_per_occasion": 20,
+    "trials_per_cell_per_occasion": 25,
+    "cells": [
+      "active_intervene",
+      "active_predict",
+      "yoked_intervene",
+      "yoked_predict"
+    ],
+    "occasions_days": [
+      0,
+      14
+    ],
+    "total_trials": 240,
+    "expected_trials_per_occasion": 120,
+    "expected_total_trials": 240,
+    "max_tests_per_trial": 2,
+    "session_cap_minutes": 75.0,
+    "estimated_minutes_per_occasion": 40.0,
+    "primary_contrast": "yoked_predict_minus_yoked_intervene",
+    "secondary_contrast": "active_predict_minus_active_intervene",
+    "specificity_n": 160,
+    "dual_n": 160,
+    "dual_arms": [
+      "active_predict_single",
+      "active_predict_dual",
+      "active_predict_dual_nondiagnostic"
+    ],
+    "tests": [
+      "viewpoint",
+      "generation",
+      "context",
+      "intend",
+      "description",
+      "fluency"
+    ],
+    "zero_diagnosticity_tests": [
+      "fluency"
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    "protocol is not registered; human collection remains blocked"
+  ],
+  "decision": "CRT_STAGE0F_PROTOCOL_PASS",
+  "note": "Design-integrity audit only. A PASS does not authorize human data collection, validate the task, or upgrade any claim."
+}

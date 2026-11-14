@@ -1,0 +1,106 @@
+{
+  "analysis": "stage0i_source_audit",
+  "corrections": [
+    "Corcoran et al. 2023 title and role corrected.",
+    "Active-inference background now points to Parr et al. 2022, not Corcoran et al."
+  ],
+  "decision": "CRT_STAGE0I_SOURCE_INTEGRITY_PASS",
+  "note": "Absence of an indexed PubMed notice is not proof of clean status.",
+  "retrieved_at": "2026-10-31",
+  "scope": "metadata_and_status_audit_not_systematic_review",
+  "sources": [
+    {
+      "doi": "10.1162/neco.2009.02-09-959",
+      "id": "cavagnaro_2010",
+      "pmid": "20028226",
+      "title": "Adaptive design optimization: a mutual information-based approach to model discrimination in cognitive science",
+      "type": "peer_reviewed",
+      "used_for": "adaptive design optimization; mutual-information design utility",
+      "verified": true
+    },
+    {
+      "doi": "10.1016/j.jmp.2013.05.005",
+      "id": "myung_2013",
+      "pmid": "23997275",
+      "title": "A Tutorial on Adaptive Design Optimization",
+      "type": "peer_reviewed",
+      "used_for": "design optimization and model-discrimination tutorial",
+      "verified": true
+    },
+    {
+      "doi": "10.1162/neco_a_00654",
+      "id": "kim_2014",
+      "pmid": "25149697",
+      "title": "A hierarchical adaptive approach to optimal experimental design",
+      "type": "peer_reviewed",
+      "used_for": "hierarchical design optimization",
+      "verified": true
+    },
+    {
+      "doi": "10.1214/23-sts915",
+      "id": "rainforth_2024",
+      "pmid": null,
+      "title": "Modern Bayesian Experimental Design",
+      "type": "peer_reviewed",
+      "used_for": "Bayesian experimental design framing",
+      "verified": true
+    },
+    {
+      "doi": "10.3758/s13428-020-01386-4",
+      "id": "adopy_2020",
+      "pmid": null,
+      "title": "ADOpy: a python package for adaptive design optimization",
+      "type": "peer_reviewed",
+      "used_for": "implementation reference for ADO",
+      "verified": true
+    },
+    {
+      "doi": "10.1214/23-ba1404",
+      "id": "modrak_2025",
+      "pmid": "41049725",
+      "title": "Simulation-Based Calibration Checking for Bayesian Computation: The Choice of Test Quantities Shapes Sensitivity",
+      "type": "peer_reviewed",
+      "used_for": "joint-likelihood SBC test quantity",
+      "verified": true
+    },
+    {
+      "correction": "Previously mislabelled as an active-inference/source-monitoring empirical paper; now used only as a method reference.",
+      "doi": "10.1016/j.neuron.2023.08.027",
+      "id": "corcoran_2023",
+      "pmid": "37738981",
+      "title": "Accelerating scientific progress through Bayesian adversarial collaboration",
+      "type": "peer_reviewed",
+      "used_for": "Bayesian adversarial collaboration method",
+      "verified": true
+    },
+    {
+      "doi": "10.7551/mitpress/12441.001.0001",
+      "id": "parr_2022",
+      "pmid": null,
+      "title": "Active Inference: The Free Energy Principle in Mind, Brain, and Behavior",
+      "type": "book",
+      "used_for": "active-inference background only",
+      "verified": true
+    },
+    {
+      "doi": "10.3390/publications14030047",
+      "id": "seyr_2026",
+      "pmid": null,
+      "title": "Thus We Are Agreed! A Systematic Mapping Review of Adversarial Collaborations in Science",
+      "type": "peer_reviewed",
+      "used_for": "adversarial-collaboration landscape",
+      "verified": true
+    },
+    {
+      "doi": "10.31234/osf.io/36xdz_v2",
+      "id": "dijkstra_fleming_2025_preprint",
+      "pmid": null,
+      "title": "Perceptual reality monitoring as higher-order inference on sensory precision",
+      "type": "preprint",
+      "used_for": "higher-order precision competitor; not treated as peer-reviewed",
+      "verified": true
+    }
+  ],
+  "tooling_note": "Crossref returned a Unicode encoding error for 10.1214/23-ba1404; the PubMed and Europe PMC records were used to verify the SBC record.",
+  "unresolved": []
+}

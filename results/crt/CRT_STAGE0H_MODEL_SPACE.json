@@ -1,0 +1,132 @@
+{
+  "analysis": "stage0h_model_space",
+  "confirmatory_models": [
+    "M0",
+    "M2",
+    "M4",
+    "M6",
+    "M7"
+  ],
+  "decision": "CRT_STAGE0H_MODEL_SPACE_PASS",
+  "exploratory_models": [
+    "M1",
+    "M3",
+    "M5"
+  ],
+  "full_active": {
+    "M0": [],
+    "M2": [
+      "delta_b"
+    ],
+    "M4": [
+      "delta_b",
+      "delta_dual"
+    ],
+    "M6": [
+      "gamma_v"
+    ],
+    "M7": [
+      "gamma_c"
+    ]
+  },
+  "full_models": [
+    "M0",
+    "M2",
+    "M4",
+    "M6",
+    "M7"
+  ],
+  "models": [
+    {
+      "account": "baseline source SDT",
+      "active_parameters": [],
+      "full_model_scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "model_id": "M0",
+      "prediction": "see CRT theory adjudication",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "confirmatory"
+    },
+    {
+      "account": "prediction precision only (exploratory)",
+      "active_parameters": [
+        "delta_pi"
+      ],
+      "full_model_scope": null,
+      "model_id": "M1",
+      "prediction": "see CRT theory adjudication",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "exploratory"
+    },
+    {
+      "account": "active prospective single prediction",
+      "active_parameters": [
+        "delta_d"
+      ],
+      "full_model_scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "model_id": "M2",
+      "prediction": "see CRT theory adjudication",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "confirmatory"
+    },
+    {
+      "account": "dual counterfactual plus direct effect (exploratory)",
+      "active_parameters": [
+        "delta_d",
+        "delta_dual_d"
+      ],
+      "full_model_scope": null,
+      "model_id": "M3",
+      "prediction": "see CRT theory adjudication",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "exploratory"
+    },
+    {
+      "account": "dual counterfactual plus consistency bias",
+      "active_parameters": [
+        "delta_d",
+        "delta_b",
+        "delta_dual_b"
+      ],
+      "full_model_scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "model_id": "M4",
+      "prediction": "see CRT theory adjudication",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "confirmatory"
+    },
+    {
+      "account": "prediction-induced bias (exploratory)",
+      "active_parameters": [
+        "delta_b"
+      ],
+      "full_model_scope": null,
+      "model_id": "M5",
+      "prediction": "see CRT theory adjudication",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "exploratory"
+    },
+    {
+      "account": "signal strength / vividness",
+      "active_parameters": [
+        "gamma_v"
+      ],
+      "full_model_scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "model_id": "M6",
+      "prediction": "source judgment is mediated by trial vividness; a direct prediction effect after controlling vividness rejects M6",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "confirmatory"
+    },
+    {
+      "account": "higher-order precision / confidence",
+      "active_parameters": [
+        "gamma_c"
+      ],
+      "full_model_scope": "full_joint_source_monitoring_latent_state_not_policy_pomdp",
+      "model_id": "M7",
+      "prediction": "source judgment and confidence are joint functions of precision; a direct prediction effect beyond precision rejects M7",
+      "readout_scope": "trial_level_hierarchical_readout_not_full_crt_pomdp",
+      "status": "confirmatory"
+    }
+  ],
+  "note": "Model-space declaration only. M1/M3/M5 remain exploratory. No model is evidence for a human mechanism until the pre-specified recovery and SBC gates pass.",
+  "protocol": "ANIMUS-CRT-v1"
+}

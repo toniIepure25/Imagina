@@ -1,0 +1,41 @@
+{
+  "analysis": "stage0g_design_power_at_approved_sesoi",
+  "config": {
+    "alpha": 0.05,
+    "attrition": 0.1,
+    "baseline_accuracy": 0.5,
+    "between_sd": 0.12,
+    "false_seen_baseline": 0.2,
+    "false_seen_effect": 0.05,
+    "false_seen_sd": 0.12,
+    "false_seen_trials_per_arm": 40,
+    "n_participants": 480,
+    "n_simulations": 400,
+    "occasions": 2,
+    "seed": 20261031,
+    "sesoi_d": 0.2,
+    "trials_per_cell_per_occasion": 25,
+    "within_correlation": 0.5
+  },
+  "decision": "CRT_STAGE0G_DESIGN_POWER_PASS",
+  "false_seen_assay": {
+    "baseline": 0.2,
+    "effect": 0.05,
+    "mean_observed_effect": 0.052758,
+    "power": 1.0
+  },
+  "note": "Planning approximation at N=480/d=0.20. Must be rechecked with the trial-level model-based endpoint before registration; not human evidence.",
+  "primary_contrast": {
+    "effect_raw": 0.024,
+    "effect_standardized": 0.2,
+    "mean_observed_effect": 0.023973,
+    "power": 0.9
+  },
+  "protocol": "ANIMUS-CRT-v1",
+  "reliability": {
+    "power": 1.0,
+    "target_lower_bound": 0.7,
+    "true_icc": 0.8
+  },
+  "scope": "paired_normal_approximation_not_trial_level_model_power"
+}
