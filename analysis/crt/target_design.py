@@ -14,7 +14,7 @@ from typing import Any
 import numpy as np
 from scipy.stats import norm
 
-from .design_optimization import DEFAULT_CANDIDATES, DesignCandidate
+from .design_optimization import IDENTIFIABILITY_CANDIDATES, DesignCandidate
 from .full_model import FULL_MODELS, FullModelConfig, fit_full_model, simulate_full_data
 
 SCOPE = "target_scale_bic_projection_not_target_fit_or_human_evidence"
@@ -29,7 +29,7 @@ class TargetProjectionConfig:
     target_trials: int = 240
     n_replicates: int = 1
     models: tuple[str, ...] = FULL_MODELS
-    candidates: tuple[DesignCandidate, ...] = DEFAULT_CANDIDATES[:3]
+    candidates: tuple[DesignCandidate, ...] = IDENTIFIABILITY_CANDIDATES
     recovery_threshold: float = 0.85
     effect_scale: float = 0.8
     min_abs_effect: float = 0.25
@@ -88,6 +88,7 @@ def _delta_bic_rows(
                         n_recovery=1,
                         seed=seed,
                         max_iter=config.max_iter,
+                        laplace=False,
                     ),
                 )
                 for model in config.models
@@ -137,7 +138,13 @@ def run_target_design_projection(config: TargetProjectionConfig | None = None) -
                 "pilot_delta_bic": {model: values.tolist() for model, values in deltas.items()},
             }
         )
-    selected = max(rows, key=lambda row: row["min_pairwise_projected_accuracy"])
+    selected = max(
+        rows,
+        key=lambda row: (
+            row["min_pairwise_projected_accuracy"],
+            row["candidate"]["vividness_spread"] + row["candidate"]["confidence_spread"],
+        ),
+    )
     complete = set(cfg.models) == CONFIRMATORY
     passed = complete and selected["min_pairwise_projected_accuracy"] >= cfg.recovery_threshold
     return {

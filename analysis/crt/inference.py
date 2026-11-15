@@ -49,6 +49,8 @@ def backend_status() -> dict[str, Any]:
         "scope": SCOPE,
         "backend": "numpyro",
         "available": available,
+        "implementation": "analysis/crt/numpyro_model.py",
+        "implementation_present": True,
         "numpyro_version": numpyro_version,
         "jax_version": jax_version,
         "python": platform.python_version(),
@@ -59,8 +61,9 @@ def backend_status() -> dict[str, Any]:
             else "CRT_STAGE0I_INFERENCE_BACKEND_BLOCKED"
         ),
         "note": (
-            "A ready backend still requires the full-model NUTS implementation and SBC/recovery run. "
-            "Absence of NumPyro blocks the confirmatory gate; it does not invalidate prior screening."
+            "The NUTS full-joint implementation is present and has a likelihood-parity test. A ready "
+            "backend still requires the target-scale SBC/recovery run; absence of NumPyro blocks the "
+            "confirmatory gate but does not invalidate prior screening."
         ),
     }
 

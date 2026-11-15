@@ -16,7 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from analysis.crt.design_optimization import (  # noqa: E402
-    DEFAULT_CANDIDATES,
+    IDENTIFIABILITY_CANDIDATES,
     HierarchicalDesignConfig,
     run_hierarchical_design_optimization,
 )
@@ -259,7 +259,7 @@ def build_reports(*, quick: bool) -> dict[str, dict[str, Any]]:
             n_trials=20,
             n_replicates=1,
             models=("M0", "M6"),
-            candidates=DEFAULT_CANDIDATES[:2],
+            candidates=IDENTIFIABILITY_CANDIDATES,
             max_iter=60,
         )
         policy_config = PolicyConfig(
@@ -283,7 +283,7 @@ def build_reports(*, quick: bool) -> dict[str, dict[str, Any]]:
             target_n=432,
             target_trials=240,
             n_replicates=2,
-            candidates=DEFAULT_CANDIDATES[:1],
+            candidates=(IDENTIFIABILITY_CANDIDATES[0], IDENTIFIABILITY_CANDIDATES[-1]),
             max_iter=60,
         )
     else:
@@ -299,7 +299,7 @@ def build_reports(*, quick: bool) -> dict[str, dict[str, Any]]:
             n_trials=80,
             n_replicates=1,
             models=("M0", "M2", "M6"),
-            candidates=DEFAULT_CANDIDATES[:3],
+            candidates=IDENTIFIABILITY_CANDIDATES,
             max_iter=200,
         )
         policy_config = PolicyConfig(
@@ -323,7 +323,7 @@ def build_reports(*, quick: bool) -> dict[str, dict[str, Any]]:
             target_n=432,
             target_trials=240,
             n_replicates=2,
-            candidates=DEFAULT_CANDIDATES[:2],
+            candidates=IDENTIFIABILITY_CANDIDATES,
             max_iter=120,
         )
     return {

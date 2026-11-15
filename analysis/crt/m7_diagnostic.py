@@ -15,7 +15,7 @@ from typing import Any
 import numpy as np
 
 from .design_optimization import (
-    DEFAULT_CANDIDATES,
+    IDENTIFIABILITY_CANDIDATES,
     DesignCandidate,
     DesignOptimizationConfig,
     _confusion_for_candidate,
@@ -24,12 +24,7 @@ from .full_model import FULL_MODELS
 
 SCOPE = "m7_design_diagnostic_synthetic_not_human_evidence"
 DIAGNOSTIC_MODELS: tuple[str, ...] = ("M4", "M6", "M7")
-DIAGNOSTIC_CANDIDATES: tuple[DesignCandidate, ...] = tuple(
-    candidate
-    for candidate in DEFAULT_CANDIDATES
-    if candidate.design_id
-    in {"balanced", "vividness_manipulated", "confidence_manipulated", "combined_manipulation"}
-)
+DIAGNOSTIC_CANDIDATES: tuple[DesignCandidate, ...] = IDENTIFIABILITY_CANDIDATES
 
 
 @dataclass(frozen=True)

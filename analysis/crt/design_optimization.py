@@ -70,6 +70,16 @@ DEFAULT_CANDIDATES: tuple[DesignCandidate, ...] = (
     DesignCandidate("prediction_light", 0.25, 0.50, 0.00, 1.00),
 )
 
+# M6 and M7 cannot be separated if their candidate covariates do not vary. Keep the balanced control,
+# then vary vividness and confidence independently. Target-scale work must use this set rather than
+# DEFAULT_CANDIDATES[:n], whose first entries have zero spread on both covariates.
+IDENTIFIABILITY_CANDIDATES: tuple[DesignCandidate, ...] = tuple(
+    candidate
+    for candidate in DEFAULT_CANDIDATES
+    if candidate.design_id
+    in {"balanced", "vividness_manipulated", "confidence_manipulated", "combined_manipulation"}
+)
+
 
 @dataclass(frozen=True)
 class DesignOptimizationConfig:
@@ -88,6 +98,7 @@ class DesignOptimizationConfig:
     min_abs_effect: float = 0.25
     seed: int = 20261031
     laplace: bool = True
+    max_iter: int = 400
 
     def __post_init__(self) -> None:
         if self.n_participants < 6:
@@ -106,6 +117,8 @@ class DesignOptimizationConfig:
             raise ValueError("thresholds must be in (0, 1)")
         if self.effect_scale <= 0 or self.min_abs_effect < 0:
             raise ValueError("effect_scale must be positive and min_abs_effect non-negative")
+        if self.max_iter <= 0:
+            raise ValueError("max_iter must be positive")
 
 
 def _paired_power_estimate(
@@ -169,7 +182,7 @@ def _confusion_for_candidate(
                         n_posterior_draws=20,
                         n_recovery=1,
                         seed=seed,
-                        max_iter=400,
+                        max_iter=config.max_iter,
                         laplace=config.laplace,
                     ),
                 )
@@ -278,6 +291,7 @@ class HierarchicalDesignConfig:
     effect_scale: float = 0.8
     min_abs_effect: float = 0.25
     max_iter: int = 200
+    laplace: bool = True
     seed: int = 20261031
 
     def __post_init__(self) -> None:
@@ -334,6 +348,7 @@ def run_hierarchical_design_optimization(
                             n_recovery=1,
                             seed=seed,
                             max_iter=cfg.max_iter,
+                            laplace=cfg.laplace,
                         ),
                     )
                     for model in cfg.models

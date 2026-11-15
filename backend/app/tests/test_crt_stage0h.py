@@ -23,7 +23,7 @@ from app.research.crt.protocol import audit_spec, load_spec, run_protocol_audit
 def test_stage0h_protocol_declares_model_space_and_gate() -> None:
     audit = run_protocol_audit()
     assert audit.passed, audit.errors
-    assert audit.spec.version == "0.7.0"
+    assert audit.spec.version == "0.7.1"
     assert audit.spec.stage == "0I"
     assert audit.spec.model_space == ("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")
     assert audit.spec.confirmatory_models == ("M0", "M2", "M4", "M6", "M7")

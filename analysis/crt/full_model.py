@@ -1,8 +1,9 @@
 """Full joint latent-source model for CRT Stage 0H.
 
 This module models the observed test, prediction, outcome, source report, and confidence jointly.
-The true source is latent and is marginalized over four states. Test choice is observed; the policy
-that generated it is not part of this likelihood and is compared separately out of sample.
+The true source is latent and is marginalized over four states using the participant's sequential
+source belief. Test choice is observed; the policy that generated it is not part of this likelihood
+and is compared separately out of sample.
 
 Scope: full_joint_source_monitoring_latent_state_not_policy_pomdp. This is a publication-oriented
 likelihood, but it is not the final CRT policy POMDP.
@@ -67,14 +68,17 @@ class FullModelConfig:
     coverage_low: float = 0.90
     coverage_high: float = 0.99
     recovery_threshold: float = 0.85
+    laplace: bool = True
 
     def __post_init__(self) -> None:
         if self.n_participants < 6:
             raise ValueError("n_participants must be at least 6")
         if self.n_trials < 20:
             raise ValueError("n_trials must be at least 20")
-        if self.n_sbc <= 0 or self.n_posterior_draws < 20 or self.n_recovery <= 0:
+        if self.n_sbc <= 0 or self.n_recovery <= 0:
             raise ValueError("simulation counts must be positive")
+        if self.laplace and self.n_posterior_draws < 20:
+            raise ValueError("n_posterior_draws must be at least 20 when laplace=True")
         if not 0 < self.coverage_low < self.coverage_high < 1:
             raise ValueError("coverage bounds must be ordered in (0, 1)")
 
@@ -94,7 +98,7 @@ class FullFit:
 
 
 def _validate_data(data: TrialData) -> None:
-    for field in ("source", "test_id", "source_report", "vividness", "prediction_confidence"):
+    for field in ("test_id", "source_report", "vividness", "prediction_confidence"):
         if getattr(data, field) is None:
             raise MissingModelInputError(f"full model requires trial-level {field!r}")
     if data.source_confidence is None:
@@ -118,19 +122,58 @@ def _prediction_probability_from_q(q: np.ndarray, pi: np.ndarray) -> np.ndarray:
     return np.clip(expit(pi * np.log(clipped / (1.0 - clipped))), 1e-8, 1.0 - 1e-8)
 
 
+def source_beliefs(
+    data: TrialData,
+    group: Mapping[str, float],
+    effects: np.ndarray,
+) -> np.ndarray:
+    """Return the participant's source posterior at the start of every trial.
+
+    The model is sequential within participant and trial order. The initial prior is uniform over
+    the four sources. After each outcome, the belief is updated from that outcome only; the
+    prediction is a readout and never enters the source likelihood. If ``data.source_belief`` is
+    supplied, it is treated as an externally computed version of the same quantity.
+    """
+    idx = data.participant.astype(int)
+    if data.source_belief is not None:
+        return np.asarray(data.source_belief, dtype=float)
+    if data.test_id is None or data.outcome is None:
+        raise MissingModelInputError("source belief reconstruction requires test_id and outcome")
+
+    d = group["alpha_d"] + effects[idx, 0]
+    test = data.test_id.astype(int)
+    outcome = data.outcome.astype(float)
+    base = np.clip(TEST_LIKELIHOODS[test], 1e-6, 1.0 - 1e-6)
+    beliefs = np.full((len(idx), 4), 0.25, dtype=float)
+    for participant in range(int(idx.max()) + 1 if len(idx) else 0):
+        trials = np.flatnonzero(idx == participant)
+        belief = np.full(4, 0.25, dtype=float)
+        for trial in trials:
+            beliefs[trial] = belief
+            likelihood = expit(float(d[trial]) * np.log(base[trial] / (1.0 - base[trial])))
+            likelihood = likelihood if outcome[trial] == 1.0 else 1.0 - likelihood
+            posterior = belief * likelihood
+            total = float(posterior.sum())
+            belief = posterior / total if total > 0.0 else np.full(4, 0.25, dtype=float)
+    return beliefs
+
+
 def prediction_probability(
     data: TrialData,
     group: Mapping[str, float],
     effects: np.ndarray,
 ) -> np.ndarray:
-    """Model-implied prediction probability, with ``alpha_pi`` counted exactly once."""
+    """Model-implied prediction probability, with ``alpha_pi`` counted exactly once.
+
+    The readout is the belief-weighted posterior predictive ``sum_s m_i(s) * p_as``, not an
+    unweighted average over latent sources.
+    """
     idx = data.participant.astype(int)
     test = data.test_id.astype(int)
-    d = group["alpha_d"] + effects[idx, 0]
     pi = group["alpha_pi"] + effects[idx, 1]
     base = np.clip(TEST_LIKELIHOODS[test], 1e-6, 1.0 - 1e-6)
-    outcome_prob = expit(d[:, None] * np.log(base / (1.0 - base)))
-    q = np.clip(outcome_prob.mean(axis=1), 1e-8, 1.0 - 1e-8)
+    beliefs = source_beliefs(data, group, effects)
+    q = np.clip(np.sum(beliefs * base, axis=1), 1e-8, 1.0 - 1e-8)
     return _prediction_probability_from_q(q, pi)
 
 
@@ -140,7 +183,6 @@ def _trial_likelihood(
     effects: np.ndarray,
 ) -> np.ndarray:
     idx = data.participant.astype(int)
-    source = data.source.astype(int)
     report = data.source_report.astype(int)
     test = data.test_id.astype(int)
     outcome = data.outcome.astype(float)
@@ -148,6 +190,8 @@ def _trial_likelihood(
     vividness = data.vividness.astype(float)
     prediction_confidence = data.prediction_confidence.astype(float)
     source_confidence = data.source_confidence.astype(float)
+    n = len(idx)
+    rows = np.arange(n)
 
     d = group["alpha_d"] + effects[idx, 0]
     b = group["alpha_b"] + effects[idx, 2]
@@ -155,28 +199,38 @@ def _trial_likelihood(
     base = np.clip(TEST_LIKELIHOODS[test], 1e-6, 1.0 - 1e-6)
     outcome_prob = expit(d[:, None] * np.log(base / (1.0 - base)))
     outcome_prob = np.clip(outcome_prob, 1e-8, 1.0 - 1e-8)
-    p_pred = prediction_probability(data, group, effects)
+    belief = np.clip(source_beliefs(data, group, effects), 1e-12, None)
+    pi = group["alpha_pi"] + effects[idx, 1]
+    q = np.clip(np.sum(belief * base, axis=1), 1e-8, 1.0 - 1e-8)
+    p_pred = _prediction_probability_from_q(q, pi)
     pred_lik = np.where(prediction == 1.0, p_pred, 1.0 - p_pred)
 
-    report_logits = np.empty((len(idx), 4))
-    for candidate in range(4):
-        report_logits[:, candidate] = (
-            d * (candidate == source)
-            + b * (candidate == 0)
-            + group["gamma_v"] * (vividness - 0.5) * (candidate == source)
-            + group["gamma_c"] * (prediction_confidence - 0.5) * (candidate == source)
-            + group["delta_b"] * data.predict * (candidate == 0)
-            + group["delta_dual"] * data.dual * (candidate == 0)
-        )
-    log_report = report_logits - logsumexp(report_logits, axis=1, keepdims=True)
-    report_lik = np.exp(log_report[np.arange(len(idx)), report])
-
-    confidence_mean = 0.5 + 0.25 * (report == source) + 0.10 * (vividness - 0.5)
-    confidence_lik = norm.pdf(source_confidence, loc=confidence_mean, scale=0.15)
-    confidence_lik = np.clip(confidence_lik, 1e-12, None)
-
     outcome_lik = np.where(outcome[:, None] == 1.0, outcome_prob, 1.0 - outcome_prob)
-    return (outcome_lik * pred_lik[:, None] * report_lik[:, None] * confidence_lik[:, None]).mean(axis=1)
+    log_joint = np.empty((n, 4), dtype=float)
+    for latent_source in range(4):
+        report_logits = np.empty((n, 4), dtype=float)
+        for candidate in range(4):
+            is_latent = candidate == latent_source
+            report_logits[:, candidate] = (
+                d * is_latent
+                + b * (candidate == 0)
+                + group["gamma_v"] * (vividness - 0.5) * is_latent
+                + group["gamma_c"] * (prediction_confidence - 0.5) * is_latent
+                + group["delta_b"] * data.predict * (candidate == 0)
+                + group["delta_dual"] * data.dual * (candidate == 0)
+            )
+        log_report = report_logits - logsumexp(report_logits, axis=1, keepdims=True)
+        report_lik = np.exp(log_report[rows, report])
+        confidence_mean = 0.5 + 0.25 * (report == latent_source) + 0.10 * (vividness - 0.5)
+        confidence_lik = np.clip(norm.pdf(source_confidence, loc=confidence_mean, scale=0.15), 1e-12, None)
+        log_joint[:, latent_source] = (
+            np.log(belief[:, latent_source])
+            + np.log(np.clip(outcome_lik[:, latent_source], 1e-12, None))
+            + np.log(np.clip(report_lik, 1e-12, None))
+            + np.log(confidence_lik)
+        )
+    marginal = np.exp(logsumexp(log_joint, axis=1)) * pred_lik
+    return np.clip(marginal, 1e-12, None)
 
 
 def _log_likelihood(data: TrialData, group: Mapping[str, float], effects: np.ndarray) -> float:
@@ -262,6 +316,16 @@ def fit_full_model(data: TrialData, model: str = "M0", config: FullModelConfig |
     log_likelihood = _log_likelihood(data, group_map, effects_map)
     n_parameters = len(GROUP_NAMES) + len(SIGMA_NAMES) + len(SIGMA_NAMES) * n_participants
     bic = -2.0 * log_likelihood + n_parameters * math.log(len(data.participant))
+    if not cfg.laplace:
+        return FullFit(
+            model=model,
+            group=group_map,
+            posterior_draws=np.empty((0, len(GROUP_NAMES))),
+            log_likelihood=log_likelihood,
+            bic=float(bic),
+            converged=bool(result.success),
+            n_parameters=n_parameters,
+        )
     hessian = _numerical_hessian(model, data, map_params, n_participants)
     covariance = np.linalg.pinv((hessian + hessian.T) / 2.0 + np.eye(len(hessian)) * 1e-6)
     group_covariance = covariance[: len(GROUP_NAMES), : len(GROUP_NAMES)]
@@ -341,11 +405,25 @@ def simulate_full_data(
     b = group["alpha_b"] + effects[idx, 2]
 
     base = np.clip(TEST_LIKELIHOODS[test], 1e-6, 1.0 - 1e-6)
-    outcome_prob = expit(d[:, None] * np.log(base / (1.0 - base)))
-    q = outcome_prob.mean(axis=1)
-    p_pred = _prediction_probability_from_q(q, pi)
-    prediction = rng.binomial(1, p_pred).astype(float)
-    outcome = rng.binomial(1, outcome_prob[np.arange(len(idx)), source]).astype(float)
+    prediction = np.zeros(len(idx), dtype=float)
+    outcome = np.zeros(len(idx), dtype=float)
+    for participant in range(n_participants):
+        trials = np.flatnonzero(idx == participant)
+        belief = np.full(4, 0.25, dtype=float)
+        for trial in trials:
+            q = float(np.dot(belief, base[trial]))
+            p_pred = _prediction_probability_from_q(
+                np.array([q]), np.array([pi[trial]])
+            )[0]
+            prediction[trial] = float(rng.binomial(1, p_pred))
+            source_probability = expit(float(d[trial]) * np.log(base[trial] / (1.0 - base[trial])))
+            outcome[trial] = rng.binomial(1, source_probability[source[trial]])
+            source_likelihood = (
+                source_probability if outcome[trial] == 1.0 else 1.0 - source_probability
+            )
+            posterior = belief * source_likelihood
+            total = float(posterior.sum())
+            belief = posterior / total if total > 0.0 else np.full(4, 0.25, dtype=float)
 
     report_logits = np.empty((len(idx), 4))
     for candidate in range(4):

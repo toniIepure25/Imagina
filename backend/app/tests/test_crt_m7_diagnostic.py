@@ -1,5 +1,4 @@
 import pytest
-
 from analysis.crt.m7_diagnostic import (
     DIAGNOSTIC_CANDIDATES,
     M7DiagnosticConfig,

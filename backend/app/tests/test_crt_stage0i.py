@@ -4,6 +4,7 @@ from dataclasses import replace
 import numpy as np
 from analysis.crt.design_optimization import (
     DEFAULT_CANDIDATES,
+    IDENTIFIABILITY_CANDIDATES,
     HierarchicalDesignConfig,
     run_hierarchical_design_optimization,
 )
@@ -30,7 +31,7 @@ from app.research.crt.protocol import audit_spec, load_spec, run_protocol_audit
 def test_stage0i_protocol_fields() -> None:
     audit = run_protocol_audit()
     assert audit.passed, audit.errors
-    assert audit.spec.version == "0.7.0"
+    assert audit.spec.version == "0.7.1"
     assert audit.spec.stage == "0I"
     assert audit.spec.stage0i_status == "computational_only_human_data_gated"
     assert audit.spec.policy_model_status == "required_before_registration"
@@ -100,22 +101,25 @@ def test_target_scale_config_is_declared_without_running() -> None:
         n_trials=240,
         n_replicates=1,
         models=FULL_MODELS,
-        candidates=DEFAULT_CANDIDATES[:1],
+        candidates=IDENTIFIABILITY_CANDIDATES,
         max_iter=200,
     )
     assert config.n_participants == 432
     assert config.n_trials == 240
     assert config.models == FULL_MODELS
     assert config.recovery_threshold == 0.85
+    assert any(candidate.vividness_spread > 0 for candidate in config.candidates)
+    assert any(candidate.confidence_spread > 0 for candidate in config.candidates)
     projection = TargetProjectionConfig(
         pilot_n=6,
         pilot_trials=20,
         target_n=432,
         target_trials=240,
         n_replicates=2,
-        candidates=DEFAULT_CANDIDATES[:1],
+        candidates=IDENTIFIABILITY_CANDIDATES,
     )
     assert projection.scale_factor > 1
+    assert projection.candidates == IDENTIFIABILITY_CANDIDATES
 
 
 def test_readout_fit_can_skip_laplace_for_design_screen() -> None:
@@ -180,6 +184,8 @@ def test_inference_backend_is_not_silently_confirmatory() -> None:
         "CRT_STAGE0I_INFERENCE_BACKEND_BLOCKED",
     }
     assert status["laplace_role"] == "screening_only_not_confirmatory"
+    assert status["implementation_present"] is True
+    assert status["implementation"] == "analysis/crt/numpyro_model.py"
 
 
 def test_package_blocks_without_review(tmp_path) -> None:

@@ -113,6 +113,9 @@ class TrialData:
     test_id: np.ndarray | None = None
     source: np.ndarray | None = None
     source_report: np.ndarray | None = None
+    # Optional pre-computed belief over the four sources at the start of each trial. The full CRT
+    # model uses this when supplied; otherwise it reconstructs the belief from observed history.
+    source_belief: np.ndarray | None = None
 
     def __post_init__(self) -> None:
         arrays = (
@@ -133,6 +136,7 @@ class TrialData:
             self.test_id,
             self.source,
             self.source_report,
+            self.source_belief,
         )
         lengths = {len(array) for array in arrays}
         if len(lengths) != 1:
@@ -140,6 +144,12 @@ class TrialData:
         for array in optional:
             if array is not None and len(array) != len(self.participant):
                 raise ValueError("optional trial arrays must match the required trial arrays")
+        if self.source_belief is not None:
+            belief = np.asarray(self.source_belief, dtype=float)
+            if belief.shape != (len(self.participant), 4):
+                raise ValueError("source_belief must have shape (n_trials, 4)")
+            if np.any(belief < 0) or not np.allclose(belief.sum(axis=1), 1.0, atol=1e-8):
+                raise ValueError("source_belief rows must be non-negative and sum to one")
         if np.any(self.diagnosticity < 0) or np.any(self.diagnosticity > 1):
             raise ValueError("diagnosticity must be in [0, 1]")
         for name, array in (
