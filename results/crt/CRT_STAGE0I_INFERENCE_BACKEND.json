@@ -11,9 +11,11 @@
     "warmup": 2000
   },
   "decision": "CRT_STAGE0I_INFERENCE_BACKEND_BLOCKED",
+  "implementation": "analysis/crt/numpyro_model.py",
+  "implementation_present": true,
   "jax_version": null,
   "laplace_role": "screening_only_not_confirmatory",
-  "note": "A ready backend still requires the full-model NUTS implementation and SBC/recovery run. Absence of NumPyro blocks the confirmatory gate; it does not invalidate prior screening.",
+  "note": "The NUTS full-joint implementation is present and has a likelihood-parity test. A ready backend still requires the target-scale SBC/recovery run; absence of NumPyro blocks the confirmatory gate but does not invalidate prior screening.",
   "numpyro_version": null,
   "python": "3.13.5",
   "requested_backend": "numpyro",

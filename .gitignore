@@ -118,3 +118,6 @@ results/crt/POD_*.json
 
 # Local code bundles for compute pods
 imagina_*_code.zip
+
+# Accidental relative output when a CLI is run from backend/ instead of the repo root
+backend/results/

@@ -663,8 +663,9 @@ artifacts:
       CRT_STAGE0I_DESIGN_OPTIMIZATION_REVIEW: LIMITED
     required_fields: [analysis, scope, models, config, power, results, selected_design, decision, note]
     note: >-
-      Target-scale N=432/T=240 hierarchical readout design screen. Both outcomes map to LIMITED
-      because this is not a full joint-model fit, not SBC, and not human evidence.
+      N=432/T=240 single-replicate hierarchical readout design screen using the combined
+      vividness/confidence manipulation. Both outcomes map to LIMITED because this is not a full
+      joint-model fit, not SBC, and not human evidence.
 
   - artifact_id: animus.p5.crt.stage0i_target_design_projection
     path: results/crt/CRT_STAGE0I_TARGET_DESIGN_PROJECTION.json

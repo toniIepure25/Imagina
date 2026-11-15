@@ -5873,3 +5873,56 @@ not executed. No human data, ethics approval, API, migration, or UI. The claim c
 parameters are not hierarchically estimated; quick-screen artifacts are not evidence of
 identifiability; independent review, adversarial agreement, calibration, registration, and ethics are
 still missing. Human collection remains blocked; no claim upgrade.
+
+---
+
+## 2026-11-15 — CRT belief-weighted likelihood, NUTS parity, and v0.7.1
+
+**What changed:**
+- Repaired the full CRT model so the trial likelihood marginalizes the latent source with the
+  participant's sequential source belief `m_i(s)`, not an unweighted source mean. `data.source` is no
+  longer required for fitting.
+- Added `analysis/crt/numpyro_model.py` (NumPyro/JAX NUTS) with likelihood parity against the NumPy
+  implementation, NUTS smoke tests, and a small-SBC path. NUTS remains optional.
+- Added `laplace=False` fitting for BIC-only target projection/readout so the planning screens do not
+  pay for an unnecessary finite-difference Hessian.
+- Added `IDENTIFIABILITY_CANDIDATES` and switched Stage 0I design/target/M7 scripts to candidates
+  with nonzero vividness and confidence spread. The old zero-spread target readout could not identify
+  `gamma_c` by construction.
+- Bumped the protocol to `ANIMUS-CRT-v1` v0.7.1 and documented the belief contract and its tests.
+- Regenerated the target design projection. It remains `REVIEW`; the selected candidate is now
+  `combined_manipulation`, not the zero-spread `balanced` design.
+- Added regression tests for belief weighting, source-free likelihood evaluation, NUTS/NumPy parity,
+  and BIC-only fitting.
+
+**Actual results:**
+- Target projection `REVIEW` at pilot N=6/T=20 projected to N=432/T=240; minimum projected pairwise
+  0.50. It is not a target-scale fit or SBC.
+- The v0.7.1 target readout uses the combined manipulation (`vividness_spread=0.35`,
+  `confidence_spread=0.35`) at N=432/T=240 with one replicate and `max_iter=80`. M2/M4/M6/M7 recover
+  at 1.00, but M0 is misclassified as M6, so minimum pairwise accuracy is 0.50 and the decision is
+  `REVIEW`. This removes the structural M7 blind spot but does not establish target identifiability.
+- NUTS likelihood parity at fixed parameters: NumPy `-15.318789835`, NumPyro `-15.3187895`; absolute
+  difference ~3.5e-07. Smoke tests ran M0/M6 in an isolated optional environment. A 5-replicate NUTS
+  SBC diagnostic returned `CRT_NUTS_SBC_REVIEW` (`alpha_d` mean rank 0.986, coverage 0.40, n=5); it is
+  too small for a calibration decision.
+
+**Verification actually run:**
+- `python scripts/verify.py --quick`: **4 passed, 2 skipped** (frontend/npm and docker absent);
+  docs links, ruff, ledger, and the backend core/research suite passed (`603.8s` pytest).
+- `python -m pytest app/tests/test_crt_full_model.py -q`: 6 passed.
+- `python -m pytest app/tests/test_crt_stage0i.py -q -k "protocol_fields or source_audit or
+  inference_backend or target_scale_config or readout_fit_can_skip"`: 5 passed, 6 deselected.
+- `python -m pytest app/tests/test_crt_stage0h.py -q -k protocol`: 2 passed, 5 deselected.
+- `python -m pytest app/tests/test_crt_m7_diagnostic.py -q`: 2 passed.
+- Optional-venv tests: `app/tests/test_crt_numpyro.py` — 3 passed, 1 skipped.
+- `python -m ruff check analysis backend/app`: clean.
+- `python -m uv lock --check --directory backend`: exit 0.
+- `python -m app.cli.science_ledger --check`: 57 artifacts, 51 gates, 17 claims; exit 0.
+- `python -m app.cli.science_ledger --write`: regenerated `results/ledger.json` and
+  `docs/program/PROGRAM_STATUS.md`.
+- `.gitignore` now excludes accidental `backend/results/` output when a CLI is run from `backend/`.
+
+**Known gaps:** target-scale NUTS SBC/recovery is still not run; the target readout is a readout
+surrogate, not the full joint model; no human data, ethics approval, registration, calibration, or
+independent review. The claim ceiling remains `L1_BEHAVIORAL_ASSISTED`.

@@ -2141,4 +2141,32 @@ unidentifiable.
 
 ---
 
-*Last updated: 2026-10-31 - ADR-076 CRT Stage 0I identification-first package; ADR-077 target readout screen*
+## ADR-078: The full likelihood uses the participant's sequential source belief
+
+**Status:** Accepted
+**Date:** 2026-11-15
+**Context:** The Stage 0I code fixed the `alpha_pi` double count but still evaluated the likelihood
+with an unweighted mean over latent sources. That object did not match the protocol's belief-weighted
+prediction `q_i(a)=sum_s m_i(s) p_as`, and it made the true source necessary for fitting. The mismatch
+could bias model comparison even when the generative model was correct.
+
+**Decision:**
+
+1. Compute the per-participant sequential source belief `m_i(s)` from the observed outcome history,
+   starting uniform and updating on the outcome only.
+2. Use the same belief for prediction and for marginalizing the latent source in the trial likelihood;
+   `data.source` is not required by the likelihood.
+3. Add a NumPyro/NUTS mirror and a likelihood-parity test; keep NUTS optional and keep Laplace
+   screening-only.
+4. Keep the target-scale SBC/recovery gate BLOCKED until it is actually run on the frozen design.
+
+**Consequences:** The NumPy and NUTS implementations now agree at fixed parameters (`~3.5e-07`). The
+Stage 0I projection changes because the likelihood changes; the updated projection still returns
+`REVIEW` and is not a target-scale fit. The historical target readout that used only zero-spread
+candidates is a design diagnosis, not evidence against M7. Human data, registration, ethics, and
+independent review remain outside this decision.
+
+---
+
+*Last updated: 2026-11-15 - ADR-078 belief-weighted full likelihood and NUTS parity; ADR-076/077 remain
+historical Stage 0I decisions*

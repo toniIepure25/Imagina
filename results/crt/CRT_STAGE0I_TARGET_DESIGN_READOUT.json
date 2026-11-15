@@ -4,30 +4,21 @@
     "analysed_n": 432,
     "candidates": [
       {
-        "confidence_spread": 0.0,
-        "design_id": "balanced",
+        "confidence_spread": 0.35,
+        "design_id": "combined_manipulation",
         "diagnosticity_high": 1.0,
         "diagnosticity_low": 0.0,
         "dual_probability": 0.5,
         "predict_probability": 0.5,
         "trials_per_cell": 25,
-        "vividness_spread": 0.0
-      },
-      {
-        "confidence_spread": 0.0,
-        "design_id": "high_diagnosticity",
-        "diagnosticity_high": 1.0,
-        "diagnosticity_low": 0.6,
-        "dual_probability": 0.5,
-        "predict_probability": 0.5,
-        "trials_per_cell": 25,
-        "vividness_spread": 0.0
+        "vividness_spread": 0.35
       }
     ],
     "discrimination_threshold": 0.85,
     "effect_scale": 0.8,
     "laplace": false,
     "main_n": 480,
+    "max_iter": 80,
     "min_abs_effect": 0.25,
     "models": [
       "M0",
@@ -37,7 +28,7 @@
       "M7"
     ],
     "n_participants": 432,
-    "n_power_simulations": 40,
+    "n_power_simulations": 100,
     "n_replicates": 1,
     "n_trials": 240,
     "power_threshold": 0.9,
@@ -52,7 +43,7 @@
     "M6",
     "M7"
   ],
-  "note": "Target-scale hierarchical readout screen at N=432/T=240 with bounded random-effect optimization. It is not a full joint-model fit, not SBC, and not human evidence.",
+  "note": "Offline simulation screening only. The selected trial composition must be frozen before registration; the classifier used to rank candidates is not a hypothesis test.",
   "power": {
     "analysed_n": 432,
     "estimate": 1.0,
@@ -63,38 +54,17 @@
   "results": [
     {
       "candidate": {
-        "confidence_spread": 0.0,
-        "design_id": "balanced",
+        "confidence_spread": 0.35,
+        "design_id": "combined_manipulation",
         "diagnosticity_high": 1.0,
         "diagnosticity_low": 0.0,
         "dual_probability": 0.5,
         "predict_probability": 0.5,
         "trials_per_cell": 25,
-        "vividness_spread": 0.0
+        "vividness_spread": 0.35
       },
       "confusion": [
         [
-          1,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          1,
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          1,
-          0,
-          0
-        ],
-        [
           0,
           0,
           0,
@@ -103,144 +73,72 @@
         ],
         [
           0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
           0,
           1,
           0,
           0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1
         ]
       ],
-      "design_id": "balanced",
+      "design_id": "combined_manipulation",
       "min_pairwise_accuracy": 0.5,
       "overall_balanced_accuracy": 0.8,
       "pairwise_accuracy": {
-        "M0_vs_M2": 1.0,
-        "M0_vs_M4": 1.0,
-        "M0_vs_M6": 1.0,
+        "M0_vs_M2": 0.5,
+        "M0_vs_M4": 0.5,
+        "M0_vs_M6": 0.5,
         "M0_vs_M7": 0.5,
         "M2_vs_M4": 1.0,
         "M2_vs_M6": 1.0,
-        "M2_vs_M7": 0.5,
+        "M2_vs_M7": 1.0,
         "M4_vs_M6": 1.0,
-        "M4_vs_M7": 0.5,
-        "M6_vs_M7": 0.5
-      },
-      "per_model_accuracy": {
-        "M0": 1.0,
-        "M2": 1.0,
-        "M4": 1.0,
-        "M6": 1.0,
-        "M7": 0.0
-      },
-      "power_estimate": 1.0
-    },
-    {
-      "candidate": {
-        "confidence_spread": 0.0,
-        "design_id": "high_diagnosticity",
-        "diagnosticity_high": 1.0,
-        "diagnosticity_low": 0.6,
-        "dual_probability": 0.5,
-        "predict_probability": 0.5,
-        "trials_per_cell": 25,
-        "vividness_spread": 0.0
-      },
-      "confusion": [
-        [
-          0,
-          0,
-          0,
-          1,
-          0
-        ],
-        [
-          0,
-          0,
-          1,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          1,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          0,
-          1,
-          0
-        ],
-        [
-          1,
-          0,
-          0,
-          0,
-          0
-        ]
-      ],
-      "design_id": "high_diagnosticity",
-      "min_pairwise_accuracy": 0.0,
-      "overall_balanced_accuracy": 0.4,
-      "pairwise_accuracy": {
-        "M0_vs_M2": 0.0,
-        "M0_vs_M4": 0.5,
-        "M0_vs_M6": 0.5,
-        "M0_vs_M7": 0.0,
-        "M2_vs_M4": 0.5,
-        "M2_vs_M6": 0.5,
-        "M2_vs_M7": 0.0,
-        "M4_vs_M6": 1.0,
-        "M4_vs_M7": 0.5,
-        "M6_vs_M7": 0.5
+        "M4_vs_M7": 1.0,
+        "M6_vs_M7": 1.0
       },
       "per_model_accuracy": {
         "M0": 0.0,
-        "M2": 0.0,
+        "M2": 1.0,
         "M4": 1.0,
         "M6": 1.0,
-        "M7": 0.0
+        "M7": 1.0
       },
       "power_estimate": 1.0
     }
   ],
-  "scope": "target_scale_hierarchical_readout_design_not_full_model_or_human_evidence",
+  "scope": "offline_model_discrimination_design_screening_not_human_evidence",
   "selected_design": {
     "candidate": {
-      "confidence_spread": 0.0,
-      "design_id": "balanced",
+      "confidence_spread": 0.35,
+      "design_id": "combined_manipulation",
       "diagnosticity_high": 1.0,
       "diagnosticity_low": 0.0,
       "dual_probability": 0.5,
       "predict_probability": 0.5,
       "trials_per_cell": 25,
-      "vividness_spread": 0.0
+      "vividness_spread": 0.35
     },
     "confusion": [
       [
-        1,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        1,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        1,
-        0,
-        0
-      ],
-      [
         0,
         0,
         0,
@@ -249,33 +147,54 @@
       ],
       [
         0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
         0,
         1,
         0,
         0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1
       ]
     ],
-    "design_id": "balanced",
+    "design_id": "combined_manipulation",
     "min_pairwise_accuracy": 0.5,
     "overall_balanced_accuracy": 0.8,
     "pairwise_accuracy": {
-      "M0_vs_M2": 1.0,
-      "M0_vs_M4": 1.0,
-      "M0_vs_M6": 1.0,
+      "M0_vs_M2": 0.5,
+      "M0_vs_M4": 0.5,
+      "M0_vs_M6": 0.5,
       "M0_vs_M7": 0.5,
       "M2_vs_M4": 1.0,
       "M2_vs_M6": 1.0,
-      "M2_vs_M7": 0.5,
+      "M2_vs_M7": 1.0,
       "M4_vs_M6": 1.0,
-      "M4_vs_M7": 0.5,
-      "M6_vs_M7": 0.5
+      "M4_vs_M7": 1.0,
+      "M6_vs_M7": 1.0
     },
     "per_model_accuracy": {
-      "M0": 1.0,
+      "M0": 0.0,
       "M2": 1.0,
       "M4": 1.0,
       "M6": 1.0,
-      "M7": 0.0
+      "M7": 1.0
     },
     "power_estimate": 1.0
   }

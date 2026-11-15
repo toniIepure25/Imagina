@@ -145,7 +145,9 @@ A non-zero `pi` is necessary but not sufficient for a prediction-specific claim.
 - M0/M2/M4/M6/M7 confirmatory; M1/M3/M5 exploratory and excluded from the primary adjudication.
 
 The full joint model in `analysis/crt/full_model.py` treats test choice as observed and marginalizes
-the latent source over four states. It is not the policy POMDP. A model-comparison claim requires both
+the latent source over four states using the participant's sequential belief `m_i(s)`, not an
+unweighted source mean. The true source is available in simulation as a generative audit but is not
+required by the likelihood. It is not the policy POMDP. A model-comparison claim requires both
 the design-optimization gate and the full-model recovery/SBC gates to pass; the current design gate is
 `REVIEW`, so no confirmatory model claim is available.
 

@@ -52,7 +52,7 @@
 | ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND | Counterfactual Reality Testing Stage 0I inference backend | `BLOCKED` | `animus.p5.crt.stage0i_inference_backend` | Optional NumPyro/JAX readiness. BLOCKED means confirmatory posterior inference is not installed; Laplace remains approximate and cannot pass a confirmatory gate. |
 | ANIMUS_P5_CRT_STAGE0I_IDENTIFIABILITY | Counterfactual Reality Testing Stage 0I identifiability | `LIMITED` | `animus.p5.crt.stage0i_identifiability` | Simulation-only pairwise full-model recovery. A PASS requires all confirmatory models and lower uncertainty bounds above threshold; it is not human evidence. |
 | ANIMUS_P5_CRT_STAGE0I_DESIGN_ADO | Counterfactual Reality Testing Stage 0I design optimization | `LIMITED` | `animus.p5.crt.stage0i_design_ado` | Full-joint-model design screen. A PASS requires the complete confirmatory set and minimum pairwise recovery above threshold; it is design evidence, not a hypothesis test. |
-| ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT | Counterfactual Reality Testing Stage 0I target readout design | `LIMITED` | `animus.p5.crt.stage0i_target_design_readout` | Target-scale N=432/T=240 hierarchical readout screen. It is not a full joint-model fit, SBC, or human evidence, so both PASS and REVIEW map to LIMITED. |
+| ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT | Counterfactual Reality Testing Stage 0I target readout design | `LIMITED` | `animus.p5.crt.stage0i_target_design_readout` | N=432/T=240 single-replicate hierarchical readout screen with the combined manipulation. It is not a full joint-model fit, SBC, or human evidence, so both PASS and REVIEW map to LIMITED. |
 | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION | Counterfactual Reality Testing Stage 0I target design projection | `LIMITED` | `animus.p5.crt.stage0i_target_design_projection` | Pilot full-model BIC separation projected to N=432/T=240 by a normal approximation. It is a planning projection, not a target-scale fit, target-scale SBC, or human evidence. |
 | ANIMUS_P5_CRT_STAGE0I_POLICY_SBC | Counterfactual Reality Testing Stage 0I policy calibration | `LIMITED` | `animus.p5.crt.stage0i_policy_sbc` | Discrete policy-model calibration, not continuous-parameter SBC. It does not show that humans use the policy. |
 | ANIMUS_P5_CRT_STAGE0I_POLICY_PARAMETER_SBC | Counterfactual Reality Testing Stage 0I policy parameter SBC | `LIMITED` | `animus.p5.crt.stage0i_policy_parameter_sbc` | Laplace approximate SBC for meta-EIG policy parameters. It is not NUTS and does not establish that participants use the policy. |
@@ -101,51 +101,51 @@
 | `animus.p2` | ANIMUS_P2 | historical | `PILOT` | `e268f6acd4df1992c8e803bb0a7f19744f5cdb9c66c862b4d6ac9966b16bfcca` | 2005 |
 | `animus.p2e` | ANIMUS_P2 | historical | `BLOCKED` | `b1dce7a92e27901662632910d6cad3a508dff9c9e1edf76d1a750553232a7541` | 2570 |
 | `animus.p2r` | ANIMUS_P2 | canonical | `BLOCKED` | `173620c625e8cb70338d4806b45fab428fddb82c498f36a35ba98382bd4d9cab` | 1308 |
-| `animus.p3.power` | ANIMUS_P3_POWER | canonical | `PASS` | `5d44b4362cc2989484a2e566bbb1ec29a6baba2d1011101f1df4ebc5d47353f3` | 996 |
-| `animus.p3.sim` | ANIMUS_P3_SIM | canonical | `PASS` | `68a1a41df0f78b21e787b42bb6ed3eb3e184b7da2cec55c0005f9bb640dd79cc` | 1934 |
-| `animus.p4.art.power` | ANIMUS_P4_ART_POWER | canonical | `PASS` | `3e68343aa70239b7fcd1518708675a3bca61baa5dc47fd56453681bfa253fc1e` | 996 |
-| `animus.p4.art.recovery` | ANIMUS_P4_ART_RECOVERY | canonical | `PASS` | `6c6da963106c4ce4219794c738624ceb3a24e0a5c7c841a6e8b7a74f8f787674` | 5986 |
-| `animus.p4.art.sim` | ANIMUS_P4_ART_SIM | canonical | `PASS` | `812b6001986b50debfd2ddeb7dc66770f4a5ced641e2529c7517199fd6acdb4d` | 1582 |
-| `animus.p5.crt.calibration` | ANIMUS_P5_CRT_CALIBRATION | canonical | `PASS` | `e27dc33439d19b89e428fdb4272c687af7e7be103b985b687ff6a142c1b80373` | 3419 |
-| `animus.p5.crt.counterfactual` | ANIMUS_P5_CRT_COUNTERFACTUAL | canonical | `LIMITED` | `477568efd5c11da21fa7794594608ee9f163fb2334d20f395d753c6a03a4a03a` | 3902 |
-| `animus.p5.crt.design_power` | ANIMUS_P5_CRT_DESIGN_POWER | canonical | `LIMITED` | `95eaf3f37fd8b73a052d1dff932d70f08bd1586690631b3e2d5d79a31f714675` | 31864 |
-| `animus.p5.crt.distortion` | ANIMUS_P5_CRT_DISTORTION_ASSAY | canonical | `PASS` | `7d41618ac7d3c2f3a2f290c3037c94d341bc867d0c30c8126b48ae287f5b9fbd` | 2204 |
-| `animus.p5.crt.gtheory` | ANIMUS_P5_CRT_GTHEORY | canonical | `PASS` | `d50038a0cbd58732ba0409467dfd217e472aca80153ee3005ed3956dfc5ae7fc` | 1932 |
-| `animus.p5.crt.hierarchical_sbc` | ANIMUS_P5_CRT_HIERARCHICAL_SBC | canonical | `PASS` | `b4236c12ced46992a6d642d4835dad81cbfa46e987804c48f13059759c5ed5d6` | 1993 |
-| `animus.p5.crt.hierarchical_screening` | ANIMUS_P5_CRT_HIERARCHICAL_SCREENING | canonical | `PASS` | `b9845e502855ad0417e0529fe64c694aaff3e44a16e8b7b5b498f392450470e9` | 923 |
-| `animus.p5.crt.model_recovery` | ANIMUS_P5_CRT_MODEL_RECOVERY_DUAL | canonical | `PASS` | `e1b6030d35f39b8b63e485a1dd89c4d9c9c67639b4c2e829b4729dfce9620817` | 1353 |
-| `animus.p5.crt.model_repair` | ANIMUS_P5_CRT_MODEL_REPAIR | canonical | `PASS` | `4b4dc2153f97b07bcbd9d4424bf76dbba2f4196714efb050f4fba82cc8c8fb51` | 2669 |
-| `animus.p5.crt.policy` | ANIMUS_P5_CRT_POLICY | canonical | `LIMITED` | `9eeb0b00dc46c3caf849d377de994e5a3ba20b0d181360914cf46b54131e1c8f` | 7408 |
-| `animus.p5.crt.power` | ANIMUS_P5_CRT_POWER | canonical | `PASS` | `daa13c992968be65b04fe0711dadfc700d9232c6baecc5e9ba5152e395a70d5a` | 996 |
-| `animus.p5.crt.protocol_audit` | ANIMUS_P5_CRT_PROTOCOL_INTEGRITY | canonical | `PASS` | `3d09db58e1a164aae002adedcd37fcb724e1acc5cd57c744934b84fd05f926c0` | 1513 |
-| `animus.p5.crt.psychometric` | ANIMUS_P5_CRT_PSYCHOMETRIC | canonical | `PASS` | `864271ad48f934a991e2397036abff7ad415e7a88bbef88aa78b86c8a4cfea2f` | 788 |
-| `animus.p5.crt.recovery` | ANIMUS_P5_CRT_RECOVERY | canonical | `PASS` | `d5976cd23bb3081c69f9f8f01f1becf724472507b35e5f96fdd1b83b1a4c462b` | 7565 |
-| `animus.p5.crt.recovery.belief` | ANIMUS_P5_CRT_RECOVERY_BELIEF | canonical | `PASS` | `a2592e714f745b940869c9875162da6ba38b7343d640741f8211742ff7b122c7` | 2531 |
+| `animus.p3.power` | ANIMUS_P3_POWER | canonical | `PASS` | `3e73959027a8e61945c9e8e1489aaf8cfd47bb8ece57f4f154bba9b52771d9d5` | 957 |
+| `animus.p3.sim` | ANIMUS_P3_SIM | canonical | `PASS` | `a09df32a47f91ff2c5ec1b0fa34e8ecd55cf10c77b9811e9a0d363b096ecb6f7` | 1851 |
+| `animus.p4.art.power` | ANIMUS_P4_ART_POWER | canonical | `PASS` | `359f61f26e168483463ebb7a0fadb01f8d1ef3b7480682501f9944f6c72ad4a1` | 957 |
+| `animus.p4.art.recovery` | ANIMUS_P4_ART_RECOVERY | canonical | `PASS` | `b234f87ad7537c10946c78a9179855d6eea5ea5ad42e65c21572cab6f3743e0d` | 5794 |
+| `animus.p4.art.sim` | ANIMUS_P4_ART_SIM | canonical | `PASS` | `7f4f07d3d0a368a879042e62930108f4d8e2f92114b9773e753cce4b0c5ed2c6` | 1527 |
+| `animus.p5.crt.calibration` | ANIMUS_P5_CRT_CALIBRATION | canonical | `PASS` | `a022df077fc294e9bc72a9e65b90419fe486c963744b852378a4deae02b8986e` | 3220 |
+| `animus.p5.crt.counterfactual` | ANIMUS_P5_CRT_COUNTERFACTUAL | canonical | `LIMITED` | `7adbda8266213500b6e7725e0b983eacef87d96dd9de3b5f462dfda48ab422a1` | 3771 |
+| `animus.p5.crt.design_power` | ANIMUS_P5_CRT_DESIGN_POWER | canonical | `LIMITED` | `d9e8f570a7ff9597461bf8c6fe43526177660101d6295fc6848386daa58a5a5e` | 30746 |
+| `animus.p5.crt.distortion` | ANIMUS_P5_CRT_DISTORTION_ASSAY | canonical | `PASS` | `134095a50b8095743ff0de6ff15e1feac0e8b475781d77b1425ab186e4e12932` | 2146 |
+| `animus.p5.crt.gtheory` | ANIMUS_P5_CRT_GTHEORY | canonical | `PASS` | `56bb49fe9ed884ffdd57980679c3f87a71e762bb778ba5833553c7eea3d74ee4` | 1860 |
+| `animus.p5.crt.hierarchical_sbc` | ANIMUS_P5_CRT_HIERARCHICAL_SBC | canonical | `PASS` | `d71f6b53fc62c9eedda4d2c0696c8e1396e686cc25e1b73931e823e1ea34d40b` | 1898 |
+| `animus.p5.crt.hierarchical_screening` | ANIMUS_P5_CRT_HIERARCHICAL_SCREENING | canonical | `PASS` | `0c413c68decffb2699c5e09bdef46d09d880bc662f064750e2a662c666573aa5` | 891 |
+| `animus.p5.crt.model_recovery` | ANIMUS_P5_CRT_MODEL_RECOVERY_DUAL | canonical | `PASS` | `d6e35ff83b8bc678f8f9e9e979cf7138c35b60fa590c8fdb621d50ccdb034e6f` | 1297 |
+| `animus.p5.crt.model_repair` | ANIMUS_P5_CRT_MODEL_REPAIR | canonical | `PASS` | `cfb3e0da9269143d19007f7e1b9da5664a401686bd5597cab04ddefdcc7e769a` | 2588 |
+| `animus.p5.crt.policy` | ANIMUS_P5_CRT_POLICY | canonical | `LIMITED` | `a855d11a8a45eebf2fb8f01a206cd823d8e50f855ba4f1a6ea7d439fcaf4c686` | 7142 |
+| `animus.p5.crt.power` | ANIMUS_P5_CRT_POWER | canonical | `PASS` | `c3bfcf7017382d61d118d099dc1c7203be950006f40ff14a96da0f245571dd24` | 957 |
+| `animus.p5.crt.protocol_audit` | ANIMUS_P5_CRT_PROTOCOL_INTEGRITY | canonical | `PASS` | `7449c03fccc023d68072eed03936288d921cddc5899a5ba4c1b5a1f666b6a36a` | 1458 |
+| `animus.p5.crt.psychometric` | ANIMUS_P5_CRT_PSYCHOMETRIC | canonical | `PASS` | `4fade52fba03e8852c909b9113925185e9610e94b3ade597bfd05ae6ba3b81f5` | 763 |
+| `animus.p5.crt.recovery` | ANIMUS_P5_CRT_RECOVERY | canonical | `PASS` | `376c8152a28581cb8606310161cc46ff38218e927beb7ded750dd9b3cb9d8e69` | 7297 |
+| `animus.p5.crt.recovery.belief` | ANIMUS_P5_CRT_RECOVERY_BELIEF | canonical | `PASS` | `ee17d5007ac52ebda7830cc7a49b015f5e7f0c8d536372bb4f566689f13d35f6` | 2397 |
 | `animus.p5.crt.registration_package` | ANIMUS_P5_CRT_REGISTRATION_READY | canonical | `BLOCKED` | `ee9fb4c9fa13a042831ee02b2a675309230191c1d269d90e5e5ad1cd8c74b06b` | 1117 |
-| `animus.p5.crt.sim` | ANIMUS_P5_CRT_SIM | canonical | `LIMITED` | `3b9c89ae29d29fed7b736dfba713cce3bc28b9f3f8c5d0042013847fe172219b` | 5442 |
-| `animus.p5.crt.specificity` | ANIMUS_P5_CRT_SPECIFICITY | historical | `PASS` | `e1b39e8bce7a542ab24ef624c593bfc6b0c5bef70cdf1c1908eb3b741f23b072` | 6256 |
-| `animus.p5.crt.specificity.belief` | ANIMUS_P5_CRT_SPECIFICITY | canonical | `LIMITED` | `b32d1267a6d12c77602e8ca5b6f8ea942c7843e2d7fd6a682f9936ee20e1c1ea` | 3494 |
-| `animus.p5.crt.stage0g_design_power` | ANIMUS_P5_CRT_STAGE0G_DESIGN_POWER | canonical | `PASS` | `dd253acc99c83050d38f764eede31757545d1a466071f39ecbca4794b06b765d` | 1185 |
-| `animus.p5.crt.stage0h_design_optimization` | ANIMUS_P5_CRT_STAGE0H_DESIGN_OPTIMIZATION | canonical | `LIMITED` | `557c518da74c5214ee12f3f7d526a5cc1724ae66daa63f02e9afa59a00105f48` | 11079 |
-| `animus.p5.crt.stage0h_full_model_recovery` | ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_RECOVERY | canonical | `LIMITED` | `a4e35f4897771981ce5a04d9a80e6f361ddb7b56a482c58653d1536419d4c8bd` | 1098 |
-| `animus.p5.crt.stage0h_full_model_sbc` | ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_SBC | canonical | `LIMITED` | `9693c10e974f844cedc9625bbea91dd9dd2e4704741d4b479c79925cf85597d3` | 869 |
-| `animus.p5.crt.stage0h_model_space` | ANIMUS_P5_CRT_STAGE0H_MODEL_SPACE | canonical | `PASS` | `441a07d4bf8cf5a5909a8d416f966c2fc96beb1eb2a1b3034c5394cc09ef20d3` | 4078 |
-| `animus.p5.crt.stage0h_package` | ANIMUS_P5_CRT_STAGE0H_READINESS | canonical | `BLOCKED` | `b695bad207dd36ea2a12a5edfbfa9e9df6fc6f591a039de51e2aa91b9738ffca` | 763 |
-| `animus.p5.crt.stage0i_design_ado` | ANIMUS_P5_CRT_STAGE0I_DESIGN_ADO | canonical | `LIMITED` | `a9d51fd130a299fadd8631c9ef4adf30c1f7b67703c459a41d52f65e70319306` | 3499 |
-| `animus.p5.crt.stage0i_full_model_recovery` | ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_RECOVERY | canonical | `LIMITED` | `4f8f61b06166a3896b899eeeb7af164ff5cfb1a4d88269100a5f46725e225bb3` | 1096 |
-| `animus.p5.crt.stage0i_full_model_sbc` | ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_SBC | canonical | `LIMITED` | `f1e6af35f3ee0358461a32798d875543a7453e7b33ca7fe82fd39f297dff7497` | 5968 |
-| `animus.p5.crt.stage0i_identifiability` | ANIMUS_P5_CRT_STAGE0I_IDENTIFIABILITY | canonical | `LIMITED` | `9d914c01a59f7f0207efecf9b6ef1850b26f87ba78f3d8b976e4629c09c368d8` | 3623 |
-| `animus.p5.crt.stage0i_inference_backend` | ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND | canonical | `BLOCKED` | `1f0355b93220ef335acac23c3a5c3defa0a13d2de87571a630d5b1b20e94c98b` | 725 |
-| `animus.p5.crt.stage0i_package` | ANIMUS_P5_CRT_STAGE0I_READINESS | canonical | `BLOCKED` | `b406598a07269d9134aa87f01edada43366501386f99e01034ca0416de563492` | 1685 |
-| `animus.p5.crt.stage0i_policy_parameter_sbc` | ANIMUS_P5_CRT_STAGE0I_POLICY_PARAMETER_SBC | canonical | `LIMITED` | `b6df62140fa7f64922b7af7e57c57737d55e509b4c7e5e29588b91c810d37b88` | 1408 |
-| `animus.p5.crt.stage0i_policy_recovery` | ANIMUS_P5_CRT_STAGE0I_POLICY_RECOVERY | canonical | `LIMITED` | `b14387bd366363ff5f5ea7bf7f27b1f16dd8ac80bbe3ba50f603851a1c7953e0` | 1482 |
-| `animus.p5.crt.stage0i_policy_sbc` | ANIMUS_P5_CRT_STAGE0I_POLICY_SBC | canonical | `LIMITED` | `9746954af4a8fc7eafadf8f7a6fc9cbe65e0396ff9e8271b3e02906d9ec98a3d` | 831 |
-| `animus.p5.crt.stage0i_source_integrity` | ANIMUS_P5_CRT_STAGE0I_SOURCE_INTEGRITY | canonical | `PASS` | `9c346e203ed74f9d727aa4d53a1da164878cae388fe4764b8156c9fb853feaa6` | 4017 |
-| `animus.p5.crt.stage0i_target_design_projection` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION | canonical | `LIMITED` | `069303aa9c4df69d2aca3897b1b30383721ae42ee45598863184af4cf6c5c40c` | 6401 |
-| `animus.p5.crt.stage0i_target_design_readout` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT | canonical | `LIMITED` | `53502f02eb904afb1ad1c5051d64651e4480ede03d612a1fa6b6539db9ff92eb` | 5790 |
-| `animus.p5.crt.theory` | ANIMUS_P5_CRT_THEORY | canonical | `PASS` | `7b050806160fafc42cf6f661c23588a678540bd1e2d915479961e1af51b73686` | 2213 |
-| `animus.p5.crt.trial_recovery` | ANIMUS_P5_CRT_TRIAL_RECOVERY | canonical | `LIMITED` | `2c04d6107ef6cfc6c7f3f18fa05b9c8bfb2f0617b3253c2704db9dc3f7d824fb` | 1236 |
-| `animus.p5.crt.trial_sbc` | ANIMUS_P5_CRT_TRIAL_SBC | canonical | `PASS` | `e0d7f0c25db52f5fa1f39a022af13132dab8319e485146d2515ce9f91f7c81e4` | 1002 |
+| `animus.p5.crt.sim` | ANIMUS_P5_CRT_SIM | canonical | `LIMITED` | `e010bba919b9d51516e41146df885293e4159f33e524ba9dfedbcb8b482776a5` | 5253 |
+| `animus.p5.crt.specificity` | ANIMUS_P5_CRT_SPECIFICITY | historical | `PASS` | `fa859c3c333008be08e01356a2a3e59c05a569e0d5cf3f43a53ee5c8ea6a4161` | 6054 |
+| `animus.p5.crt.specificity.belief` | ANIMUS_P5_CRT_SPECIFICITY | canonical | `LIMITED` | `09b0f8c823afe49a9bd1cae77c7774064a3a85a9884c21f05c7f11db457ecbbd` | 3391 |
+| `animus.p5.crt.stage0g_design_power` | ANIMUS_P5_CRT_STAGE0G_DESIGN_POWER | canonical | `PASS` | `a978f0c62b998da2035a28be537a113dfd24d6355641425bea4d47b4b0fc4723` | 1145 |
+| `animus.p5.crt.stage0h_design_optimization` | ANIMUS_P5_CRT_STAGE0H_DESIGN_OPTIMIZATION | canonical | `LIMITED` | `4280d4e8880b9473faf5055046466440ba016f67f5f535c19da34931ecb90d7a` | 10552 |
+| `animus.p5.crt.stage0h_full_model_recovery` | ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_RECOVERY | canonical | `LIMITED` | `ffbbe2dedea0dbeedd50c24590464aa7329234798e13124b16d28160fc5fc741` | 1034 |
+| `animus.p5.crt.stage0h_full_model_sbc` | ANIMUS_P5_CRT_STAGE0H_FULL_MODEL_SBC | canonical | `LIMITED` | `829c1089f270eed627c43a4504b560070947cef29ffb2fc9fb4ab26e33a48bca` | 837 |
+| `animus.p5.crt.stage0h_model_space` | ANIMUS_P5_CRT_STAGE0H_MODEL_SPACE | canonical | `PASS` | `9fe4d489ab93eae146d76a413e8f0da9c91c8b2e34894199ab0842663c2c2be5` | 3946 |
+| `animus.p5.crt.stage0h_package` | ANIMUS_P5_CRT_STAGE0H_READINESS | canonical | `BLOCKED` | `7f91c6c0e658cabb69a19be5ab84661c94e511bf7b4f8118f14e845d9c2c55b7` | 743 |
+| `animus.p5.crt.stage0i_design_ado` | ANIMUS_P5_CRT_STAGE0I_DESIGN_ADO | canonical | `LIMITED` | `286da2f0e9f1be025f05d01e6b33c0cfcb2ca3d0b0234f737600994a6d150fe4` | 3355 |
+| `animus.p5.crt.stage0i_full_model_recovery` | ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_RECOVERY | canonical | `LIMITED` | `e94d8a1b885f9b6eabaf1fb8472a34ad4e349e1fc4960f4596946e39791e0a6c` | 1033 |
+| `animus.p5.crt.stage0i_full_model_sbc` | ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_SBC | canonical | `LIMITED` | `4c1f7510e4c8b268217883146b8362f6ce9be9b40653b9d458cecb1dcceb1e59` | 5772 |
+| `animus.p5.crt.stage0i_identifiability` | ANIMUS_P5_CRT_STAGE0I_IDENTIFIABILITY | canonical | `LIMITED` | `991b4d9438154b73f68ffaa42c0d56df0480afa3c27ffe7439c9d132921ec1b2` | 3445 |
+| `animus.p5.crt.stage0i_inference_backend` | ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND | canonical | `BLOCKED` | `2a9b09b47ee46bd36565205fbbfd788c09d003e69aecaa53d8656b49f770605f` | 872 |
+| `animus.p5.crt.stage0i_package` | ANIMUS_P5_CRT_STAGE0I_READINESS | canonical | `BLOCKED` | `2ab0f1b219045cc996fe1fb5a2e1324ebb5e881b03e3e70c9031e037c681a220` | 1651 |
+| `animus.p5.crt.stage0i_policy_parameter_sbc` | ANIMUS_P5_CRT_STAGE0I_POLICY_PARAMETER_SBC | canonical | `LIMITED` | `d45268d83426696e351a6a6f4329c6f69186d69e64e21012661db70f4f249975` | 1355 |
+| `animus.p5.crt.stage0i_policy_recovery` | ANIMUS_P5_CRT_STAGE0I_POLICY_RECOVERY | canonical | `LIMITED` | `9149afb78b953a3ed273651abac693d95ffad7d669efadfce3c1ce3e7c414ccb` | 1393 |
+| `animus.p5.crt.stage0i_policy_sbc` | ANIMUS_P5_CRT_STAGE0I_POLICY_SBC | canonical | `LIMITED` | `c821afbca700f1a89c6236cbb6aa537c6a4cbd577aecab26286c70097b703d46` | 805 |
+| `animus.p5.crt.stage0i_source_integrity` | ANIMUS_P5_CRT_STAGE0I_SOURCE_INTEGRITY | canonical | `PASS` | `105adf9fff317ad04f636f78dbed3f8cd3f294c8fcb94618d2a95a6a9e91f2db` | 3912 |
+| `animus.p5.crt.stage0i_target_design_projection` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION | canonical | `LIMITED` | `6360c3bf4f9fc68bd284a73c39165307957892d51b84e4fbc0ba2ac83ff1074d` | 9429 |
+| `animus.p5.crt.stage0i_target_design_readout` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT | canonical | `LIMITED` | `7ead95dd9ff941ce3ef539f638f42119c48ab8fc6256e090e3bf1bbd0dd82d15` | 4160 |
+| `animus.p5.crt.theory` | ANIMUS_P5_CRT_THEORY | canonical | `PASS` | `5095c62851e41925dc0c2306eed8923fc6b6c61023ca33ef1a088a093cfbf441` | 2112 |
+| `animus.p5.crt.trial_recovery` | ANIMUS_P5_CRT_TRIAL_RECOVERY | canonical | `LIMITED` | `fe39185e9b5ef1b37898b98f387d68b283f27802bb75fe0748137f3268dca266` | 1191 |
+| `animus.p5.crt.trial_sbc` | ANIMUS_P5_CRT_TRIAL_SBC | canonical | `PASS` | `1e4bb3314390c9bda2cb5264e933a198be3558146de73722d9e515180386c2a8` | 965 |
 | `c1.final` | C1 | canonical | `NULL` | `1f412b5216d37664a54078ace6e9bc5aaf084ef24830607732a77d1006632c3b` | 9737 |
 | `c2.final` | C2 | canonical | `NULL` | `e02e6c961302614380333e572d221b17bc11d8f14603d412784e709f95998a2e` | 8804 |
 | `c3.final` | C3 | canonical | `NULL` | `6073ec1c8aa130ef1aa06e73c87db1df571edbd49986d2e6d5e2e57113c0fc60` | 5650 |

@@ -360,8 +360,8 @@ gates:
     canonical_artifact: animus.p5.crt.stage0i_target_design_readout
     claim_ids: []
     note: >-
-      Target-scale N=432/T=240 hierarchical readout screen. It is not a full joint-model fit, SBC,
-      or human evidence, so both PASS and REVIEW map to LIMITED.
+      N=432/T=240 single-replicate hierarchical readout screen with the combined manipulation. It is
+      not a full joint-model fit, SBC, or human evidence, so both PASS and REVIEW map to LIMITED.
 
   - gate_id: ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION
     name: Counterfactual Reality Testing Stage 0I target design projection

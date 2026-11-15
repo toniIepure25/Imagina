@@ -768,21 +768,22 @@ fit and SBC not run” as a blocker. The target-scale fit remains required.
 
 ---
 
-## RISK-065: Target readout screen fails to recover M7 and is not the full model
+## RISK-065: Target readout screen is single-replicate and still fails to separate M0
 
-**Risk:** The N=432/T=240 readout screen selects a balanced design with minimum pairwise 0.50; M7
-recovers at 0.00. This could be read as proof that the full model is unidentifiable or that the trial
-design is adequate.
+**Risk:** The v0.7.1 N=432/T=240 readout screen with the combined manipulation recovers M7 at 1.00,
+but M0 is misclassified as M6 in one replicate; minimum pairwise accuracy is still 0.50. This could be
+read as evidence that the trial design is adequate or that the full model is unidentifiable.
 **Impact:** High for design claims and for any decision to proceed to registration.
 **Mitigation:** Scope says `target_scale_hierarchical_readout_design_not_full_model_or_human_evidence`;
-the gate maps both outcomes to `LIMITED`; the protocol records the M7 failure as a design/model
-diagnosis. A full joint-model design and NUTS SBC remain required.
-**Status:** Open; target readout artifact and gate recorded.
+the config records `n_replicates=1` and `max_iter=80`; the gate maps both outcomes to `LIMITED`; the
+protocol records M0 misrecovery and the absence of a target-scale full-model/NUTS run. A
+multi-replicate full joint-model design and NUTS SBC remain required.
+**Status:** Open; readout artifact and gate recorded, decision `REVIEW`.
 
 ---
 
-*Last updated: 2026-10-31 - RISK-062 Stage 0I quick-screen scope; RISK-063 policy SBC label;
-RISK-064 target projection scope; RISK-065 target readout M7 failure*
+*Last updated: 2026-11-15 - RISK-065 combined-candidate single-replicate readout; RISK-062/063/064
+remain current*
 
 *Prior update: 2026-10-25 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,
 RISK-052 threshold overclaiming, RISK-053 feature-level reliability limits, RISK-054 generated-skybox
