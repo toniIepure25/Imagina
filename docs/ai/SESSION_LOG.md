@@ -5962,3 +5962,10 @@ contains scikit-learn. The next CI run must confirm the full 69-job matrix.
 **Verification:** `test_science_ledger.py` — 11 passed; multimodal acquisition/API/neural/closed-loop/
 phase-2 suite — 127 passed; ANIMUS-P1 guard — PASS; ledger check — exit 0. The next CI run must
 confirm the full matrix.
+
+**Third CI run:** 67 of 69 jobs passed. The remaining failures were a release-image startup failure
+(the backend image installed no science extras, so `app.main` could not import numpy/sklearn) and two
+stale Playwright expectations. The release Dockerfiles now install `[science]` by default. The
+synthetic-demo smoke test now checks the current heading and boundary sentence. The diffusion lane
+test mock now returns the terminal manifest on job creation, so it tests consent and skybox
+application without depending on an incidental polling interval. The app polling path is unchanged.

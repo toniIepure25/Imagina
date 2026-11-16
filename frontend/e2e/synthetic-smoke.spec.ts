@@ -6,9 +6,11 @@ test.describe("Synthetic Runtime Smoke", () => {
   test("synthetic-demo page loads with disclaimer", async ({ page }) => {
     await page.goto("/research/synthetic-demo");
     await expect(
-      page.getByText("Synthetic engineering validation only")
+      page.getByRole("heading", { name: "Three-condition engineering run" })
     ).toBeVisible();
-    await expect(page.getByText("Synthetic Runtime Operator")).toBeVisible();
+    await expect(
+      page.getByText(/not human-subject, behavioural, or neuroscientific evidence/)
+    ).toBeVisible();
   });
 
   test("research landing links to synthetic demo", async ({ page }) => {

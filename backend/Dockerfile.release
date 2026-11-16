@@ -1,6 +1,7 @@
 # Release image for the IMAGINA backend.
 # Build: docker build -f Dockerfile.release -t imagina-backend:RELEASE .
 # Optional extras: --build-arg IMAGINA_EXTRAS="[science,neural]"
+# The default includes science because app.main imports numpy/sklearn-backed modules.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -13,7 +14,7 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY app ./app
 
-ARG IMAGINA_EXTRAS=""
+ARG IMAGINA_EXTRAS="[science]"
 RUN pip install --no-cache-dir ".${IMAGINA_EXTRAS}" \
     && useradd --create-home --uid 10001 imagina \
     && mkdir -p /app/data \

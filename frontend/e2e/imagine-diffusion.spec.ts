@@ -74,7 +74,7 @@ async function mockReady(page: Page) {
       return route.fulfill({
         status: 202,
         contentType: "application/json",
-        body: JSON.stringify(job("queued")),
+        body: JSON.stringify(job("succeeded", manifest)),
       });
     }
     return route.fulfill({
