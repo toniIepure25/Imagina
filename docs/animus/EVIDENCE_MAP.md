@@ -25,7 +25,7 @@ inherits their findings.
 | Self-report and objective imagery measures converge | Weak/minimal correlations reported (2024 mental comparison work) | Report them as different evidence streams | "VVIQ proves the task is valid" |
 | Adaptive difficulty around an intermediate challenge can support practice | Plausible but heterogeneous; 2025 Challenge Point scoping review | Use a bounded heuristic and call it a heuristic | "Scientifically optimized learning" |
 | A short local task can diagnose a clinical condition | Not supported by this instrument | Nothing | Any diagnosis or treatment claim |
-| Neural decoding of imagined content is available here | Not implemented; no validated decoder | Nothing | "Neural reconstruction" / "mind reading" |
+| Neural decoding of imagined content is available here | Not implemented; no validated decoder | Nothing | "Neural reconstruction" or any thought-decoding claim |
 
 ## Design decisions that follow
 

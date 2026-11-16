@@ -5944,3 +5944,21 @@ instead of weakening the import or skipping the tests.
 
 **Verification:** `uv lock --check --directory backend` exits 0; `uv export --extra dev --extra science`
 contains scikit-learn. The next CI run must confirm the full 69-job matrix.
+
+**Follow-up after the second CI run:** 67 of 69 jobs passed. The two remaining failures were not
+`scikit-learn` regressions:
+
+- `animus-p1-closed-loop` reached its claim guard and correctly rejected a literal prohibited phrase
+  in `docs/animus/EVIDENCE_MAP.md` even though the table row described the phrase as unsupported.
+  Rephrased the row as “any thought-decoding claim”; the guard now passes without weakening it.
+- `backend-core` exposed two independent hermetic-suite problems. First, multimodal tests need the
+  `neural` extra (`mne`, `torch`, `h5py`, `nibabel`), but the job installed only `science`; the job
+  now installs `.[dev,science,neural]` and `h5py` is explicit in the extra. Second, the ledger hashed
+  raw bytes, so a Windows-generated ledger recorded CRLF byte counts and hashes that could not match
+  the LF checkout on CI. `_canonical_artifact_bytes()` now normalizes UTF-8 text line endings to LF
+  before hashing and byte counting, with a regression test. The ledger and `PROGRAM_STATUS.md` were
+  regenerated; all 57 artifact hashes now match their `git show HEAD:` blobs.
+
+**Verification:** `test_science_ledger.py` — 11 passed; multimodal acquisition/API/neural/closed-loop/
+phase-2 suite — 127 passed; ANIMUS-P1 guard — PASS; ledger check — exit 0. The next CI run must
+confirm the full matrix.

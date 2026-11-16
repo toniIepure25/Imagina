@@ -2168,5 +2168,29 @@ independent review remain outside this decision.
 
 ---
 
-*Last updated: 2026-11-15 - ADR-078 belief-weighted full likelihood and NUTS parity; ADR-076/077 remain
-historical Stage 0I decisions*
+## ADR-079: Artifact hashes use canonical LF text and CI installs optional test dependencies
+
+**Status:** Accepted
+**Date:** 2026-11-16
+**Context:** The ledger hashed raw artifact bytes. A Windows working tree materialized CRLF while
+Git/CI used LF, so the committed ledger hashes and byte counts could never match a Linux checkout and
+`test_generated_status_document_is_current` failed only in CI. Separately, the hermetic core job
+installed the science extra but ran multimodal tests that import `mne`, `torch`, `h5py`, and
+`nibabel`, exposing a hidden dependency mismatch once collection succeeded.
+
+**Decision:**
+
+1. Hash and size UTF-8 artifact text after normalizing CRLF/CR to LF; leave binary artifacts as raw
+   bytes.
+2. Add a CRLF regression test and regenerate the ledger and status document from the canonical bytes.
+3. Install `.[dev,science,neural]` in `backend-core` and declare `h5py` in the neural extra, so the
+   tests' optional imports are satisfied rather than silently skipped.
+
+**Consequences:** The 57 artifact hashes now match their Git blobs across platforms. The ledger no
+longer records Windows-specific line endings. `backend-core` is heavier but runs the multimodal suite
+it already selects by marker; optional neural tests are no longer an untested blind spot.
+
+---
+
+*Last updated: 2026-11-16 - ADR-079 canonical artifact hashing and neural CI dependencies; ADR-078
+belief-weighted full likelihood and NUTS parity*
