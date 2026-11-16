@@ -1,188 +1,172 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import ClaimBadge from "@/components/platform/ClaimBadge";
 import BoundaryNote from "@/components/platform/BoundaryNote";
-import { DEFAULT_SCENE_PARAMS } from "@/lib/feedbackMapping";
-import { PLATFORM_BOUNDARY } from "@/lib/claims";
-
-const DreamCorridorScene = dynamic(() => import("@/components/scene/DreamCorridorScene"), { ssr: false });
 
 const LOOP = [
-  ["01", "Self-report", "Vividness, effort, and relaxation anchors."],
-  ["02", "Signal", "Simulated EEG-like series, replayed deterministically."],
-  ["03", "Estimate", "Rule-based proxy state with explicit uncertainty."],
-  ["04", "PID / IQI", "Experimental composites, never a clinical score."],
-  ["05", "Curriculum", "Eight-level adaptive staircase with safety overrides."],
-  ["06", "Feedback", "Procedural scene parameters, no image model."],
-  ["07", "Report", "Local evidence, provenance, and boundaries."],
+  ["01", "Intend", "Write the scene you want to inspect, in ordinary language."],
+  ["02", "Stage", "See a deterministic symbolic candidate before committing to it."],
+  ["03", "Correct", "Move, lock, rename, or reject one thing at a time."],
+  ["04", "Compare", "Read the version graph and the changes that produced it."],
+  ["05", "Record", "Export the session, its provenance, and its stated limits."],
 ];
 
-const MODES = [
+const SURFACES = [
   {
     index: "01",
     label: "Studio",
     href: "/animus",
-    title: "Build a symbolic scene, version by version.",
-    body: "Natural language becomes typed commands. Preview, compare, blink, branch, and read the event trace. Every version stays immutable.",
-    action: "Open Studio",
+    title: "A scene graph you can inspect and revise.",
+    body: "Describe an intention, stage a candidate, correct what is wrong, and keep every version immutable. The scene is symbolic and editable — not a generated image.",
+    action: "Open ANIMUS",
   },
   {
     index: "02",
-    label: "Research Console",
-    href: "/session",
-    title: "Run the closed loop and inspect the evidence.",
-    body: "Start a session, watch the corridor adapt, replay it deterministically, and read a report that states what the data can and cannot support.",
-    action: "Start a session",
+    label: "Lumen",
+    href: "/animus/imagine",
+    title: "A first-person world, composed from a brief.",
+    body: "Terrain, architecture, weather, and light are assembled from a text brief and a conditioning vector. The diffusion lane fails closed until a worker is explicitly attached.",
+    action: "Enter Lumen",
   },
   {
     index: "03",
-    label: "Lumen",
-    href: "/animus/imagine",
-    title: "Describe a world. Walk through it.",
-    body: "A text brief and a signal vector compose a layered first-person world: terrain, architecture, weather, and light. The diffusion lane stays visibly offline until a worker is attached.",
-    action: "Enter Lumen",
+    label: "Evidence",
+    href: "/science",
+    title: "Claims that travel with their limits.",
+    body: "The registry records what is simulated, what is measured, what is blocked, and what the instrument is not allowed to say. Start with the boundary, not the demo.",
+    action: "Read the evidence",
   },
 ];
 
 export default function LandingPage() {
   return (
     <AppShell level={1} status="local only">
-      <section className="relative flex min-h-[calc(100dvh-3.5rem)] flex-col overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 opacity-55" aria-hidden="true">
-          <DreamCorridorScene
-            params={{
-              ...DEFAULT_SCENE_PARAMS,
-              clarity: 0.72,
-              fogDensity: 0.24,
-              lightStability: 0.82,
-              textureDetail: 0.68,
-              particleStability: 0.74,
-              doorComplexity: 0.55,
-              colorSaturation: 0.78,
-              breathingCueStrength: 0.18,
-              wallDistortion: 0.12,
-              blur: 0.06,
-            }}
-          />
-        </div>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background via-background/88 to-background/25" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" aria-hidden="true" />
-
-        <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-1 items-center px-4 py-14 md:px-8 lg:py-20">
-          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.65fr)] lg:items-end">
-            <div className="max-w-3xl">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="mono-label text-accent-glow/75">Local-first research instrument</span>
-                <ClaimBadge />
-              </div>
-              <h1 className="mt-5 text-balance font-display text-5xl leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-                See the loop.
-                <span className="block text-accent-glow">Change one variable.</span>
-              </h1>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-foreground/65 sm:text-lg">
-                Three modes, one instrument: a spatial studio for composing symbolic scenes, a first-person world
-                engine, and a research console for sessions, simulated signals, and evidence you can audit.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-2.5">
-                <Link
-                  href="/animus"
-                  className="inline-flex min-h-12 items-center rounded-lg bg-accent px-5 text-sm font-semibold text-white shadow-[0_0_32px_rgba(92,124,250,0.24)] transition-colors hover:bg-accent-glow hover:text-background"
-                >
-                  Open Studio
-                </Link>
-                <Link
-                  href="/session"
-                  className="inline-flex min-h-12 items-center rounded-lg border border-white/15 bg-white/[0.03] px-5 text-sm font-semibold text-foreground/80 transition-colors hover:border-accent-glow/40 hover:text-foreground"
-                >
-                  Start a session
-                </Link>
-                <Link
-                  href="/science"
-                  className="inline-flex min-h-12 items-center rounded-lg px-4 text-sm text-foreground/55 transition-colors hover:text-foreground"
-                >
-                  Read boundaries →
-                </Link>
-              </div>
-              <div className="mt-9 grid max-w-xl grid-cols-3 gap-3 border-t border-white/10 pt-5">
-                {[
-                  ["26", "routes, one language"],
-                  ["L1", "behavioral claim ceiling"],
-                  ["0", "external services or telemetry"],
-                ].map(([value, label]) => (
-                  <div key={label}>
-                    <p className="font-mono text-xl text-foreground/85">{value}</p>
-                    <p className="mt-1 text-[11px] leading-4 text-foreground/40">{label}</p>
-                  </div>
-                ))}
-              </div>
+      <section className="relative overflow-hidden border-b border-white/8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(92,124,250,0.16),transparent_55%),radial-gradient(ellipse_at_90%_20%,rgba(232,180,90,0.08),transparent_45%)]" aria-hidden="true" />
+        <div className="relative mx-auto grid w-full max-w-[1500px] gap-12 px-4 py-16 md:px-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.75fr)] lg:items-center lg:py-24">
+          <div className="max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="mono-label text-accent-glow/75">Local-first research instrument</span>
+              <ClaimBadge />
             </div>
-
-            <aside className="hidden rounded-xl border border-white/12 bg-[#080a0d]/70 p-4 backdrop-blur-xl lg:block" aria-label="Instrument status">
-              <div className="flex items-center justify-between">
-                <span className="mono-label text-foreground/40">Instrument status</span>
-                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-signal/75">
-                  <span className="h-1.5 w-1.5 rounded-full bg-signal" /> nominal
-                </span>
-              </div>
-              <dl className="mt-4 space-y-3">
-                {[
-                  ["Studio", "symbolic scene graph · immutable versions"],
-                  ["Session", "closed loop · safety monitor active"],
-                  ["Replay", "deterministic · same seed, same stream"],
-                  ["Evidence", "local SQLite · exportable"],
-                ].map(([term, detail]) => (
-                  <div key={term} className="border-b border-white/[0.07] pb-3 last:border-0 last:pb-0">
-                    <dt className="text-sm text-foreground/80">{term}</dt>
-                    <dd className="mt-0.5 text-[11px] leading-4 text-foreground/40">{detail}</dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="mt-4 rounded-lg border border-lock/20 bg-lock/[0.05] p-2.5">
-                <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-lock/70">Boundary</p>
-                <p className="mt-1 text-[11px] leading-5 text-foreground/50">{PLATFORM_BOUNDARY}</p>
-              </div>
-            </aside>
+            <h1 className="mt-5 text-balance font-display text-5xl leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+              Make imagination
+              <span className="block text-accent-glow">inspectable.</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-foreground/65 sm:text-lg">
+              ANIMUS is a local-first workspace for composing symbolic scenes, testing what changed, and
+              keeping every version, decision, and uncertainty boundary on your own machine. No account.
+              No telemetry. No neural decoding.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-2.5">
+              <Link
+                href="/animus"
+                className="inline-flex min-h-12 items-center rounded-lg bg-accent px-5 text-sm font-semibold text-white shadow-[0_0_32px_rgba(92,124,250,0.24)] transition-colors hover:bg-accent-glow hover:text-background"
+              >
+                Open ANIMUS
+              </Link>
+              <Link
+                href="/science"
+                className="inline-flex min-h-12 items-center rounded-lg border border-white/15 bg-white/[0.03] px-5 text-sm font-semibold text-foreground/80 transition-colors hover:border-accent-glow/40 hover:text-foreground"
+              >
+                Explore the evidence
+              </Link>
+              <Link
+                href="#for-labs"
+                className="inline-flex min-h-12 items-center rounded-lg px-4 text-sm text-foreground/55 transition-colors hover:text-foreground"
+              >
+                For labs →
+              </Link>
+            </div>
+            <div className="mt-9 grid max-w-xl grid-cols-3 gap-3 border-t border-white/10 pt-5">
+              {[
+                ["Local", "SQLite and your files"],
+                ["0", "accounts or telemetry"],
+                ["L1", "behavioural claim ceiling"],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <p className="font-mono text-xl text-foreground/85">{value}</p>
+                  <p className="mt-1 text-[11px] leading-4 text-foreground/40">{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
+
+          <figure className="relative">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/12 bg-[#080a0d] shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+              <Image
+                src="/animus/studio.png"
+                alt="ANIMUS Studio: a symbolic scene graph with an immutable version ledger"
+                fill
+                priority
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-foreground/40">
+              <span>ANIMUS Studio — symbolic scene graph, immutable versions</span>
+              <span className="font-mono uppercase tracking-[0.18em]">local · experimental</span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
-      <section className="border-t border-surface-border px-4 py-14 md:px-8" aria-labelledby="modes-title">
-        <div className="mx-auto w-full max-w-[1500px]">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="mono-label text-accent-glow/65">One instrument, three modes</p>
-              <h2 id="modes-title" className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
-                Compose, walk, then measure.
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-6 text-foreground/50">
-              The Studio is for building and inspecting a scene. Lumen is for stepping inside a composed world. The
-              Research Console runs the loop and records what happened. None of the three modes makes claims beyond the
-              recorded evidence.
+      <section className="mx-auto w-full max-w-[1500px] px-4 py-16 md:px-8 lg:py-20">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)]">
+          <div>
+            <span className="mono-label text-foreground/40">The loop</span>
+            <h2 className="mt-3 text-balance font-display text-3xl leading-tight text-foreground sm:text-4xl">
+              One loop. Every step inspectable.
+            </h2>
+            <p className="mt-4 max-w-md text-sm leading-7 text-foreground/55">
+              The product is not a one-shot prompt. It is a versioned, reversible loop between intention
+              and inspection — designed for research, not for spectacle.
             </p>
           </div>
-          <div className="mt-6 grid gap-4 lg:grid-cols-3">
-            {MODES.map((mode) => (
+          <ol className="divide-y divide-white/8 border-y border-white/8">
+            {LOOP.map(([index, title, body]) => (
+              <li key={index} className="grid gap-2 py-4 sm:grid-cols-[3rem_minmax(0,0.42fr)_minmax(0,1fr)] sm:items-baseline">
+                <span className="font-mono text-xs text-accent-glow/70">{index}</span>
+                <span className="text-sm font-medium text-foreground/85">{title}</span>
+                <span className="text-sm leading-6 text-foreground/50">{body}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="border-y border-white/8 bg-white/[0.015]">
+        <div className="mx-auto w-full max-w-[1500px] px-4 py-16 md:px-8 lg:py-20">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <span className="mono-label text-foreground/40">Three surfaces</span>
+              <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">
+                Compose. Walk. Audit.
+              </h2>
+            </div>
+            <p className="max-w-md text-sm leading-6 text-foreground/50">
+              The same local backend, the same provenance, and the same claim boundary across three
+              different ways of working with a scene.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {SURFACES.map((surface) => (
               <Link
-                key={mode.href}
-                href={mode.href}
-                className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.025] p-5 transition-colors hover:border-accent-glow/30 hover:bg-white/[0.04]"
+                key={surface.label}
+                href={surface.href}
+                className="group flex min-h-64 flex-col rounded-xl border border-white/10 bg-[#080a0d]/70 p-5 transition-colors hover:border-accent-glow/35"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="font-mono text-[11px] text-accent-glow/60">{mode.index}</span>
-                  <span className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/40">
-                    {mode.label}
-                  </span>
+                <div className="flex items-center justify-between">
+                  <span className="mono-label text-foreground/35">{surface.index}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-glow/60">{surface.label}</span>
                 </div>
-                <h3 className="mt-8 max-w-md text-2xl font-semibold leading-tight tracking-tight text-foreground/90">
-                  {mode.title}
-                </h3>
-                <p className="mt-3 max-w-lg text-sm leading-6 text-foreground/50">{mode.body}</p>
-                <span className="mt-6 inline-flex min-h-9 items-center text-sm text-accent-glow/85 group-hover:text-accent-glow">
-                  {mode.action} →
+                <h3 className="mt-5 text-balance font-display text-2xl leading-tight text-foreground/90">{surface.title}</h3>
+                <p className="mt-3 flex-1 text-sm leading-6 text-foreground/50">{surface.body}</p>
+                <span className="mt-5 inline-flex items-center text-sm text-accent-glow/80 transition-colors group-hover:text-accent-glow">
+                  {surface.action} →
                 </span>
               </Link>
             ))}
@@ -190,77 +174,95 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-t border-surface-border px-4 py-14 md:px-8" aria-labelledby="loop-title">
-        <div className="mx-auto w-full max-w-[1500px]">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="mono-label text-accent-glow/65">Closed loop</p>
-              <h2 id="loop-title" className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
-                Seven steps, each inspectable.
-              </h2>
-            </div>
-            <p className="max-w-lg text-sm leading-6 text-foreground/50">
-              The corridor is not a decoded mental image. It is an adaptive scaffold driven by experimental proxy
-              metrics, with a safety monitor that can override the curriculum.
-            </p>
-          </div>
-          <ol className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-7">
-            {LOOP.map(([number, title, detail]) => (
-              <li key={number} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">
-                <span className="font-mono text-[11px] text-accent-glow/55">{number}</span>
-                <h3 className="mt-2 text-sm font-medium text-foreground/80">{title}</h3>
-                <p className="mt-1 text-[11px] leading-5 text-foreground/40">{detail}</p>
+      <section className="mx-auto grid w-full max-w-[1500px] gap-10 px-4 py-16 md:px-8 lg:grid-cols-2 lg:py-20">
+        <div className="rounded-xl border border-white/10 bg-[#080a0d]/70 p-6">
+          <span className="mono-label text-foreground/40">What this is</span>
+          <ul className="mt-5 space-y-3 text-sm leading-6 text-foreground/65">
+            {[
+              "A local-first instrument for symbolic scene authoring, correction, and comparison.",
+              "A provenance-aware record of versions, events, exports, and stated limits.",
+              "A research surface for behavioural tasks that separates what was observed from what was inferred.",
+            ].map((item) => (
+              <li key={item} className="flex gap-2.5">
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-signal" aria-hidden="true" />
+                {item}
               </li>
             ))}
-          </ol>
+          </ul>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-[#080a0d]/70 p-6">
+          <span className="mono-label text-foreground/40">What this is not</span>
+          <ul className="mt-5 space-y-3 text-sm leading-6 text-foreground/65">
+            {[
+              "Not an image generator, neural reconstruction system, or decoder of imagined content.",
+              "Not a clinical diagnostic, treatment, neurofeedback, or BCI product.",
+              "Not a validated measure of imagination ability, and not a consciousness claim.",
+            ].map((item) => (
+              <li key={item} className="flex gap-2.5">
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-lock" aria-hidden="true" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <Link href="/science" className="mt-5 inline-flex min-h-9 items-center text-sm text-lock/85 hover:text-lock">
+            Read the full scientific boundary →
+          </Link>
         </div>
       </section>
 
-      <section className="border-t border-surface-border px-4 py-14 md:px-8" aria-labelledby="boundaries-title">
-        <div className="mx-auto grid w-full max-w-[1500px] gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-          <div className="rounded-xl border border-white/10 bg-white/[0.025] p-5">
-            <p className="mono-label text-foreground/40">Allowed</p>
-            <h2 id="boundaries-title" className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-              What this instrument can say
-            </h2>
-            <ul className="mt-4 space-y-2.5 text-sm leading-6 text-foreground/60">
+      <section id="for-labs" className="border-t border-white/8 bg-[linear-gradient(180deg,rgba(92,124,250,0.06),transparent)]">
+        <div className="mx-auto w-full max-w-[1500px] px-4 py-16 md:px-8 lg:py-20">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:items-start">
+            <div>
+              <span className="mono-label text-foreground/40">For research teams</span>
+              <h2 className="mt-3 text-balance font-display text-3xl leading-tight text-foreground sm:text-4xl">
+                A study surface you can defend.
+              </h2>
+              <p className="mt-4 max-w-lg text-sm leading-7 text-foreground/55">
+                Run local, keep participant data on your own machine, and hand a reviewer a session that
+                includes its own version history and uncertainty boundary. The instrument is experimental;
+                the provenance is real.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                <Link
+                  href="https://github.com/toniIepure25/Imagina/issues"
+                  className="inline-flex min-h-11 items-center rounded-lg border border-white/15 px-4 text-sm font-semibold text-foreground/80 transition-colors hover:border-accent-glow/40 hover:text-foreground"
+                >
+                  Open a research inquiry
+                </Link>
+                <Link
+                  href="/animus/about"
+                  className="inline-flex min-h-11 items-center rounded-lg px-4 text-sm text-foreground/55 transition-colors hover:text-foreground"
+                >
+                  Capability envelope →
+                </Link>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
               {[
-                "It estimates proxy metrics related to attention, self-reported vividness, behavioral stability, and simulated signal patterns.",
-                "It adapts procedural visual feedback based on an estimated imagery state.",
-                "It is a research prototype for closed-loop mental imagery training.",
-                "PID and IQI are experimental proxies that still require validation.",
-              ].map((item) => (
-                <li key={item} className="flex gap-2.5">
-                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-signal" aria-hidden="true" />
-                  {item}
-                </li>
+                ["Local deployment", "SQLite, files, and backups stay under your control."],
+                ["Versioned evidence", "Every scene change and export has a durable record."],
+                ["Explicit status", "Simulation, pilot, blocked, and human evidence are kept separate."],
+                ["No decoding lane", "No raw neural data and no external inference service."],
+              ].map(([title, body]) => (
+                <div key={title} className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
+                  <p className="text-sm font-medium text-foreground/85">{title}</p>
+                  <p className="mt-2 text-xs leading-5 text-foreground/45">{body}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
-          <div className="rounded-xl border border-lock/20 bg-lock/[0.045] p-5">
-            <p className="mono-label text-lock/65">Not allowed</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">What it will never claim</h2>
-            <ul className="mt-4 space-y-2.5 text-sm leading-6 text-foreground/60">
-              {[
-                "Read thoughts, decode dreams, or show what someone is imagining.",
-                "Diagnose, treat, cure aphantasia, or guarantee lucid dreaming.",
-                "Provide clinically validated neurofeedback or measure consciousness.",
-              ].map((item) => (
-                <li key={item} className="flex gap-2.5">
-                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-lock" aria-hidden="true" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Link href="/science" className="mt-5 inline-flex min-h-9 items-center text-sm text-lock/85 hover:text-lock">
-              Read the full scientific boundary →
-            </Link>
+          <div className="mt-10 rounded-lg border border-amber-300/15 bg-amber-300/[0.04] p-4 text-sm leading-6 text-foreground/60">
+            <span className="font-medium text-amber-200/80">Evidence status.</span> No human CRT data has
+            been collected. Stage 0I is simulation-only; target-scale NUTS/SBC remains blocked. CI green
+            is process evidence, not scientific validation.
           </div>
-        </div>
-        <div className="mx-auto mt-5 w-full max-w-[1500px]">
-          <BoundaryNote />
         </div>
       </section>
+
+      <div className="mx-auto w-full max-w-[1500px] px-4 pb-12 md:px-8">
+        <BoundaryNote />
+      </div>
     </AppShell>
   );
 }

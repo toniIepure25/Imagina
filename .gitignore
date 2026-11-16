@@ -20,6 +20,8 @@ node_modules/
 .next/
 out/
 .turbo/
+test-results/
+playwright-report/
 
 # ---- Testing & Linting ----
 .pytest_cache/
@@ -65,6 +67,9 @@ data/
 *.ckpt
 *.parquet
 *.csv
+
+# Research-review templates are source, not runtime data
+!docs/research/review/*.csv
 
 # ---- External EEG Data (never commit) ----
 data/OpenMIIR-RawEEG/

@@ -251,6 +251,12 @@ def main() -> int:
         cwd=ROOT,
         timeout=60,
     )
+    runner.run(
+        "public claims",
+        [find_python(), str(ROOT / "scripts" / "audit_public_claims.py")],
+        cwd=ROOT,
+        timeout=60,
+    )
 
     if not args.skip_backend:
         backend_checks(runner, mode)

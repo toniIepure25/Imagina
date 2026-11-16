@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.release
       args:
-        IMAGINA_EXTRAS: ""
+        IMAGINA_EXTRAS: "[science]"
     ports:
       - "8000:8000"
     volumes:
