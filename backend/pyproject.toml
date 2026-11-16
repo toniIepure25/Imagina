@@ -22,6 +22,7 @@ science = [
     "statsmodels>=0.14,<1",
     "PyYAML>=6.0,<7",
     "jsonschema>=4.20,<5",
+    "scikit-learn>=1.3,<2",
 ]
 crt = [
     "numpyro>=0.16,<1",

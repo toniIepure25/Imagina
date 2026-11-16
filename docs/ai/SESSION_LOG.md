@@ -5926,3 +5926,21 @@ still missing. Human collection remains blocked; no claim upgrade.
 **Known gaps:** target-scale NUTS SBC/recovery is still not run; the target readout is a readout
 surrogate, not the full joint model; no human data, ethics approval, registration, calibration, or
 independent review. The claim ceiling remains `L1_BEHAVIORAL_ASSISTED`.
+
+---
+
+## 2026-11-16 — CI dependency repair after the Stage 0I push
+
+**Finding:** The first post-push CI run completed 63 of 69 jobs successfully but failed six jobs
+(`backend-core`, `science-api-cooperative-abort`, `animus-p1-closed-loop`,
+`animus-p2e-real-confirmatory`, `animus-p2-perception-neural-adapter`, `science-frontend-e2e`). All six
+failures traced to a missing `scikit-learn` in the `science` extra, while `app.main` imports
+`app.multimodal.evaluation` unconditionally and that module imports `sklearn.model_selection` at module
+scope.
+
+**Change:** Added `scikit-learn>=1.3,<2` to the `science` extra (kept it in `neural` for the neural-only
+install path) and refreshed `backend/uv.lock`. This aligns the declared dependency with the import graph
+instead of weakening the import or skipping the tests.
+
+**Verification:** `uv lock --check --directory backend` exits 0; `uv export --extra dev --extra science`
+contains scikit-learn. The next CI run must confirm the full 69-job matrix.
