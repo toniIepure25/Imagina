@@ -5969,3 +5969,50 @@ stale Playwright expectations. The release Dockerfiles now install `[science]` b
 synthetic-demo smoke test now checks the current heading and boundary sentence. The diffusion lane
 test mock now returns the terminal manifest on job creation, so it tests consent and skybox
 application without depending on an incidental polling interval. The app polling path is unchanged.
+
+---
+
+## 2026-11-17 — P0 credibility fixes, public claims guard, and Stage 0J
+
+**Task:** execute the approved plan's P0/phase-1 slices: release compose, landing repositioning, public
+claims audit, target-scale readiness scaffolding, and paper/business/governance scaffolds.
+
+**Changes:**
+- `docker-compose.release.yml` now passes `IMAGINA_EXTRAS="[science]"`, matching the release Dockerfile
+  and the unconditional NumPy/sklearn imports in `app.main`.
+- `frontend/app/page.tsx` is an ANIMUS/Studio/Evidence landing. It removes PID/IQI and simulated-EEG
+  language from the primary surface and adds a visible evidence-status block.
+- Added `frontend/e2e/landing.spec.ts` and a studio screenshot asset.
+- Added `scripts/audit_public_claims.py`; `backend-core` runs it after the docs-link check.
+- Added `analysis/crt/target_scale.py`, `science/schemas/crt_target_scale.schema.json`, a registry
+  artifact/gate, `results/crt/CRT_STAGE0J_TARGET_SCALE.json` (`BLOCKED`), and 8 tests. The SBC gate now
+  checks a mean-rank window in addition to coverage; Rhat/ESS remain an explicit limitation.
+- Added `paper/` (manuscript, supplement, references, SVG figure generator), `business/` (one-pager,
+  deck outline, financial model, discovery protocol, funding roadmap, data room, claims guardrails),
+  `docs/research/review/` templates, ethics/data/registration checklists, and operations docs.
+- Corrected the manuscript model table to match `analysis/crt/full_model.py`: `M2` prediction
+  consistency, `M4` dual cost, `M6` vividness, `M7` confidence/precision proxy. The earlier draft
+  mislabelled `M6` as active prediction.
+- Verified the six core references against Crossref and PubMed; exact titles/authors/DOIs/PMIDs now
+  match, and no PubMed notice was returned. Added the Dijkstra & Fleming preprint as a labelled
+  precision-competitor, not peer-reviewed evidence.
+- Added `AUTHORS.md`; governance now points to it. No PI is named.
+
+**Actual results:**
+- Stage 0J artifact is `BLOCKED` because NumPyro/JAX is unavailable in this environment. No
+  target-scale SBC or recovery was run. The BIC recovery limitation is recorded in the artifact.
+- Ledger: 58 artifacts, 52 gates, 17 claims; `ANIMUS_P5_CRT_STAGE0J_TARGET_SCALE=BLOCKED`.
+- Public claims audit: 14 files, 0 affirmative prohibited phrases.
+- Docs links: 144 files OK.
+- Stage 0J tests: 8 passed.
+- CRT/ledger subset (`-k "crt or science_ledger"`): 149 passed, 3 skipped, 2,195 deselected.
+- Frontend typecheck: clean. Next production build: compiled and generated 30 routes.
+- Landing Playwright: 3 passed against `next start` (`PLAYWRIGHT_BASE_URL`).
+- `python scripts/verify.py --quick`: 5 passed, 2 skipped (npm/docker unavailable); docs links,
+  public claims, ruff, ledger, and the backend core/research pytest suite (484.4s) all passed.
+- No human participants, ethics approval, registration, calibration, independent review, customer
+  interviews, LOIs, or revenue exist.
+
+**Known gaps:** target-scale compute, npm-driven Playwright/axe execution in this environment,
+automated axe/WCAG gate, SBOM/signed releases, named PI/statistician/ethics partner, and real
+customer discovery remain open. The claim ceiling remains `L1_BEHAVIORAL_ASSISTED`.

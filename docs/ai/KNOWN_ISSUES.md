@@ -782,7 +782,45 @@ multi-replicate full joint-model design and NUTS SBC remain required.
 
 ---
 
-*Last updated: 2026-11-15 - RISK-065 combined-candidate single-replicate readout; RISK-062/063/064
+## RISK-066: Stage 0J recovery is BIC-based, not NUTS marginal likelihood
+
+**Risk:** `CRT_STAGE0J_TARGET_SCALE.json` combines NUTS SBC with BIC recovery. It can be described as a
+full NUTS recovery package even though the recovery arm is not a NUTS marginal-likelihood comparison.
+**Impact:** High for methods-paper claims and for any statement that the target design is fully
+identified.
+**Mitigation:** The artifact limitations, Stage 0J protocol, gate note, and manuscript skeleton state
+the BIC limitation explicitly. A NUTS recovery implementation remains required for a stronger claim.
+**Status:** Open; artifact is `BLOCKED` until compute is available.
+
+---
+
+## RISK-067: Release compose fix is not locally validated
+
+**Risk:** `docker-compose.release.yml` now passes `IMAGINA_EXTRAS="[science]"`, but Docker is unavailable
+in this environment, so the image was not built or health-checked locally.
+**Impact:** Medium; CI release jobs must confirm the fix.
+**Mitigation:** The value matches `Dockerfile.release` and the CI release job; the release checklist
+requires a health check. Do not claim the release is verified until CI passes.
+**Status:** Fixed in source; verification pending.
+
+---
+
+## RISK-068: Public surface lacks automated accessibility and real customer discovery
+
+**Risk:** The new landing has a Playwright smoke test but no axe/WCAG gate, screen-reader pass, or
+contrast audit. The business workspace has a discovery protocol but zero interviews, LOIs, or pilots.
+**Impact:** Medium for funding due diligence; high if the deck implies traction or accessibility
+conformance that does not exist.
+**Mitigation:** `docs/operations/ACCESSIBILITY.md` and `business/CUSTOMER_DISCOVERY.md` state the gaps.
+The deck and one-pager say pre-traction. Add axe and interview records before claiming otherwise.
+**Status:** Open.
+
+---
+
+*Last updated: 2026-11-17 - RISK-066/067/068 Stage 0J recovery scope, release compose not locally
+validated, and public-surface accessibility/customer-discovery gaps*
+
+*Prior update: 2026-11-15 - RISK-065 combined-candidate single-replicate readout; RISK-062/063/064
 remain current*
 
 *Prior update: 2026-10-25 - RISK-050 epistemic overclaiming, RISK-051 Beta/local-scene validity,

@@ -39,7 +39,7 @@ The platform is built so that its own limits are inspectable. That is the point.
 
 | IMAGINA is | IMAGINA is not |
 |---|---|
-| A symbolic scene-authoring and correction loop | An image generator or neural reconstruction system |
+| A symbolic scene-authoring and correction loop | Not an image generator or neural reconstruction system |
 | A set of separate behavioural measurement surfaces | A single “imagination ability” score |
 | A provenance-aware evidence system | A clinical diagnostic or treatment tool |
 | A computational research programme with preregistration gates | A validated neurofeedback or BCI product |
@@ -138,7 +138,7 @@ must pass before the next one is allowed to proceed.
 | **C1 — neural–behavioural alignment** | Do neural features add incremental validity for trial-level vividness? | Public EEG dataset `ds005815` (YOTO); classical-feature pipeline produced a null incremental result with a completed falsification battery | `NULL` for the tested pipeline; not a claim that imagery is absent |
 | **C2 — neural content and state** | Can content/state be decoded with leakage-safe splits? | Null/limited; no authorized neural-content claim | `NULL` / limited |
 | **C3 — fMRI imagery transfer** | Does perception-trained decoding transfer to imagery? | Exploratory, frozen perception decoder; no clinical or mind-reading claim | Exploratory |
-| **CRT — Counterfactual Reality Testing** | Which cues explain source judgments: vividness, confidence, context, or a simpler baseline? | Computational design and recovery only; **no human CRT data** | Stage 0I; package `BLOCKED` |
+| **CRT — Counterfactual Reality Testing** | Which cues explain source judgments: vividness, confidence, context, or a simpler baseline? | Computational design and recovery only; **no human CRT data** | Stage 0I/0J; package `BLOCKED` |
 
 ### What CRT is trying to learn
 
@@ -147,8 +147,8 @@ Participants encounter items through different routes — **seen**, **imagined**
 explained by:
 
 - a simple baseline (`M0`);
-- one additional cue (`M2`);
-- context/description effects (`M4`);
+- prediction consistency (`M2`);
+- prediction consistency plus a dual-cost term (`M4`);
 - vividness weighting (`M6`);
 - confidence-weighted integration (`M7`).
 
@@ -386,11 +386,31 @@ scripts/                    verification and UI-driving scripts
 |---|---|
 | [Program status](docs/program/PROGRAM_STATUS.md) | Canonical gate and claim status, generated from the registry |
 | [CRT Stage 0I protocol](docs/research/CRT_STAGE0I_PROTOCOL.md) | Identifiability, target-scale design, SBC, and readiness blockers |
+| [CRT Stage 0J protocol](docs/research/CRT_STAGE0J_PROTOCOL.md) | Target-scale NUTS SBC/recovery, compute rules, and failure modes |
 | [CRT preregistration](docs/program/CRT_PREREGISTRATION.md) | Hypotheses, endpoints, stopping rules, and claim ceiling |
 | [CRT analysis plan](docs/program/CRT_ANALYSIS_PLAN.md) | Model space, estimands, and analysis sequence |
 | [CRT source audit](docs/research/CRT_SOURCE_AUDIT.md) | Primary-source verification and corrections |
 | [CRT adversarial collaboration](docs/program/CRT_ADVERSARIAL_COLLABORATION.md) | Pre-specified disagreement and adjudication procedure |
 | [CRT theory adjudication](docs/program/CRT_THEORY_ADJUDICATION.md) | Competing theoretical accounts and discriminating predictions |
+| [Systematic review workspace](docs/research/review/README.md) | Protocol and templates; not yet a systematic review |
+| [Ethics package](docs/program/CRT_ETHICS_PACKAGE.md) | Template; no approval exists |
+| [Stage 1 checklist](docs/program/CRT_STAGE1_REGISTRATION_CHECKLIST.md) | Registration blockers and sign-off |
+
+### Paper and business
+
+| Document | Why read it |
+|---|---|
+| [Paper workspace](paper/README.md) | Methods paper and Registered Report plan; no submission |
+| [Business workspace](business/README.md) | Pre-traction positioning, pilots, and funding hypotheses |
+| [Claims guardrails](business/CLAIMS_GUARDRAILS.md) | How public business and paper text is reviewed |
+
+### Operations
+
+| Document | Why read it |
+|---|---|
+| [Release checklist](docs/operations/RELEASE_CHECKLIST.md) | Release gates and known automation gaps |
+| [Threat model](docs/operations/THREAT_MODEL.md) | Local-first deployment risks and controls |
+| [Accessibility status](docs/operations/ACCESSIBILITY.md) | What is verified and what is not |
 
 ---
 
@@ -400,6 +420,8 @@ scripts/                    verification and UI-driving scripts
 - **Documentation and figures:** [CC BY 4.0](LICENSE-DOCS).
 - **Citation:** see [CITATION.cff](CITATION.cff). Cite the repository version and the specific study
   artifacts you used; do not cite a demo as validation.
+- **Authors and roles:** see [AUTHORS.md](AUTHORS.md); the PI and independent statistician are not yet
+  assigned, which blocks the human study.
 - **Contributing:** read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 - **Security:** see [SECURITY.md](SECURITY.md); do not open a public issue for a vulnerability.
 - **Governance and claims:** see [GOVERNANCE.md](GOVERNANCE.md). Claim status changes only through a
@@ -416,6 +438,9 @@ implemented against an additive schema through migration **v021**. The CRT progr
 computational Stage 0I design work, but its registration package is **BLOCKED**: inference is not yet
 stable at target scale, independent review has not occurred, calibration has not been run, and no
 ethics approval or registration exists.
+
+Stage 0J target-scale readiness is also **BLOCKED** while the publication-grade NumPyro/JAX backend is
+unavailable. The paper and business workspaces are drafts, not submissions or commitments.
 
 Human CRT data collection is **not authorized**. Public datasets, simulations, and model-recovery
 checks are not substitutes for a preregistered human study.

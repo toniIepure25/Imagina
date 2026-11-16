@@ -2192,5 +2192,37 @@ it already selects by marker; optional neural tests are no longer an untested bl
 
 ---
 
-*Last updated: 2026-11-16 - ADR-079 canonical artifact hashing and neural CI dependencies; ADR-078
+*Last updated: 2026-11-17 - ADR-080 P0 credibility fixes, public claims guard, and Stage 0J
+target-scale readiness; ADR-079 canonical artifact hashing and neural CI dependencies; ADR-078
 belief-weighted full likelihood and NUTS parity*
+
+---
+
+## ADR-080: P0 credibility fixes and Stage 0J target-scale readiness
+
+**Status:** Accepted
+**Date:** 2026-11-17
+**Context:** The approved plan required a credible public surface, a release compose that actually
+starts, and a computational gate between Stage 0I and any human study. The release compose still
+overrode the Dockerfile's science extras with an empty string, the root landing foregrounded
+deprecated PID/IQI and simulated-EEG language, and there was no public-prose claims guard. Stage 0I
+also lacked a single auditable target-scale decision artifact.
+
+**Decision:**
+
+1. Set `IMAGINA_EXTRAS="[science]"` in `docker-compose.release.yml`; the release image imports
+   NumPy/sklearn modules unconditionally.
+2. Replace the root landing with an ANIMUS/Studio/evidence narrative and remove PID/IQI and simulated
+   EEG from the primary surface.
+3. Add `scripts/audit_public_claims.py`, scanning README, `business/`, and `paper/`; run it in
+   `backend-core`.
+4. Add `analysis/crt/target_scale.py`, a JSON Schema, a registry artifact/gate, and a BLOCKED
+   placeholder artifact. The target run is manual and requires `--confirm-compute`; CI only exercises
+   the wiring. `PASS` requires every confirmatory NUTS SBC and BIC recovery to pass.
+5. Add paper, business, review, ethics, and operations scaffolds without inventing participants,
+   approvals, customers, or results.
+
+**Consequences:** Stage 0J is visible as `BLOCKED`, not silently skipped. The public landing no longer
+promotes deprecated legacy scores. The public claims guard is narrow and does not replace review.
+Target-scale NUTS SBC/recovery remains unrun; the BIC recovery limitation is explicit. No claim is
+upgraded and no human data are authorized.

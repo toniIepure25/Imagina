@@ -12,9 +12,10 @@ designed to keep scientific claims independent of product pressure.
 | Contributors | Code, docs, analyses, and reproduction reports under this policy |
 | Independent reviewer | Adversarial review of a sealed gate before a claim changes (may be external) |
 
-Until a PI is named in `CITATION.cff`/`GOVERNANCE.md`, the maintainers act
-jointly as PI for claim decisions. This is a temporary arrangement and should be
-resolved before the first human study.
+Until a PI is named in `AUTHORS.md` and `CITATION.cff`, the maintainers act
+jointly as PI for claim decisions. This is a temporary arrangement and must be
+resolved before the first human study. The unfilled roles and submission
+blockers are tracked in [`AUTHORS.md`](AUTHORS.md).
 
 ## Decision types
 

@@ -1,0 +1,4 @@
+search_date,index,query,date_range,hits,peer_reviewed,notes
+2026-11-16,PubMed,"(""reality monitoring""[tiab] OR ""source monitoring""[tiab]) AND (prediction[tiab] OR ""active inference""[tiab] OR ""information search""[tiab]) AND (imagination[tiab] OR imagery[tiab])",all years,2,mixed,"scoping only; no dual screening; two records returned"
+2026-11-16,Europe PMC,"(""reality monitoring"" OR ""source monitoring"") AND (prediction OR ""active inference"" OR ""information search"") AND (imagination OR imagery)",all years,202,mixed,"scoping only; broad free-text query; includes preprints and clinical hallucination papers"
+2026-11-16,OpenAlex,"reality monitoring prediction imagination source attribution",all years,4795,mixed,"scoping only; ranked relevance, not a systematic count"

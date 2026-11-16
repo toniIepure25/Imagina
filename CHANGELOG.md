@@ -19,9 +19,23 @@ semantic versioning.
 - JSON Schemas for claims, result envelopes, and ledger snapshots.
 - Cross-platform `scripts/verify.py` with `--quick`, `--ci`, and `--full`
   modes, plus `check_docs_links.py` for local Markdown links.
+- Public-prose claim guard (`scripts/audit_public_claims.py`) for README,
+  `business/`, and `paper/`; wired into `backend-core`.
+- CRT Stage 0J target-scale readiness module, JSON Schema, registry gate, and
+  `BLOCKED` placeholder artifact. The target run is manual and requires
+  `--confirm-compute`; readiness checks coverage and mean-rank windows, while
+  Rhat/ESS remain a recorded limitation.
+- Paper workspace (`paper/`), business workspace (`business/`), systematic-review
+  templates, ethics/data/registration checklists, and operations docs.
+- `AUTHORS.md` with explicit unfilled PI, statistician, and ethics roles.
 
 ### Changed
 
+- The public landing now presents ANIMUS Studio, Lumen, and the evidence boundary;
+  deprecated PID/IQI and simulated-EEG language were removed from the primary
+  surface.
+- `docker-compose.release.yml` passes `IMAGINA_EXTRAS="[science]"` instead of
+  overriding the release image's default.
 - Release container definitions now install from the project metadata, run
   production servers as a non-root user, and are built/started/health-checked
   in CI.
