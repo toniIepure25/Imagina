@@ -97,10 +97,10 @@
 
 | Artifact | Gate | Authority | Mapped status | SHA-256 | Bytes |
 | --- | --- | --- | --- | --- | --- |
-| `animus.p1` | ANIMUS_P1 | canonical | `PASS` | `3568af04d443e438cd148f04c603a451c7416bcc999dbf4f8bb2d5bf1e7424d2` | 1163 |
-| `animus.p2` | ANIMUS_P2 | historical | `PILOT` | `e268f6acd4df1992c8e803bb0a7f19744f5cdb9c66c862b4d6ac9966b16bfcca` | 2005 |
-| `animus.p2e` | ANIMUS_P2 | historical | `BLOCKED` | `b1dce7a92e27901662632910d6cad3a508dff9c9e1edf76d1a750553232a7541` | 2570 |
-| `animus.p2r` | ANIMUS_P2 | canonical | `BLOCKED` | `173620c625e8cb70338d4806b45fab428fddb82c498f36a35ba98382bd4d9cab` | 1308 |
+| `animus.p1` | ANIMUS_P1 | canonical | `PASS` | `390ca0307589f824d06591b40971976b4db67fac1e6602912e7849c622dce55e` | 1134 |
+| `animus.p2` | ANIMUS_P2 | historical | `PILOT` | `ee42d706475e58f101aa949965f07309ea2075c59ed0a1f4902c719a821de438` | 1957 |
+| `animus.p2e` | ANIMUS_P2 | historical | `BLOCKED` | `51c1e8206cc774ae01c39fb1eb283efb6b8716a4fdea2faf199dd9182df6ad23` | 2521 |
+| `animus.p2r` | ANIMUS_P2 | canonical | `BLOCKED` | `ddd852a9e2c2fec1c4cd3cc6f11df99c461986faf2eacf7510208a07c19a87bb` | 1289 |
 | `animus.p3.power` | ANIMUS_P3_POWER | canonical | `PASS` | `3e73959027a8e61945c9e8e1489aaf8cfd47bb8ece57f4f154bba9b52771d9d5` | 957 |
 | `animus.p3.sim` | ANIMUS_P3_SIM | canonical | `PASS` | `a09df32a47f91ff2c5ec1b0fa34e8ecd55cf10c77b9811e9a0d363b096ecb6f7` | 1851 |
 | `animus.p4.art.power` | ANIMUS_P4_ART_POWER | canonical | `PASS` | `359f61f26e168483463ebb7a0fadb01f8d1ef3b7480682501f9944f6c72ad4a1` | 957 |
@@ -135,25 +135,25 @@
 | `animus.p5.crt.stage0i_full_model_recovery` | ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_RECOVERY | canonical | `LIMITED` | `e94d8a1b885f9b6eabaf1fb8472a34ad4e349e1fc4960f4596946e39791e0a6c` | 1033 |
 | `animus.p5.crt.stage0i_full_model_sbc` | ANIMUS_P5_CRT_STAGE0I_FULL_MODEL_SBC | canonical | `LIMITED` | `4c1f7510e4c8b268217883146b8362f6ce9be9b40653b9d458cecb1dcceb1e59` | 5772 |
 | `animus.p5.crt.stage0i_identifiability` | ANIMUS_P5_CRT_STAGE0I_IDENTIFIABILITY | canonical | `LIMITED` | `991b4d9438154b73f68ffaa42c0d56df0480afa3c27ffe7439c9d132921ec1b2` | 3445 |
-| `animus.p5.crt.stage0i_inference_backend` | ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND | canonical | `BLOCKED` | `2a9b09b47ee46bd36565205fbbfd788c09d003e69aecaa53d8656b49f770605f` | 872 |
+| `animus.p5.crt.stage0i_inference_backend` | ANIMUS_P5_CRT_STAGE0I_INFERENCE_BACKEND | canonical | `BLOCKED` | `7a2405c0c8d788a62007236d65d2bb56c178b88125019f6ae8760bd6e0671abf` | 850 |
 | `animus.p5.crt.stage0i_package` | ANIMUS_P5_CRT_STAGE0I_READINESS | canonical | `BLOCKED` | `2ab0f1b219045cc996fe1fb5a2e1324ebb5e881b03e3e70c9031e037c681a220` | 1651 |
 | `animus.p5.crt.stage0i_policy_parameter_sbc` | ANIMUS_P5_CRT_STAGE0I_POLICY_PARAMETER_SBC | canonical | `LIMITED` | `d45268d83426696e351a6a6f4329c6f69186d69e64e21012661db70f4f249975` | 1355 |
 | `animus.p5.crt.stage0i_policy_recovery` | ANIMUS_P5_CRT_STAGE0I_POLICY_RECOVERY | canonical | `LIMITED` | `9149afb78b953a3ed273651abac693d95ffad7d669efadfce3c1ce3e7c414ccb` | 1393 |
 | `animus.p5.crt.stage0i_policy_sbc` | ANIMUS_P5_CRT_STAGE0I_POLICY_SBC | canonical | `LIMITED` | `c821afbca700f1a89c6236cbb6aa537c6a4cbd577aecab26286c70097b703d46` | 805 |
 | `animus.p5.crt.stage0i_source_integrity` | ANIMUS_P5_CRT_STAGE0I_SOURCE_INTEGRITY | canonical | `PASS` | `105adf9fff317ad04f636f78dbed3f8cd3f294c8fcb94618d2a95a6a9e91f2db` | 3912 |
-| `animus.p5.crt.stage0i_target_design_projection` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION | canonical | `LIMITED` | `6360c3bf4f9fc68bd284a73c39165307957892d51b84e4fbc0ba2ac83ff1074d` | 9429 |
-| `animus.p5.crt.stage0i_target_design_readout` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT | canonical | `LIMITED` | `7ead95dd9ff941ce3ef539f638f42119c48ab8fc6256e090e3bf1bbd0dd82d15` | 4160 |
+| `animus.p5.crt.stage0i_target_design_projection` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION | canonical | `LIMITED` | `92697731d7a0abcb6727ccfac0358d0ee55fdd9fcdaf237c6449ed274e98b0f3` | 9048 |
+| `animus.p5.crt.stage0i_target_design_readout` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT | canonical | `LIMITED` | `d733ccb71b017c8d0a134d8103500b91ca944046f8e10160691e25ac6c9018e3` | 3960 |
 | `animus.p5.crt.theory` | ANIMUS_P5_CRT_THEORY | canonical | `PASS` | `5095c62851e41925dc0c2306eed8923fc6b6c61023ca33ef1a088a093cfbf441` | 2112 |
 | `animus.p5.crt.trial_recovery` | ANIMUS_P5_CRT_TRIAL_RECOVERY | canonical | `LIMITED` | `fe39185e9b5ef1b37898b98f387d68b283f27802bb75fe0748137f3268dca266` | 1191 |
 | `animus.p5.crt.trial_sbc` | ANIMUS_P5_CRT_TRIAL_SBC | canonical | `PASS` | `1e4bb3314390c9bda2cb5264e933a198be3558146de73722d9e515180386c2a8` | 965 |
-| `c1.final` | C1 | canonical | `NULL` | `1f412b5216d37664a54078ace6e9bc5aaf084ef24830607732a77d1006632c3b` | 9737 |
-| `c2.final` | C2 | canonical | `NULL` | `e02e6c961302614380333e572d221b17bc11d8f14603d412784e709f95998a2e` | 8804 |
-| `c3.final` | C3 | canonical | `NULL` | `6073ec1c8aa130ef1aa06e73c87db1df571edbd49986d2e6d5e2e57113c0fc60` | 5650 |
-| `c3.realdata` | C3 | historical | `SUPERSEDED` | `ca552078dd9d034e97350cf835d86997f82702e5cc31c56f2dc2f4b971bf0b5e` | 3849 |
-| `c3m.final` | C3M | canonical | `NULL` | `a53d926c0c4981594d68e656fa5f1a68fe55130ae49cba46407bbfae39cb6154` | 4637 |
-| `c3xat.r1.blocked1` | C3XAT_R1 | historical | `BLOCKED` | `db6b5ef0baf650ad33acf93ee2cea449ac1a0526facebea98d01c98e2ad2e3f0` | 2680 |
-| `c3xat.r1.blocked2` | C3XAT_R1 | historical | `BLOCKED` | `ff4a9880f75c182c90624a893b47d6373851ba48f0167ae0a1fead8408d112f1` | 3110 |
-| `c3xat.r1.final` | C3XAT_R1 | canonical | `LIMITED` | `cf0a8aecaf61b3117a7fcfb59ab534bfe42da41caeb4fadf39beade5c136126c` | 7570 |
+| `c1.final` | C1 | canonical | `NULL` | `e636295b851042a8168f97808c12751178095a1756b70a1f3c53767547752486` | 9679 |
+| `c2.final` | C2 | canonical | `NULL` | `adcf030ab69d28bb5f4ac049845a4ee2ba7f42cec7fdd55a15331840b4ee9656` | 8751 |
+| `c3.final` | C3 | canonical | `NULL` | `aec376971e7a781bf0cb17daeaac8fbc56977905bb1b6746836f10f9d49606b7` | 5560 |
+| `c3.realdata` | C3 | historical | `SUPERSEDED` | `9afaf099d4fc45ad78a8c230205e767e6d0e946fe5026176577f3583fcf6e1be` | 3821 |
+| `c3m.final` | C3M | canonical | `NULL` | `f36fbe1a694370c8c6f752338ac6d29e08040a82ce21feec442a7c4a430ae1a6` | 4549 |
+| `c3xat.r1.blocked1` | C3XAT_R1 | historical | `BLOCKED` | `13b75390dcf20e6714c7f9cbd7bed61e46f69525cdd6ce9668ff3552f83cb509` | 2620 |
+| `c3xat.r1.blocked2` | C3XAT_R1 | historical | `BLOCKED` | `b89490f6b689c07669e29894f3fbee89afd69cfca4780755548d691dece1d25a` | 3052 |
+| `c3xat.r1.final` | C3XAT_R1 | canonical | `LIMITED` | `9d8cea0c4c2001d0bbf9158ec1d64f9471b16ef8fdd426de1f8b98682e28cf7d` | 7360 |
 
 ## What this document does not establish
 

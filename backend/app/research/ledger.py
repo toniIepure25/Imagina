@@ -169,12 +169,25 @@ def _is_blank(value: Any) -> bool:
     return value is _MISSING or value is None or value == ""
 
 
+def _canonical_artifact_bytes(path: Path) -> bytes:
+    """Return artifact bytes with text line endings normalized to LF.
+
+    Artifact hashes must be identical on Windows and POSIX checkouts. Git stores
+    text as LF, while a Windows working tree may materialize CRLF; hashing raw
+    bytes would make the ledger platform-specific.
+    """
+    raw = path.read_bytes()
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return raw
+    if "\r" not in text:
+        return raw
+    return text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+
+
 def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    return hashlib.sha256(_canonical_artifact_bytes(path)).hexdigest()
 
 
 def _load_artifacts(root: Path) -> dict[str, ArtifactSpec]:
@@ -270,7 +283,7 @@ def _load_records(root: Path, specs: dict[str, ArtifactSpec], errors: list[str])
             raw_status=raw_status,
             status=mapped_status,
             sha256=_sha256(artifact_path),
-            size_bytes=artifact_path.stat().st_size,
+            size_bytes=len(_canonical_artifact_bytes(artifact_path)),
             superseded_by=spec.superseded_by,
             note=spec.note,
         )

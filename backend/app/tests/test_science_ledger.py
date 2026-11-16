@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 import yaml
 
-from app.research.ledger import build_snapshot, render_markdown, repo_root, write_outputs
+from app.research.ledger import _canonical_artifact_bytes, build_snapshot, render_markdown, repo_root, write_outputs
 
 pytestmark = pytest.mark.core
 
@@ -192,3 +192,8 @@ def test_generated_status_document_is_current() -> None:
     snapshot = build_snapshot(REPO)
     status_path = REPO / "docs" / "program" / "PROGRAM_STATUS.md"
     assert status_path.read_text(encoding="utf-8") == render_markdown(snapshot)
+
+def test_artifact_bytes_normalize_windows_line_endings(tmp_path: Path) -> None:
+    artifact = tmp_path / "artifact.json"
+    artifact.write_bytes(b'{"ok": true}\r\n')
+    assert _canonical_artifact_bytes(artifact) == b'{"ok": true}\n'
