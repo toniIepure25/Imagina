@@ -773,3 +773,18 @@ artifacts:
       source/policy POMDP SBC, model-based power, calibration, independent review, and ethics are
       complete. The trial-level readout SBC passes but recovery is REVIEW. It does not authorize human
       data.
+
+  - artifact_id: animus.p5.crt.stage0j_target_scale
+    path: results/crt/CRT_STAGE0J_TARGET_SCALE.json
+    gate_id: ANIMUS_P5_CRT_STAGE0J_TARGET_SCALE
+    authority: canonical
+    status_path: decision
+    status_map:
+      CRT_STAGE0J_PASS: PASS
+      CRT_STAGE0J_REVIEW: LIMITED
+      CRT_STAGE0J_BLOCKED: BLOCKED
+    required_fields: [analysis, scope, created_at, code_sha, decision, status, config, environment, sbc, recovery, failures, limitations]
+    note: >-
+      Target-scale readiness package: NUTS SBC per confirmatory model plus BIC recovery and an explicit
+      readiness decision. BLOCKED is expected when NumPyro/JAX is unavailable. PASS is simulation-only
+      and does not authorize human collection or a claim upgrade.

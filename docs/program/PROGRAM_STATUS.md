@@ -61,6 +61,7 @@
 | ANIMUS_P5_CRT_STAGE0I_POLICY_RECOVERY | Counterfactual Reality Testing Stage 0I policy recovery | `LIMITED` | `animus.p5.crt.stage0i_policy_recovery` | Policy-choice recovery in simulation. A PASS is policy identifiability, not human evidence. |
 | ANIMUS_P5_CRT_STAGE0I_READINESS | Counterfactual Reality Testing Stage 0I readiness | `BLOCKED` | `animus.p5.crt.stage0i_package` | Documentation-quality readiness gate. BLOCKED is expected until computational gates, independent review, adversarial agreement, calibration, registration, and ethics are complete. |
 | ANIMUS_P5_CRT_REGISTRATION_READY | Counterfactual Reality Testing registration readiness | `BLOCKED` | `animus.p5.crt.registration_package` | Documentation-quality gate. READY_FOR_INDEPENDENT_REVIEW means the Stage 0F package is complete enough for PI, statistician, adversarial, and ethics review; it does not authorize human data collection or upgrade any claim. BLOCKED means at least one prerequisite is missing. Endpoint SBC is complete and a trial-level readout SBC is reported, but trial-level readout recovery is a post hoc conditional pass (LIMITED), not a pre-specified full-set pass; the full CRT POMDP SBC, calibration, model-based power, independent review, and ethics remain blockers. |
+| ANIMUS_P5_CRT_STAGE0J_TARGET_SCALE | Counterfactual Reality Testing target-scale readiness | `BLOCKED` | `animus.p5.crt.stage0j_target_scale` | NUTS SBC per confirmatory model plus BIC recovery and an explicit readiness decision. PASS is simulation-only and does not authorize human collection, a measurement claim, or a claim upgrade. BLOCKED is expected when the publication-grade posterior backend is unavailable. |
 
 ## Claims
 
@@ -143,6 +144,7 @@
 | `animus.p5.crt.stage0i_source_integrity` | ANIMUS_P5_CRT_STAGE0I_SOURCE_INTEGRITY | canonical | `PASS` | `105adf9fff317ad04f636f78dbed3f8cd3f294c8fcb94618d2a95a6a9e91f2db` | 3912 |
 | `animus.p5.crt.stage0i_target_design_projection` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_PROJECTION | canonical | `LIMITED` | `92697731d7a0abcb6727ccfac0358d0ee55fdd9fcdaf237c6449ed274e98b0f3` | 9048 |
 | `animus.p5.crt.stage0i_target_design_readout` | ANIMUS_P5_CRT_STAGE0I_TARGET_DESIGN_READOUT | canonical | `LIMITED` | `d733ccb71b017c8d0a134d8103500b91ca944046f8e10160691e25ac6c9018e3` | 3960 |
+| `animus.p5.crt.stage0j_target_scale` | ANIMUS_P5_CRT_STAGE0J_TARGET_SCALE | canonical | `BLOCKED` | `5df1ea25f9a9dc6ef246cf7fe95803e511a63362eee0d4c356fc1a2d2258b95c` | 1521 |
 | `animus.p5.crt.theory` | ANIMUS_P5_CRT_THEORY | canonical | `PASS` | `5095c62851e41925dc0c2306eed8923fc6b6c61023ca33ef1a088a093cfbf441` | 2112 |
 | `animus.p5.crt.trial_recovery` | ANIMUS_P5_CRT_TRIAL_RECOVERY | canonical | `LIMITED` | `fe39185e9b5ef1b37898b98f387d68b283f27802bb75fe0748137f3268dca266` | 1191 |
 | `animus.p5.crt.trial_sbc` | ANIMUS_P5_CRT_TRIAL_SBC | canonical | `PASS` | `1e4bb3314390c9bda2cb5264e933a198be3558146de73722d9e515180386c2a8` | 965 |

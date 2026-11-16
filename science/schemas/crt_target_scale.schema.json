@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://imagina.local/schemas/crt_target_scale.schema.json",
+  "title": "CRT Stage 0J target-scale readiness artifact",
+  "description": "Simulation-only readiness artifact. A PASS is not human evidence and does not authorize a claim upgrade.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "analysis",
+    "protocol",
+    "scope",
+    "created_at",
+    "code_sha",
+    "decision",
+    "status",
+    "config",
+    "environment",
+    "sbc",
+    "recovery",
+    "failures",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {"const": "IMAGINA-CRT-TARGET-SCALE-v1"},
+    "analysis": {"const": "crt_stage0j_target_scale_readiness"},
+    "protocol": {"const": "ANIMUS-CRT-v1"},
+    "scope": {"type": "string", "minLength": 3},
+    "created_at": {"type": "string", "format": "date-time"},
+    "code_sha": {"type": "string", "minLength": 7},
+    "decision": {
+      "enum": ["CRT_STAGE0J_PASS", "CRT_STAGE0J_REVIEW", "CRT_STAGE0J_BLOCKED"]
+    },
+    "status": {"enum": ["pass", "review", "blocked"]},
+    "reason": {"type": ["string", "null"]},
+    "config": {
+      "type": "object",
+      "required": ["n_participants", "n_trials", "n_sbc", "draws", "n_recovery", "models"],
+      "properties": {
+        "n_participants": {"type": "integer", "minimum": 6},
+        "n_trials": {"type": "integer", "minimum": 20},
+        "n_sbc": {"type": "integer", "minimum": 1},
+        "draws": {"type": "integer", "minimum": 20},
+        "n_recovery": {"type": "integer", "minimum": 1},
+        "models": {"type": "array", "minItems": 1, "uniqueItems": true}
+      }
+    },
+    "environment": {"type": "object"},
+    "sbc": {"type": "array"},
+    "recovery": {"type": ["object", "null"]},
+    "failures": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

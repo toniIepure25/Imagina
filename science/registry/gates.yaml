@@ -428,3 +428,12 @@ gates:
       SBC is complete and a trial-level readout SBC is reported, but trial-level readout recovery is a
       post hoc conditional pass (LIMITED), not a pre-specified full-set pass; the full CRT POMDP SBC,
       calibration, model-based power, independent review, and ethics remain blockers.
+
+  - gate_id: ANIMUS_P5_CRT_STAGE0J_TARGET_SCALE
+    name: Counterfactual Reality Testing target-scale readiness
+    canonical_artifact: animus.p5.crt.stage0j_target_scale
+    claim_ids: []
+    note: >-
+      NUTS SBC per confirmatory model plus BIC recovery and an explicit readiness decision. PASS is
+      simulation-only and does not authorize human collection, a measurement claim, or a claim upgrade.
+      BLOCKED is expected when the publication-grade posterior backend is unavailable.

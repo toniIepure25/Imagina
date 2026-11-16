@@ -553,6 +553,18 @@
       "superseded_by": null
     },
     {
+      "artifact_id": "animus.p5.crt.stage0j_target_scale",
+      "authority": "canonical",
+      "bytes": 1521,
+      "gate_id": "ANIMUS_P5_CRT_STAGE0J_TARGET_SCALE",
+      "note": "Target-scale readiness package: NUTS SBC per confirmatory model plus BIC recovery and an explicit readiness decision. BLOCKED is expected when NumPyro/JAX is unavailable. PASS is simulation-only and does not authorize human collection or a claim upgrade.",
+      "path": "results/crt/CRT_STAGE0J_TARGET_SCALE.json",
+      "raw_status": "CRT_STAGE0J_BLOCKED",
+      "sha256": "5df1ea25f9a9dc6ef246cf7fe95803e511a63362eee0d4c356fc1a2d2258b95c",
+      "status": "BLOCKED",
+      "superseded_by": null
+    },
+    {
       "artifact_id": "animus.p5.crt.theory",
       "authority": "canonical",
       "bytes": 2112,
@@ -1319,6 +1331,14 @@
       "gate_id": "ANIMUS_P5_CRT_REGISTRATION_READY",
       "name": "Counterfactual Reality Testing registration readiness",
       "note": "Documentation-quality gate. READY_FOR_INDEPENDENT_REVIEW means the Stage 0F package is complete enough for PI, statistician, adversarial, and ethics review; it does not authorize human data collection or upgrade any claim. BLOCKED means at least one prerequisite is missing. Endpoint SBC is complete and a trial-level readout SBC is reported, but trial-level readout recovery is a post hoc conditional pass (LIMITED), not a pre-specified full-set pass; the full CRT POMDP SBC, calibration, model-based power, independent review, and ethics remain blockers.",
+      "status": "BLOCKED"
+    },
+    {
+      "canonical_artifact": "animus.p5.crt.stage0j_target_scale",
+      "claims": [],
+      "gate_id": "ANIMUS_P5_CRT_STAGE0J_TARGET_SCALE",
+      "name": "Counterfactual Reality Testing target-scale readiness",
+      "note": "NUTS SBC per confirmatory model plus BIC recovery and an explicit readiness decision. PASS is simulation-only and does not authorize human collection, a measurement claim, or a claim upgrade. BLOCKED is expected when the publication-grade posterior backend is unavailable.",
       "status": "BLOCKED"
     }
   ],

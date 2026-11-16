@@ -257,6 +257,9 @@ def run_nuts_smoke(data: TrialData, model: str = "M0", config: NutsConfig | None
     }
 
 
+RANK_TOLERANCE = 0.10
+
+
 @dataclass(frozen=True)
 class NutsSbcConfig:
     n_participants: int = 8
@@ -335,7 +338,15 @@ def run_nuts_sbc(
     calibrated = all(
         cfg.coverage_low <= metrics[name]["coverage"] <= cfg.coverage_high for name in targets
     )
-    passed = calibrated and convergence == cfg.n_sbc and cfg.n_sbc >= cfg.min_sbc_for_decision
+    rank_centered = all(
+        abs(metrics[name]["mean_rank"] - 0.5) <= RANK_TOLERANCE for name in targets
+    )
+    passed = (
+        calibrated
+        and rank_centered
+        and convergence == cfg.n_sbc
+        and cfg.n_sbc >= cfg.min_sbc_for_decision
+    )
     return {
         "analysis": "crt_numpyro_nuts_sbc",
         "scope": SCOPE,
@@ -343,10 +354,12 @@ def run_nuts_sbc(
         "target_parameters": targets,
         "config": asdict(cfg),
         "metrics": metrics,
+        "rank_tolerance": RANK_TOLERANCE,
         "clean_chains": convergence,
         "decision": "CRT_NUTS_SBC_PASS" if passed else "CRT_NUTS_SBC_REVIEW",
         "note": (
             "NUTS SBC; a REVIEW below the minimum SBC count is expected and is not a failed model. "
+            "Coverage and mean-rank windows are screening criteria, not proof of calibration. "
             "No human evidence is used."
         ),
     }

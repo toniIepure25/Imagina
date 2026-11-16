@@ -1,0 +1,49 @@
+{
+  "analysis": "crt_stage0j_target_scale_readiness",
+  "code_sha": "fc4eeec8e182173d30185c21165ef56931f67886",
+  "config": {
+    "chains": 1,
+    "coverage_high": 0.97,
+    "coverage_low": 0.93,
+    "draws": 500,
+    "min_sbc_for_decision": 50,
+    "models": [
+      "M0",
+      "M2",
+      "M4",
+      "M6",
+      "M7"
+    ],
+    "n_participants": 432,
+    "n_recovery": 2,
+    "n_sbc": 20,
+    "n_trials": 240,
+    "recovery_threshold": 0.85,
+    "seed": 20261117,
+    "warmup": 500
+  },
+  "created_at": "2026-11-16T23:10:44.103409+00:00",
+  "decision": "CRT_STAGE0J_BLOCKED",
+  "environment": {
+    "jax": null,
+    "numpy": "2.3.1",
+    "numpyro": null,
+    "platform": "Windows-10-10.0.19045-SP0",
+    "python": "3.13.5"
+  },
+  "failures": [],
+  "limitations": [
+    "Simulation-only; no human participants and no human evidence.",
+    "SBC coverage and mean-rank checks are necessary but not sufficient for a valid study design.",
+    "Rhat/ESS are not yet enforced in the SBC loop; only divergent transitions count as unclean chains.",
+    "Recovery is BIC-based among pre-specified models; it is not a NUTS marginal-likelihood comparison.",
+    "A PASS does not authorize a measurement, clinical, decoding, or consciousness claim."
+  ],
+  "protocol": "ANIMUS-CRT-v1",
+  "reason": "NumPyro/JAX is not installed; target-scale SBC cannot run.",
+  "recovery": {},
+  "sbc": [],
+  "schema": "IMAGINA-CRT-TARGET-SCALE-v1",
+  "scope": "simulation_only_target_scale_readiness_not_human_evidence",
+  "status": "blocked"
+}
